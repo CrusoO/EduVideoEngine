@@ -7,7 +7,7 @@ import type { LessonBundle } from "../bundle";
  *  1. the question, and the equation with each term in its own colour (x squared blue, minus five x yellow, plus six green);
  *  2. the parabola is drawn on while the equation shrinks to the top;
  *  3. the two roots pop in, each labelled;
- *  4. two hops on a number line, 0 to 2 and 2 to 5, a bracket under the line labelled 2 + 3 = 5, the other terms of the equation dimmed,
+ *  4. two hops on a number line, 0 to 2 and 2 to 5, a bracket under the line labelled 2 + 3 = 5, the other terms of the equation dimmed by cues when the hops begin,
  *     and the 5 of the total in yellow like minus five x.
  * Every number and equation is an expression tree; the sentences carry {expr:id} placeholders only. Positions of hops, roots and the bracket are
  * computed from these expressions, never typed.
@@ -114,7 +114,7 @@ export function buildSumOfRoots(): LessonBundle {
         beatId: "b4",
         sourceIds: [src[0]!, src[1]!],
         objects: [
-          { id: "eq", component: "equation", props: { size: "m", focus: ["t.linear"] }, exprRef: "eq1" },
+          { id: "eq", component: "equation", props: { size: "m" }, exprRef: "eq1" },
           {
             id: "line",
             component: "numberLine",
@@ -123,12 +123,15 @@ export function buildSumOfRoots(): LessonBundle {
         ],
         layout: [{ rule: "column", items: ["eq", "line"] }, { rule: "center", item: "line" }],
         cues: [
+          // when the hops begin, the terms that do not matter fade: only minus five x stays bright
+          { targetObject: "eq#t.square", action: "dim", anchor: { sentenceId: "s4.1", at: { wordIndex: 9 } }, minHoldMs: 0 },
+          { targetObject: "eq#t.constant", action: "dim", anchor: { sentenceId: "s4.1", at: { wordIndex: 9 } }, minHoldMs: 0 },
           { targetObject: "line#hop0", action: "draw", anchor: { sentenceId: "s4.1", at: { wordIndex: 9 } }, minHoldMs: 800 },
           { targetObject: "line#hop1", action: "draw", anchor: { sentenceId: "s4.2", at: { wordIndex: 6 } }, minHoldMs: 800 },
           { targetObject: "line#bracket0", action: "draw", anchor: { sentenceId: "s4.3", at: "start" }, minHoldMs: 800 },
         ],
         interactions: [{ id: "ask4", afterSentenceId: "s4.3", prompt: "How is the five in the sum related to the minus five x in the equation?", goalExprRef: "total" }],
-        a11y: { altText: "The equation at the top with only minus five x bright. Under it a number line: a hop from zero to two, a hop from two to five, and a bracket under the line labelled two plus three equals five, the five in yellow like minus five x." },
+        a11y: { altText: "The equation at the top: when the hops begin, x squared and plus six fade, and only minus five x stays bright. Under it a number line: a hop from zero to two, a hop from two to five, and a bracket under the line labelled two plus three equals five, the five in yellow like minus five x." },
       },
     ],
   });

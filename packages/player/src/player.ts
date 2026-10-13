@@ -80,7 +80,10 @@ export class Player {
     this.caption.className = "eve-caption";
     this.caption.lang = o.bundle.locale;
     this.caption.setAttribute("data-testid", "caption");
-    o.root.append(this.stage, this.caption);
+    const surround = document.createElement("div");
+    surround.className = "eve-surround";
+    surround.append(this.stage);
+    o.root.append(surround, this.caption);
     if (o.credit) {
       const credit = document.createElement("p");
       credit.className = "eve-credit";

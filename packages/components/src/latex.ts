@@ -97,10 +97,12 @@ export type ColorTheme = { of: ColorOf; muted: string };
  * The LaTeX of a formula as the stage draws it. With `focus` (a list of term names) every other part is dimmed to the muted colour and only the
  * focused terms keep their own colours: "other terms dimmed". Without a colour theme the formula is plain, as before.
  */
-export function formulaLatex(e: Expr, colors?: ColorTheme, focus?: readonly string[]): string {
+export function formulaLatex(e: Expr, colors?: ColorTheme, focus?: readonly string[], dimmed?: ReadonlySet<string>): string {
   if (!colors) return toLatex(e);
-  if (!focus) return toLatex(e, colors.of);
-  return `\\textcolor{${colors.muted}}{${toLatex(e, (t) => (focus.includes(t) ? colors.of(t) : undefined))}}`;
+  // Terms dimmed by a cue take the muted colour, whatever colour they have; without a theme there is no muted colour to use, so the formula stays plain.
+  const of: ColorOf = dimmed && dimmed.size > 0 ? (t) => (dimmed.has(t) ? colors.muted : colors.of(t)) : colors.of;
+  if (!focus) return toLatex(e, of);
+  return `\\textcolor{${colors.muted}}{${toLatex(e, (t) => (focus.includes(t) ? of(t) : dimmed?.has(t) ? colors.muted : undefined))}}`;
 }
 
 /** Plain ASCII reading for fallbacks (alt text when MathML is not enough). */

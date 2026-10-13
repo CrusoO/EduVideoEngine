@@ -236,7 +236,7 @@ describe("assureLayout: whole lessons", () => {
     const fast = assureLayout(bundle, resolve(bundle, tracks(0.01)));
     expect(fast.length).toBeGreaterThan(0);
     expect(fast.every((f) => f.code === "reading-time")).toBe(true);
-    expect(new Set(fast.map((f) => f.viewport))).toEqual(new Set(["phone 360x640", "desktop 1280x720"]));
+    expect(new Set(fast.map((f) => f.viewport))).toEqual(new Set(["phone 360x640", "desktop 1280x720 (stage capped at 960)"]));
     expect(fast[0]).toMatchObject({ level: "fail", sceneId: expect.any(String) });
   });
 

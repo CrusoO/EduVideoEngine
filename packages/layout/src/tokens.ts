@@ -36,6 +36,8 @@ export type Viewport = { width: number; height: number };
 
 /** From this card width the stage is a 16:9 frame; below it, a phone frame. 880 px gives 495 px of height, more than the 456 px of the design phone: desktop is roomier, never the reverse. */
 export const WIDE_MIN_WIDTH = 880;
+/** On a wide card the stage is capped at this width and centred on a dark surround: a sparse scene in a very wide stage looks empty (ADR 0019). */
+export const MAX_STAGE_PX = 960;
 /** A stage is never shorter than this, whatever the screen (a phone held sideways). */
 export const MIN_STAGE_PX = 240;
 
@@ -56,9 +58,9 @@ export const centerOffset = (contentHeight: number, frameHeight: number): number
 /** Screens every reference lesson must fit: the 360 x 640 design phone and a 1280 x 720 desktop window. */
 export const referenceViewports = (chromePx: number = DEFAULT_CHROME_PX): ReadonlyArray<{ name: string; viewport: Viewport }> => {
   const phone = stageFrame(DESIGN_SCREEN.width, DESIGN_SCREEN.height, chromePx);
-  const wide = stageFrame(1280, 720, chromePx);
+  const wide = stageFrame(Math.min(1280, MAX_STAGE_PX), 720, chromePx); // a 1280 px window shows a 960 px stage
   return [
     { name: "phone 360x640", viewport: { width: phone.width, height: phone.height } },
-    { name: "desktop 1280x720", viewport: { width: wide.width, height: wide.height } },
+    { name: "desktop 1280x720 (stage capped at 960)", viewport: { width: wide.width, height: wide.height } },
   ];
 };

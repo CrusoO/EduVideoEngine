@@ -116,7 +116,7 @@ export function solve(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx, op
   // ---- place -----------------------------------------------------------------------------------------------------
   const boxes: Record<string, Box> = {};
   const intrinsic: Record<string, Intrinsic> = {};
-  for (const o of scene.objects) intrinsic[o.id] = o.component === "highlight" ? { height: 0, words: 0, equations: 0, facts: [] } : measure(o, W, ctx);
+  for (const o of scene.objects) intrinsic[o.id] = measure(o, W, ctx);
 
   const place = (b: Block, x: number, y: number, w: number): number => {
     if (b.kind === "item") {

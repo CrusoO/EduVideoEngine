@@ -1,8 +1,16 @@
 /* The card around the stage follows the YourTutor theme; the stage inside it is the dark stage theme (packages/components/src/styles.css). */
+/* The surround is dark and as wide as the card; the stage is capped at 960 px and centred in it, so a sparse scene never sits in a very wide empty box. */
+.eve-surround {
+  display: flex;
+  justify-content: center;
+  background: var(--eve-surround, #06070C);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
 .eve-player-stage {
   width: 100%;
+  max-width: 960px;
   box-sizing: border-box;
-  border-radius: 12px 12px 0 0;
   overflow: hidden;
 }
 .eve-caption {

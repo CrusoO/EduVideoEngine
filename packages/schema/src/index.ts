@@ -10,3 +10,4 @@ export * from "./locales";
 export * from "./verbalise";
 export { hindiPreview } from "./fixtures/hindi-preview";
 export { layoutStress } from "./fixtures/layout-stress";
+export * from "./limits";

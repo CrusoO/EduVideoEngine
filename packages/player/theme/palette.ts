@@ -2,6 +2,9 @@
  * The stage theme (dark). One source of truth for the colours of the player stage. The same values live in
  * packages/components/src/styles.css (variables) and packages/layout/src/tokens.ts (COLOR); tests/theme.test.ts fails if they drift.
  */
+/** The dark band around a capped stage on a wide card. */
+export const SURROUND = "#06070C";
+
 export const STAGE = {
   bg: "#0B0D14",
   grid: "#171B2A",

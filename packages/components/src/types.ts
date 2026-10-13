@@ -62,6 +62,8 @@ export type VerifyContext = {
   math?: MathRenderer;
   /** The parts of this object that cues address (the part names after the # in cue targets). Each must be one the component lists. */
   cueParts?: string[];
+  /** Every cue that addresses a part of this object: the part and the action. Lets a component refuse an action it cannot show on a part. */
+  cueActions?: Array<{ part: string; action: string }>;
 };
 
 /**

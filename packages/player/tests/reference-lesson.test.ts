@@ -51,8 +51,8 @@ describe("the reference lesson: four scenes", () => {
     const s = lesson.scenes[3]!;
     const line = s.objects.find((o) => o.id === "line")!;
     expect(line.props).toMatchObject({ hops: [{ from: "zero", to: "two" }, { from: "two", to: "five" }], brackets: [{ span: "hops", label: "total" }] });
-    expect(s.objects.find((o) => o.id === "eq")!.props).toEqual({ size: "m", focus: ["t.linear"] });
-    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["line#hop0", "draw"], ["line#hop1", "draw"], ["line#bracket0", "draw"]]);
+    expect(s.objects.find((o) => o.id === "eq")!.props).toEqual({ size: "m" });
+    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["eq#t.square", "dim"], ["eq#t.constant", "dim"], ["line#hop0", "draw"], ["line#hop1", "draw"], ["line#bracket0", "draw"]]);
     const total = lesson.expressions.total as { b: { term?: string } };
     const minusFiveX = (lesson.expressions.eq1 as { a: { a: { b: { term?: string } } } }).a.a.b;
     expect(total.b.term).toBe(minusFiveX.term);
@@ -62,8 +62,10 @@ describe("the reference lesson: four scenes", () => {
   it("every component of every scene passes its own verification, including the parts its cues address", () => {
     for (const scene of lesson.scenes) {
       for (const o of scene.objects) {
-        const parts = scene.cues.filter((c) => c.targetObject.startsWith(`${o.id}#`)).map((c) => c.targetObject.split("#")[1]!);
-        const problems = componentFor(o.component).verify(o.props as never, { expressions: lesson.expressions, exprRef: o.exprRef, objectIds: scene.objects.map((x) => x.id), math: katexMath, cueParts: parts });
+        const mine = scene.cues.filter((c) => c.targetObject.startsWith(`${o.id}#`));
+        const parts = mine.map((c) => c.targetObject.split("#")[1]!);
+        const cueActions = mine.map((c) => ({ part: c.targetObject.split("#")[1]!, action: c.action }));
+        const problems = componentFor(o.component).verify(o.props as never, { expressions: lesson.expressions, exprRef: o.exprRef, objectIds: scene.objects.map((x) => x.id), math: katexMath, cueParts: parts, cueActions });
         expect(problems, `${scene.id}/${o.id}`).toEqual([]);
       }
     }

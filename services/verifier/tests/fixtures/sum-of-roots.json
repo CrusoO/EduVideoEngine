@@ -515,10 +515,7 @@
           "id": "eq",
           "component": "equation",
           "props": {
-            "size": "m",
-            "focus": [
-              "t.linear"
-            ]
+            "size": "m"
           },
           "exprRef": "eq1"
         },
@@ -563,6 +560,28 @@
       ],
       "cues": [
         {
+          "targetObject": "eq#t.square",
+          "action": "dim",
+          "anchor": {
+            "sentenceId": "s4.1",
+            "at": {
+              "wordIndex": 9
+            }
+          },
+          "minHoldMs": 0
+        },
+        {
+          "targetObject": "eq#t.constant",
+          "action": "dim",
+          "anchor": {
+            "sentenceId": "s4.1",
+            "at": {
+              "wordIndex": 9
+            }
+          },
+          "minHoldMs": 0
+        },
+        {
           "targetObject": "line#hop0",
           "action": "draw",
           "anchor": {
@@ -603,17 +622,17 @@
         }
       ],
       "a11y": {
-        "altText": "The equation at the top with only minus five x bright. Under it a number line: a hop from zero to two, a hop from two to five, and a bracket under the line labelled two plus three equals five, the five in yellow like minus five x."
+        "altText": "The equation at the top: when the hops begin, x squared and plus six fade, and only minus five x stays bright. Under it a number line: a hop from zero to two, a hop from two to five, and a bracket under the line labelled two plus three equals five, the five in yellow like minus five x."
       }
     }
   ],
   "hashes": {
-    "bundle": "279379dff1d5d28a27f060673e41350ebe4d26f360e8fea180ee340ed363fe85",
+    "bundle": "abb9497d8e092a4048baf819abf8c99baf1107c703d343df577b1a66341640de",
     "perScene": {
       "scene1": "c8f218705617916843f13a0d768adbd6866d691b969f2340f0a9843c579db44b",
       "scene2": "f0df84879b254726e0b3e3236de0c2d1a404a344be22b3b0219c5704883d9e87",
       "scene3": "6d28629b7a9742b3ed8706462ae58084c8a6da5ecc25986f0e7300e95b682488",
-      "scene4": "46dc6dd044f95b9d5d59290e6b1d7dfa45ca492b2d945232c047297d7ff64791"
+      "scene4": "2ae6e33cc0b00b5fdb72487409b599551b684e48f97859bc6d4d8ebfd2d22311"
     }
   }
 }

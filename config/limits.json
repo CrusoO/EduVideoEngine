@@ -1,0 +1,9 @@
+{
+  "_comment": "Limits that are decisions, not code. Change them here; tests read this file. See ADR 0018.",
+  "durationS": {
+    "beatMax": 75,
+    "lessonTargetWarn": 300,
+    "lessonHardMax": 420
+  },
+  "beats": { "min": 4, "max": 10 }
+}

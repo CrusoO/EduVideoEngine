@@ -14,7 +14,7 @@ const APPEARS = new Set(["reveal", "draw", "pop"]);
 /**
  * How an object (or one named part of it) looks at lesson time t, from its events alone. Pure and seekable (ADR 0009).
  *  - No appearance event: visible from the start, fully drawn, full size.
- *  - Appearance events are reveal, draw and pop; the earliest one decides. reveal: invisible, then fades in over REVEAL_MS.
+ *  - Appearance events are reveal, draw and pop; the earliest one decides (at the same instant: draw, then pop, then reveal). reveal: invisible, then fades in over REVEAL_MS.
  *    draw: appears at its time and its stroke is drawn on over DRAW_MS (draw 0 to 1). pop: scales in from POP_FROM and fades in over POP_MS.
  *  - Highlight: active from atMs to holdUntilMs, eased in and out over HIGHLIGHT_EASE_MS (the strongest event wins).
  *  - Dim: dimmed from its atMs on.
@@ -23,7 +23,8 @@ const APPEARS = new Set(["reveal", "draw", "pop"]);
  */
 export function objectStateAt(events: readonly ObjectEvent[], t: number, reduceMotion = false, part?: string): ObjectState {
   const mine = events.filter((e) => e.part === part);
-  const first = mine.filter((e) => APPEARS.has(e.action)).sort((a, b) => a.atMs - b.atMs)[0];
+  // Two appearance cues at the same instant are ordered by name, so the result never depends on the order the events arrive in.
+  const first = mine.filter((e) => APPEARS.has(e.action)).sort((a, b) => a.atMs - b.atMs || (a.action < b.action ? -1 : a.action > b.action ? 1 : 0))[0];
   let visible = true;
   let opacity = 1;
   let draw = 1;

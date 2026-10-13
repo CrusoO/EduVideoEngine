@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   EXPR_OPS,
   hindiPreview,
+  LIMITS,
+  sumOfRoots,
   named,
   termIds,
   add,
@@ -334,5 +336,35 @@ describe("cue targets with parts and the new actions", () => {
     for (const t of ["graph#", "#curve", "graph#a#b", "graph #a", ""]) {
       expect(sealed((b) => void (b.scenes[3]!.cues[0] = { targetObject: t, action: "draw", anchor: { sentenceId: "s4.1", at: "start" }, minHoldMs: 800 })).ok, t).toBe(false);
     }
+  });
+});
+
+describe("lesson length (ADR 0018, config/limits.json)", () => {
+  const withTarget = (s: number) => {
+    const b = structuredClone(sumOfRoots) as LessonBundle;
+    b.plan.targetLengthS = s;
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    return validateBundle(seal(rest));
+  };
+  it("the limits are the ones the owner confirmed, read from the config file", () => {
+    expect(LIMITS.durationS).toEqual({ beatMax: 75, lessonTargetWarn: 300, lessonHardMax: 420 });
+    expect(LIMITS.beats).toEqual({ min: 4, max: 10 });
+  });
+  it("up to the target: valid and quiet; over it: valid with a warning; over the hard limit: rejected", () => {
+    const at = withTarget(300);
+    expect(at.ok).toBe(true);
+    expect(at.warnings).toEqual([]);
+    const over = withTarget(301);
+    expect(over.ok).toBe(true);
+    expect(over.warnings).toEqual([{ path: "plan.targetLengthS", message: "planned for 301 s: over the 300 s target" }]);
+    expect(withTarget(420).ok).toBe(true);
+    const hard = withTarget(421);
+    expect(hard.ok).toBe(false);
+    expect(hard.issues).toEqual([{ path: "plan.targetLengthS", message: "a lesson may last at most 420 s, this one is planned for 421 s" }]);
+    expect(hard.warnings).toEqual([]);
+  });
+  it("a bundle that fails the schema has no warnings to give", () => {
+    expect(validateBundle({}).warnings).toEqual([]);
   });
 });

@@ -2,10 +2,12 @@ import { LessonBundle } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { termIds } from "./expr";
 import { computeHashes } from "./hash";
+import { LIMITS } from "./limits";
 import { LOCALES } from "./locales";
 
 export type Issue = { path: string; message: string };
-export type Validation = { ok: true; bundle: Bundle; issues: [] } | { ok: false; bundle?: undefined; issues: Issue[] };
+/** `warnings` are things worth a look that do not fail the lesson (a lesson target over the warning length). */
+export type Validation = { ok: true; bundle: Bundle; issues: []; warnings: Issue[] } | { ok: false; bundle?: undefined; issues: Issue[]; warnings: Issue[] };
 
 const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
 /**
@@ -15,7 +17,7 @@ const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
  */
 const LITERAL_MATH = /[=^√∑∫²³⁴⁵⁶⁷⁸⁹⁰¹½¼¾]|\\[A-Za-z]+|\$|\d\s*[+\-−×÷*/]\s*\d/;
 /** 4 to 10 beats (ADR 0018): the ceiling is raised from 7 so a beat that does not fit a phone stage can be split in two. */
-export const BEAT_COUNT = { min: 4, max: 10 } as const;
+export const BEAT_COUNT = LIMITS.beats;
 /** Components whose appearance must come from an expression tree. */
 const NEEDS_EXPR = new Set(["equation", "functionGraph"]);
 
@@ -28,7 +30,7 @@ export const wordsOf = (text: string): string[] => text.replace(PLACEHOLDER, "X"
 export function validateBundle(input: unknown): Validation {
   const parsed = LessonBundle.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })) };
+    return { ok: false, issues: parsed.error.issues.map((i) => ({ path: i.path.join("."), message: i.message })), warnings: [] };
   }
   const b = parsed.data;
   const issues: Issue[] = [];
@@ -40,6 +42,10 @@ export function validateBundle(input: unknown): Validation {
   if (b.plan.beats.length < BEAT_COUNT.min || b.plan.beats.length > BEAT_COUNT.max) {
     bad("plan.beats", `a lesson has ${BEAT_COUNT.min} to ${BEAT_COUNT.max} beats`);
   }
+  // Duration (ADR 0018): the planner's target length for the lesson. Over the target is a warning, over the hard limit fails. The resolved length is checked again once the voice exists.
+  const warnings: Issue[] = [];
+  if (b.plan.targetLengthS > LIMITS.durationS.lessonHardMax) bad("plan.targetLengthS", `a lesson may last at most ${LIMITS.durationS.lessonHardMax} s, this one is planned for ${b.plan.targetLengthS} s`);
+  else if (b.plan.targetLengthS > LIMITS.durationS.lessonTargetWarn) warnings.push({ path: "plan.targetLengthS", message: `planned for ${b.plan.targetLengthS} s: over the ${LIMITS.durationS.lessonTargetWarn} s target` });
   const bundleSources = new Set(b.sourceIds);
   for (const beat of b.plan.beats) {
     for (const s of beat.sourceIds) if (!bundleSources.has(s)) bad(`plan.beats.${beat.id}.sourceIds`, `unknown source ${s}`);
@@ -150,5 +156,5 @@ export function validateBundle(input: unknown): Validation {
     for (const key of Object.keys(b.hashes.perScene)) if (!sceneIds.has(key)) bad(`hashes.perScene.${key}`, "hash for a scene that does not exist");
   }
 
-  return issues.length ? { ok: false, issues } : { ok: true, bundle: b, issues: [] };
+  return issues.length ? { ok: false, issues, warnings } : { ok: true, bundle: b, issues: [], warnings };
 }

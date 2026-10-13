@@ -45,6 +45,23 @@ describe("the earliest appearance decides", () => {
   });
 });
 
+describe("two appearance cues at one instant", () => {
+  it("never depend on the order the events arrive in: draw wins over pop wins over reveal", () => {
+    const kinds = ["reveal", "draw", "pop"] as const;
+    for (const a of kinds) {
+      for (const b of kinds) {
+        if (a === b) continue;
+        const fwd = objectStateAt([ev(a, 100), ev(b, 100)], 200);
+        const rev = objectStateAt([ev(b, 100), ev(a, 100)], 200);
+        expect(rev, `${a} and ${b}`).toEqual(fwd);
+      }
+    }
+    expect(objectStateAt([ev("reveal", 100), ev("draw", 100)], 100 + DRAW_MS / 2).draw).toBe(0.5);
+    expect(objectStateAt([ev("reveal", 100), ev("pop", 100)], 100 + POP_MS / 2).opacity).toBe(0.5);
+    expect(objectStateAt([ev("pop", 100), ev("draw", 100)], 100 + DRAW_MS / 2).draw).toBe(0.5);
+  });
+});
+
 describe("parts", () => {
   const events = [ev("draw", 1000, 2000, "curve"), ev("pop", 3000, 4000, "root0"), ev("reveal", 500)];
   it("a part follows only its own events, the whole object only the events without a part", () => {

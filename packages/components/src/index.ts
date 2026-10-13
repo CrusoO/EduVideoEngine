@@ -5,7 +5,7 @@ export * from "./sample";
 export * from "./registry";
 export * from "./math-cache";
 export { text, TextProps, WORD_BUDGET, applyState } from "./text";
-export { equation, EquationProps } from "./equation";
+export { equation, EquationProps, dimmedTerms, MAX_TERMS_PER_EQUATION } from "./equation";
 export { functionGraph, GraphProps } from "./functionGraph";
 export { stepList, StepListProps } from "./stepList";
 export { highlight, HighlightProps, HIGHLIGHT_COLOR, STAGE_COLOR, contrast } from "./highlight";
