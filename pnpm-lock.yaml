@@ -231,6 +231,9 @@ importers:
       '@eve/components':
         specifier: workspace:*
         version: link:../components
+      '@eve/layout':
+        specifier: workspace:*
+        version: link:../layout
       '@eve/resolver':
         specifier: workspace:*
         version: link:../resolver

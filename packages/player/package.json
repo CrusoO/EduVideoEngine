@@ -11,7 +11,8 @@
   "dependencies": {
     "@eve/schema": "workspace:*",
     "@eve/components": "workspace:*",
-    "@eve/resolver": "workspace:*"
+    "@eve/resolver": "workspace:*",
+    "@eve/layout": "workspace:*"
   },
   "devDependencies": {
     "@playwright/test": "1.49.1",

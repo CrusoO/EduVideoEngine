@@ -4,6 +4,7 @@ import { quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type Pause
 import { resolve } from "@eve/resolver";
 import { buildMathCache, katexMath } from "@eve/components/src/build";
 import { cachedMath } from "@eve/components";
+import { solve } from "@eve/layout";
 import { Player, type MasterClock } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;
@@ -224,5 +225,60 @@ describe("Player: captions are typeset like the screen", () => {
     expect(cap.textContent).not.toMatch(/x\^2/); // no ASCII maths
     expect(cap.firstChild!.textContent).toBe("Here is a quadratic equation: ");
     expect(cap.lastChild!.textContent).toBe(".");
+  });
+});
+
+describe("Player: layout from the solver", () => {
+  const withWidth = (w: number) => {
+    let width = w;
+    const made = make({ stageWidth: () => width });
+    return { ...made, setWidth: (n: number) => (width = n) };
+  };
+  const box = (root: HTMLElement, id: string) => {
+    const el = root.querySelector<HTMLElement>(`[data-object-id="${id}"]`)!;
+    return { x: parseInt(el.style.left), y: parseInt(el.style.top), w: parseInt(el.style.width), h: parseInt(el.style.height), pos: el.style.position };
+  };
+
+  it("puts every object in the box the solver computes, and sizes the stage to the content", () => {
+    const { player, root } = withWidth(360);
+    player.seek(0);
+    const spec = bundle.scenes[0]!;
+    const want = solve({ objects: spec.objects, layout: spec.layout }, { width: 360, height: 0 }, { expressions: bundle.expressions, locale: bundle.locale });
+    for (const [id, b] of Object.entries(want.boxes)) expect(box(root, id), id).toEqual({ x: b.x, y: b.y, w: b.width, h: b.height, pos: "absolute" });
+    expect(root.querySelector<HTMLElement>(".eve-stage")!.style.height).toBe(`${want.contentHeight}px`);
+    expect(root.querySelector(".eve-stage")!.classList.contains("eve-laid")).toBe(true);
+  });
+
+  it("solves again when the stage width changes, and not otherwise", () => {
+    const { player, root, setWidth } = withWidth(360);
+    player.seek(0);
+    const narrow = box(root, "title").w;
+    player.seek(100);
+    expect(box(root, "title").w).toBe(narrow);
+    setWidth(1000);
+    player.seek(200);
+    expect(box(root, "title").w).toBe(960);
+  });
+
+  it("solves again for each scene", () => {
+    const { player, root } = withWidth(360);
+    player.seek(timeline.scenes[1]!.startMs);
+    expect(box(root, "general").pos).toBe("absolute");
+  });
+
+  it("a stage with no width (nothing is laid out yet) stays a plain column", () => {
+    const { player, root } = withWidth(0);
+    player.seek(0);
+    expect(root.querySelector(".eve-stage")!.classList.contains("eve-laid")).toBe(false);
+    expect(root.querySelector<HTMLElement>('[data-object-id="title"]')!.style.position).toBe("");
+  });
+
+  it("centres what the spec centres", () => {
+    const b = structuredClone(bundle);
+    b.scenes[0]!.layout = [{ rule: "center", item: "title" }];
+    const root = document.createElement("div");
+    const player = new Player({ root, bundle: b, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360 });
+    player.seek(0);
+    expect(root.querySelector<HTMLElement>('[data-object-id="title"]')!.style.textAlign).toBe("center");
   });
 });

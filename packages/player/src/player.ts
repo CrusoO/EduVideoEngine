@@ -1,6 +1,7 @@
 import { componentFor, spokenLabel, toLatex, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
+import { PAD, solve } from "@eve/layout";
 import type { MasterClock } from "./clock";
 
 export type PlayerOptions = {
@@ -19,6 +20,8 @@ export type PlayerOptions = {
   onInterrupt?: () => void;
   /** Wall clock for the stall watchdog. Injected for tests. */
   now?: () => number;
+  /** Width of the stage in pixels, for the layout solver. Default: the real width of the stage element (0 when nothing is laid out, as in jsdom, in which case the stage stays a plain column). */
+  stageWidth?: () => number;
   /** Called after every draw, with the lesson time that was drawn. For measurement. */
   onFrame?: (drawnMs: number) => void;
   /** Injected for tests. */
@@ -48,6 +51,8 @@ export class Player {
   private readonly sceneById: Map<string, SceneSpec>;
   private readonly sentenceText: Map<string, string>;
   private captionId: string | null = null;
+  private laidWidth = -1;
+  private resizeObserver: ResizeObserver | null = null;
   private readonly raf: (cb: () => void) => number;
   private readonly caf: (id: number) => void;
 
@@ -70,6 +75,12 @@ export class Player {
       credit.className = "eve-credit";
       credit.textContent = o.credit;
       o.root.append(credit);
+    }
+    if (typeof ResizeObserver !== "undefined") {
+      this.resizeObserver = new ResizeObserver(() => {
+        if (this.o.root.isConnected) this.draw(this.o.clock.nowMs());
+      });
+      this.resizeObserver.observe(this.stage);
     }
     this.o.clock.onInterrupt?.(() => {
       this.pause();
@@ -108,6 +119,7 @@ export class Player {
   }
 
   destroy(): void {
+    this.resizeObserver?.disconnect();
     this.running = false;
     this.caf(this.frame);
     this.o.clock.pause();
@@ -159,6 +171,7 @@ export class Player {
     const scene = [...tl.scenes].reverse().find((s) => s.startMs <= t) ?? tl.scenes[0]!;
     if (scene.sceneId !== this.sceneId) this.mount(scene.sceneId);
     const spec = this.sceneById.get(scene.sceneId)!;
+    this.relayout(spec);
     const rectOf = (id: string): Rect | null => {
       const el = this.els.get(id);
       if (!el) return null;
@@ -213,8 +226,36 @@ export class Player {
     this.caption.append(text.slice(last));
   }
 
+  /**
+   * Put every object where the layout solver says (ADR 0014, 0017). Only when the stage width changed since the last solve:
+   * the solver is pure, so the same width always gives the same boxes. The stage keeps its plain column when it has no width.
+   */
+  private relayout(spec: SceneSpec): void {
+    const width = this.o.stageWidth ? this.o.stageWidth() : this.stage.clientWidth;
+    if (width === this.laidWidth) return;
+    this.laidWidth = width;
+    if (width <= 2 * PAD) {
+      this.stage.classList.remove("eve-laid");
+      return;
+    }
+    // A scene the solver cannot place is a build error (assureLayout catches it first); here it throws, never draws a guess.
+    const layout = solve({ objects: spec.objects, layout: spec.layout }, { width, height: 0 }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale });
+    this.stage.classList.add("eve-laid");
+    this.stage.style.height = `${layout.contentHeight}px`;
+    for (const [id, box] of Object.entries(layout.boxes)) {
+      const el = this.els.get(id)!;
+      el.style.position = "absolute";
+      el.style.left = `${box.x}px`;
+      el.style.top = `${box.y}px`;
+      el.style.width = `${box.width}px`;
+      el.style.height = `${box.height}px`;
+      el.style.textAlign = layout.centered.includes(id) ? "center" : "";
+    }
+  }
+
   private mount(sceneId: string): void {
     this.sceneId = sceneId;
+    this.laidWidth = -1;
     this.els.clear();
     this.events.clear();
     const spec = this.sceneById.get(sceneId)!;

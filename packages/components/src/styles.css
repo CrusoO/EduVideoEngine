@@ -117,3 +117,17 @@
 .eve-highlight-label:lang(ne) {
   font-weight: 500;
 }
+/* Laid out by the solver (packages/layout): the stage is a positioned box and every object has its own box. */
+.eve-stage.eve-laid {
+  display: block;
+  padding: 0;
+  gap: 0;
+}
+.eve-stage.eve-laid > .eve-obj {
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+.eve-stage.eve-laid > .eve-equation {
+  overflow-x: auto;
+  overflow-y: hidden;
+}

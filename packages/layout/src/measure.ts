@@ -52,24 +52,29 @@ export function clusters(text: string): string[] {
   return out;
 }
 
-/** Width of one cluster in em. Conservative averages for Inter (Latin) and Noto Sans Devanagari. */
+/**
+ * Width of one cluster in em. Calibrated against the real fonts (Inter, Noto Sans Devanagari) by tests/measured-widths.json:
+ * the model must never be narrower than the browser, and at most 25 percent wider.
+ */
 function emWidth(c: string): number {
   const cp = c.codePointAt(0)!;
-  if (isDeva(cp)) return c.includes("्") ? 1.0 : 0.72;
-  if (c === " ") return 0.3;
-  if (/[il.,;:'!|]/.test(c)) return 0.3;
-  if (/[mwMW@%]/.test(c)) return 0.88;
-  if (/[A-Z]/.test(c)) return 0.7;
-  if (/[0-9]/.test(c)) return 0.62;
+  if (isDeva(cp)) return c.includes("्") ? 0.92 : 0.74;
+  if (c === " ") return 0.28;
+  if (/[il.,;:'!|]/.test(c)) return 0.28;
+  if (/[mwMW@%]/.test(c)) return 0.85;
+  if (/[A-Z]/.test(c)) return 0.66;
+  if (/[0-9]/.test(c)) return 0.6;
   if (cp > 0x7f && !isMark(cp)) return 0.95; // anything else outside Latin: assume wide
-  return 0.56;
+  return 0.54;
 }
+
+/** Width of a text in em, as the model sees it. */
+export const textWidthEm = (text: string, bold = false): number => clusters(text).reduce((n, c) => n + emWidth(c), 0) * (bold ? 1.04 : 1);
 
 /** Lines needed for `text` at `fontPx` in `width` px: greedy word wrap, a word longer than the line breaks anywhere. */
 export function wrapLines(text: string, fontPx: number, width: number, bold = false): number {
-  const scale = fontPx * (bold ? 1.06 : 1);
-  const w = (s: string) => Math.ceil(clusters(s).reduce((n, c) => n + emWidth(c) * scale, 0));
-  const space = Math.ceil(0.3 * scale);
+  const w = (s: string) => Math.ceil(textWidthEm(s, bold) * fontPx);
+  const space = Math.ceil(0.28 * fontPx);
   let lines = 1;
   let used = 0;
   for (const word of text.split(/\s+/).filter(Boolean)) {
@@ -121,10 +126,10 @@ function shape(e: Expr): Shape {
   }
 }
 
-/** Display equation height at the 18.4 px (size m) font: 64 plain, 66 with a power, 84 with a fraction, +18 per nested fraction. Size l scales by 25.6/18.4. */
+/** Display equation height at the 18.4 px (size m) font: 66 plain (brackets and powers included), 84 with a fraction, +18 per nested fraction. Size l scales by 25.6/18.4. */
 function equationHeight(e: Expr, size: "m" | "l"): number {
   const s = shape(e);
-  const m = 64 + (s.pow ? 2 : 0) + (s.fracDepth > 0 ? 20 + 18 * (s.fracDepth - 1) : 0);
+  const m = 66 + (s.fracDepth > 0 ? 18 + 18 * (s.fracDepth - 1) : 0);
   return Math.ceil(size === "l" ? (m * 25.6) / 18.4 : m);
 }
 const katexPx = (size: "m" | "l") => (size === "l" ? 25.6 : 18.4) * 1.21;

@@ -18,7 +18,8 @@ const katexFonts = ["KaTeX_Main-Regular", "KaTeX_Math-Italic", "KaTeX_Size2-Regu
 
 const ENGLISH_KB = 95;
 const HINDI_KB = 170;
-const PLAYER_JS_GZIP_KB = 35;
+// 35 until the layout solver joined the player (+3.9 KB measured); raised to 40 with that change, on purpose.
+const PLAYER_JS_GZIP_KB = 40;
 
 describe("budgets", () => {
   it(`English lesson fonts (Inter 400 and 600 + three KaTeX fonts) stay within ${ENGLISH_KB} KB`, () => {

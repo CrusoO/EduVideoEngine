@@ -5,7 +5,7 @@ import "../src/player.css";
 import { buildMathCache } from "../../components/src/build";
 import { cachedMath } from "@eve/components";
 import { resolve } from "@eve/resolver";
-import { hindiPreview, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
+import { hindiPreview, layoutStress, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
 import { FileVoiceAdapter } from "../../voice/src/adapter";
 import { loadBuffers } from "../../voice/src/browser";
 import { AudioClock, Player } from "../src";
@@ -17,7 +17,9 @@ import { AudioClock, Player } from "../src";
 const params = new URLSearchParams(location.search);
 const voice = params.get("voice") ?? "piper";
 const msPerWord = Number(params.get("mpw") ?? 300);
-const bundle = (params.get("lesson") === "hindi" ? hindiPreview : quadraticRoots) as LessonBundle;
+const lessons = { hindi: hindiPreview, stress: layoutStress } as Record<string, LessonBundle>;
+const bundle = (lessons[params.get("lesson") ?? ""] ?? quadraticRoots) as LessonBundle;
+document.getElementById("root")!.style.width = `${params.get("w") ?? 360}px`;
 const ctx = new AudioContext();
 
 async function voiceTracks(): Promise<{ tracks: AudioTrack[]; buffers: Map<string, AudioBuffer>; credit: string }> {

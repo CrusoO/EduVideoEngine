@@ -63,13 +63,17 @@ test("seek while playing lands on the same picture as a fresh draw, in any order
   await page.evaluate(() => (window as unknown as W).__player.pause());
 });
 
-test("frame at a fixed lesson time (golden, with the re-baselined fonts)", async ({ page }) => {
-  await open(page, 300);
-  const t = await page.evaluate(() => {
-    const w = window as unknown as W;
-    const ev = w.__timeline.events.find((e) => e.sceneId === "scene3" && e.targetObject === "total" && e.action === "reveal")!;
-    return ev.atMs + 1500;
+for (const width of [360, 1280]) {
+  test(`frame at a fixed lesson time, laid out by the solver, at ${width}px (golden)`, async ({ page }) => {
+    await page.setViewportSize({ width: width + 40, height: 1000 });
+    await page.goto(`/?voice=tone&mpw=300&w=${width}`);
+    await page.waitForFunction(() => (window as unknown as W).__ready === true);
+    const t = await page.evaluate(() => {
+      const w = window as unknown as W;
+      const ev = w.__timeline.events.find((e) => e.sceneId === "scene3" && e.targetObject === "total" && e.action === "reveal")!;
+      return ev.atMs + 1500;
+    });
+    await page.evaluate((ms) => (window as unknown as W).__player.seek(ms), t);
+    await expect(page.locator("#root")).toHaveScreenshot(`player-scene3-worked-${width}.png`);
   });
-  await page.evaluate((ms) => (window as unknown as W).__player.seek(ms), t);
-  await expect(page.locator("#root")).toHaveScreenshot("player-scene3-worked.png");
-});
+}
