@@ -1,0 +1,16 @@
+{
+  "name": "edu-video-engine",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Educational video engine: a compiler from a typed LessonBundle to a deterministic, offline, interactive lesson player.",
+  "packageManager": "pnpm@12.5.1",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.8"
+  }
+}
