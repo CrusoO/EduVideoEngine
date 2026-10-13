@@ -4,7 +4,7 @@ import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type Less
 import { resolve } from "@eve/resolver";
 import { buildMathCache, katexMath } from "@eve/components/src/build";
 import { cachedMath } from "@eve/components";
-import { centerOffset, solve } from "@eve/layout";
+import { solve } from "@eve/layout";
 import { Player, type MasterClock } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;
@@ -244,10 +244,9 @@ describe("Player: layout from the solver", () => {
     const player = new Player({ root, bundle, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360, viewportHeight: () => 640 });
     player.seek(0);
     const spec = bundle.scenes[0]!;
-    const want = solve({ objects: spec.objects, layout: spec.layout }, { width: 360, height: 456 }, { expressions: bundle.expressions, locale: bundle.locale });
-    const dy = centerOffset(want.contentHeight, 456);
-    expect(dy).toBeGreaterThan(0);
-    for (const [id, b] of Object.entries(want.boxes)) expect(box(root, id), id).toEqual({ x: b.x, y: b.y + dy, w: b.width, h: b.height, pos: "absolute" });
+    const want = solve({ objects: spec.objects, layout: spec.layout }, { width: 360, height: 456 }, { expressions: bundle.expressions, locale: bundle.locale }, { spread: true });
+    expect(want.spread).toBeGreaterThan(0);
+    for (const [id, b] of Object.entries(want.boxes)) expect(box(root, id), id).toEqual({ x: b.x, y: b.y, w: b.width, h: b.height, pos: "absolute" });
     const stage = root.querySelector<HTMLElement>(".eve-stage")!;
     expect(stage.style.height).toBe("456px");
     expect(stage.dataset.frame).toBe("phone");

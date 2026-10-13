@@ -6,6 +6,8 @@ export const PAD = 20; // padding of the stage on every side
 export const GAP = { tight: 8, normal: 16, loose: 28 } as const; // fixed, never scaled: a wider stage must never be taller
 export const ROW_COLLAPSE_PX = 480; // a stage narrower than this stacks every row (phones first)
 export const GRAPH_MAX_WIDTH = 480;
+/** The most spare stage height that is spread into one gap or margin when a scene is shorter than its stage; the rest of the spare height is shared equally above and below. */
+export const MAX_SPREAD_PX = 72;
 export const GRAPH_ASPECT = { w: 400, h: 260 }; // the SVG viewBox of the graph component
 
 /** Smallest text that may appear anywhere: chart annotations (axis numbers) included. */

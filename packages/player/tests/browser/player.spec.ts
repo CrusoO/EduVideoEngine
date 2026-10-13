@@ -63,17 +63,20 @@ test("seek while playing lands on the same picture as a fresh draw, in any order
   await page.evaluate(() => (window as unknown as W).__player.pause());
 });
 
-for (const width of [360, 1280]) {
-  test(`frame at a fixed lesson time, laid out by the solver, at ${width}px (golden)`, async ({ page }) => {
-    await page.setViewportSize({ width: width + 40, height: 1000 });
-    await page.goto(`/?voice=tone&mpw=300&w=${width}`);
-    await page.waitForFunction(() => (window as unknown as W).__ready === true);
-    const t = await page.evaluate(() => {
-      const w = window as unknown as W;
-      const ev = w.__timeline.events.find((e) => e.sceneId === "scene3" && e.targetObject === "total" && e.action === "reveal")!;
-      return ev.atMs + 1500;
+/** One golden frame per scene of the reference lesson, at a phone and a desktop width, when everything the scene shows has been shown. */
+for (const scene of [1, 2, 3, 4]) {
+  for (const width of [360, 1280]) {
+    test(`reference lesson, scene ${scene} at ${width}px: laid out by the solver, in the stage theme (golden)`, async ({ page }) => {
+      await page.setViewportSize({ width: width + 40, height: 640 });
+      await page.goto(`/?voice=tone&mpw=300&w=${width}`);
+      await page.waitForFunction(() => (window as unknown as W).__ready === true);
+      const t = await page.evaluate((n) => {
+        const w = window as unknown as W;
+        const sc = w.__timeline.scenes[n - 1]!;
+        return sc.endMs - 400;
+      }, scene);
+      await page.evaluate((ms) => (window as unknown as W).__player.seek(ms), t);
+      await expect(page.locator("#root")).toHaveScreenshot(`reference-scene${scene}-${width}.png`);
     });
-    await page.evaluate((ms) => (window as unknown as W).__player.seek(ms), t);
-    await expect(page.locator("#root")).toHaveScreenshot(`player-scene3-worked-${width}.png`);
-  });
+  }
 }

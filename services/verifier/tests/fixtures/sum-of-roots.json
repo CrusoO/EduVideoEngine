@@ -347,6 +347,10 @@
             "eq"
           ],
           "gap": "loose"
+        },
+        {
+          "rule": "center",
+          "item": "title"
         }
       ],
       "cues": [
@@ -397,8 +401,7 @@
             "xMin": 0,
             "xMax": 5,
             "yMin": -1,
-            "yMax": 7,
-            "roots": true
+            "yMax": 7
           },
           "exprRef": "f1"
         }
@@ -410,6 +413,10 @@
             "eq",
             "graph"
           ]
+        },
+        {
+          "rule": "center",
+          "item": "graph"
         }
       ],
       "cues": [
@@ -424,7 +431,7 @@
         }
       ],
       "a11y": {
-        "altText": "The equation is now smaller, at the top. Under it a graph: the parabola is drawn on, crossing the horizontal axis at two places."
+        "altText": "The equation is now smaller, at the top. Under it a graph: the parabola is drawn on, crossing the horizontal axis at two places (the roots are not marked yet)."
       }
     },
     {
@@ -462,6 +469,10 @@
             "eq",
             "graph"
           ]
+        },
+        {
+          "rule": "center",
+          "item": "graph"
         }
       ],
       "cues": [
@@ -544,6 +555,10 @@
             "eq",
             "line"
           ]
+        },
+        {
+          "rule": "center",
+          "item": "line"
         }
       ],
       "cues": [
@@ -593,12 +608,12 @@
     }
   ],
   "hashes": {
-    "bundle": "99d514cfffc7267b4f969ab5b5f3623aaab2d30f3da2aa6b4e595fd38283e594",
+    "bundle": "279379dff1d5d28a27f060673e41350ebe4d26f360e8fea180ee340ed363fe85",
     "perScene": {
-      "scene1": "dc4cdd61813f51269f26c58c71f52a1dddc4f4ebc70959262ffc2043781774f8",
-      "scene2": "340c2fb115c3a3b7f440d31a7fac2969f65b7d666ff7ce4f898359c3de05b73d",
-      "scene3": "5424554ca36c89e0c1d4c9af87050547db70f17e18676aeb7fcde6da6d9b2b5f",
-      "scene4": "9e8107ad8ba3320915d611274857e2f4a0f639896fd6f3e564ff437bbfadddc7"
+      "scene1": "c8f218705617916843f13a0d768adbd6866d691b969f2340f0a9843c579db44b",
+      "scene2": "f0df84879b254726e0b3e3236de0c2d1a404a344be22b3b0219c5704883d9e87",
+      "scene3": "6d28629b7a9742b3ed8706462ae58084c8a6da5ecc25986f0e7300e95b682488",
+      "scene4": "46dc6dd044f95b9d5d59290e6b1d7dfa45ca492b2d945232c047297d7ff64791"
     }
   }
 }

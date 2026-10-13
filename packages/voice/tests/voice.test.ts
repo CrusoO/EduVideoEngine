@@ -1,14 +1,14 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { quadraticRootsV1 as quadraticRoots, sha256Bytes, type LessonBundle } from "@eve/schema";
+import { sumOfRoots, sha256Bytes, type LessonBundle } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import { FileVoiceAdapter, StaleVoiceError, VoiceManifest, requireCleared, trackHash, wavInfo } from "../src";
 
-const dir = join(__dirname, "..", "fixtures", "quadratic-roots.en-IN");
+const dir = join(__dirname, "..", "fixtures", "sum-of-roots.en-IN");
 const manifest = JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8"));
 const reader = async (file: string) => new Uint8Array(readFileSync(join(dir, file)));
-const bundle = quadraticRoots as LessonBundle;
+const bundle = sumOfRoots as LessonBundle;
 const adapter = (over: { manifest?: unknown; read?: (f: string) => Promise<Uint8Array> } = {}) => new FileVoiceAdapter(over.manifest ?? manifest, over.read ?? reader, "/voice/");
 const problemsOf = async (a: FileVoiceAdapter, b: LessonBundle) => ((await a.tracksFor(b).catch((e: unknown) => e)) as StaleVoiceError).problems;
 
@@ -19,7 +19,7 @@ describe("the pinned fixture files", () => {
     expect(m.voice.credit).toMatch(/Jenny \(Dioco\)/);
     expect(m.voice.licences.model).toMatch(/research-only/);
     expect(m.voice.engine.archiveSha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(m.tracks).toHaveLength(12);
+    expect(m.tracks).toHaveLength(11);
   });
   it("every committed file is the one in the manifest, and lasts exactly as long as the manifest says", async () => {
     for (const t of manifest.tracks) {
@@ -57,7 +57,7 @@ describe("FileVoiceAdapter", () => {
 
   it("a changed sentence is refused, naming the sentence", async () => {
     const b = structuredClone(bundle);
-    b.script[2]!.text = "For any equation of the form {expr:general}, there is a very useful shortcut.";
+    b.script[2]!.text = "Let us draw this equation. The curve is called a very famous parabola.";
     const err = await adapter().tracksFor(b).catch((e: unknown) => e);
     expect(err).toBeInstanceOf(StaleVoiceError);
     expect((err as StaleVoiceError).problems).toEqual(["s2.1: the sentence changed since its voice file was made"]);
@@ -66,17 +66,17 @@ describe("FileVoiceAdapter", () => {
 
   it("a changed expression is refused for every sentence that speaks it", async () => {
     const b = structuredClone(bundle);
-    b.expressions.rule = { op: "eq", a: { op: "sym", name: "S" }, b: { op: "div", a: { op: "sym", name: "b" }, b: { op: "sym", name: "a" } } };
-    expect(await problemsOf(adapter(), b)).toEqual(["s2.2: the sentence changed since its voice file was made"]);
+    b.expressions.total = { op: "eq", a: { op: "add", a: { op: "num", n: 2 }, b: { op: "num", n: 4 } }, b: { op: "num", n: 6 } };
+    expect(await problemsOf(adapter(), b)).toEqual(["s4.3: the sentence changed since its voice file was made"]);
   });
 
   it("a new sentence has no voice file, and a deleted sentence leaves an orphan file", async () => {
     const added = structuredClone(bundle);
-    added.script.push({ id: "s5.3", beatId: "b5", text: "One more thing.", termSpans: [], exprRefs: [], status: "frozen" });
-    expect(await problemsOf(adapter(), added)).toEqual(["s5.3: no voice file"]);
+    added.script.push({ id: "s4.5", beatId: "b4", text: "One more thing.", termSpans: [], exprRefs: [], status: "frozen" });
+    expect(await problemsOf(adapter(), added)).toEqual(["s4.5: no voice file"]);
     const removed = structuredClone(bundle);
-    removed.script = removed.script.filter((s) => s.id !== "s5.2");
-    expect(await problemsOf(adapter(), removed)).toEqual(["s5.2: voice file for a sentence that no longer exists"]);
+    removed.script = removed.script.filter((s) => s.id !== "s3.3");
+    expect(await problemsOf(adapter(), removed)).toEqual(["s3.3: voice file for a sentence that no longer exists"]);
   });
 
   it("an altered or missing file is refused", async () => {
@@ -96,7 +96,7 @@ describe("FileVoiceAdapter", () => {
   it("a duration that disagrees with the file is refused", async () => {
     const m = structuredClone(manifest);
     m.tracks[0].durationMs += 1;
-    expect((await problemsOf(adapter({ manifest: m }), bundle))[0]).toMatch(/s1\.1: s1\.1\.wav lasts 5529 ms, the manifest says 5530 ms/);
+    expect((await problemsOf(adapter({ manifest: m }), bundle))[0]).toMatch(/s1\.1: s1\.1\.wav lasts 5494 ms, the manifest says 5495 ms/);
   });
 
   it("a manifest for another lesson or language is refused", async () => {

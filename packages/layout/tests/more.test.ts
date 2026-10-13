@@ -133,6 +133,7 @@ const empty = (boxes: Layout["boxes"], over: Partial<Layout> = {}): Layout => ({
   overlays: [],
   centered: [],
   contentHeight: 100,
+  spread: 0,
   collapsed: true,
   intrinsic: Object.fromEntries(Object.keys(boxes).map((id) => [id, { height: boxes[id]!.height, words: 0, equations: 0, facts: [] }])),
   ...over,

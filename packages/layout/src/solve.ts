@@ -1,6 +1,6 @@
 import type { LayoutRule } from "@eve/schema";
 import { OVERLAY, measure, type Intrinsic, type LayoutObject, type MeasureCtx } from "./measure";
-import { GAP, PAD, ROW_COLLAPSE_PX, type Viewport } from "./tokens";
+import { GAP, MAX_SPREAD_PX, PAD, ROW_COLLAPSE_PX, type Viewport } from "./tokens";
 
 export type SceneInput = { objects: readonly LayoutObject[]; layout: readonly LayoutRule[] };
 export type Box = { x: number; y: number; width: number; height: number };
@@ -14,6 +14,8 @@ export type Layout = {
   centered: string[];
   /** Height the stage needs, bottom padding included. */
   contentHeight: number;
+  /** Spare height the solver spread between and around the blocks (0 unless `spread` was asked for and the scene is shorter than its stage). */
+  spread: number;
   /** True when rows were stacked because the stage is narrower than ROW_COLLAPSE_PX. */
   collapsed: boolean;
   /** The size model's answer per object, kept so the checks and the player read the same numbers. */
@@ -37,9 +39,11 @@ const items = (b: Block): string[] => (b.kind === "item" ? [b.id] : b.items.flat
  *  - Objects without a rule fall into one column in declaration order, with the normal gap.
  *  - column / row group their items (row: equal shares). below moves an item after another. beside pairs two items in a
  *    row. center centres an object narrower than its slot. A row or beside collapses to a column under 480 px.
+ *  - With `spread`, a scene shorter than its stage fills it: the spare height is divided into equal slots above, between and below the top-level
+ *    blocks (each slot at most MAX_SPREAD_PX; what is left is shared equally above and below). Whole blocks move, so a row stays a row.
  *  - Highlights are overlays: not laid out, they follow the measured rectangle of their target. Naming one in a column or row is harmless.
  */
-export function solve(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx): Layout {
+export function solve(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx, opts: { spread?: boolean } = {}): Layout {
   const problems: string[] = [];
   const byId = new Map(scene.objects.map((o) => [o.id, o]));
   const flow = scene.objects.filter((o) => !OVERLAY.has(o.component));
@@ -147,9 +151,24 @@ export function solve(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx): L
   };
 
   let y = PAD;
+  const blockIds: string[][] = [];
   top.forEach((b, i) => {
     if (i > 0) y += GAP.normal;
     y += place(b, PAD, y, W);
+    blockIds.push(items(b));
   });
-  return { viewport, boxes, overlays, centered: [...centered], contentHeight: y + PAD, collapsed, intrinsic };
+  let contentHeight = y + PAD;
+  let spread = 0;
+  if (opts.spread && top.length > 0 && viewport.height > contentHeight) {
+    spread = viewport.height - contentHeight;
+    const slots = top.length + 1;
+    const per = Math.min(MAX_SPREAD_PX, Math.floor(spread / slots));
+    const leftover = spread - per * slots;
+    blockIds.forEach((ids, i) => {
+      const dy = Math.floor(leftover / 2) + per * (i + 1);
+      for (const id of ids) boxes[id] = { ...boxes[id]!, y: boxes[id]!.y + dy };
+    });
+    contentHeight = viewport.height;
+  }
+  return { viewport, boxes, overlays, centered: [...centered], contentHeight, spread, collapsed, intrinsic };
 }

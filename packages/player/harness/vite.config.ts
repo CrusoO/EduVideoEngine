@@ -26,6 +26,6 @@ export default defineConfig({
   publicDir: false,
   plugins: [
     serve("/fonts", join(here, "..", "..", "components", "fonts"), () => "font/woff2"),
-    serve("/voice", join(here, "..", "..", "voice", "fixtures", "quadratic-roots.en-IN"), (f) => (f.endsWith(".json") ? "application/json" : "audio/wav")),
+    serve("/voice", join(here, "..", "..", "voice", "fixtures", "sum-of-roots.en-IN"), (f) => (f.endsWith(".json") ? "application/json" : "audio/wav")),
   ],
 });

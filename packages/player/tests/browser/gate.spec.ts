@@ -30,8 +30,8 @@ test("offline: after the lesson has loaded, with the network cut, the whole less
   }, null, { timeout: 150_000 });
   expect(afterCut, "no request at all after the network was cut").toEqual([]);
   expect(outside, "nothing was ever requested from outside the harness").toEqual([]);
-  const shown = await page.evaluate(() => (window as unknown as W).__timeline.events.filter((e) => e.action === "reveal").length);
-  expect(shown).toBe(12);
+  const shown = await page.evaluate(() => (window as unknown as W).__timeline.events.filter((e) => ["reveal", "draw", "pop"].includes(e.action)).length);
+  expect(shown).toBe(8); // two reveals, a draw-on of the curve, two pops, three draws on the number line
 });
 
 test("Devanagari through the player: conjuncts shaped by Noto Sans Devanagari, Latin words in the same family, nothing clipped, equation free of Devanagari", async ({ page, context }) => {

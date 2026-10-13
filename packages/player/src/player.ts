@@ -1,7 +1,7 @@
 import { componentFor, formulaLatex, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
-import { DEFAULT_CHROME_PX, PAD, centerOffset, solve, stageFrame } from "@eve/layout";
+import { DEFAULT_CHROME_PX, PAD, solve, stageFrame } from "@eve/layout";
 import { colorTheme } from "../theme/palette";
 import type { MasterClock } from "./clock";
 
@@ -256,8 +256,7 @@ export class Player {
     }
     const frame = stageFrame(width, vh, this.o.chromePx ?? DEFAULT_CHROME_PX);
     // A scene the solver cannot place is a build error (assureLayout catches it first); here it throws, never draws a guess.
-    const layout = solve({ objects: spec.objects, layout: spec.layout }, { width, height: frame.height }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale });
-    const dy = centerOffset(layout.contentHeight, frame.height);
+    const layout = solve({ objects: spec.objects, layout: spec.layout }, { width, height: frame.height }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale }, { spread: true });
     this.stage.classList.add("eve-laid");
     this.stage.dataset.frame = frame.mode;
     this.stage.style.height = `${frame.height}px`;
@@ -265,7 +264,7 @@ export class Player {
       const el = this.els.get(id)!;
       el.style.position = "absolute";
       el.style.left = `${box.x}px`;
-      el.style.top = `${box.y + dy}px`;
+      el.style.top = `${box.y}px`;
       el.style.width = `${box.width}px`;
       el.style.height = `${box.height}px`;
       el.style.textAlign = layout.centered.includes(id) ? "center" : "";

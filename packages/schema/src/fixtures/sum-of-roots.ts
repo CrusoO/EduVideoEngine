@@ -75,7 +75,7 @@ export function buildSumOfRoots(): LessonBundle {
           { id: "title", component: "text", props: { text: "What do the two roots add up to?", role: "title" } },
           { id: "eq", component: "equation", props: { size: "l" }, exprRef: "eq1" },
         ],
-        layout: [{ rule: "column", items: ["title", "eq"], gap: "loose" }],
+        layout: [{ rule: "column", items: ["title", "eq"], gap: "loose" }, { rule: "center", item: "title" }],
         cues: [
           { targetObject: "title", action: "reveal", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 800 },
           { targetObject: "eq", action: "reveal", anchor: { sentenceId: "s1.1", at: { wordIndex: 5 } }, minHoldMs: 1500 },
@@ -88,11 +88,11 @@ export function buildSumOfRoots(): LessonBundle {
         sourceIds: [src[2]!],
         objects: [
           { id: "eq", component: "equation", props: { size: "m" }, exprRef: "eq1" },
-          { id: "graph", component: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7, roots: true }, exprRef: "f1" },
+          { id: "graph", component: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7 }, exprRef: "f1" },
         ],
-        layout: [{ rule: "column", items: ["eq", "graph"] }],
+        layout: [{ rule: "column", items: ["eq", "graph"] }, { rule: "center", item: "graph" }],
         cues: [{ targetObject: "graph#curve", action: "draw", anchor: { sentenceId: "s2.1", at: "start" }, minHoldMs: 800 }],
-        a11y: { altText: "The equation is now smaller, at the top. Under it a graph: the parabola is drawn on, crossing the horizontal axis at two places." },
+        a11y: { altText: "The equation is now smaller, at the top. Under it a graph: the parabola is drawn on, crossing the horizontal axis at two places (the roots are not marked yet)." },
       },
       {
         id: "scene3",
@@ -102,7 +102,7 @@ export function buildSumOfRoots(): LessonBundle {
           { id: "eq", component: "equation", props: { size: "m" }, exprRef: "eq1" },
           { id: "graph", component: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7, roots: true }, exprRef: "f1" },
         ],
-        layout: [{ rule: "column", items: ["eq", "graph"] }],
+        layout: [{ rule: "column", items: ["eq", "graph"] }, { rule: "center", item: "graph" }],
         cues: [
           { targetObject: "graph#root0", action: "pop", anchor: { sentenceId: "s3.1", at: { wordIndex: 3 } }, minHoldMs: 300 },
           { targetObject: "graph#root1", action: "pop", anchor: { sentenceId: "s3.2", at: { wordIndex: 4 } }, minHoldMs: 300 },
@@ -121,7 +121,7 @@ export function buildSumOfRoots(): LessonBundle {
             props: { min: 0, max: 6, hops: [{ from: "zero", to: "two" }, { from: "two", to: "five", color: "green" }], brackets: [{ span: "hops", label: "total" }] },
           },
         ],
-        layout: [{ rule: "column", items: ["eq", "line"] }],
+        layout: [{ rule: "column", items: ["eq", "line"] }, { rule: "center", item: "line" }],
         cues: [
           { targetObject: "line#hop0", action: "draw", anchor: { sentenceId: "s4.1", at: { wordIndex: 9 } }, minHoldMs: 800 },
           { targetObject: "line#hop1", action: "draw", anchor: { sentenceId: "s4.2", at: { wordIndex: 6 } }, minHoldMs: 800 },

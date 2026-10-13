@@ -27,7 +27,7 @@ async function measure(page: Page) {
       new Promise<Record<string, unknown>>((resolveReport) => {
         const w = window as unknown as W;
         const tl = w.__timeline;
-        const reveals = tl.events.filter((e) => e.action === "reveal");
+        const reveals = tl.events.filter((e) => e.action === "reveal" || e.action === "draw" || e.action === "pop");
         const seen = new Map<number, number>();
         const frameTimes: number[] = [];
         const ctx0 = w.__ctx.currentTime;
@@ -37,8 +37,9 @@ async function measure(page: Page) {
           const after = w.__clock.nowMs(); // right after the DOM was updated
           reveals.forEach((e, i) => {
             if (seen.has(i) || drawn < e.atMs) return;
-            const el = document.querySelector<HTMLElement>(`[data-object-id="${e.targetObject}"]`);
-            if (el && getComputedStyle(el).visibility === "visible" && Number(el.style.opacity || 0) > 0) seen.set(i, after);
+            const [obj, part] = e.targetObject.split("#");
+            const el = document.querySelector<HTMLElement>(part ? `[data-object-id="${obj}"] [data-part="${part}"]` : `[data-object-id="${obj}"]`);
+            if (el && getComputedStyle(el).visibility === "visible" && Number(el.style.opacity === "" ? 1 : el.style.opacity) > 0) seen.set(i, after);
           });
         });
         w.__player.play().then(() => {

@@ -47,7 +47,7 @@ async function scenes(page: Page, lesson: string, width: number) {
   return out;
 }
 
-for (const lesson of ["quadratic", "hindi", "stress"]) {
+for (const lesson of ["reference", "v1", "hindi", "stress"]) {
   for (const width of [360, 1280]) {
     test(`${lesson} at ${width}px: every box holds its real content, nothing overlaps, nothing scrolls sideways`, async ({ page }) => {
       for (const s of await scenes(page, lesson, width)) {

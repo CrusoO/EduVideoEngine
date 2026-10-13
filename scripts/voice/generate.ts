@@ -9,12 +9,12 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { quadraticRoots, spokenText } from "../../packages/schema/src";
+import { spokenText, sumOfRoots as lesson } from "../../packages/schema/src";
 import { trackHash, wavInfo, type VoiceManifest } from "../../packages/voice/src";
 
 const root = resolve(__dirname, "..", "..");
 const tools = join(root, "tools", "piper");
-const out = join(root, "packages", "voice", "fixtures", "quadratic-roots.en-IN");
+const out = join(root, "packages", "voice", "fixtures", "sum-of-roots.en-IN");
 const sha = (p: string) => createHash("sha256").update(readFileSync(p)).digest("hex");
 
 const exe = join(tools, "piper", "piper.exe");
@@ -32,8 +32,8 @@ rmSync(out, { recursive: true, force: true });
 mkdirSync(out, { recursive: true });
 
 const tracks: VoiceManifest["tracks"] = [];
-for (const s of quadraticRoots.script) {
-  const spoken = spokenText(s.text, quadraticRoots.expressions, quadraticRoots.locale);
+for (const s of lesson.script) {
+  const spoken = spokenText(s.text, lesson.expressions, lesson.locale);
   const file = `${s.id}.wav`;
   const target = join(out, file);
   const run = spawnSync(exe, ["--model", model, "--config", config, "--output_file", target], { input: spoken, encoding: "utf8" });
@@ -54,8 +54,8 @@ for (const s of quadraticRoots.script) {
 
 const manifest: VoiceManifest = {
   version: 1,
-  bundleId: quadraticRoots.bundleId,
-  locale: quadraticRoots.locale,
+  bundleId: lesson.bundleId,
+  locale: lesson.locale,
   voice: {
     id: voiceId,
     provider: "piper",
