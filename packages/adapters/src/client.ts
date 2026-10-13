@@ -1,7 +1,7 @@
 import { UnsafePromptError, assertPromptSafe } from "@eve/safety";
 import type { ZodType } from "zod";
 import type { LlmConfig } from "./config";
-import { FixtureStore, fixtureKey } from "./fixtures";
+import { FixtureStore, fixtureKey, type Fixture } from "./fixtures";
 import { GeminiAdapter } from "./gemini";
 import { Ledger, pacificDay, type LedgerEntry } from "./ledger";
 import { PROFILES, profileOf, type ProfileFile } from "./profiles";
@@ -40,7 +40,7 @@ export type ClientOptions = {
   maxRateLimitRetries?: number;
 };
 
-export type Stats = { calls: number; replayed: number; sent: number; repairs: number; rateLimited: number };
+export type Stats = { calls: number; replayed: number; sent: number; repairs: number; rateLimited: number; standIns: number };
 
 /**
  * The one door to a language model (ADR 0023). It decides replay / record / live, refuses what must not go out (personal data, a missing recorded
@@ -48,7 +48,7 @@ export type Stats = { calls: number; replayed: number; sent: number; repairs: nu
  * and validates every answer against the caller's own schema, with a single repair retry that sends the validator's messages back.
  */
 export class LlmClient {
-  readonly stats: Stats = { calls: 0, replayed: 0, sent: 0, repairs: 0, rateLimited: 0 };
+  readonly stats: Stats = { calls: 0, replayed: 0, sent: 0, repairs: 0, rateLimited: 0, standIns: 0 };
   private readonly clock: Clock;
   private readonly profiles: ProfileFile;
   private adapter?: LLMAdapter;
@@ -87,14 +87,14 @@ export class LlmClient {
             `Record it once with LLM_MODE=record and a key, then commit the new file in fixtures/llm/.`,
         );
       }
-      this.stats.replayed++;
+      this.replayed(spec, f);
       return f.response;
     }
     if (config.ci) throw new LlmRefused(`CI runs in replay mode only, but ${spec.step} (prompt ${spec.promptVersion}, model ${model}) has no recorded answer and would need a live call.`);
     if (config.mode === "record") {
       const f = fixtures.read(key);
-      if (f) {
-        this.stats.replayed++;
+      if (f && f.provenance !== "authored-standin") {
+        this.replayed(spec, f);
         return f.response;
       }
     }
@@ -164,6 +164,14 @@ export class LlmClient {
     const second = await this.generate({ ...spec, kind: "repair", input: repairInput(spec.input, first.text, parsed.errors) });
     parsed = parseJson(second.text, spec.schema, spec.check);
     return parsed.ok ? { ok: true, value: parsed.value, repaired: true, text: second.text } : { ok: false, errors: parsed.errors, text: second.text };
+  }
+
+  private replayed(spec: CallSpec, f: Fixture) {
+    this.stats.replayed++;
+    if (f.provenance === "authored-standin") {
+      this.stats.standIns++;
+      this.log(`NOTE: the answer for ${spec.step} (${spec.promptVersion}) is an authored stand-in, not a model output. Record a real one with LLM_MODE=record and a key.`);
+    }
   }
 
   private createAdapter(): LLMAdapter {

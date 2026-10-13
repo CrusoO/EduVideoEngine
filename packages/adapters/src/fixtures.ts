@@ -11,7 +11,11 @@ export type FixtureKeyParts = { promptVersion: string; model: string; system: st
  */
 export const fixtureKey = (p: FixtureKeyParts): string => hashOf({ promptVersion: p.promptVersion, model: p.model, system: p.system, input: p.input });
 
-export type Fixture = { key: string; step: string; promptVersion: string; model: string; recordedAt: string; response: LlmResponse };
+/**
+ * `recorded` (or absent): the answer a model gave in record mode. `authored-standin`: written by a person (or by Claude Code) to let replay and the
+ * tests run before a key exists. It is NOT a model output; every report that replays one says so, and recording over it replaces it.
+ */
+export type Fixture = { key: string; step: string; promptVersion: string; model: string; recordedAt: string; provenance?: "recorded" | "authored-standin"; response: LlmResponse };
 
 /** Recorded answers, one JSON file per key. Holds the model's answer and token counts, never the key, never the prompt. */
 export class FixtureStore {

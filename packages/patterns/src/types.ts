@@ -29,9 +29,17 @@ export type Instance = {
 
 export type FillResult<C> = { ok: true; content: C } | { ok: false; missing: string[] };
 
+/** Whether the scene carries a pause-and-ask: required (the writer must give the question), optional, or none. */
+export type PauseSupport = "required" | "optional" | "none";
+
 export type Pattern<C = unknown> = {
   id: string;
   useWhen: string;
+  /** The beat kinds this pattern suits. A worked beat must use a pattern whose claims are derived from a stored solution. */
+  kinds: readonly ("predict" | "explore" | "explain" | "worked" | "check")[];
+  pause: PauseSupport;
+  /** True when the scene brings claims derived from a stored solution (the worked-beat patterns). */
+  derivesClaims: boolean;
   /** The components the scene uses, from the closed component registry. */
   components: readonly string[];
   slots: readonly Slot[];
@@ -41,6 +49,8 @@ export type Pattern<C = unknown> = {
   heightCostPx: number;
   /** Fills the content slots from retrieved records, or says what is missing. Deterministic. */
   fill(r: Retrieval): FillResult<C>;
+  /** The ids of the records a scene of this pattern is built from: a beat that uses the pattern must list them as its sourceIds. */
+  sources(content: C): string[];
   build(content: C, args: PatternArgs): Instance;
 };
 

@@ -1,0 +1,18 @@
+{
+  "key": "7e93676f0ad09e80d602da70874821731ad213259b0feb3444d37a8bd9b3b24e",
+  "step": "planner",
+  "promptVersion": "planner.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-13T16:55:55.845Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\n  \"template\": \"problem-first\",\n  \"beats\": [\n    {\n      \"id\": \"b1\",\n      \"kind\": \"predict\",\n      \"title\": \"Meet the equation\",\n      \"pattern\": \"colour-bound-terms\",\n      \"durationS\": 14,\n      \"pause\": false,\n      \"animate\": true,\n      \"sourceIds\": [\n        \"quad.sum.problem\"\n      ]\n    },\n    {\n      \"id\": \"b2\",\n      \"kind\": \"explore\",\n      \"title\": \"Where the curve crosses\",\n      \"pattern\": \"plot-and-mark-roots\",\n      \"durationS\": 20,\n      \"pause\": false,\n      \"animate\": true,\n      \"sourceIds\": [\n        \"quad.sum.graph\",\n        \"quad.sum.steps\"\n      ]\n    },\n    {\n      \"id\": \"b3\",\n      \"kind\": \"worked\",\n      \"title\": \"Factorise and find the roots\",\n      \"pattern\": \"step-by-step-worked-example\",\n      \"durationS\": 26,\n      \"pause\": true,\n      \"animate\": true,\n      \"sourceIds\": [\n        \"quad.sum.steps\"\n      ]\n    },\n    {\n      \"id\": \"b4\",\n      \"kind\": \"worked\",\n      \"title\": \"Add the roots with hops\",\n      \"pattern\": \"hops-on-number-line\",\n      \"durationS\": 26,\n      \"pause\": true,\n      \"animate\": true,\n      \"sourceIds\": [\n        \"quad.sum.steps\"\n      ]\n    },\n    {\n      \"id\": \"b5\",\n      \"kind\": \"explain\",\n      \"title\": \"A common mistake\",\n      \"pattern\": \"common-mistake-contrast\",\n      \"durationS\": 16,\n      \"pause\": false,\n      \"animate\": true,\n      \"sourceIds\": [\n        \"quad.sum.misconception\"\n      ]\n    }\n  ]\n}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    }
+  }
+}

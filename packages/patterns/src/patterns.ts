@@ -53,6 +53,10 @@ const ask = (a: PatternArgs, goalExprRef?: string): NonNullable<SceneSpec["inter
 type ColourContent = { equation: string; recordIds: string[] };
 const colourBoundTerms: Pattern<ColourContent> = {
   id: "colour-bound-terms",
+  kinds: ["predict", "explore", "explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
   useWhen: "Show an equation for the first time, with each of its terms in its own colour, so later steps can point at a colour instead of at symbols.",
   components: ["text", "equation"],
   slots: [
@@ -84,6 +88,10 @@ const colourBoundTerms: Pattern<ColourContent> = {
 type PredictContent = { problem: string; answer: string; recordIds: string[] };
 const predictThenReveal: Pattern<PredictContent> = {
   id: "predict-then-reveal",
+  kinds: ["predict", "check"],
+  pause: "required",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
   useWhen: "Ask the student to guess a result before it is shown: the problem is on screen, a question pauses the lesson, and the answer appears afterwards.",
   components: ["text", "equation"],
   slots: [
@@ -124,6 +132,10 @@ const predictThenReveal: Pattern<PredictContent> = {
 type HopsContent = { rec: ContentRecord; problem: string; total: string; stops: number[]; focus: string[] };
 const hopsOnNumberLine: Pattern<HopsContent> = {
   id: "hops-on-number-line",
+  kinds: ["worked"],
+  pause: "required",
+  derivesClaims: true,
+  sources: (c) => [c.rec.id],
   useWhen: "Add numbers as hops along a number line, one hop per root, with a bracket under the whole length labelled by the sum. For a worked beat that adds the roots.",
   components: ["equation", "numberLine"],
   slots: [
@@ -141,9 +153,11 @@ const hopsOnNumberLine: Pattern<HopsContent> = {
     const roots = rootsOf(rec);
     const sum = rec.steps?.find((s) => s.role === "sum");
     const missing: string[] = [];
+    if (!r.expressions[rec.problem]) missing.push(`the problem equation ${rec.problem}`);
     if (roots.length < 1 || roots.length > 3) missing.push("one to three root steps");
     if (roots.some((x) => !Number.isInteger(x.value))) missing.push("whole-number roots (a hop is a whole step)");
     if (!sum) missing.push("a sum step");
+    if (!sum || !rec.expressions[sum.expr]) missing.push("the expression of the sum step");
     if (missing.length > 0) return { ok: false, missing };
     const stops = roots.reduce<number[]>((acc, x) => [...acc, acc.at(-1)! + x.value], [0]);
     // The term of the problem that the sum is about stays bright; the other terms dim when the hops begin.
@@ -183,6 +197,10 @@ const hopsOnNumberLine: Pattern<HopsContent> = {
 type PlotContent = { problem: string; fn: string; window: { xMin: number; xMax: number; yMin: number; yMax: number }; roots: number; recordIds: string[] };
 const plotAndMarkRoots: Pattern<PlotContent> = {
   id: "plot-and-mark-roots",
+  kinds: ["explore", "explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
   useWhen: "Draw the curve of an equation and mark where it crosses the axis: the roots appear one by one, found from the expression, never typed.",
   components: ["equation", "functionGraph"],
   slots: [
@@ -227,6 +245,10 @@ type StepsContent = { rec: ContentRecord; problem: string; steps: string[] };
 const MAX_STEPS = 3;
 const stepByStep: Pattern<StepsContent> = {
   id: "step-by-step-worked-example",
+  kinds: ["worked"],
+  pause: "optional",
+  derivesClaims: true,
+  sources: (c) => [c.rec.id],
   useWhen: "Show a stored solution as its steps, one under another, below the problem. For a worked beat: its claims are derived from the stored steps.",
   components: ["equation", "stepList"],
   slots: [
@@ -265,6 +287,10 @@ const stepByStep: Pattern<StepsContent> = {
 type ContrastContent = { wrong: string; right: string; recordIds: string[] };
 const commonMistakeContrast: Pattern<ContrastContent> = {
   id: "common-mistake-contrast",
+  kinds: ["explain", "check"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
   useWhen: "Put a typical wrong statement next to the right one: the mistake appears first, then the correct version, and the mistake fades.",
   components: ["text", "equation"],
   slots: [{ name: "contrast", source: "content", what: "a misconception record: the wrong and the right statement, as expressions" }, TITLE, ALT],
@@ -298,7 +324,7 @@ export const PATTERNS = [colourBoundTerms, predictThenReveal, hopsOnNumberLine, 
 export type PatternId = (typeof PATTERNS)[number]["id"];
 export const PATTERN_IDS: readonly PatternId[] = PATTERNS.map((p) => p.id);
 
-type Any = { id: string; slots: readonly Slot[]; minSentences: number; fill(r: Retrieval): FillResult<unknown>; build(c: never, a: PatternArgs): Instance };
+type Any = { id: string; slots: readonly Slot[]; minSentences: number; fill(r: Retrieval): FillResult<unknown>; sources(c: never): string[]; build(c: never, a: PatternArgs): Instance };
 const byId = (id: string): Any => {
   const p = (PATTERNS as unknown as readonly Any[]).find((x) => x.id === id);
   if (!p) throw new PatternError(`unknown pattern ${id}: the list is closed (${PATTERN_IDS.join(", ")})`);
@@ -308,6 +334,13 @@ const byId = (id: string): Any => {
 /** Can this pattern be used with these records? A pattern is usable only if every content slot can be filled from them. */
 export function usable(id: string, r: Retrieval): FillResult<unknown> {
   return byId(id).fill(r);
+}
+
+/** The ids of the records a pattern would be built from, or undefined if it cannot be used with these records. */
+export function patternSources(id: string, r: Retrieval): string[] | undefined {
+  const p = byId(id);
+  const filled = p.fill(r);
+  return filled.ok ? p.sources(filled.content as never) : undefined;
 }
 
 /** The patterns usable with these records, in list order. This is what the planner may choose from. */
@@ -338,5 +371,5 @@ export function instantiate(id: string, r: Retrieval, args: PatternArgs): Instan
 
 /** The catalogue the planner and composer prompts are given: id, when to use, components, slots, minimum sentences and height cost. */
 export function catalogue() {
-  return PATTERNS.map((p) => ({ id: p.id, useWhen: p.useWhen, components: p.components, slots: p.slots, minSentences: p.minSentences, heightCostPx: p.heightCostPx }));
+  return PATTERNS.map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, derivesClaims: p.derivesClaims, components: p.components, slots: p.slots, minSentences: p.minSentences, heightCostPx: p.heightCostPx }));
 }

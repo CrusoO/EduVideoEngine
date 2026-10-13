@@ -5,10 +5,13 @@
   "main": "index.ts",
   "types": "index.ts",
   "dependencies": {
+    "@eve/adapters": "workspace:*",
     "@eve/components": "workspace:*",
     "@eve/content": "workspace:*",
     "@eve/layout": "workspace:*",
     "@eve/patterns": "workspace:*",
-    "@eve/schema": "workspace:*"
+    "@eve/safety": "workspace:*",
+    "@eve/schema": "workspace:*",
+    "zod": "^3.24.1"
   }
 }

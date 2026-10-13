@@ -280,6 +280,9 @@ importers:
 
   packages/pipeline:
     dependencies:
+      '@eve/adapters':
+        specifier: workspace:*
+        version: link:../adapters
       '@eve/components':
         specifier: workspace:*
         version: link:../components
@@ -292,9 +295,15 @@ importers:
       '@eve/patterns':
         specifier: workspace:*
         version: link:../patterns
+      '@eve/safety':
+        specifier: workspace:*
+        version: link:../safety
       '@eve/schema':
         specifier: workspace:*
         version: link:../schema
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
 
   packages/player:
     dependencies:
