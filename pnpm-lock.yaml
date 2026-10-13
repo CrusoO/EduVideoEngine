@@ -210,6 +210,22 @@ importers:
         specifier: 5.4.11
         version: 5.4.11(@types/node@22.20.5)
 
+  packages/layout:
+    dependencies:
+      '@eve/components':
+        specifier: workspace:*
+        version: link:../components
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
+    devDependencies:
+      '@eve/resolver':
+        specifier: workspace:*
+        version: link:../resolver
+      fast-check:
+        specifier: 3.23.1
+        version: 3.23.1
+
   packages/player:
     dependencies:
       '@eve/components':
