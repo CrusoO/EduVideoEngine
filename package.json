@@ -18,8 +18,10 @@
     "content:validate": "vite-node scripts/content-validate.ts",
     "content:seal": "vite-node scripts/content-seal.ts",
     "llm:usage": "vite-node scripts/llm-usage.ts",
-    "plan:lesson": "vite-node scripts/plan-lesson.ts",
-    "player:size": "vite-node scripts/player-size.ts"
+    "plan:lesson": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/plan-lesson.ts",
+    "player:size": "vite-node scripts/player-size.ts",
+    "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",
+    "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",
@@ -27,6 +29,7 @@
     "@types/node": "^22.10.0",
     "typescript": "^5.7.0",
     "vite-node": "2.1.9",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "zod": "^3.25.76"
   }
 }

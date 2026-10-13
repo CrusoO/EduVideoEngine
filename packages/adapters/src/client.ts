@@ -22,6 +22,8 @@ export type CallSpec = {
   input: string;
   jsonSchema?: JsonSchema;
   maxOutputTokens?: number;
+  /** Ask for JSON output mode even without a schema. */
+  json?: boolean;
   kind?: "call" | "repair";
 };
 
@@ -76,7 +78,7 @@ export class LlmClient {
   async generate(spec: CallSpec): Promise<LlmResponse> {
     const { config, fixtures } = this.o;
     const model = this.modelFor(spec.role);
-    const key = fixtureKey({ promptVersion: spec.promptVersion, model, system: spec.system, input: spec.input });
+    const key = fixtureKey({ promptVersion: spec.promptVersion, model, system: spec.system, input: spec.input, temperature: config.temperature });
     this.stats.calls++;
 
     if (config.mode === "replay") {
@@ -119,7 +121,7 @@ export class LlmClient {
       this.log(`WARNING: using placeholder limits for ${model} (${rpm} requests a minute, ${cap} a day). Read your real limits in AI Studio and set LLM_RPM and LLM_DAILY_REQUEST_CAP.`);
     }
 
-    const maxTries = (this.o.maxRateLimitRetries ?? 4) + 1;
+    const maxTries = (this.o.maxRateLimitRetries ?? 2) + 1;
     for (let attempt = 0; attempt < maxTries; attempt++) {
       await this.gate(model, rpm, cap);
       try {
@@ -130,6 +132,8 @@ export class LlmClient {
           jsonSchema: profile.structuredOutput ? spec.jsonSchema : undefined,
           maxOutputTokens: Math.min(spec.maxOutputTokens ?? profile.maxOutputTokens, profile.maxOutputTokens),
           thinking: config.thinking,
+          temperature: config.temperature,
+          json: spec.json,
         });
         this.stats.sent++;
         this.record(spec, model, spec.kind ?? "call", response.usage, response.status);
@@ -140,6 +144,7 @@ export class LlmClient {
           this.stats.rateLimited++;
           this.record(spec, model, "rate-limited", { inputTokens: 0, outputTokens: 0, thinkingTokens: 0 }, "429");
           if (attempt === maxTries - 1) throw new LlmRefused(`${model} is still rate limited after ${maxTries} tries; stopping. Wait a few minutes or lower LLM_RPM.`);
+          this.log(`  provider said: ${e.message}`);
           const wait = e.retryAfterMs ?? Math.min(60_000, 2000 * 2 ** attempt);
           this.log(`rate limited (429) on ${model}; waiting ${Math.round(wait / 1000)} s before try ${attempt + 2} of ${maxTries}`);
           await this.clock.sleep(wait);
@@ -157,11 +162,11 @@ export class LlmClient {
    * rejected answer go back to the model. If the repair fails too, the result says so and the caller falls back; nothing throws for a bad answer.
    */
   async generateJson<T>(spec: CallSpec & { schema: ZodType<T>; check?: (value: T) => string[] }): Promise<JsonResult<T>> {
-    const first = await this.generate({ ...spec, kind: "call" });
+    const first = await this.generate({ ...spec, json: true, kind: "call" });
     let parsed = parseJson(first.text, spec.schema, spec.check);
     if (parsed.ok) return { ok: true, value: parsed.value, repaired: false, text: first.text };
     this.stats.repairs++;
-    const second = await this.generate({ ...spec, kind: "repair", input: repairInput(spec.input, first.text, parsed.errors) });
+    const second = await this.generate({ ...spec, json: true, kind: "repair", input: repairInput(spec.input, first.text, parsed.errors) });
     parsed = parseJson(second.text, spec.schema, spec.check);
     return parsed.ok ? { ok: true, value: parsed.value, repaired: true, text: second.text } : { ok: false, errors: parsed.errors, text: second.text };
   }
@@ -237,7 +242,7 @@ export function parseJson<T>(text: string, schema: ZodType<T>, check?: (value: T
   return extra.length > 0 ? { ok: false, errors: extra.slice(0, 20) } : { ok: true, value: parsed.data };
 }
 
-/** The repair prompt: the original input, the rejected answer and the validator's messages. The system prompt stays the same. */
+/** The repair request: the original request, then validator_errors and the rejected reply (system prompt rule 14: fix only what the errors name). */
 export function repairInput(input: string, rejected: string, errors: readonly string[]): string {
-  return `${input}\n\nYOUR PREVIOUS ANSWER WAS REJECTED.\nPrevious answer:\n${rejected}\n\nThe validator reported:\n${errors.map((e) => `- ${e}`).join("\n")}\n\nAnswer again with corrected JSON only, fixing every point above.`;
+  return `${input}\n\nREPAIR\n${JSON.stringify({ validator_errors: errors, previous_reply: rejected }, null, 2)}`;
 }

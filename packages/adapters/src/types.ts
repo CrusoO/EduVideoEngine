@@ -12,6 +12,10 @@ export type LlmRequest = {
   /** Asked for only when the model's profile says structured output is supported. Our own schema still validates the answer. */
   jsonSchema?: JsonSchema;
   maxOutputTokens?: number;
+  /** Sampling temperature (LLM_TEMPERATURE). Sent only where the model's profile allows it. */
+  temperature?: number;
+  /** Ask for a JSON reply even without a schema (JSON output mode), where the profile supports it. */
+  json?: boolean;
   /** A level name (minimal, low, medium, high) or a token budget; the adapter maps it with the model's profile or ignores it. */
   thinking?: string | number;
 };

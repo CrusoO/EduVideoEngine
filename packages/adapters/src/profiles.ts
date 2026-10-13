@@ -14,6 +14,8 @@ export const ModelProfile = z
     status: z.enum(["stable", "legacy", "preview"]),
     freeTier: z.boolean(),
     structuredOutput: z.boolean(),
+    /** False if the API rejects a temperature for this model. Default: allowed. */
+    temperature: z.boolean().optional(),
     thinking: Thinking,
     maxOutputTokens: z.number().int().positive(),
     /** Requests per minute and per day. Placeholders (limitsVerified false) until the owner reads them from the AI Studio dashboard. */

@@ -3,9 +3,12 @@ import type { Retrieval } from "@eve/content";
 import { PATTERNS, patternSources, usablePatterns } from "@eve/patterns";
 import { BEAT_KINDS, LIMITS, LessonPlan } from "@eve/schema";
 import { z } from "zod";
-import { loadPrompt } from "./prompt";
+import { allowedValues, buildEnvelope } from "../envelope";
+import { loadPassPrompt, loadPrompt } from "./prompt";
 
-export const PLANNER_PROMPT_VERSION = "planner.v1";
+export const PLANNER_PROMPT_VERSION = "planner.v2";
+/** Sent as the system instruction on every call; its text is part of every fixture key. */
+export const SYSTEM_PROMPT_VERSION = "system.v1";
 
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/);
 
@@ -27,7 +30,8 @@ export type PlannedBeat = z.infer<typeof PlannedBeat>;
 const Planned = z.object({ template: z.enum(["problem-first", "example-first"]), beats: z.array(PlannedBeat).min(1) }).strict();
 const Insufficient = z.object({ error: z.literal("insufficient_content"), missing: z.array(z.string().min(1)).min(1) }).strict();
 /** What the model may answer: a plan, or the statement that the records cannot support the skill. */
-export const PlannerAnswer = z.union([Planned, Insufficient]);
+const Unsupported = z.object({ error: z.literal("unsupported_locale") }).strict();
+export const PlannerAnswer = z.union([Planned, Insufficient, Unsupported]);
 export type PlannerAnswer = z.infer<typeof PlannerAnswer>;
 
 export type LessonPlanWithPatterns = { template: "problem-first" | "example-first"; targetLengthS: number; beats: PlannedBeat[] };
@@ -35,6 +39,7 @@ export type LessonPlanWithPatterns = { template: "problem-first" | "example-firs
 export type PlanResult =
   | { ok: true; plan: LessonPlanWithPatterns; lessonPlan: LessonPlan; warnings: string[]; repaired: boolean; requests: number }
   | { ok: false; reason: "insufficient_content"; missing: string[]; declaredByModel: boolean }
+  | { ok: false; reason: "unsupported_locale" }
   | { ok: false; reason: "invalid"; errors: string[] };
 
 /** The plain-language reasons the records cannot support a lesson at all. Checked before any request is made: no model call is spent on records that cannot work. */
@@ -52,13 +57,13 @@ export function missingForPlanning(r: Retrieval): string[] {
 /** The template follows the prerequisites: solid means the lesson may open with the problem, otherwise with an example. */
 export const templateFor = (prerequisitesSolid: boolean) => (prerequisitesSolid ? "problem-first" : "example-first") as "problem-first" | "example-first";
 
-/** Everything the model is told about the records and the rules. Plain data, stable key order, nothing but owner-written content. */
-export function plannerInput(r: Retrieval, prerequisitesSolid = true): string {
+/** The INPUT section: the records, the usable patterns and the limits. Plain data, stable key order, nothing but owner-written content. The locale is the language ("en"), as the system prompt expects. */
+export function plannerData(r: Retrieval, prerequisitesSolid = true) {
   const usable = usablePatterns(r);
-  return JSON.stringify(
+  return (
     {
       skillId: r.skillId,
-      locale: r.locale,
+      locale: r.locale.split("-")[0]!,
       template: templateFor(prerequisitesSolid),
       limits: { beats: LIMITS.beats, beatMaxSeconds: LIMITS.durationS.beatMax, lessonTargetSeconds: LIMITS.durationS.lessonTargetWarn, lessonHardMaxSeconds: LIMITS.durationS.lessonHardMax },
       beatKinds: BEAT_KINDS,
@@ -70,11 +75,12 @@ export function plannerInput(r: Retrieval, prerequisitesSolid = true): string {
         ...(rec.terms ? { terms: rec.terms.map((t) => t.term) } : {}),
       })),
       patterns: PATTERNS.filter((p) => usable.includes(p.id as never)).map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, minSentences: p.minSentences, sources: patternSources(p.id, r) })),
-    },
-    null,
-    2,
+    }
   );
 }
+
+/** The INPUT section as text. */
+export const plannerInput = (r: Retrieval, prerequisitesSolid = true): string => JSON.stringify(plannerData(r, prerequisitesSolid), null, 2);
 
 /** A deliberately small JSON schema for providers that take one: every property optional, because our own validation decides. */
 export const PLANNER_JSON_SCHEMA: JsonSchema = {
@@ -164,8 +170,17 @@ export function toLessonPlan(plan: LessonPlanWithPatterns): LessonPlan {
 
 /** The call the planner makes, without the schema checks: the prompt file, its version and the input. Shared by the pass and by the tool that authors a stand-in. */
 export function plannerCall(r: Retrieval, prerequisitesSolid = true) {
-  const prompt = loadPrompt(PLANNER_PROMPT_VERSION);
-  return { step: "planner", promptVersion: prompt.version, system: prompt.text, input: plannerInput(r, prerequisitesSolid) };
+  const pass = loadPassPrompt(PLANNER_PROMPT_VERSION);
+  const input = buildEnvelope({
+    task: pass.task,
+    rules: pass.rules,
+    allowed: allowedValues({ records: r.records.map((x) => x.id), expressions: Object.keys(r.expressions) }),
+    input: plannerData(r, prerequisitesSolid),
+    schema: PLANNER_JSON_SCHEMA,
+    errors: pass.errors,
+    example: pass.example,
+  });
+  return { step: "planner", promptVersion: pass.version, system: loadPrompt(SYSTEM_PROMPT_VERSION).text, input };
 }
 
 /**
@@ -186,7 +201,7 @@ export async function planLesson(client: LlmClient, r: Retrieval, opts: { prereq
   });
   const requests = client.stats.sent + client.stats.replayed - before;
   if (!result.ok) return { ok: false, reason: "invalid", errors: result.errors };
-  if ("error" in result.value) return { ok: false, reason: "insufficient_content", missing: result.value.missing, declaredByModel: true };
+  if ("error" in result.value) return result.value.error === "unsupported_locale" ? { ok: false, reason: "unsupported_locale" } : { ok: false, reason: "insufficient_content", missing: result.value.missing, declaredByModel: true };
 
   const total = result.value.beats.reduce((n, b) => n + b.durationS, 0);
   const plan: LessonPlanWithPatterns = { template: result.value.template, targetLengthS: total, beats: result.value.beats };

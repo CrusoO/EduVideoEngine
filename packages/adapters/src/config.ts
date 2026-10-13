@@ -15,6 +15,8 @@ export type LlmConfig = {
   dailyCap?: number;
   /** A level name or a token budget, whichever the chosen model's profile supports. */
   thinking?: string | number;
+  /** LLM_TEMPERATURE, default 0.2: low, because the reply is parsed by a program. */
+  temperature: number;
   /** True when running in CI: only replay is allowed. */
   ci: boolean;
 };
@@ -34,6 +36,8 @@ export function readConfig(env: Record<string, string | undefined> = process.env
   if (!["replay", "record", "live"].includes(mode)) throw new ConfigError(`LLM_MODE must be replay, record or live, got ${JSON.stringify(env.LLM_MODE)}`);
   const thinkingBudget = positive("LLM_THINKING_BUDGET", env.LLM_THINKING_BUDGET);
   const level = env.LLM_THINKING_LEVEL?.trim();
+  const temperature = env.LLM_TEMPERATURE?.trim() ? Number(env.LLM_TEMPERATURE) : 0.2;
+  if (!Number.isFinite(temperature) || temperature < 0 || temperature > 2) throw new ConfigError(`LLM_TEMPERATURE must be a number from 0 to 2, got ${JSON.stringify(env.LLM_TEMPERATURE)}`);
   return {
     provider: env.LLM_PROVIDER?.trim() || "gemini",
     apiKey: env.GEMINI_API_KEY?.trim() || undefined,
@@ -44,6 +48,7 @@ export function readConfig(env: Record<string, string | undefined> = process.env
     rpm: positive("LLM_RPM", env.LLM_RPM),
     dailyCap: positive("LLM_DAILY_REQUEST_CAP", env.LLM_DAILY_REQUEST_CAP),
     thinking: thinkingBudget ?? (level ? level : undefined),
+    temperature,
     ci: env.CI === "true" || env.CI === "1",
   };
 }

@@ -25,6 +25,7 @@ export class GeminiAdapter implements LLMAdapter {
     const profile = profileOf(request.model, PROFILES);
     const generation: Record<string, unknown> = {};
     if (request.maxOutputTokens !== undefined) generation.max_output_tokens = Math.min(request.maxOutputTokens, profile?.maxOutputTokens ?? request.maxOutputTokens);
+    if (request.temperature !== undefined && profile?.temperature !== false) generation.temperature = request.temperature;
     if (profile) {
       const t = thinkingFor(profile, request.thinking);
       if (t.level) generation.thinking_level = t.level;
@@ -32,7 +33,7 @@ export class GeminiAdapter implements LLMAdapter {
     }
     const body: Record<string, unknown> = { model: request.model, input: request.input, system_instruction: request.system, store: false };
     if (Object.keys(generation).length > 0) body.generation_config = generation;
-    if (request.jsonSchema && profile?.structuredOutput) body.response_format = { type: "text", mime_type: "application/json", schema: request.jsonSchema };
+    if ((request.jsonSchema || request.json) && profile?.structuredOutput) body.response_format = { type: "text", mime_type: "application/json", ...(request.jsonSchema ? { schema: request.jsonSchema } : {}) };
 
     let res;
     try {
@@ -43,8 +44,9 @@ export class GeminiAdapter implements LLMAdapter {
     const raw = await res.text();
     if (res.status === 429) {
       const after = Number(res.headers.get("retry-after"));
-      throw new LlmRateLimited("Gemini answered 429 (too many requests)", Number.isFinite(after) && after > 0 ? after * 1000 : undefined);
+      throw new LlmRateLimited(`Gemini answered 429 (too many requests): ${redact(raw, this.apiKey).replace(/\s+/g, " ").slice(0, 300)}`, Number.isFinite(after) && after > 0 ? after * 1000 : undefined);
     }
+    if (res.status === 503 || res.status === 504) throw new LlmRateLimited(`Gemini answered ${res.status} (high demand, try later)`);
     if (!res.ok) throw new LlmHttpError(`Gemini answered ${res.status}: ${redact(raw, this.apiKey).slice(0, 300)}`, res.status);
 
     let json: GeminiInteraction;

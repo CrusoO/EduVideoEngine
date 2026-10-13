@@ -82,7 +82,7 @@ describe("record and replay", () => {
     const fake = new FakeAdapter(["{}"]);
     const { client, fixtures } = setup({ mode: "replay" }, fake);
     await expect(client.generate(spec)).rejects.toThrow(/no recorded answer for planner[\s\S]*LLM_MODE=record/);
-    fixtures.write({ key: fixtureKey({ ...spec, model: client.modelFor() }), step: "planner", promptVersion: "planner.v1", model: client.modelFor(), recordedAt: "x", response: { text: "{\"a\":1}", model: client.modelFor(), status: "completed", usage: { inputTokens: 1, outputTokens: 1, thinkingTokens: 0 } } });
+    fixtures.write({ key: fixtureKey({ ...spec, model: client.modelFor(), temperature: 0.2 }), step: "planner", promptVersion: "planner.v1", model: client.modelFor(), recordedAt: "x", response: { text: "{\"a\":1}", model: client.modelFor(), status: "completed", usage: { inputTokens: 1, outputTokens: 1, thinkingTokens: 0 } } });
     expect((await client.generate(spec)).text).toBe("{\"a\":1}");
     expect(fake.requests).toHaveLength(0);
     expect(client.stats).toMatchObject({ replayed: 1, sent: 0 });
@@ -185,8 +185,8 @@ describe("rate handling", () => {
   it("gives up after the retries and says so", async () => {
     const fake = new FakeAdapter(() => new LlmRateLimited("429"));
     const { client } = setup({ mode: "live", rpm: 600, dailyCap: 100 }, fake);
-    await expect(client.generate(spec)).rejects.toThrow(/still rate limited after 5 tries/);
-    expect(fake.requests).toHaveLength(5);
+    await expect(client.generate(spec)).rejects.toThrow(/still rate limited after 3 tries/);
+    expect(fake.requests).toHaveLength(3);
   });
 
   it("refuses to pass the daily cap, tells the owner, and sends nothing more", async () => {
@@ -259,9 +259,9 @@ describe("answers are always validated with our own schema; one repair retry", (
     const r = run(["{\"beats\":2}", "{\"beats\":6}"]);
     expect(await r.result()).toMatchObject({ ok: true, value: { beats: 6 }, repaired: true });
     expect(r.fake.requests).toHaveLength(2);
-    expect(r.fake.requests[1]!.input).toContain("YOUR PREVIOUS ANSWER WAS REJECTED");
+    expect(r.fake.requests[1]!.input).toContain("validator_errors");
     expect(r.fake.requests[1]!.input).toContain("beats:");
-    expect(r.fake.requests[1]!.input).toContain("{\"beats\":2}");
+    expect(r.fake.requests[1]!.input).toContain("previous_reply");
     expect(r.ledger.entries().map((e) => e.kind)).toEqual(["call", "repair"]);
     expect(r.client.stats.repairs).toBe(1);
   });

@@ -3,13 +3,13 @@ import { join } from "node:path";
 import { hashOf } from "@eve/schema";
 import type { LlmResponse } from "./types";
 
-export type FixtureKeyParts = { promptVersion: string; model: string; system: string; input: string };
+export type FixtureKeyParts = { promptVersion: string; model: string; system: string; input: string; temperature?: number };
 
 /**
  * The key of a recorded answer: the hash of the prompt version, the model id and the input. The system text is part of the key too, so editing a
  * prompt file without bumping its version makes the fixture "missing" (and replay fails) instead of replaying an answer to an older prompt.
  */
-export const fixtureKey = (p: FixtureKeyParts): string => hashOf({ promptVersion: p.promptVersion, model: p.model, system: p.system, input: p.input });
+export const fixtureKey = (p: FixtureKeyParts): string => hashOf({ promptVersion: p.promptVersion, model: p.model, system: p.system, input: p.input, ...(p.temperature !== undefined ? { temperature: p.temperature } : {}) });
 
 /**
  * `recorded` (or absent): the answer a model gave in record mode. `authored-standin`: written by a person (or by Claude Code) to let replay and the

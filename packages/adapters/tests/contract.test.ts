@@ -55,7 +55,7 @@ describe("a second adapter replaces the first without changing the pipeline step
     const stub = new StubSecondProvider([bad, good]);
     const out = await planStep(clientFor("stub", stub));
     expect(out).toMatchObject({ ok: true, repaired: true });
-    expect(JSON.stringify(stub.wire[1])).toContain("YOUR PREVIOUS ANSWER WAS REJECTED");
+    expect(JSON.stringify(stub.wire[1])).toContain("validator_errors");
   });
 
   it("is counted in the same ledger shape", async () => {
