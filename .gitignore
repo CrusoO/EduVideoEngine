@@ -9,3 +9,4 @@ reports/
 .measure*/
 test-results/
 tools/piper/
+stryker.measure.json

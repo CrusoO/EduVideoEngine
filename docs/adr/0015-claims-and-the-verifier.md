@@ -56,3 +56,8 @@ A later check could narrow that gap, strongest first:
    "is equivalent to") and each match required to have a claim of the same kind. Partial, and per language (the Hindi and Nepali patterns wait for reviewers).
 4. **A reviewer's checklist** in the review step for the worked beats: the cheapest, and the only one that catches a claim of a kind nobody thought of.
 None of these is built. Recommended order: 1 for worked beats, then 2.
+
+### Phase 1 design decision (owner, 2026-10-13): the first later check is sentence generation
+The first of the later checks to build is **number 1: for worked beats, the sentences are generated from the declared claims** (a template filled from `roots(eq1, [2, 3])`,
+`sum-of-roots(...)`, and so on), so an undeclared claim cannot be written. Recorded as a Phase 1 design decision. **Not built now.** The scriptwriter prompt, when it is written,
+receives the claims of a worked beat and the sentence templates, not free prose for the claim sentences.

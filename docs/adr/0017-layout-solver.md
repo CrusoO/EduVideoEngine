@@ -1,6 +1,6 @@
 # ADR 0017: The layout solver (packages/layout), what it found, and what to do about five objects on a phone
 
-Status: accepted for the solver; the **proposal in section 6 needs the owner's decision**.
+Status: accepted, including the height-budget decision of section 7.
 
 ## 1. What it is
 `solve(scene, viewport, ctx) -> Layout`: the layout rules of a scene and the stage size in, one box (x, y, width, height) per object out. Pure and deterministic
@@ -40,21 +40,25 @@ Reference screens: a 360 x 640 phone and a 1280 x 720 window. The stage height i
 ## 6. What it found
 1. **Graph axis numbers were 8.8 px on a phone** (11 units of a 400-unit drawing, scaled to 320 px). They are now 15 units (12 px at 360 px). Below a 360 px stage they would fail the 12 px minimum, so 360 px is the smallest supported width.
 2. **The reference lesson passes** every check at both screens (tallest scene 388 px of 456).
-3. **A column of five objects does not fit a phone**, as feared. Title (64) + equation with a fraction (84) + graph (208) + three steps (112) + a 20-word body (106) + four gaps (64) + padding (40) = **678 px against a 456 px stage: it overflows by 222 px.**
+3. **A column of five objects does not fit a phone** (the case that led to section 7), as feared. Title (64) + equation with a fraction (84) + graph (208) + three steps (112) + a 20-word body (106) + four gaps (64) + padding (40) = **678 px against a 456 px stage: it overflows by 222 px.**
    It also overflows the desktop window as a column (671 px against 536 px), though two rows bring it to 500 px there. Nothing was shrunk to hide this.
    What fits a phone: three heavy objects (title + equation + graph), or title + equation + steps + body.
 4. A row can be **taller at 480 px than the same objects stacked at 479 px** (half-width columns wrap more). Within one side of the 480 px boundary a wider stage is never taller (property test); across it, not.
    The graph is the one object whose height follows its width (until 480 px wide).
 
-## 7. Proposal for five objects on a phone (needs a decision)
-Options:
-* **A. A height budget at compile time (recommended).** The composer is told the budget of a phone stage (456 px) and the cost of each object type, computed by this same solver. A scene over budget is rejected
-  and the composer must split the beat. The schema maximum of 5 objects stays, but the real limit is height. Cost: more, shorter scenes; this is also better pedagogy for a small screen.
-* **B. Let the stage scroll.** Rejected: a stage that scrolls under a running voice breaks the one-screen-at-a-time design and the cue timing.
-* **C. A compact size for heavy objects** (a graph of 160 px, a step list with tighter spacing), as an explicit `size: "compact"` prop, never silent, still obeying the text-size minimums.
-  Possible later, in addition to A.
-* **D. Change what is on screen within one scene** (replace objects as the voice moves on). Needs a "remove" action and a new resolver rule: a Phase 2 question.
-Until a decision, the build fails any scene that overflows (as it does now).
+## 7. Overflow: a compile-time height budget (DECIDED 2026-10-13)
+The owner confirmed option A:
+* **Each component has a pixel height cost** computed by this solver (`sceneCost`, `costTable`). A **scene must fit the stage height**. The composer is given the costs
+  (`packages/layout/component-costs.json`, generated for a 360 px stage) and keeps a scene within the budget. When a scene does not fit it **splits the beat** (`splitToFit` shows how:
+  the fewest consecutive groups that each fit). If it cannot split cleanly (one object is taller than the whole stage, or a split would separate things that belong together) it **falls back
+  to the template scene**. Splitting needs more beats: the limit is raised to 4 to 10 by ADR 0018.
+* **The sheet chrome is a parameter, not a constant.** `chromePx` goes into `stageFrame`, `referenceViewports`, the player and the budget. The default **184 px (56 header + 128 caption and
+  credit) is UNCONFIRMED**: the owner is measuring the real YourTutor sheet at 360 x 640 and will give the number. Nothing may hard-code 184.
+* **The screen height is dynamic**: `dvh` in CSS, `window.visualViewport.height` in the player, never a fixed 640. A phone browser that shows its address bar has a shorter stage.
+* **Design target 360 x 640.** A phone stage is `dvh - chrome` high. A wide card (880 px and up) is a 16:9 frame, which is always at least as tall as the phone stage (495 px against 456 px
+  at 880 px): desktop is roomier, never the reverse. Content shorter than its frame is centred vertically, so no band of empty stage sits under it. A scene taller than its stage is reported by
+  the player (`onOverflow`) and failed by the build.
+Options B (scroll), C (compact sizes) and D (replace objects inside a scene) from the earlier proposal stay rejected or deferred.
 
 ## 8. Not done
 No component size model beyond the five built (text, equation, step list, graph, highlight): a new component must add its model or the solver refuses it with a clear error. Hindi and Nepali line heights are modelled

@@ -220,3 +220,54 @@ describe("measure: graph, highlight and the rest", () => {
     expect(minPx("annotation")).toBe(12);
   });
 });
+
+describe("edges of the model (found by mutation testing)", () => {
+  it("a zero-width non-joiner and a joiner stay with their base; a leading mark has nothing to attach to", () => {
+    expect(clusters("क‌ष")).toEqual(["क‌", "ष"]);
+    expect(clusters("́a")).toEqual(["́", "a"]);
+  });
+  it("the Devanagari block is exactly U+0900 to U+097F", () => {
+    const w = (cp: number) => Math.round(textWidthEm(String.fromCodePoint(cp)) * 100) / 100;
+    expect(w(0x0900)).toBe(0.74);
+    expect(w(0x097f)).toBe(0.74);
+    expect(w(0x08a0)).toBe(0.95);
+    expect(w(0x0980)).toBe(0.95);
+  });
+  it("U+007F is still the Latin width, U+0080 is not", () => {
+    expect(textWidthEm("\u007f")).toBeCloseTo(0.54, 6);
+    expect(textWidthEm("\u0080")).toBeCloseTo(0.95, 6);
+  });
+  it("wrapLines is not bold unless asked", () => {
+    expect(wrapLines("aaaaa aaaaa", 10, 57)).toBe(1);
+    expect(wrapLines("aaaaa aaaaa", 10, 57, true)).toBe(2);
+  });
+  it("a run of spaces counts as one space", () => {
+    expect(wrapLines("aaaaa    aaaaa", 10, 57)).toBe(1);
+  });
+  it("a word wider than the line is measured from where it starts: alone, and after other text", () => {
+    expect(wrapLines("a".repeat(40), 10, 108)).toBe(2); // 216 px in 108 px
+    expect(wrapLines(`${"a".repeat(12)} ${"a".repeat(36)}`, 10, 100)).toBe(3); // 65 + 3 + 195 = 263 px
+    expect(wrapLines(`${"a".repeat(12)} ${"a".repeat(35)}`, 10, 100)).toBe(3);
+  });
+  it("only hi and ne at the start of a locale take the taller Indic line heights", () => {
+    const body = (locale: string) => measure({ id: "t", component: "text", props: { text: "Hi", role: "body" } }, 320, { expressions: {}, locale }).height;
+    expect(body("hi-IN")).toBe(30);
+    expect(body("ne")).toBe(30);
+    expect(body("xhi")).toBe(27);
+    expect(body("en-hi")).toBe(27);
+    expect(body("hindi")).toBe(27);
+  });
+  it("an equation with a single fraction costs 84, not 66 and not 102", () => {
+    expect(hOf(eqObj("nest1"))).toBe(84);
+    expect(hOf(eqObj("eq1"))).toBe(66);
+  });
+  it("formula width ignores every space but counts every other character", () => {
+    const m = measure({ id: "e", component: "equation", props: {}, exprRef: "total" }, 320, ctx);
+    expect(m.naturalWidth).toBe(Math.ceil(("2+3=5".length) * 0.62 * 18.4 * 1.21));
+  });
+  it("the equation size defaults to m, and its text is not bold", () => {
+    expect(measure(eqObj("eq1"), 320, ctx).facts[0]).toMatchObject({ bold: false });
+    expect(measure(eqObj("eq1", "l"), 320, ctx).height).toBeGreaterThan(measure(eqObj("eq1"), 320, ctx).height);
+    expect(measure(steps("eq1"), 320, ctx).facts[0]).toMatchObject({ bold: false });
+  });
+});
