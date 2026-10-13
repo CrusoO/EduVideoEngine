@@ -1,5 +1,5 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { Timeline, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { objectStateAt } from "@eve/components";
 import { MIN_ACTION_MS, ResolveError, SCENE_TAIL_MS, SENTENCE_GAP_MS, eventsFor, resolve } from "../src";
@@ -18,7 +18,10 @@ const track = (sentenceId: string, durationMs: number, wordStartsMs?: number[]):
 const tracksOf = (b: LessonBundle) => b.script.map((s) => track(s.id, 400 * wordsOf(s.text).length));
 
 describe("resolve: the quadratic fixture", () => {
-  const tl = resolve(bundle, tracksOf(bundle));
+  let tl: Timeline;
+  beforeAll(() => {
+    tl = resolve(bundle, tracksOf(bundle));
+  });
 
   it("returns a valid Timeline", () => expect(() => Timeline.parse(tl)).not.toThrow());
 

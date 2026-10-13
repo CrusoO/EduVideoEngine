@@ -1,7 +1,7 @@
 import fc from "fast-check";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { Timeline, hashOf, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
-import { DEFAULT_OPTIONS, MIN_ACTION_MS, RESOLVER_VERSION, ResolveError, SCENE_TAIL_MS, resolve, sceneChunk } from "../src";
+import { DEFAULT_OPTIONS, MIN_ACTION_MS, RESOLVER_VERSION, ResolveError, SCENE_TAIL_MS, eventsFor, resolve, sceneChunk } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;
 const hex = "a".repeat(64);
@@ -110,7 +110,10 @@ describe("rounding rule (ADR 0010): proportional placement is floor(wordIndex * 
 });
 
 describe("pause points, hash, diagnostics, overlaps, options, chunks", () => {
-  const tl = resolve(bundle, tracksOf(bundle));
+  let tl: Timeline;
+  beforeAll(() => {
+    tl = resolve(bundle, tracksOf(bundle));
+  });
 
   it("emits a pause point at the end of the sentence it follows", () => {
     const p = tl.pausePoints.find((x) => x.id === "ask3")!;
@@ -181,5 +184,101 @@ describe("pause points, hash, diagnostics, overlaps, options, chunks", () => {
     const moved = resolve(bundle, longer);
     expect(moved.scenes.find((s) => s.sceneId === "scene3")!.startMs).not.toBe(tl.scenes.find((s) => s.sceneId === "scene3")!.startMs);
     expect(sceneChunk(moved, "scene3")).toEqual(base);
+  });
+});
+
+describe("refusals name the problem; ordering and chunks are exact", () => {
+  const base = () => structuredClone(bundle);
+  const tl = () => resolve(bundle, tracksOf(bundle));
+
+  it("error messages carry the problems", () => {
+    expect(() => resolve(bundle, [])).toThrow(/^cannot resolve: no audio for sentence s1\.1; /);
+  });
+
+  it("a scene whose beat has no sentences", () => {
+    const b = base();
+    b.script = b.script.filter((s) => s.beatId !== "b5");
+    expect(() => resolve(b, tracksOf(b))).toThrow(/scene scene5 has no sentences in beat b5/);
+  });
+
+  it("a cue or a pause that names a sentence spoken in another scene", () => {
+    const b = base();
+    b.scenes[0]!.cues[0]!.anchor = { sentenceId: "s2.1", at: "start" };
+    expect(() => resolve(b, tracksOf(b))).toThrow(/scene scene1: cue anchors to s2\.1, which is not spoken in this scene/);
+    const p = base();
+    p.scenes[2]!.interactions = [{ id: "askX", afterSentenceId: "s1.1", prompt: "?" }];
+    expect(() => resolve(p, tracksOf(p))).toThrow(/scene scene3: pause askX follows s1\.1, which is not spoken in this scene/);
+  });
+
+  it("a word index exactly one past the last word is refused; the last word is accepted", () => {
+    const n = wordsOf(bundle.script[0]!.text).length;
+    const mk = (w: number) => {
+      const b = base();
+      b.scenes[0]!.cues = [{ targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.1", at: { wordIndex: w } }, minHoldMs: 0 }];
+      return b;
+    };
+    expect(() => resolve(mk(n), tracksOf(mk(n)))).toThrow(/wordIndex .* is past the end of s1\.1/);
+    expect(() => resolve(mk(n - 1), tracksOf(mk(n - 1)))).not.toThrow();
+  });
+
+  it("events are ordered by time, ties keep the order the author wrote the cues", () => {
+    const b = base();
+    b.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.2", at: "start" }, minHoldMs: 0 },
+      { targetObject: "title", action: "reveal", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 0 },
+      { targetObject: "title", action: "dim", anchor: { sentenceId: "s1.2", at: "start" }, minHoldMs: 0 },
+    ];
+    const t = resolve(b, tracksOf(b));
+    const first = t.events.filter((e) => e.sceneId === "scene1").map((e) => `${e.targetObject}:${e.action}`);
+    expect(first).toEqual(["title:reveal", "eq1:reveal", "title:dim"]);
+  });
+
+  it("overlapping reveals are harmless, overlapping dims are refused, and a window ending where another begins is fine in either authoring order", () => {
+    const r = base();
+    r.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 5000 },
+      { targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 100 }, minHoldMs: 5000 },
+    ];
+    expect(() => resolve(r, tracksOf(r))).not.toThrow();
+    const d = base();
+    d.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "dim", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+      { targetObject: "eq1", action: "dim", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 500 }, minHoldMs: 1000 },
+    ];
+    expect(() => resolve(d, tracksOf(d))).toThrow(/dim and dim overlap on eq1/);
+    // later window authored first: 1000-2000 then 0-1000 (touching, written out of time order)
+    const t = base();
+    t.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 1000 }, minHoldMs: 1000 },
+      { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+    ];
+    expect(() => resolve(t, tracksOf(t))).not.toThrow();
+    // and the other way round: authored 0-1000 then 1000-2000, but where the later one starts before the first ends by 1 ms
+    const o = base();
+    o.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+      { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 999 }, minHoldMs: 1000 },
+    ];
+    expect(() => resolve(o, tracksOf(o))).toThrow(/overlap/);
+  });
+
+  it("the version is recorded", () => expect(tl().provenance.resolverVersion).toMatch(/^\d+\.\d+\.\d+$/));
+
+  it("eventsFor returns only that object's events; sceneChunk keeps only its scene's audio, events and pause points", () => {
+    const t = tl();
+    expect(eventsFor(t, "scene1", "eq1").map((e) => e.action).sort()).toEqual(["highlight", "reveal"]);
+    expect(eventsFor(t, "scene2", "eq1")).toEqual([]);
+    expect(eventsFor(t, "scene1", "title").every((e) => e.action === "reveal")).toBe(true);
+    expect(() => sceneChunk(t, "nope")).toThrow(/no scene nope/);
+    const c1 = sceneChunk(t, "scene1");
+    const c3 = sceneChunk(t, "scene3");
+    expect(c1.audio.map((a) => a.sentenceId)).toEqual(["s1.1", "s1.2"]);
+    expect(c1.events.map((e) => e.targetObject).sort()).toEqual(["eq1", "eq1", "title"]);
+    expect(c1.pausePoints).toEqual([]);
+    expect(c3.pausePoints.map((p) => p.id)).toEqual(["ask3"]);
+    expect(c3.pausePoints[0]!.atMs).toBe(t.pausePoints.find((p) => p.id === "ask3")!.atMs - t.scenes.find((s) => s.sceneId === "scene3")!.startMs);
+    // sentence ends exactly at a scene boundary are not smuggled into the next scene's chunk
+    expect(c3.audio.every((a) => a.endMs <= c3.durationMs)).toBe(true);
+    expect(c1.durationMs + c3.durationMs).toBeLessThan(t.totalMs);
   });
 });

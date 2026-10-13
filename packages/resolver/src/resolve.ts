@@ -109,7 +109,6 @@ export function resolve(bundle: LessonBundle, tracks: readonly AudioTrack[], ove
   // Stable order: by time, then scene order (already the push order), then the author's cue order.
   const order = new Map(events.map((e, i) => [e, i]));
   events.sort((a, b) => a.atMs - b.atMs || order.get(a)! - order.get(b)!);
-  pausePoints.sort((a, b) => a.atMs - b.atMs);
   const body = {
     bundleId: bundle.bundleId,
     bundleHash: bundle.hashes.bundle,

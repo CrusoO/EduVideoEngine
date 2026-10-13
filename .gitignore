@@ -4,3 +4,5 @@ dist
 *.log
 test-results
 playwright-report
+.stryker-tmp/
+reports/
