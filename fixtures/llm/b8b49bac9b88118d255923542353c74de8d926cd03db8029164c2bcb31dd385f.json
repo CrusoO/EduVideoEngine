@@ -1,0 +1,17 @@
+{
+  "key": "b8b49bac9b88118d255923542353c74de8d926cd03db8029164c2bcb31dd385f",
+  "step": "smoke",
+  "promptVersion": "smoke.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-13T21:38:19.294Z",
+  "response": {
+    "text": "{\"ok\":true,\"echo\":\"lantern\"}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1211,
+      "outputTokens": 9,
+      "thinkingTokens": 49
+    }
+  }
+}

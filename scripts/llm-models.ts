@@ -45,4 +45,4 @@ for (const provider of PROVIDERS) {
   console.log("other text models listed (not in the profile):");
   for (const m of interesting.filter((m) => !(m.id in PROFILES[provider].models))) console.log(`  ${m.id}   ${m.extra}`);
 }
-process.exit(missingAny === 0 ? 0 : 1);
+process.exitCode = missingAny === 0 ? 0 : 1;

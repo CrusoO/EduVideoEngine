@@ -65,4 +65,4 @@ for (const provider of PROVIDERS) {
     console.log(`result: FAILURE\nlatency: ${Date.now() - t0} ms\nreason: ${(e as Error).message}`);
   }
 }
-process.exit(failures === 0 ? 0 : 1);
+process.exitCode = failures === 0 ? 0 : 1;
