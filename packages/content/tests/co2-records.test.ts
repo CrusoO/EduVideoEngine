@@ -90,6 +90,14 @@ describe("practice questions", () => {
 });
 
 describe("skills", () => {
+  it("every prerequisite has a skill record in the same language", () => {
+    const pre = make("skill", { id: "k.pre", skillId: "S.PRE" });
+    const main = make("skill", { id: "k.main", prerequisiteSkillIds: ["S.PRE"] });
+    expect(validateStore([pre, main])).toEqual([]);
+    expect(validateStore([main]).map((p) => p.message).join(" | ")).toMatch(/prerequisite S\.PRE has no skill record in the store/);
+    const other = make("skill", { id: "k.pre", skillId: "S.PRE", locale: "hi-IN" });
+    expect(validateStore([other, main]).map((p) => p.message).join(" | ")).toMatch(/has no skill record/);
+  });
   it("a skill has one record per language", () => {
     const a = make("skill", { id: "k.1" });
     const b = make("skill", { id: "k.2" });

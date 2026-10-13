@@ -36,7 +36,7 @@ describe("the seed records", () => {
   it("validate with the real verifier", async () => {
     const store = await checkStore(root);
     expect(store.problems).toEqual([]);
-    expect(store.records.length).toBe(10);
+    expect(store.records.length).toBe(11);
   }, 120_000);
   it("are retrievable in a fixed order with nothing unresolved", () => {
     const { records } = loadStore(root);

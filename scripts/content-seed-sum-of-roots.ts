@@ -93,6 +93,15 @@ const records: Array<Omit<ContentRecord, "hash">> = [
   },
   {
     ...base,
+    skillId: "MATH.ALG.QUAD.FACTORISE",
+    id: "quad.factorise.skill",
+    kind: "skill",
+    text: "Write a quadratic expression as a product of two brackets.",
+    expressions: {},
+    sourceNote: "Written for this project as the description of the factorising skill, so the sum-of-roots skill has a prerequisite that exists in the store. Prose only.",
+  },
+  {
+    ...base,
     id: "quad.sum.claim.root",
     kind: "conceptClaim",
     text: "A root of an equation is a value of the unknown that makes the equation true.",
@@ -140,8 +149,8 @@ const records: Array<Omit<ContentRecord, "hash">> = [
 ];
 
 for (const r of records) {
-  const file = resolve(dir, `${r.id}.json`);
+  const file = resolve(r.skillId === SKILL ? dir : resolve(dir, "..", "factorise"), `${r.id}.json`);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, `${JSON.stringify(sealRecord(r), null, 2)}\n`);
-  console.log(`wrote content/maths/algebra/sum-of-roots/${r.id}.json`);
+  console.log(`wrote ${file}`);
 }

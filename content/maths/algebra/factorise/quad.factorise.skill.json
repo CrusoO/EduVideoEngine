@@ -1,0 +1,12 @@
+{
+  "skillId": "MATH.ALG.QUAD.FACTORISE",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.factorise.skill",
+  "kind": "skill",
+  "text": "Write a quadratic expression as a product of two brackets.",
+  "expressions": {},
+  "sourceNote": "Written for this project as the description of the factorising skill, so the sum-of-roots skill has a prerequisite that exists in the store. Prose only.",
+  "hash": "5b4fec8a3617fccc8d87e86545ebf4a610fe9edab1fc5304340e3f7fd6b69c17"
+}

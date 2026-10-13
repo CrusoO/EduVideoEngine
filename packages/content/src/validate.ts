@@ -158,6 +158,12 @@ export function validateStore(records: readonly ContentRecord[]): ContentProblem
     if (skills.has(key)) out.push({ recordId: r.id, path: "skillId", message: `skill ${r.skillId} already has a skill record (${skills.get(key)})` });
     skills.set(key, r.id);
   }
+  // Every prerequisite names a skill that has a skill record in the same language (AM-10): "linked" targets must exist in the store.
+  for (const r of records.filter((x) => x.kind === "skill")) {
+    for (const pre of r.prerequisiteSkillIds ?? []) {
+      if (!skills.has(`${pre}/${r.locale}`)) out.push({ recordId: r.id, path: "prerequisiteSkillIds", message: `prerequisite ${pre} has no skill record in the store (${r.locale})` });
+    }
+  }
   const claims = new Map(records.filter((x) => x.kind === "conceptClaim").map((c) => [c.id, c.dependsOn ?? []]));
   const state = new Map<string, number>();
   const visit = (c: string): boolean => {

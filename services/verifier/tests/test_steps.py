@@ -162,6 +162,7 @@ def test_chain_sum_of_the_roots_of_a_quadratic():
     report = verify_bundle(bundle(ex, claims))
     assert [c.detail for c in report.checks if c.kind == "step" and not c.ok] == []
     assert sum(1 for c in report.checks if c.kind == "step") == 4  # c.start uses nothing
+    assert report.ok  # the whole verifier, claims and steps, accepts this chain
 
 
 def test_chain_solving_a_linear_equation():
@@ -180,6 +181,11 @@ def test_chain_solving_a_linear_equation():
     report = verify_bundle(bundle(ex, claims))
     assert [c.detail for c in report.checks if c.kind == "step" and not c.ok] == []
     assert sum(1 for c in report.checks if c.kind == "step") == 3
+    # The FULL verifier (claims as well as steps) rejects this chain: the substitution check 3*5+5 = 20 is a true closed equation (the equality check
+    # accepts it) but it cannot be stated as a claim, because `equivalent` needs two equations with one common unknown. ADR 0042 proposes the smallest addition.
+    failed = {c.id: c.detail for c in report.checks if not c.ok}
+    assert list(failed) == ["c.chk"] and "one common unknown" in failed["c.chk"]
+    assert not report.ok
 
 
 def test_chain_pythagoras_needs_a_kind_the_set_does_not_have():
@@ -202,6 +208,10 @@ def test_chain_pythagoras_needs_a_kind_the_set_does_not_have():
     report = verify_bundle(bundle(ex, claims))
     failed = {c.id: c.detail for c in report.checks if c.kind == "step" and not c.ok}
     assert list(failed) == ["c.p2"] and "both signed roots must be kept" in failed["c.p2"]
+    # the claim check fails too: c = 5 is not equivalent to c^2 = 25 (it drops -5), so the lesson cannot state the positive length as an `equivalent` claim
+    claim_failed = [c.detail for c in report.checks if c.kind == "claim" and not c.ok]
+    assert len(claim_failed) == 1 and "not equivalent" in claim_failed[0]
+    assert not report.ok
 
 
 def test_a_step_with_half_its_declaration_or_an_unknown_kind_is_rejected():
