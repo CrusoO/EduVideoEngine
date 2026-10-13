@@ -93,6 +93,19 @@ export function validateBundle(input: unknown): Validation {
     }
   }
 
+  const claimIds = new Set<string>();
+  for (const claim of b.claims ?? []) {
+    const at = `claims.${claim.id}`;
+    if (claimIds.has(claim.id)) bad(at, "claim ids must be unique");
+    claimIds.add(claim.id);
+    const refs = claim.kind === "equivalent" ? [claim.a, claim.b] : claim.kind === "roots" ? [claim.equation] : [claim.equation, claim.equals];
+    for (const r of refs) {
+      const e = b.expressions[r];
+      if (!e) bad(at, `claim names unknown expression ${r}`);
+      else if (e.op !== "eq") bad(at, `claim needs an equation, ${r} is not one`);
+    }
+  }
+
   for (const beat of b.plan.beats) {
     const scenes = b.scenes.filter((s) => s.beatId === beat.id);
     if (scenes.length === 0) bad(`plan.beats.${beat.id}`, "every beat needs at least one scene");

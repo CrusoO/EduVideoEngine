@@ -22,6 +22,24 @@ export const SYMPY_NODE: Record<ExprOp, string> = {
   eq: "Eq(a, b)",
 };
 
+/**
+ * Which function of the Python verifier (services/verifier, eve_verifier/handlers.py) turns each node type into SymPy.
+ * Typed as a Record over every ExprOp: adding a node type to EXPR_OPS without a line here is a COMPILE ERROR, and the
+ * generated expr-ops.json plus the Python tests then fail until the handler exists. That is how "every number is verified"
+ * stays true.
+ */
+export const VERIFIER_HANDLERS: Record<ExprOp, string> = {
+  num: "h_num",
+  sym: "h_sym",
+  neg: "h_neg",
+  add: "h_add",
+  sub: "h_sub",
+  mul: "h_mul",
+  div: "h_div",
+  pow: "h_pow",
+  eq: "h_eq",
+};
+
 export type Expr =
   | { op: "num"; n: number; d?: number } // n/d, d defaults to 1, d > 0
   | { op: "sym"; name: string }

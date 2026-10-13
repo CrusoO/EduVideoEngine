@@ -68,6 +68,14 @@ export function buildQuadraticRoots(): LessonBundle {
       { id: "s5.1", beatId: "b5", text: "Now you try. For {expr:eq2}, what do the roots add up to?", termSpans: [], exprRefs: ["eq2"], status: "frozen" },
       { id: "s5.2", beatId: "b5", text: "Use the rule, then check your answer.", termSpans: [], exprRefs: [], status: "frozen" },
     ],
+    claims: [
+      { id: "c.factored", kind: "equivalent", a: "eq1", b: "factored" },
+      { id: "c.roots", kind: "roots", equation: "eq1", values: [num(2), num(3)] },
+      { id: "c.sum", kind: "sum-of-roots", equation: "eq1", equals: "total" },
+      { id: "c.sum-rule", kind: "sum-of-roots", equation: "eq1", equals: "fromRule" },
+      { id: "c.vieta", kind: "sum-of-roots", equation: "general", equals: "rule" },
+      { id: "c.answer", kind: "sum-of-roots", equation: "eq2", equals: "answer2" },
+    ],
     scenes: [
       {
         id: "scene1",

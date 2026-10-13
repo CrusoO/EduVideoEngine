@@ -8,7 +8,11 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "mutate": "stryker run",
-    "voice:generate": "vite-node scripts/voice/generate.ts"
+    "voice:generate": "vite-node scripts/voice/generate.ts",
+    "gen:ops": "vite-node scripts/gen-ops.ts",
+    "verify:gate": "vite-node scripts/verify-gate.ts",
+    "gen:ops": "vite-node scripts/gen-ops.ts",
+    "verify:gate": "vite-node scripts/verify-gate.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",

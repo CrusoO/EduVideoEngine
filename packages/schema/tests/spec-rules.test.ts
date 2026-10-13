@@ -102,3 +102,24 @@ describe("language registry", () => {
     expect(v.ok).toBe(false);
   });
 });
+
+describe("claims", () => {
+  it("must name equations that exist, with unique ids", () => {
+    const b = structuredClone(quadraticRoots) as never as { claims: Array<Record<string, unknown>>; hashes: never };
+    const bad = (mut: (c: Array<Record<string, unknown>>) => void) => {
+      const copy = structuredClone(b);
+      mut(copy.claims);
+      return validateBundle(seal({ ...(copy as never as LessonBundle), hashes: undefined } as never));
+    };
+    expect(bad((c) => (c[0]!.a = "nope")).issues.map((i) => JSON.stringify(i)).join()).toMatch(/unknown expression nope/);
+    expect(bad((c) => (c[0]!.a = "f1")).issues.map((i) => JSON.stringify(i)).join()).toMatch(/needs an equation, f1 is not one/);
+    expect(bad((c) => (c[1]!.id = c[0]!.id)).issues.map((i) => JSON.stringify(i)).join()).toMatch(/claim ids must be unique/);
+    expect(bad(() => undefined).ok).toBe(true);
+  });
+  it("a lesson without claims hashes exactly as it did before claims existed", () => {
+    const { claims: _claims, hashes: _h, ...rest } = quadraticRoots as LessonBundle;
+    void _claims;
+    void _h;
+    expect(seal(rest).hashes.perScene).toEqual(quadraticRoots.hashes.perScene);
+  });
+});

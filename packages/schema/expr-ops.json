@@ -1,0 +1,35 @@
+{
+  "ops": [
+    "num",
+    "sym",
+    "neg",
+    "add",
+    "sub",
+    "mul",
+    "div",
+    "pow",
+    "eq"
+  ],
+  "handlers": {
+    "num": "h_num",
+    "sym": "h_sym",
+    "neg": "h_neg",
+    "add": "h_add",
+    "sub": "h_sub",
+    "mul": "h_mul",
+    "div": "h_div",
+    "pow": "h_pow",
+    "eq": "h_eq"
+  },
+  "sympy": {
+    "num": "Rational(n, d)",
+    "sym": "Symbol(name)",
+    "neg": "Mul(-1, a)",
+    "add": "Add(a, b)",
+    "sub": "Add(a, Mul(-1, b))",
+    "mul": "Mul(a, b)",
+    "div": "Mul(a, Pow(b, -1))",
+    "pow": "Pow(a, b)",
+    "eq": "Eq(a, b)"
+  }
+}

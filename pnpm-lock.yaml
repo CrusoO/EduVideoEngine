@@ -267,6 +267,12 @@ importers:
         specifier: 3.23.1
         version: 3.23.1
 
+  packages/verify:
+    dependencies:
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
+
   packages/voice:
     dependencies:
       '@eve/schema':
