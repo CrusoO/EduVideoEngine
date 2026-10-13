@@ -10,7 +10,7 @@ Lives outside the YourTutor repository on purpose (see `docs/adr/0001-separate-r
 | Path | What |
 |---|---|
 | `packages/schema` | LessonBundle, SceneSpec, Cue, Timeline, AudioTrack (zod), expression trees, hashing, bundle validation, JSON Schemas for the prompts, the hand-written fixture |
-| `packages/components` | (next) the component registry |
+| `packages/components` | five components (text, equation, functionGraph, stepList, highlight), tree-to-LaTeX serializer, seekable-time state, browser harness and golden frames |
 | `packages/resolver` | (next) pure `resolve(bundle, audioTracks) -> Timeline` |
 | `packages/player` | (next) offline browser player |
 | `packages/adapters` | (next) LLM, TTS, ASR, align, translate adapters |
@@ -26,5 +26,7 @@ Lives outside the YourTutor repository on purpose (see `docs/adr/0001-separate-r
 
 ## Status
 
-Phase 0, step (a) done: schema package, fixture ("sum of the roots of a quadratic", 5 scenes), 25 tests.
-Next: (b) components, (c) resolver, (d) player, (e) adapters, (f) verifier, then the Phase 0 gate.
+Phase 0: step (a) schema and fixture done; step (b) components done (127 unit tests, 13 browser tests).
+Next: (c) resolver, (d) player, (e) adapters (FileVoiceAdapter first), (f) verifier, then the Phase 0 gate.
+
+Golden frames: `pnpm --filter @eve/components golden` (regenerate with `golden:update`).

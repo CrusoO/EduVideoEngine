@@ -1,0 +1,112 @@
+/* Component styles. Colours are variables with safe defaults so a theme can override them. Fonts are bundled
+   (Noto Sans, Noto Sans Devanagari, KaTeX's own maths fonts): nothing is fetched at run time. */
+.eve-stage {
+  --eve-bg: #ffffff;
+  --eve-ink: #14172b;
+  --eve-muted: #464e6b;
+  --eve-accent: #1d4fd8;
+  --eve-hl: 0;
+  --eve-hl-color: #b45309;
+  position: relative;
+  box-sizing: border-box;
+  background: var(--eve-bg);
+  color: var(--eve-ink);
+  font-family: "Noto Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* Only OUR text takes the Devanagari stack: KaTeX keeps its own maths fonts (symbols only ever reach it). */
+.eve-text:lang(hi),
+.eve-text:lang(ne),
+.eve-highlight-label:lang(hi),
+.eve-highlight-label:lang(ne) {
+  font-family: "Noto Sans Devanagari", "Noto Sans", system-ui, sans-serif;
+  line-height: 1.7;
+  font-synthesis: none;
+}
+.eve-obj {
+  box-sizing: border-box;
+}
+.eve-text-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+}
+.eve-text-title:lang(hi),
+.eve-text-title:lang(ne) {
+  line-height: 1.5;
+}
+.eve-text-label {
+  font-size: 1.05rem;
+  color: var(--eve-muted);
+}
+.eve-text-body {
+  font-size: 1.1rem;
+}
+.eve-equation {
+  font-size: 1.15rem;
+  overflow-x: auto;
+}
+.eve-equation.eve-size-l {
+  font-size: 1.6rem;
+}
+.eve-graph {
+  width: 100%;
+  max-width: 480px;
+}
+.eve-graph-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.eve-grid {
+  stroke: #d6d9e8;
+  stroke-width: 1;
+}
+.eve-axis {
+  stroke: var(--eve-ink);
+  stroke-width: 1.5;
+}
+.eve-tick {
+  fill: var(--eve-muted);
+  font-size: 11px;
+  font-family: "Noto Sans", sans-serif;
+}
+.eve-curve {
+  stroke: var(--eve-accent);
+  stroke-width: 2.5;
+}
+.eve-marker {
+  fill: var(--eve-hl-color);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.eve-steps-list {
+  margin: 0;
+  padding-left: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.eve-highlight {
+  border: 3px solid var(--eve-hl-color);
+  border-radius: 12px;
+  box-shadow: 0 0 0 calc(var(--eve-hl) * 6px) rgba(180, 83, 9, 0.18);
+}
+.eve-highlight-label {
+  position: absolute;
+  left: 12px;
+  top: -16px;
+  background: var(--eve-hl-color);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}

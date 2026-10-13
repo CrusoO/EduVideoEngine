@@ -4,6 +4,24 @@ import { z } from "zod";
  * Expression trees. Equations exist ONLY as trees: the on-screen KaTeX form, the spoken form and the verifier input
  * are all derived from one tree, so screen, voice and checker cannot disagree. Numbers are exact rationals.
  */
+/**
+ * The CLOSED set of node types. Each maps one-to-one onto something the SymPy verifier can check (SYMPY_NODE). A node
+ * type the verifier cannot check must never be added here: "every number is verified" would silently stop being true.
+ */
+export const EXPR_OPS = ["num", "sym", "neg", "add", "sub", "mul", "div", "pow", "eq"] as const;
+export type ExprOp = (typeof EXPR_OPS)[number];
+export const SYMPY_NODE: Record<ExprOp, string> = {
+  num: "Rational(n, d)",
+  sym: "Symbol(name)",
+  neg: "Mul(-1, a)",
+  add: "Add(a, b)",
+  sub: "Add(a, Mul(-1, b))",
+  mul: "Mul(a, b)",
+  div: "Mul(a, Pow(b, -1))",
+  pow: "Pow(a, b)",
+  eq: "Eq(a, b)",
+};
+
 export type Expr =
   | { op: "num"; n: number; d?: number } // n/d, d defaults to 1, d > 0
   | { op: "sym"; name: string }

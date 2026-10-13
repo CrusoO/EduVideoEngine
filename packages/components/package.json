@@ -1,0 +1,25 @@
+{
+  "name": "@eve/components",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "harness": "vite harness --port 5199 --strictPort",
+    "golden": "playwright test -c playwright.config.ts",
+    "golden:update": "playwright test -c playwright.config.ts --update-snapshots"
+  },
+  "dependencies": {
+    "@eve/schema": "workspace:*",
+    "katex": "0.16.11",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@fontsource/noto-sans": "5.1.0",
+    "@fontsource/noto-sans-devanagari": "5.1.0",
+    "@playwright/test": "1.49.1",
+    "@types/katex": "0.16.7",
+    "vite": "5.4.11",
+    "jsdom": "25.0.1"
+  }
+}

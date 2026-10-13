@@ -1,13 +1,18 @@
 import { LessonBundle } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { computeHashes } from "./hash";
+import { LOCALES } from "./locales";
 
 export type Issue = { path: string; message: string };
 export type Validation = { ok: true; bundle: Bundle; issues: [] } | { ok: false; bundle?: undefined; issues: Issue[] };
 
 const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
-/** Maths must not be written as literal text: an equals sign, a caret, a root sign, or digit-operator-digit. */
-const LITERAL_MATH = /[=^√∑∫]|\d\s*[+\-×÷*/]\s*\d/;
+/**
+ * Maths must not be written as literal NOTATION in narration: an equals sign, a caret, a slash fraction, superscripts,
+ * root and sum signs, LaTeX fragments, or digit-operator-digit. Plain numbers are fine ("the roots 2 and 3"): the
+ * verbaliser speaks them as words at synthesis time.
+ */
+const LITERAL_MATH = /[=^√∑∫²³⁴⁵⁶⁷⁸⁹⁰¹½¼¾]|\\[A-Za-z]+|\$|\d\s*[+\-−×÷*/]\s*\d/;
 export const BEAT_COUNT = { min: 4, max: 7 } as const;
 /** Components whose appearance must come from an expression tree. */
 const NEEDS_EXPR = new Set(["equation", "functionGraph"]);
@@ -27,6 +32,7 @@ export function validateBundle(input: unknown): Validation {
   const issues: Issue[] = [];
   const bad = (path: string, message: string) => issues.push({ path, message });
 
+  if (!(b.locale in LOCALES)) bad("locale", `locale ${b.locale} is not in the language registry`);
   const beats = new Map(b.plan.beats.map((x) => [x.id, x]));
   if (beats.size !== b.plan.beats.length) bad("plan.beats", "beat ids must be unique");
   if (b.plan.beats.length < BEAT_COUNT.min || b.plan.beats.length > BEAT_COUNT.max) {
