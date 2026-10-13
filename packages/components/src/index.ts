@@ -3,6 +3,7 @@ export * from "./state";
 export * from "./latex";
 export * from "./sample";
 export * from "./registry";
+export * from "./math-cache";
 export { text, TextProps, WORD_BUDGET, applyState } from "./text";
 export { equation, EquationProps } from "./equation";
 export { functionGraph, GraphProps } from "./functionGraph";

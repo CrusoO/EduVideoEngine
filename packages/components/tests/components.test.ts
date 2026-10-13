@@ -14,10 +14,14 @@ import {
   type ObjectEvent,
   type RenderContext,
 } from "../src";
+import { buildMathCache, katexMath } from "../src/build";
+import { cachedMath } from "../src";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 
 const expressions = quadraticRoots.expressions;
 const ev = (action: ObjectEvent["action"], atMs: number, holdUntilMs = atMs + 1000): ObjectEvent => ({ action, atMs, holdUntilMs });
-const ctx = (over: Partial<RenderContext> = {}): RenderContext => ({ objectId: "o", locale: "en-IN", expressions, events: [], ...over });
+const ctx = (over: Partial<RenderContext> = {}): RenderContext => ({ objectId: "o", locale: "en-IN", expressions, events: [], math: katexMath, ...over });
 
 describe("objectStateAt: appearance is a pure function of (events, t)", () => {
   it("an object with no reveal event is visible from the start", () => {
@@ -105,7 +109,7 @@ describe("every implemented component honours the contract", () => {
     for (const scene of quadraticRoots.scenes) {
       for (const o of scene.objects) {
         const mod = componentFor(o.component);
-        const problems = mod.verify(o.props as never, { expressions, exprRef: o.exprRef, objectIds: scene.objects.map((x) => x.id) });
+        const problems = mod.verify(o.props as never, { expressions, exprRef: o.exprRef, objectIds: scene.objects.map((x) => x.id), math: katexMath });
         expect(problems, `${scene.id}/${o.id}`).toEqual([]);
       }
     }
@@ -162,5 +166,47 @@ describe("the graph draws exactly what is true", () => {
     const pts = samplePoints({ op: "div", a: { op: "num", n: 1 }, b: { op: "sym", name: "x" } }, { xMin: -1, xMax: 1, yMin: -5, yMax: 5 }, 4);
     expect(pts.find((p) => p.x === 0)!.y).toBeNull();
     expect(pts.find((p) => p.x === 1)!.y).toBe(1);
+  });
+});
+
+describe("pre-rendered maths: the player ships no KaTeX script", () => {
+  const cache = buildMathCache(quadraticRoots);
+
+  it("the cache covers every equation and step of the fixture lesson", () => {
+    expect(Object.keys(cache).length).toBeGreaterThanOrEqual(10);
+    expect(Object.values(cache).every((h) => h.includes("katex"))).toBe(true);
+  });
+
+  it("an object drawn from the cache has exactly the same DOM as one typeset live", () => {
+    for (const scene of quadraticRoots.scenes) {
+      for (const o of scene.objects) {
+        if (o.component !== "equation" && o.component !== "stepList") continue;
+        const mod = componentFor(o.component);
+        const base = { objectId: o.id, locale: "en-IN", expressions, exprRef: o.exprRef, events: [] };
+        const live = document.createElement("div");
+        const cached = document.createElement("div");
+        mod.render(live, o.props as never, 3000, { ...base, math: katexMath });
+        mod.render(cached, o.props as never, 3000, { ...base, math: cachedMath(cache) });
+        expect(cached.outerHTML, `${scene.id}/${o.id}`).toBe(live.outerHTML);
+      }
+    }
+  });
+
+  it("a formula missing from the cache is a loud build error, never a blank equation", () => {
+    expect(() => cachedMath({})("x+1", true)).toThrow(/no pre-rendered markup/);
+  });
+
+  it("the cache is derived data: it is not part of the bundle, so building it changes no hash", () => {
+    const before = JSON.stringify(quadraticRoots.hashes);
+    buildMathCache(quadraticRoots);
+    expect(JSON.stringify(quadraticRoots.hashes)).toBe(before);
+  });
+
+  it("nothing the player imports pulls in KaTeX: only build.ts does", () => {
+    const src = join(__dirname, "..", "src");
+    const importers = readdirSync(src)
+      .filter((f) => f.endsWith(".ts"))
+      .filter((f) => /from "katex"/.test(readFileSync(join(src, f), "utf8")));
+    expect(importers).toEqual(["build.ts"]);
   });
 });

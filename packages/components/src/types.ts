@@ -21,6 +21,9 @@ export type ObjectState = {
   dimmed: boolean;
 };
 
+/** Typesets LaTeX to HTML (KaTeX markup). The player gets a pre-rendered cache (math-cache.ts), so it ships no KaTeX code. */
+export type MathRenderer = (latex: string, display: boolean) => string;
+
 export type Rect = { x: number; y: number; width: number; height: number };
 
 export type RenderContext = {
@@ -33,6 +36,8 @@ export type RenderContext = {
   exprRef?: string;
   /** This object's resolved events. */
   events: ObjectEvent[];
+  /** Maths typesetter: a cache lookup in the player, live KaTeX at build time and in tests. */
+  math: MathRenderer;
   /** Where another object of the scene sits, relative to the stage (null if unknown). For overlays such as highlight. */
   rectOf?: (objectId: string) => Rect | null;
 };
@@ -42,6 +47,8 @@ export type VerifyContext = {
   exprRef?: string;
   /** Ids of every object in the scene. */
   objectIds: string[];
+  /** When given, verify also checks that every formula typesets. Build time only. */
+  math?: MathRenderer;
 };
 
 /**

@@ -1,4 +1,3 @@
-import katex from "katex";
 import { z } from "zod";
 import { toLatex, toPlain } from "./latex";
 import { objectStateAt } from "./state";
@@ -25,7 +24,7 @@ export const stepList: ComponentModule<StepListProps> = {
         if (!expr) throw new Error(`stepList ${ctx.objectId}: unknown step expression ${id}`);
         const li = document.createElement("li");
         const math = document.createElement("span");
-        katex.render(toLatex(expr), math, { displayMode: false, throwOnError: true, strict: "error", trust: false, output: "htmlAndMathml" });
+        math.innerHTML = ctx.math(toLatex(expr), false);
         li.append(math);
         ol.append(li);
       }

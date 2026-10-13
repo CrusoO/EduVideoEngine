@@ -94,6 +94,7 @@ test("Devanagari conjuncts: shaped by the browser in Noto Sans Devanagari, Latin
 test("all fonts used are the bundled ones", async ({ page }) => {
   await open(page, "scene4-graph", 360);
   const loaded = await page.evaluate(() => Array.from(document.fonts).filter((f) => f.status === "loaded").map((f) => f.family.replace(/"/g, "")));
-  expect(loaded).toContain("Noto Sans");
+  expect(loaded).toContain("Inter");
+  expect(loaded).not.toContain("Noto Sans");
   expect(loaded.some((f) => f.startsWith("KaTeX"))).toBe(true);
 });

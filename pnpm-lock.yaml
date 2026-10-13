@@ -194,12 +194,6 @@ importers:
         specifier: ^3.24.1
         version: 3.25.76
     devDependencies:
-      '@fontsource/noto-sans':
-        specifier: 5.1.0
-        version: 5.1.0
-      '@fontsource/noto-sans-devanagari':
-        specifier: 5.1.0
-        version: 5.1.0
       '@playwright/test':
         specifier: 1.49.1
         version: 1.49.1
@@ -575,12 +569,6 @@ packages:
     engines: {node: '>=12'}
     cpu: [x64]
     os: [win32]
-
-  '@fontsource/noto-sans-devanagari@5.1.0':
-    resolution: {integrity: sha512-4CNw+DzB6ZqnB8tpYrH6sJxdU9petd2eTAVROtGLM/1oyB1HbCr4P0dLwnSpzo+iX1GPa8VXiTFj6uGJDWdpJw==}
-
-  '@fontsource/noto-sans@5.1.0':
-    resolution: {integrity: sha512-P6X+ynPOteCsbUHI7rU4UIpRJcuraJ3OllKqPIjKgxPZS0yPtxFyquADb4SmcgZosRrgqDy34/dcSIhio3Qx4Q==}
 
   '@inquirer/checkbox@3.0.1':
     resolution: {integrity: sha512-0hm2nrToWUdD6/UHnel/UKGdk1//ke5zGUpHIvk5ZWmaKezlGxZkOJXNSWsdxO/rEqTkbB3lNC2J6nBElV2aAQ==}
@@ -2037,10 +2025,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.21.5':
     optional: true
-
-  '@fontsource/noto-sans-devanagari@5.1.0': {}
-
-  '@fontsource/noto-sans@5.1.0': {}
 
   '@inquirer/checkbox@3.0.1':
     dependencies:

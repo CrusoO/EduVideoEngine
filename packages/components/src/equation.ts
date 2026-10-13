@@ -1,4 +1,3 @@
-import katex from "katex";
 import { z } from "zod";
 import { symbols } from "@eve/schema";
 import { toLatex, toPlain } from "./latex";
@@ -20,21 +19,23 @@ export const equation: ComponentModule<EquationProps> = {
     const latex = toLatex(expr);
     // Same input, same DOM: only re-typeset when the formula changes, never on a time change.
     if (el.dataset.latex !== latex) {
-      katex.render(latex, el, { displayMode: p.display ?? true, throwOnError: true, strict: "error", trust: false, output: "htmlAndMathml" });
+      el.innerHTML = ctx.math(latex, p.display ?? true);
       el.dataset.latex = latex;
     }
     applyState(el, objectStateAt(ctx.events, t));
   },
   cueTargets: () => ["whole"],
   altText: (_props, ctx) => (ctx.exprRef && ctx.expressions[ctx.exprRef] ? `Equation: ${toPlain(ctx.expressions[ctx.exprRef]!)}` : "Equation"),
-  verify(_props, ctx) {
+  verify(props, ctx) {
     const expr = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
     if (!expr) return [`unknown exprRef ${ctx.exprRef}`];
     const problems: string[] = [];
-    try {
-      katex.renderToString(toLatex(expr), { throwOnError: true, strict: "error" });
-    } catch (e) {
-      problems.push(`KaTeX cannot render ${toLatex(expr)}: ${(e as Error).message}`);
+    if (ctx.math) {
+      try {
+        ctx.math(toLatex(expr), props.display ?? true);
+      } catch (e) {
+        problems.push(`KaTeX cannot render ${toLatex(expr)}: ${(e as Error).message}`);
+      }
     }
     for (const name of symbols(expr)) if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(name)) problems.push(`symbol ${name} is not ASCII`);
     return problems;

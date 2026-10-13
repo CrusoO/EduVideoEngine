@@ -1,11 +1,7 @@
-import "@fontsource/noto-sans/latin-400.css";
-import "@fontsource/noto-sans/latin-700.css";
-import "@fontsource/noto-sans-devanagari/devanagari-400.css";
-import "@fontsource/noto-sans-devanagari/devanagari-700.css";
-import "@fontsource/noto-sans-devanagari/latin-400.css";
-import "@fontsource/noto-sans-devanagari/latin-700.css";
+import "../src/fonts.css";
 import "katex/dist/katex.min.css";
 import "../src/styles.css";
+import { katexMath } from "../src/build";
 import { componentFor, type ObjectEvent, type Rect, type RenderContext } from "../src";
 import { CASES, type Case } from "./cases";
 
@@ -45,6 +41,7 @@ function draw(t: number) {
     exprRef,
     events: (c.events[id] ?? []) as ObjectEvent[],
     rectOf,
+    math: katexMath,
   });
   // Two passes: flow objects first, so highlights can measure the objects they ring.
   for (const pass of ["flow", "overlay"] as const) {
@@ -60,11 +57,12 @@ w.__render = draw;
 draw(Number(params.get("t") ?? c.t));
 // Fonts load on first use: ask for every face the stage needs, then wait, so a capture never sees a fallback font.
 Promise.all([
-  document.fonts.load('400 18px "Noto Sans"'),
-  document.fonts.load('700 18px "Noto Sans"'),
+  document.fonts.load('400 18px Inter'),
+  document.fonts.load('600 18px Inter'),
   document.fonts.load('400 18px "Noto Sans Devanagari"', "द्विघात"),
-  document.fonts.load('700 18px "Noto Sans Devanagari"', "द्विघात"),
+  document.fonts.load('500 18px "Noto Sans Devanagari"', "द्विघात"),
   document.fonts.load('400 18px "Noto Sans Devanagari"', "Class 12"),
+  document.fonts.load('500 18px "Noto Sans Devanagari"', "Class 12"),
   document.fonts.load('400 18px KaTeX_Main'),
   document.fonts.load('italic 400 18px KaTeX_Math'),
   document.fonts.load('400 18px KaTeX_Size2'),
