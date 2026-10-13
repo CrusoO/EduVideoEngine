@@ -5,13 +5,13 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
+    "@eve/components": "workspace:*",
     "@eve/content": "workspace:*",
     "@eve/schema": "workspace:*"
   },
   "devDependencies": {
     "@eve/layout": "workspace:*",
     "@eve/resolver": "workspace:*",
-    "@eve/verify": "workspace:*",
-    "@eve/components": "workspace:*"
+    "@eve/verify": "workspace:*"
   }
 }

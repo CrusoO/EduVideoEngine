@@ -173,6 +173,7 @@ describe("writer slots", () => {
     expect(() => instantiate("colour-bound-terms", r, { ...args, text: { altText: "alt" } })).toThrow(/title is empty/);
     expect(() => instantiate("colour-bound-terms", r, { ...args, text: { title: "x".repeat(47), altText: "alt" } })).toThrow(/limit is 46/);
     expect(() => instantiate("colour-bound-terms", r, { ...args, text: { title: "ok", altText: "  " } })).toThrow(/altText is empty/);
+    expect(() => instantiate("colour-bound-terms", r, { ...args, text: { title: "a b c d e f g h i", altText: "alt" } })).toThrow(/9 words, the limit is 8/);
     expect(() => instantiate("predict-then-reveal", r, { ...args, sentenceIds: ["only"], text: { title: "t", prompt: "p", altText: "a" } })).toThrow(/at least 2 sentence/);
     expect(() => instantiate("predict-then-reveal", r, { ...args, text: { title: "t", altText: "a" } })).toThrow(/prompt is empty/);
   });

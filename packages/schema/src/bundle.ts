@@ -113,6 +113,8 @@ export const SceneSpec = z
     cues: z.array(Cue),
     interactions: z.array(PauseAsk).optional(),
     a11y: z.object({ altText: z.string().min(1) }).strict(),
+    /** Set when the pipeline could not compose this scene and used the plain template instead: a person must look at it before the lesson is published. */
+    review: z.object({ status: z.literal("needs-human-review"), reason: z.string().min(1) }).strict().optional(),
   })
   .strict();
 

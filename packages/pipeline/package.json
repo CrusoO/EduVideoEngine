@@ -1,0 +1,14 @@
+{
+  "name": "@eve/pipeline",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "dependencies": {
+    "@eve/components": "workspace:*",
+    "@eve/content": "workspace:*",
+    "@eve/layout": "workspace:*",
+    "@eve/patterns": "workspace:*",
+    "@eve/schema": "workspace:*"
+  }
+}

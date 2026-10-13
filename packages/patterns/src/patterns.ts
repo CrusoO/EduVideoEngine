@@ -1,3 +1,4 @@
+import { WORD_BUDGET } from "@eve/components";
 import { deriveClaims, type ContentRecord, type Retrieval } from "@eve/content";
 import { evaluate, num, termIds, type Claim, type Cue, type Expr, type SceneSpec } from "@eve/schema";
 import { TITLE_MAX_CHARS, heightCostPx } from "./cost";
@@ -5,7 +6,7 @@ import { PatternError, type FillResult, type Instance, type Pattern, type Patter
 
 /** The writer slots every pattern has: what the screen says in the student's own words, and the description for screen readers. */
 const ALT: Slot = { name: "altText", source: "writer", what: "what the scene shows, for a screen reader", maxChars: 400 };
-const TITLE: Slot = { name: "title", source: "writer", what: "a short heading (at most two lines)", maxChars: TITLE_MAX_CHARS };
+const TITLE: Slot = { name: "title", source: "writer", what: "a short heading (at most two lines)", maxChars: TITLE_MAX_CHARS, maxWords: WORD_BUDGET.title };
 const PROMPT: Slot = { name: "prompt", source: "writer", what: "the question asked of the student, which pauses the lesson", maxChars: 140 };
 const PROMPT_OPTIONAL: Slot = { ...PROMPT, optional: true };
 
@@ -330,6 +331,7 @@ export function instantiate(id: string, r: Retrieval, args: PatternArgs): Instan
       throw new PatternError(`pattern ${id}: the writer slot ${slot.name} is empty`);
     }
     if (slot.maxChars !== undefined && v.length > slot.maxChars) throw new PatternError(`pattern ${id}: ${slot.name} is ${v.length} characters, the limit is ${slot.maxChars}`);
+    if (slot.maxWords !== undefined && v.trim().split(/\s+/).length > slot.maxWords) throw new PatternError(`pattern ${id}: ${slot.name} has ${v.trim().split(/\s+/).length} words, the limit is ${slot.maxWords}`);
   }
   return p.build(filled.content as never, args);
 }

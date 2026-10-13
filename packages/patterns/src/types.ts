@@ -6,7 +6,7 @@ import type { Retrieval } from "@eve/content";
  * stored solution, a plot window). A `writer` slot is a short text the planner, scriptwriter or composer supplies (a title, a question, alt text);
  * it is length-checked and never holds maths.
  */
-export type Slot = { name: string; source: "content" | "writer"; what: string; optional?: boolean; maxChars?: number };
+export type Slot = { name: string; source: "content" | "writer"; what: string; optional?: boolean; maxChars?: number; maxWords?: number };
 
 /** What a caller supplies to instantiate a pattern for one beat. */
 export type PatternArgs = {

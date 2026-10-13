@@ -246,6 +246,9 @@ importers:
 
   packages/patterns:
     dependencies:
+      '@eve/components':
+        specifier: workspace:*
+        version: link:../components
       '@eve/content':
         specifier: workspace:*
         version: link:../content
@@ -253,9 +256,6 @@ importers:
         specifier: workspace:*
         version: link:../schema
     devDependencies:
-      '@eve/components':
-        specifier: workspace:*
-        version: link:../components
       '@eve/layout':
         specifier: workspace:*
         version: link:../layout
@@ -265,6 +265,24 @@ importers:
       '@eve/verify':
         specifier: workspace:*
         version: link:../verify
+
+  packages/pipeline:
+    dependencies:
+      '@eve/components':
+        specifier: workspace:*
+        version: link:../components
+      '@eve/content':
+        specifier: workspace:*
+        version: link:../content
+      '@eve/layout':
+        specifier: workspace:*
+        version: link:../layout
+      '@eve/patterns':
+        specifier: workspace:*
+        version: link:../patterns
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
 
   packages/player:
     dependencies:
