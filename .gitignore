@@ -10,3 +10,4 @@ reports/
 test-results/
 tools/piper/
 stryker.measure.json
+stryker.budget.json

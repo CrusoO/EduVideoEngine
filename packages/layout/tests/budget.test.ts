@@ -102,35 +102,78 @@ describe("splitToFit", () => {
   it("a scene that fits is one group, in order", () => {
     const r = splitToFit({ objects: [text("a"), eq("b")], layout: [] }, phone, ctx);
     expect(r.ok).toBe(true);
-    expect(r.groups.map((g) => g.map((o) => o.id))).toEqual([["a", "b"]]);
+    expect(r.scenes.map((s) => s.objects.map((o) => o.id))).toEqual([["a", "b"]]);
   });
 
   it("five objects on the phone split into the fewest consecutive scenes that each fit", () => {
     const r = splitToFit({ objects: five, layout: [] }, phone, ctx);
     expect(r.ok).toBe(true);
-    expect(r.groups.map((g) => g.map((o) => o.id))).toEqual([["title", "rule", "g"], ["s", "body"]]);
-    for (const g of r.groups) expect(sceneCost({ objects: g, layout: [] }, phone, ctx).fits).toBe(true);
+    expect(r.scenes.map((s) => s.objects.map((o) => o.id))).toEqual([["title", "rule", "g"], ["s", "body"]]);
+    for (const s of r.scenes) expect(sceneCost(s, phone, ctx).fits).toBe(true);
   });
 
   it("an overlay goes with its target, and a rule is kept only when all its objects are in the group", () => {
     const rules: LayoutRule[] = [{ rule: "column", items: ["title", "rule"] }, { rule: "row", items: ["g", "s"] }];
     const r = splitToFit({ objects: [...five, ring], layout: rules }, phone, ctx);
-    const withGraph = r.groups.find((g) => g.some((o) => o.id === "g"))!;
-    expect(withGraph.some((o) => o.id === "ring")).toBe(true);
-    const other = r.groups.find((g) => !g.some((o) => o.id === "g"))!;
-    expect(other.some((o) => o.id === "ring")).toBe(false);
+    const withGraph = r.scenes.find((s) => s.objects.some((o) => o.id === "g"))!;
+    expect(withGraph.objects.some((o) => o.id === "ring")).toBe(true);
+    const other = r.scenes.find((s) => !s.objects.some((o) => o.id === "g"))!;
+    expect(other.objects.some((o) => o.id === "ring")).toBe(false);
   });
 
   it("splitting cannot help an object that is too big alone: the caller falls back to the template scene", () => {
     const huge = text("huge", "word ".repeat(400).trim(), "body");
     const r = splitToFit({ objects: [text("a"), huge], layout: [] }, phone, ctx);
     expect(r.ok).toBe(false);
-    expect(r.groups).toEqual([]);
+    expect(r.scenes).toEqual([]);
     expect(r.reason).toBe("huge (text) needs more height than the whole stage (456 px) on its own");
   });
 
   it("an empty scene is no groups, and a desktop frame needs no split", () => {
-    expect(splitToFit({ objects: [], layout: [] }, phone, ctx)).toEqual({ groups: [], ok: true });
-    expect(splitToFit({ objects: five, layout: [] }, { width: 1280, height: 720 }, ctx).groups).toHaveLength(1);
+    expect(splitToFit({ objects: [], layout: [] }, phone, ctx)).toEqual({ scenes: [], ok: true });
+    expect(splitToFit({ objects: five, layout: [] }, { width: 1280, height: 720 }, ctx).scenes).toHaveLength(1);
+  });
+});
+
+describe("splitToFit keeps the rules that still make sense", () => {
+  const a = text("a", "A");
+  const b = text("b", "B");
+  const c = eq("c");
+  const d = eq("d");
+  const tall = (id: string): LayoutObject => ({ id, component: "functionGraph", props: {}, exprRef: "f1" });
+  it("a rule is kept when all the objects it names are in the scene, and dropped when one is not", () => {
+    // g1 and g2 are graphs (208 px each): they cannot share a phone scene, so the split falls between them
+    const rules: LayoutRule[] = [
+      { rule: "column", items: ["a", "b"], gap: "tight" },
+      { rule: "below", item: "b", of: "a" },
+      { rule: "center", item: "g1" },
+      { rule: "row", items: ["c", "d"] },
+      { rule: "below", item: "g2", of: "a" }, // across the split: dropped
+      { rule: "center", item: "g2" },
+    ];
+    const r = splitToFit({ objects: [a, b, tall("g1"), tall("g2"), c, d], layout: rules }, phone, ctx);
+    expect(r.ok).toBe(true);
+    const first = r.scenes[0]!;
+    expect(first.objects.map((o) => o.id)).toEqual(["a", "b", "g1"]);
+    expect(first.layout).toEqual([{ rule: "column", items: ["a", "b"], gap: "tight" }, { rule: "below", item: "b", of: "a" }, { rule: "center", item: "g1" }]);
+    const rest = r.scenes.slice(1).flatMap((s) => s.layout);
+    expect(r.scenes[1]!.objects.map((o) => o.id)).toEqual(["g2", "c", "d"]);
+    expect(rest).toEqual([{ rule: "row", items: ["c", "d"] }, { rule: "center", item: "g2" }]);
+  });
+  it("a beside rule and a below rule across the split are dropped, inside it they are kept", () => {
+    const e = text("e", "E");
+    const f = text("f", "F");
+    const r = splitToFit({ objects: [e, f, tall("g1"), tall("g2")], layout: [{ rule: "beside", item: "f", of: "e", side: "left" }, { rule: "below", item: "g2", of: "e" }] }, phone, ctx);
+    expect(r.scenes[0]!.layout).toEqual([{ rule: "beside", item: "f", of: "e", side: "left" }]);
+    expect(r.scenes.slice(1).flatMap((s) => s.layout)).toEqual([]);
+  });
+  it("an overlay named in a rule does not make the rule drop", () => {
+    const ring: LayoutObject = { id: "ring", component: "highlight", props: { target: "g1" } };
+    const r = splitToFit({ objects: [tall("g1"), ring], layout: [{ rule: "column", items: ["g1", "ring"] }] }, phone, ctx);
+    expect(r.scenes[0]!.layout).toEqual([{ rule: "column", items: ["g1", "ring"] }]);
+  });
+  it("every returned scene has no empty scene before it and the objects keep their order", () => {
+    const r = splitToFit({ objects: [tall("g1"), tall("g2"), tall("g3")], layout: [] }, phone, ctx);
+    expect(r.scenes.map((s) => s.objects.map((o) => o.id))).toEqual([["g1"], ["g2"], ["g3"]]);
   });
 });

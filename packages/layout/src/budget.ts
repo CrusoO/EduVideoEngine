@@ -57,8 +57,8 @@ export function costTable(width: number, ctx: MeasureCtx & { sample: { fraction:
 }
 
 export type SplitResult = {
-  /** Consecutive groups of objects, each of which fits the stage on its own. */
-  groups: ReadonlyArray<ReadonlyArray<LayoutObject>>;
+  /** Consecutive scenes (objects, and the layout rules that still make sense inside each), each of which fits the stage on its own. */
+  scenes: ReadonlyArray<SceneInput>;
   ok: boolean;
   /** When not ok: why, so the composer can fall back to the template scene. */
   reason?: string;
@@ -67,7 +67,7 @@ export type SplitResult = {
 /**
  * Splits a scene's objects, in order, into the fewest consecutive groups that each fit the stage. Rules that name an object outside a
  * group are dropped for that group (a rule is only kept when all its objects are in the group). Overlays follow their target's group.
- * `ok` is false when a single object cannot fit by itself: nothing can be done by splitting, so the caller uses the template scene.
+ * Each returned scene carries only the rules whose objects are all in it. `ok` is false when a single object cannot fit by itself: nothing can be done by splitting, so the caller uses the template scene.
  * Splitting a scene means splitting its beat (one scene per beat, ADR 0010), which is the composer's job and needs the beat limit relaxed (ADR 0018).
  */
 export function splitToFit(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx): SplitResult {
@@ -85,7 +85,7 @@ export function splitToFit(scene: SceneInput, viewport: Viewport, ctx: MeasureCt
   const groups: LayoutObject[][] = [];
   let current: LayoutObject[] = [];
   for (const o of flow) {
-    if (!fits([o])) return { groups: [], ok: false, reason: `${o.id} (${o.component}) needs more height than the whole stage (${viewport.height} px) on its own` };
+    if (!fits([o])) return { scenes: [], ok: false, reason: `${o.id} (${o.component}) needs more height than the whole stage (${viewport.height} px) on its own` };
     if (current.length > 0 && !fits([...current, o])) {
       groups.push(current);
       current = [];
@@ -93,5 +93,5 @@ export function splitToFit(scene: SceneInput, viewport: Viewport, ctx: MeasureCt
     current.push(o);
   }
   if (current.length > 0) groups.push(current);
-  return { groups: groups.map((g) => sceneFor(g).objects), ok: true };
+  return { scenes: groups.map(sceneFor), ok: true };
 }
