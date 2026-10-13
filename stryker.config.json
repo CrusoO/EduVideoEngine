@@ -1,12 +1,35 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "testRunner": "vitest",
-  "plugins": ["@stryker-mutator/vitest-runner"],
-  "mutate": ["packages/resolver/src/resolve.ts", "packages/resolver/src/events.ts", "packages/player/src/clock.ts", "packages/player/src/player.ts", "packages/layout/src/solve.ts", "packages/layout/src/check.ts", "packages/layout/src/measure.ts", "packages/layout/src/budget.ts"],
-  "vitest": { "configFile": "vitest.config.ts" },
-  "reporters": ["clear-text", "json"], "jsonReporter": { "fileName": "reports/mutation.json" },
-  "thresholds": { "high": 95, "low": 90, "break": 90 },
-  "coverageAnalysis": "off",
-  "concurrency": 4,
+  "plugins": [
+    "@stryker-mutator/vitest-runner"
+  ],
+  "mutate": [
+    "packages/resolver/src/resolve.ts",
+    "packages/resolver/src/events.ts",
+    "packages/player/src/clock.ts",
+    "packages/player/src/player.ts",
+    "packages/layout/src/solve.ts",
+    "packages/layout/src/check.ts",
+    "packages/layout/src/measure.ts",
+    "packages/layout/src/budget.ts"
+  ],
+  "vitest": {
+    "configFile": "vitest.stryker.config.ts"
+  },
+  "reporters": [
+    "clear-text",
+    "json"
+  ],
+  "jsonReporter": {
+    "fileName": "reports/mutation.json"
+  },
+  "thresholds": {
+    "high": 95,
+    "low": 90,
+    "break": 90
+  },
+  "coverageAnalysis": "perTest",
+  "concurrency": 6,
   "timeoutMS": 30000
 }
