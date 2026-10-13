@@ -210,3 +210,26 @@ describe("pre-rendered maths: the player ships no KaTeX script", () => {
     expect(importers).toEqual(["build.ts"]);
   });
 });
+
+describe("accessible labels carry the spoken form", () => {
+  it("an equation is labelled with the verbalised tree, not ASCII maths", () => {
+    const el = document.createElement("div");
+    componentFor("equation").render(el, {} as never, 0, ctx({ exprRef: "eq1" }));
+    expect(el.getAttribute("role")).toBe("img");
+    expect(el.getAttribute("aria-label")).toBe("x squared minus five x plus six equals zero");
+    expect(componentFor("equation").altText({} as never, { expressions, exprRef: "eq1", locale: "en-IN" })).toBe("Equation: x squared minus five x plus six equals zero");
+  });
+  it("each step of a step list is labelled too", () => {
+    const el = document.createElement("div");
+    componentFor("stepList").render(el, { steps: ["factored", "total"] } as never, 0, ctx());
+    expect(Array.from(el.querySelectorAll("[aria-label]")).map((n) => n.getAttribute("aria-label"))).toEqual([
+      "open bracket x minus two close bracket open bracket x minus three close bracket equals zero",
+      "two plus three equals five",
+    ]);
+  });
+  it("a language with no reviewed vocabulary falls back to the ASCII reading, never to guessed words", () => {
+    const el = document.createElement("div");
+    componentFor("equation").render(el, {} as never, 0, ctx({ exprRef: "total", locale: "hi-IN" }));
+    expect(el.getAttribute("aria-label")).toBe("2 + 3 = 5");
+  });
+});

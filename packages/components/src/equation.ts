@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { symbols } from "@eve/schema";
-import { toLatex, toPlain } from "./latex";
+import { toLatex } from "./latex";
+import { spokenLabel } from "./spoken";
 import { objectStateAt } from "./state";
 import { applyState } from "./text";
 import type { ComponentModule } from "./types";
@@ -22,10 +23,13 @@ export const equation: ComponentModule<EquationProps> = {
       el.innerHTML = ctx.math(latex, p.display ?? true);
       el.dataset.latex = latex;
     }
+    // The label a screen reader speaks is the verbalised tree (same source as the voice); KaTeX's MathML stays inside for tools that read it.
+    el.setAttribute("role", "img");
+    el.setAttribute("aria-label", spokenLabel(expr, ctx.locale));
     applyState(el, objectStateAt(ctx.events, t));
   },
   cueTargets: () => ["whole"],
-  altText: (_props, ctx) => (ctx.exprRef && ctx.expressions[ctx.exprRef] ? `Equation: ${toPlain(ctx.expressions[ctx.exprRef]!)}` : "Equation"),
+  altText: (_props, ctx) => (ctx.exprRef && ctx.expressions[ctx.exprRef] ? `Equation: ${spokenLabel(ctx.expressions[ctx.exprRef]!, ctx.locale)}` : "Equation"),
   verify(props, ctx) {
     const expr = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
     if (!expr) return [`unknown exprRef ${ctx.exprRef}`];

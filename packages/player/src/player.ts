@@ -1,4 +1,4 @@
-import { componentFor, toPlain, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
+import { componentFor, spokenLabel, toLatex, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import type { MasterClock } from "./clock";
@@ -41,6 +41,7 @@ export class Player {
   private readonly stage: HTMLElement;
   private readonly sceneById: Map<string, SceneSpec>;
   private readonly sentenceText: Map<string, string>;
+  private captionId: string | null = null;
   private readonly raf: (cb: () => void) => number;
   private readonly caf: (id: number) => void;
 
@@ -48,9 +49,7 @@ export class Player {
     this.raf = o.raf ?? ((cb) => requestAnimationFrame(cb));
     this.caf = o.caf ?? ((id) => cancelAnimationFrame(id));
     this.sceneById = new Map(o.bundle.scenes.map((s) => [s.id, s]));
-    this.sentenceText = new Map(
-      o.bundle.script.map((s) => [s.id, s.text.replace(/\{expr:([^}]+)\}/g, (_m, id: string) => (o.bundle.expressions[id] ? toPlain(o.bundle.expressions[id]!) : id))]),
-    );
+    this.sentenceText = new Map(o.bundle.script.map((s) => [s.id, s.text]));
     o.root.replaceChildren();
     this.stage = document.createElement("div");
     this.stage.className = "eve-stage eve-player-stage";
@@ -165,8 +164,35 @@ export class Player {
       }
     }
     const said = tl.audio.find((a) => a.startMs <= t && t < a.endMs);
-    this.caption.textContent = said ? (this.sentenceText.get(said.sentenceId) ?? "") : "";
+    this.showCaption(said ? said.sentenceId : null);
     this.o.onFrame?.(t);
+  }
+
+  /**
+   * The sentence being spoken. Each {expr:id} placeholder is typeset through the same maths renderer as the equation on
+   * screen (the pre-rendered cache in the player), so the caption never shows ASCII maths, and carries the spoken form
+   * as its accessible label.
+   */
+  private showCaption(sentenceId: string | null): void {
+    if (this.captionId === sentenceId) return;
+    this.captionId = sentenceId;
+    this.caption.replaceChildren();
+    const text = sentenceId ? this.sentenceText.get(sentenceId) : undefined;
+    if (!text) return;
+    let last = 0;
+    for (const m of text.matchAll(/\{expr:([^}]+)\}/g)) {
+      this.caption.append(text.slice(last, m.index));
+      last = m.index! + m[0].length;
+      const expr = this.o.bundle.expressions[m[1]!];
+      if (!expr) throw new Error(`caption: unknown expression ${m[1]}`);
+      const span = document.createElement("span");
+      span.className = "eve-caption-math";
+      span.innerHTML = this.o.math(toLatex(expr), false);
+      span.setAttribute("role", "img");
+      span.setAttribute("aria-label", spokenLabel(expr, this.o.bundle.locale));
+      this.caption.append(span);
+    }
+    this.caption.append(text.slice(last));
   }
 
   private mount(sceneId: string): void {

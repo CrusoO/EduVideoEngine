@@ -6,3 +6,4 @@ export * from "./validate";
 export { quadraticRoots, buildQuadraticRoots, expressions as quadraticExpressions } from "./fixtures/quadratic-roots";
 export * from "./json-schema";
 export * from "./locales";
+export * from "./verbalise";

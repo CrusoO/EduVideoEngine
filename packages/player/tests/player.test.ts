@@ -211,3 +211,18 @@ describe("Player: the loop, pause points and the end", () => {
     expect(f.size()).toBe(0);
   });
 });
+
+describe("Player: captions are typeset like the screen", () => {
+  it("each formula in a sentence is KaTeX markup from the same cache, labelled with its spoken form", () => {
+    const { player, root } = make({ math: cachedMath(buildMathCache(bundle)) });
+    const a = timeline.audio.find((x) => x.sentenceId === "s1.1")!;
+    player.seek(a.startMs + 10);
+    const cap = root.querySelector(".eve-caption")!;
+    const m = cap.querySelector(".eve-caption-math")!;
+    expect(m.querySelector(".katex")).not.toBeNull();
+    expect(m.getAttribute("aria-label")).toBe("x squared minus five x plus six equals zero");
+    expect(cap.textContent).not.toMatch(/x\^2/); // no ASCII maths
+    expect(cap.firstChild!.textContent).toBe("Here is a quadratic equation: ");
+    expect(cap.lastChild!.textContent).toBe(".");
+  });
+});

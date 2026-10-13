@@ -9,3 +9,4 @@ export { equation, EquationProps } from "./equation";
 export { functionGraph, GraphProps } from "./functionGraph";
 export { stepList, StepListProps } from "./stepList";
 export { highlight, HighlightProps, HIGHLIGHT_COLOR, contrast } from "./highlight";
+export * from "./spoken";

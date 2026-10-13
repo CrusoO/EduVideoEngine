@@ -13,7 +13,7 @@ export const katexMath: MathRenderer = (latex, display) =>
  * build time. The result is a derived cache (keyed by LaTeX, never part of the hashed bundle): rebuild it freely, it
  * changes nothing the bundle hash covers.
  */
-export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "expressions">, math: MathRenderer = katexMath): MathCache {
+export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "script" | "expressions">, math: MathRenderer = katexMath): MathCache {
   const cache: MathCache = {};
   const add = (id: string, display: boolean) => {
     const expr = bundle.expressions[id];
@@ -21,6 +21,8 @@ export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "expression
     const latex = toLatex(expr);
     cache[mathKey(latex, display)] ??= math(latex, display);
   };
+  // Captions typeset the formulas inside narration sentences inline.
+  for (const sentence of bundle.script) for (const id of sentence.exprRefs) add(id, false);
   for (const scene of bundle.scenes) {
     for (const o of scene.objects) {
       if (o.component === "equation" && o.exprRef) add(o.exprRef, (o.props as { display?: boolean }).display ?? true);

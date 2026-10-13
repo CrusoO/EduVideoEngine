@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { toLatex, toPlain } from "./latex";
+import { toLatex } from "./latex";
+import { spokenLabel } from "./spoken";
 import { objectStateAt } from "./state";
 import { applyState } from "./text";
 import type { ComponentModule } from "./types";
@@ -25,6 +26,8 @@ export const stepList: ComponentModule<StepListProps> = {
         const li = document.createElement("li");
         const math = document.createElement("span");
         math.innerHTML = ctx.math(toLatex(expr), false);
+        math.setAttribute("role", "img");
+        math.setAttribute("aria-label", spokenLabel(expr, ctx.locale));
         li.append(math);
         ol.append(li);
       }
@@ -33,7 +36,7 @@ export const stepList: ComponentModule<StepListProps> = {
     applyState(host, objectStateAt(ctx.events, t));
   },
   cueTargets: () => ["whole"],
-  altText: (props, ctx) => props.steps.map((id, i) => `Step ${i + 1}: ${ctx.expressions[id] ? toPlain(ctx.expressions[id]!) : id}`).join(". "),
+  altText: (props, ctx) => props.steps.map((id, i) => `Step ${i + 1}: ${ctx.expressions[id] ? spokenLabel(ctx.expressions[id]!, ctx.locale) : id}`).join(". "),
   verify(props, ctx) {
     const problems: string[] = [];
     for (const id of props.steps) if (!(id in ctx.expressions)) problems.push(`step ${id} is not an authored expression`);
