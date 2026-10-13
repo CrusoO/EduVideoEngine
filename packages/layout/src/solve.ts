@@ -88,8 +88,12 @@ export function solve(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx): L
       const gap = GAP[rule.gap ?? "normal"];
       put({ kind: rule.rule === "row" && !collapsed ? "row" : "col", items: blocks, gap }, ids);
     } else if (rule.rule === "beside") {
+      if (rule.of === rule.item) {
+        problems.push(`beside: ${rule.item} cannot sit beside itself`);
+        continue;
+      }
       const blocks = take([rule.of, rule.item], "beside");
-      if (!blocks || rule.of === rule.item) continue;
+      if (!blocks) continue;
       const pair = rule.side === "left" ? [blocks[1]!, blocks[0]!] : [blocks[0]!, blocks[1]!];
       put({ kind: collapsed ? "col" : "row", items: collapsed ? [blocks[0]!, blocks[1]!] : pair, gap: GAP.normal }, [rule.of, rule.item]);
     } else if (rule.rule === "below") {

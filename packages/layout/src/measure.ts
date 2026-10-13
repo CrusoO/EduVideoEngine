@@ -107,29 +107,26 @@ const wordsOf = (s: string) => s.trim().split(/\s+/).filter(Boolean).length;
 
 // ---- formulas -------------------------------------------------------------------------------------------------------
 
-type Shape = { pow: boolean; fracDepth: number };
-function shape(e: Expr): Shape {
+/** How many fractions are nested in a formula (a number such as 3/4 is a fraction). */
+function fracDepth(e: Expr): number {
   switch (e.op) {
     case "num":
-      return { pow: false, fracDepth: (e.d ?? 1) === 1 ? 0 : 1 };
+      return (e.d ?? 1) === 1 ? 0 : 1;
     case "sym":
-      return { pow: false, fracDepth: 0 };
+      return 0;
     case "neg":
-      return shape(e.a);
+      return fracDepth(e.a);
     default: {
-      const a = shape(e.a);
-      const b = shape(e.b);
-      const pow = a.pow || b.pow || e.op === "pow";
-      const inner = Math.max(a.fracDepth, b.fracDepth);
-      return { pow, fracDepth: e.op === "div" ? inner + 1 : inner };
+      const inner = Math.max(fracDepth(e.a), fracDepth(e.b));
+      return e.op === "div" ? inner + 1 : inner;
     }
   }
 }
 
-/** Display equation height at the 18.4 px (size m) font: 66 plain (brackets and powers included), 84 with a fraction, +18 per nested fraction. Size l scales by 25.6/18.4. */
+/** Display equation height at the 18.4 px (size m) font: 66 plain (brackets and powers included, measured), 84 with a fraction, +18 per nested fraction. Size l scales by 25.6/18.4. */
 function equationHeight(e: Expr, size: "m" | "l"): number {
-  const s = shape(e);
-  const m = 66 + (s.fracDepth > 0 ? 18 + 18 * (s.fracDepth - 1) : 0);
+  const d = fracDepth(e);
+  const m = 66 + (d > 0 ? 18 + 18 * (d - 1) : 0);
   return Math.ceil(size === "l" ? (m * 25.6) / 18.4 : m);
 }
 const katexPx = (size: "m" | "l") => (size === "l" ? 25.6 : 18.4) * 1.21;
@@ -160,7 +157,7 @@ export function measure(o: LayoutObject, width: number, ctx: MeasureCtx): Intrin
       const steps = ((o.props as { steps?: string[] }).steps ?? []).map((id) => ctx.expressions[id]);
       if (steps.some((s) => !s)) throw new Error(`stepList ${o.id}: unknown step expression`);
       const inner = width - 26; // list indent: 1.6rem
-      const heights = (steps as Expr[]).map((s) => (shape(s).fracDepth > 0 ? 40 + 18 * (shape(s).fracDepth - 1) : 28));
+      const heights = (steps as Expr[]).map((s) => (fracDepth(s) > 0 ? 40 + 18 * (fracDepth(s) - 1) : 28));
       return {
         height: heights.reduce((a, b) => a + b, 0) + 8 * Math.max(0, heights.length - 1),
         words: 0,
