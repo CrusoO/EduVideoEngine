@@ -7,3 +7,4 @@ playwright-report
 .stryker-tmp/
 reports/
 .measure*/
+test-results/

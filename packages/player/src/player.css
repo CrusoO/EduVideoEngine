@@ -1,0 +1,15 @@
+.eve-caption {
+  margin: 0;
+  padding: 12px 20px 16px;
+  min-height: 3em;
+  font-family: Inter, "Noto Sans Devanagari", system-ui, sans-serif;
+  font-synthesis: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #464e6b;
+}
+.eve-caption:lang(hi),
+.eve-caption:lang(ne) {
+  font-family: "Noto Sans Devanagari", Inter, system-ui, sans-serif;
+  line-height: 1.7;
+}

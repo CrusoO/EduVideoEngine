@@ -1,0 +1,22 @@
+{
+  "name": "@eve/player",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "harness": "vite harness --port 5198 --strictPort",
+    "sync": "playwright test -c playwright.config.ts"
+  },
+  "dependencies": {
+    "@eve/schema": "workspace:*",
+    "@eve/components": "workspace:*",
+    "@eve/resolver": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.49.1",
+    "vite": "5.4.11",
+    "jsdom": "25.0.1",
+    "katex": "0.16.11"
+  }
+}

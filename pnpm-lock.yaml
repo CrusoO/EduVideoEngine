@@ -207,6 +207,31 @@ importers:
         specifier: 5.4.11
         version: 5.4.11(@types/node@22.20.5)
 
+  packages/player:
+    dependencies:
+      '@eve/components':
+        specifier: workspace:*
+        version: link:../components
+      '@eve/resolver':
+        specifier: workspace:*
+        version: link:../resolver
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
+    devDependencies:
+      '@playwright/test':
+        specifier: 1.49.1
+        version: 1.49.1
+      jsdom:
+        specifier: 25.0.1
+        version: 25.0.1
+      katex:
+        specifier: 0.16.11
+        version: 0.16.11
+      vite:
+        specifier: 5.4.11
+        version: 5.4.11(@types/node@22.20.5)
+
   packages/resolver:
     dependencies:
       '@eve/schema':
