@@ -3,9 +3,10 @@ import { seal } from "../hash";
 import type { LessonBundle } from "../bundle";
 
 /**
- * Hand-written reference lesson: "the sum of the roots of a quadratic" (English, 5 scenes, about three minutes of
- * narration). Every number and equation is an expression tree; the sentences carry {expr:id} placeholders only.
- * This is the Phase 0 fixture: the resolver, player and verifier are all proven against it.
+ * The Phase 0 reference lesson, kept as a TEST FIXTURE ("V1"): "the sum of the roots of a quadratic" in five scenes, with the general rule,
+ * a factorisation and a practice question. It has more kinds of content than the current reference lesson (src/fixtures/sum-of-roots.ts), so the
+ * generic rules of the schema, the resolver and the components are still tested against it. Every number and equation is an expression tree;
+ * the sentences carry {expr:id} placeholders only.
  */
 const x = sym("x");
 const a = sym("a");
@@ -35,7 +36,7 @@ export const expressions = {
 
 const src = ["src.quad.roots.001", "src.quad.vieta.002", "src.quad.graph.003"];
 
-export function buildQuadraticRoots(): LessonBundle {
+export function buildQuadraticRootsV1(): LessonBundle {
   return seal({
     bundleId: "bundle.quad.sum-of-roots.en-IN.v1",
     specVersion: "1.0.0",
@@ -167,4 +168,4 @@ export function buildQuadraticRoots(): LessonBundle {
   });
 }
 
-export const quadraticRoots: LessonBundle = buildQuadraticRoots();
+export const quadraticRootsV1: LessonBundle = buildQuadraticRootsV1();

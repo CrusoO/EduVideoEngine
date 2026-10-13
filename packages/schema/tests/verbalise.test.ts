@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { NoSpeechVocabulary, add, div, eq, mul, neg, num, pow, quadraticRoots, spokenText, sub, sym, verbalise, type Expr } from "../src";
+import { NoSpeechVocabulary, add, div, eq, mul, neg, num, pow, quadraticRootsV1 as quadraticRoots, spokenText, sub, sym, verbalise, type Expr } from "../src";
 
 const x = sym("x");
 const a = sym("a");

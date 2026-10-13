@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { add, eq, mul, num, pow, quadraticRoots, sym, wordsOf, type AudioTrack, type Expr, type LessonBundle } from "@eve/schema";
+import { add, eq, mul, num, pow, quadraticRootsV1 as quadraticRoots, sym, wordsOf, type AudioTrack, type Expr, type LessonBundle } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import {
   COLOR,

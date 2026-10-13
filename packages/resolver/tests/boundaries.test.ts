@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { beforeAll, describe, expect, it } from "vitest";
-import { Timeline, hashOf, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
+import { Timeline, hashOf, quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { DEFAULT_OPTIONS, MIN_ACTION_MS, RESOLVER_VERSION, ResolveError, SCENE_TAIL_MS, eventsFor, resolve, sceneChunk } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;

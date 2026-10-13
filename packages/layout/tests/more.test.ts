@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, wordsOf, type AudioTrack, type LayoutRule, type LessonBundle } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LayoutRule, type LessonBundle } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import { COLOR, GAP, LayoutError, PAD, assureLayout, checkLayout, requiredContrast, solve, type Layout, type LayoutObject } from "../src";
 

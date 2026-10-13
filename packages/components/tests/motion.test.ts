@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { quadraticRoots } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots } from "@eve/schema";
 import { DRAW_MS, POP_FROM, POP_MS, REVEAL_MS, componentFor, objectStateAt, partStateAt, type ObjectEvent, type RenderContext } from "../src";
 import { applyState } from "../src/text";
 import { katexMath } from "../src/build";

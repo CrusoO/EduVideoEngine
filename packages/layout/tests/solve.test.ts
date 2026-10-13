@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, type LayoutRule } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, type LayoutRule } from "@eve/schema";
 import { GAP, LayoutError, PAD, referenceViewports, ROW_COLLAPSE_PX, solve, type LayoutObject, type SceneInput } from "../src";
 
 const expressions = quadraticRoots.expressions;

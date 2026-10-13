@@ -14,7 +14,7 @@ import {
   SYMPY_NODE,
   canonicalJson,
   hashOf,
-  quadraticRoots,
+  quadraticRootsV1 as quadraticRoots,
   seal,
   validateBundle,
   type LessonBundle,

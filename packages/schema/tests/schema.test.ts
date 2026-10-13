@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   COMPONENT_NAMES,
-  buildQuadraticRoots,
+  buildQuadraticRootsV1,
   computeHashes,
   evaluate,
   jsonSchemas,
   quadraticExpressions,
-  quadraticRoots,
+  quadraticRootsV1 as quadraticRoots,
   ratEquals,
   rational,
   seal,
@@ -60,7 +60,7 @@ describe("the hand-written fixture", () => {
   });
 
   it("is deterministic: building it twice gives identical hashes", () => {
-    expect(buildQuadraticRoots().hashes).toEqual(quadraticRoots.hashes);
+    expect(buildQuadraticRootsV1().hashes).toEqual(quadraticRoots.hashes);
   });
 });
 

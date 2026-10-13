@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import { katexMath } from "@eve/components/src/build";
 import { AudioClock, Player, STALL_MS, type ClockContext, type ClockSource, type MasterClock } from "../src";

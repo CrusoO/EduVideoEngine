@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, type LayoutRule } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, type LayoutRule } from "@eve/schema";
 import { DEFAULT_CHROME_PX, DESIGN_SCREEN, MIN_STAGE_PX, WIDE_MIN_WIDTH, centerOffset, costTable, referenceViewports, sceneCost, splitToFit, stageFrame, type LayoutObject } from "../src";
 
 const expressions = quadraticRoots.expressions;

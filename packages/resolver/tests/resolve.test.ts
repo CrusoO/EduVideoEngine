@@ -1,6 +1,6 @@
 import fc from "fast-check";
 import { beforeAll, describe, expect, it } from "vitest";
-import { Timeline, quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
+import { Timeline, quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { objectStateAt } from "@eve/components";
 import { MIN_ACTION_MS, ResolveError, SCENE_TAIL_MS, SENTENCE_GAP_MS, eventsFor, resolve } from "../src";
 

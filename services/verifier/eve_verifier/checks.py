@@ -207,11 +207,87 @@ def check_claims(bundle: Bundle, report: Report) -> None:
             report.checks.append(Check(cid, "claim", False, f"names an expression that does not exist: {e}"))
 
 
+def _value(bundle: Bundle, expr_id: str) -> Any:
+    """The exact number an expression id stands for (None if it is not a number)."""
+    node = bundle["expressions"].get(expr_id)
+    if node is None:
+        return None
+    try:
+        v = to_sympy(node)
+    except UnknownNode:
+        return None
+    return v if not v.free_symbols and v.is_number else None
+
+
+def check_numberlines(bundle: Bundle, report: Report) -> None:
+    """Number lines: the hops continue where the last one ended, stay on the line, and their total is what the bracket says.
+
+    Where the same scene shows a quadratic, the total of the hops must be the sum of its roots (minus the coefficient of x over the leading one):
+    the hops have to add up to the coefficient the lesson points at.
+    """
+    for scene in bundle["scenes"]:
+        quad = None
+        for o in scene["objects"]:
+            if o["component"] == "equation" and o.get("exprRef") and bundle["expressions"][o["exprRef"]].get("op") == "eq":
+                eq = to_sympy(bundle["expressions"][o["exprRef"]])
+                syms = sorted(eq.free_symbols, key=lambda s: s.name)
+                if len(syms) == 1:
+                    try:
+                        p = Poly(eq.lhs - eq.rhs, syms[0])
+                    except Exception:  # noqa: BLE001
+                        continue
+                    if p.degree() == 2:
+                        quad = -p.coeff_monomial(syms[0]) / p.coeff_monomial(syms[0] ** 2)
+        for o in scene["objects"]:
+            if o["component"] != "numberLine":
+                continue
+            cid = f"{scene['id']}/{o['id']}"
+            props = o["props"]
+            hops = []
+            ok = True
+            for i, h in enumerate(props.get("hops", [])):
+                a, b = _value(bundle, h["from"]), _value(bundle, h["to"])
+                if a is None or b is None:
+                    report.checks.append(Check(f"{cid}#hop{i}", "numberline", False, f"hop {i}: {h['from']} or {h['to']} is not a number"))
+                    ok = False
+                    continue
+                hops.append((a, b))
+                inside = props["min"] <= a <= props["max"] and props["min"] <= b <= props["max"]
+                if not inside or a == b:
+                    report.checks.append(Check(f"{cid}#hop{i}", "numberline", False, f"hop {i} from {a} to {b} is not on the line {props['min']} to {props['max']}" if not inside else f"hop {i} has no length"))
+                    ok = False
+            for i in range(1, len(hops)):
+                if hops[i][0] != hops[i - 1][1]:
+                    report.checks.append(Check(f"{cid}#hop{i}", "numberline", False, f"hop {i} starts at {hops[i][0]} but hop {i - 1} ended at {hops[i - 1][1]}"))
+                    ok = False
+            if not hops:
+                continue
+            total = sum(b - a for a, b in hops)
+            span = hops[-1][1] - hops[0][0]
+            if total != span:
+                report.checks.append(Check(f"{cid}", "numberline", False, f"the hops add up to {total} but they span {span}"))
+                ok = False
+            for i, br in enumerate(props.get("brackets", [])):
+                label = br.get("label")
+                node = bundle["expressions"].get(label) if label else None
+                if node is not None and node.get("op") == "eq":
+                    stated = to_sympy(node).rhs
+                    if simplify(stated - span) != 0:
+                        report.checks.append(Check(f"{cid}#bracket{i}", "numberline", False, f"the bracket spans {span} but its label says {_text(stated)}"))
+                        ok = False
+            if quad is not None and simplify(span - quad) != 0:
+                report.checks.append(Check(f"{cid}", "numberline", False, f"the hops add up to {span} but the roots of the equation on screen add up to {_text(simplify(quad))} (minus the coefficient of x over the leading one)"))
+                ok = False
+            if ok:
+                report.checks.append(Check(cid, "numberline", True, f"{len(hops)} hops from {hops[0][0]} to {hops[-1][1]}, total {total}" + (f", the sum of the roots of the equation on screen ({_text(simplify(quad))})" if quad is not None else "")))
+
+
 def verify_bundle(bundle: Bundle) -> Report:
     """Run every check. A bundle with nothing checkable is NOT ok: silence is not verification."""
     report = Report()
     check_nodes(bundle, report)
     check_equalities(bundle, report)
     check_points(bundle, report)
+    check_numberlines(bundle, report)
     check_claims(bundle, report)
     return report

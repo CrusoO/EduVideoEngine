@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, quadraticExpressions, type ComponentName } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, quadraticExpressions, type ComponentName } from "@eve/schema";
 import {
   HIGHLIGHT_COLOR,
   STAGE_COLOR,

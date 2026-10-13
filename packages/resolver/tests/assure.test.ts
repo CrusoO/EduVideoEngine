@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { DEAD_AIR_LIMIT_MS, assureTimeline, resolve } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;

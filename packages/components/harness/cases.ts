@@ -1,4 +1,4 @@
-import { add, eq, mul, named, num, pow, quadraticRoots, sub, sym, type ComponentInstance, type ColorName, type Expr } from "@eve/schema";
+import { add, eq, mul, named, num, pow, quadraticRootsV1 as quadraticRoots, sub, sym, type ComponentInstance, type ColorName, type Expr } from "@eve/schema";
 import type { ObjectEvent } from "../src";
 
 /** One stage to draw: objects, their resolved events (hand-made here; the resolver makes them in step c), a locale. */

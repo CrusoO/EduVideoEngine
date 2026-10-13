@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { add, div, eq, mul, neg, num, pow, quadraticRoots, sub, sym, type Expr } from "@eve/schema";
+import { add, div, eq, mul, neg, num, pow, quadraticRootsV1 as quadraticRoots, sub, sym, type Expr } from "@eve/schema";
 import { COLOR, clusters, measure, minPx, textWidthEm, wrapLines, type LayoutObject } from "../src";
 
 const x = sym("x");

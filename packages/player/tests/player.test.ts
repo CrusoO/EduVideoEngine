@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import { buildMathCache, katexMath } from "@eve/components/src/build";
 import { cachedMath } from "@eve/components";

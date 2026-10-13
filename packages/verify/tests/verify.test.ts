@@ -1,19 +1,19 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { EXPR_OPS, SYMPY_NODE, VERIFIER_HANDLERS, num, quadraticRoots, type ExprOp, type LessonBundle } from "@eve/schema";
+import { EXPR_OPS, SYMPY_NODE, VERIFIER_HANDLERS, add, num, quadraticRootsV1, sumOfRoots, type ExprOp, type LessonBundle } from "@eve/schema";
 import { VerifierUnavailable, verifyBundle } from "../src";
 
 const root = join(__dirname, "..", "..", "..");
 const json = (rel: string) => JSON.parse(readFileSync(join(root, rel), "utf8"));
-const bundle = () => structuredClone(quadraticRoots) as LessonBundle;
+const bundle = () => structuredClone(sumOfRoots) as LessonBundle;
 
 describe("the files the Python verifier reads are generated from this source, and are current", () => {
   it("expr-ops.json lists exactly the node types, handlers and SymPy mapping of the schema", () => {
     expect(json("packages/schema/expr-ops.json")).toEqual({ ops: [...EXPR_OPS], handlers: VERIFIER_HANDLERS, sympy: SYMPY_NODE });
   });
   it("the Python fixture is the reference lesson as it is now", () => {
-    expect(json("services/verifier/tests/fixtures/quadratic-roots.json")).toEqual(JSON.parse(JSON.stringify(quadraticRoots)));
+    expect(json("services/verifier/tests/fixtures/sum-of-roots.json")).toEqual(JSON.parse(JSON.stringify(sumOfRoots)));
   });
 });
 
@@ -32,23 +32,29 @@ describe("verifyBundle (SymPy, as a process)", () => {
   it("verifies the reference lesson", async () => {
     const r = await verifyBundle(bundle());
     expect(r.ok).toBe(true);
-    expect(r.counts).toEqual({ expression: 9, equality: 2, point: 2, claim: 6 });
+    expect(r.counts).toEqual({ expression: 6, equality: 1, numberline: 1, claim: 3 });
+  });
+
+  it("verifies the earlier five-scene lesson too (term names and colours do not matter to it)", async () => {
+    expect((await verifyBundle(structuredClone(quadraticRootsV1))).ok).toBe(true);
   });
 
   it("rejects a lesson whose arithmetic is wrong, with the reason", async () => {
     const b = bundle();
-    b.expressions.total = { op: "eq", a: b.expressions.total!.op === "eq" ? b.expressions.total!.a : num(0), b: num(6) };
+    b.expressions.total = { op: "eq", a: add(num(2), num(4)), b: num(5) };
     const r = await verifyBundle(b);
     expect(r.ok).toBe(false);
-    expect(r.failed.map((f) => f.id).sort()).toEqual(["c.sum", "total"]);
-    expect(r.failed.find((f) => f.id === "total")!.detail).toMatch(/2 \+ 3 = 6 is false/);
+    expect(r.failed.map((f) => f.id)).toEqual(["total"]);
+    expect(r.failed.find((f) => f.id === "total")!.detail).toMatch(/2 \+ 4 = 5 is false/);
   });
 
-  it("rejects a lesson whose graph names a point that is not a root", async () => {
+  it("rejects hops that do not add up to the coefficient", async () => {
     const b = bundle();
-    b.scenes.find((s) => s.id === "scene4")!.objects.find((o) => o.id === "roots")!.props = { target: "graph", points: [2, 4] };
+    b.expressions.five = num(6);
     const r = await verifyBundle(b);
-    expect(r.failed.map((f) => f.id)).toEqual(["scene4/roots@4"]);
+    expect(r.ok).toBe(false);
+    expect(r.failed.map((f) => f.id).sort()).toEqual(["scene4/line", "scene4/line#bracket0"]);
+    expect(r.failed.find((f) => f.id === "scene4/line")!.detail).toMatch(/the roots of the equation on screen add up to 5/);
   });
 
   it("a verifier that cannot start means not verified, never a silent pass", async () => {

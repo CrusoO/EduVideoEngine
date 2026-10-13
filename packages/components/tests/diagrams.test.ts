@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
-import { add, div, eq, mul, neg, num, pow, quadraticRoots, sub, sym, type Expr } from "@eve/schema";
+import { add, div, eq, mul, neg, num, pow, quadraticRootsV1 as quadraticRoots, sub, sym, type Expr } from "@eve/schema";
 import { componentFor, findRoots, formatRoot, type ObjectEvent, type RenderContext } from "../src";
 import { katexMath } from "../src/build";
 

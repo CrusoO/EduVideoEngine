@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { quadraticRoots, sha256Bytes, type LessonBundle } from "@eve/schema";
+import { quadraticRootsV1 as quadraticRoots, sha256Bytes, type LessonBundle } from "@eve/schema";
 import { resolve } from "@eve/resolver";
 import { FileVoiceAdapter, StaleVoiceError, VoiceManifest, requireCleared, trackHash, wavInfo } from "../src";
 
