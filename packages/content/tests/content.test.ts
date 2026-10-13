@@ -5,7 +5,7 @@ import { checkStore, deriveClaims, loadStore, recordHash, retrieve, sealRecord, 
 
 const x = sym("x");
 const root = resolve(__dirname, "..", "..", "..", "content");
-const base = { skillId: "S.ONE", locale: "en-IN", licence: "owner-original", reviewStatus: "draft" as const, sourceNote: "written for tests" };
+const base = { skillId: "S.ONE", locale: "en-IN", licence: "owner-original", approvalStatus: "draft" as const, sourceNote: "written for tests" };
 const passage = (over: Partial<Omit<ContentRecord, "hash">> = {}): ContentRecord =>
   sealRecord({ ...base, id: "p.one", kind: "passage", text: "Look at {expr:e.one}.", expressions: { "e.one": eq(add(num(2), num(3)), num(5)) }, ...over });
 const steps = (over: Partial<Omit<ContentRecord, "hash">> = {}): ContentRecord =>

@@ -28,6 +28,21 @@ export type ColorName = z.infer<typeof ColorName>;
 
 export const BEAT_KINDS = ["predict", "explore", "explain", "worked", "check"] as const;
 
+/** Spec versions. 1.0.0 is the pinned legacy shape; 2.0.0 is the CO-2 pedagogy layer (ADR 0030). A bundle follows exactly one. */
+export const LEGACY_SPEC_VERSION = "1.0.0";
+export const SPEC_VERSION = "2.0.0";
+export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION] as const;
+
+/** What a beat does in the lesson (ADR 0028). Independent of how its claims are checked. */
+export const PEDAGOGY_BEAT_KINDS = ["hook", "prerequisite", "concept", "worked", "mistake", "check"] as const;
+export const SENTENCE_ROLES = ["goal", "claim", "link", "transition", "question"] as const;
+export const CLAIM_MODES = ["computed", "grounded"] as const;
+export const IMPORTANCES = ["core", "support"] as const;
+export const PREREQUISITE_STATUSES = ["recapped", "linked", "assumed"] as const;
+/** The closed set of solution-step kinds (ADR 0034). One verifier handler each; unknown kinds are rejected. */
+export const STEP_KINDS = ["rearrange", "factorise", "expand", "substitute", "evaluate", "simplify", "take_root", "apply_identity"] as const;
+export const TEXT_ROLES = ["title", "caption"] as const;
+
 export const PauseAsk = z
   .object({
     id,
@@ -45,6 +60,10 @@ export const Beat = z
     animate: z.boolean(),
     sourceIds: z.array(id).min(1),
     cueFocus: id.optional(), // at most one focus per beat
+    /** Spec 2.0.0 only (ADR 0028, 0029). Hashed into this beat's scene. */
+    beatKind: z.enum(PEDAGOGY_BEAT_KINDS).optional(),
+    slotId: id.optional(),
+    learningGoal: z.string().min(1).optional(),
   })
   .strict();
 
@@ -53,6 +72,10 @@ export const LessonPlan = z
     template: z.enum(["problem-first", "example-first"]),
     targetLengthS: z.number().int().positive(),
     beats: z.array(Beat).min(1),
+    /** Spec 2.0.0 only. Hashed into the bundle, not into any scene (ADR 0030). */
+    arcId: id.optional(),
+    prerequisites: z.array(z.object({ skillId: id, status: z.enum(PREREQUISITE_STATUSES) }).strict()).optional(),
+    level: id.optional(),
   })
   .strict();
 
@@ -64,7 +87,13 @@ export const NarrationSentence = z
     text: z.string().min(1),
     termSpans: z.array(z.object({ glossaryId: id, start: z.number().int().min(0), end: z.number().int().min(0) }).strict()),
     exprRefs: z.array(id),
-    status: z.enum(["draft", "reviewed", "frozen"]),
+    /** "reviewed" is legacy (1.0.0); 2.0.0 uses "approved" (ADR 0031). */
+    status: z.enum(["draft", "reviewed", "approved", "frozen"]),
+    /** Spec 2.0.0 only (ADR 0029). */
+    role: z.enum(SENTENCE_ROLES).optional(),
+    claimId: id.optional(),
+    linkClaimIds: z.array(id).length(2).optional(),
+    questionId: id.optional(),
   })
   .strict();
 
@@ -74,6 +103,9 @@ export const ComponentInstance = z
     component: ComponentName,
     props: z.record(z.unknown()),
     exprRef: id.optional(),
+    /** Spec 2.0.0 only (ADR 0032): a static object is a text title or caption, with no digits and no placeholders. */
+    role: z.literal("static").optional(),
+    textRole: z.enum(TEXT_ROLES).optional(),
   })
   .strict();
 
@@ -126,20 +158,28 @@ const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
  * Each claim names the beat whose steps rely on it (`beatId`): a worked beat must declare at least one (validator rule, ADR 0015).
  * Optional and without defaults, so a lesson with no claims hashes exactly as before (ADR 0003).
  */
+const ClaimExtras = {
+  /** Spec 2.0.0 only (ADR 0028, 0034). `id` is the claim id. */
+  claimMode: z.enum(CLAIM_MODES).optional(),
+  dependsOn: z.array(id).optional(),
+  importance: z.enum(IMPORTANCES).optional(),
+  usesStep: id.optional(),
+  stepKind: z.enum(STEP_KINDS).optional(),
+};
 export const Claim = z.discriminatedUnion("kind", [
   /** `a` and `b` are equations in one symbol with the same solutions (for example an equation and its factored form). */
-  z.object({ id, beatId: id, kind: z.literal("equivalent"), a: id, b: id }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("equivalent"), a: id, b: id, ...ClaimExtras }).strict(),
   /** The solutions of `equation` are exactly `values` (exact numbers, as expression trees). */
-  z.object({ id, beatId: id, kind: z.literal("roots"), equation: id, values: z.array(ExprSchema).min(1) }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("roots"), equation: id, values: z.array(ExprSchema).min(1), ...ClaimExtras }).strict(),
   /** The sum of the roots of `equation` equals the right-hand side of the equation `equals`. */
-  z.object({ id, beatId: id, kind: z.literal("sum-of-roots"), equation: id, equals: id }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("sum-of-roots"), equation: id, equals: id, ...ClaimExtras }).strict(),
 ]);
 export type Claim = z.infer<typeof Claim>;
 
 export const LessonBundle = z
   .object({
     bundleId: id,
-    specVersion: z.literal("1.0.0"),
+    specVersion: z.enum(SPEC_VERSIONS),
     skillId: id,
     locale: z.string().regex(/^[a-z]{2,3}-[A-Z]{2}$/),
     /** Every content-plane record used. */
@@ -152,6 +192,9 @@ export const LessonBundle = z
     script: z.array(NarrationSentence).min(1),
     scenes: z.array(SceneSpec).min(1),
     claims: z.array(Claim).optional(),
+    /** Spec 2.0.0 only. Hashed into the bundle (ADR 0030). The verification label is NOT stored here (ADR 0031). */
+    subjectId: id.optional(),
+    facts: z.array(z.object({ id, text: z.string().min(1), sourceIds: z.array(id).min(1) }).strict()).optional(),
     hashes: z.object({ bundle: hex64, perScene: z.record(hex64) }).strict(),
   })
   .strict();

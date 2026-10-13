@@ -1,6 +1,6 @@
 import { sha256 } from "@noble/hashes/sha256";
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils";
-import type { LessonBundle, SceneSpec } from "./bundle";
+import { SPEC_VERSION, type LessonBundle, type SceneSpec } from "./bundle";
 import { termIds } from "./expr";
 
 /**
@@ -35,7 +35,10 @@ export const hashOf = (value: unknown): string => sha256Hex(canonicalJson(value)
  * it references. Editing one scene (or a sentence it uses) changes only that scene's hash, so caches, reviews and
  * analytics reopen exactly the affected scene.
  */
-export function sceneHash(bundle: Pick<LessonBundle, "script" | "expressions"> & { termColors?: LessonBundle["termColors"] }, scene: SceneSpec): string {
+export function sceneHash(
+  bundle: Pick<LessonBundle, "script" | "expressions"> & { termColors?: LessonBundle["termColors"]; specVersion?: LessonBundle["specVersion"]; plan?: Pick<LessonBundle["plan"], "beats"> },
+  scene: SceneSpec,
+): string {
   const sentences = bundle.script.filter((s) => s.beatId === scene.beatId);
   const refs = new Set<string>([...sentences.flatMap((s) => s.exprRefs), ...scene.objects.flatMap((o) => (o.exprRef ? [o.exprRef] : []))]);
   const expressions = Object.fromEntries([...refs].sort().map((r) => [r, bundle.expressions[r] ?? null]));
@@ -43,7 +46,14 @@ export function sceneHash(bundle: Pick<LessonBundle, "script" | "expressions"> &
   const used = new Set<string>();
   for (const e of Object.values(expressions)) if (e) termIds(e, used);
   const colors = Object.fromEntries([...used].sort().flatMap((t) => (bundle.termColors?.[t] ? [[t, bundle.termColors[t]]] : [])));
-  return hashOf(Object.keys(colors).length > 0 ? { scene, sentences, expressions, termColors: colors } : { scene, sentences, expressions });
+  const parts: Record<string, unknown> = { scene, sentences, expressions };
+  if (Object.keys(colors).length > 0) parts.termColors = colors;
+  // Spec 2.0.0 (ADR 0030): the beat's own fields (beatKind, slotId, learningGoal) belong to its scene. Legacy bundles hash exactly as before.
+  if (bundle.specVersion === SPEC_VERSION) {
+    const { beatKind, slotId, learningGoal } = bundle.plan?.beats.find((b) => b.id === scene.beatId) ?? {};
+    parts.beat = { beatKind, slotId, learningGoal }; // undefined members are dropped by canonicalJson
+  }
+  return hashOf(parts);
 }
 
 /** Recompute every hash of a bundle (the bundle hash covers all content except the hashes themselves). */

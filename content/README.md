@@ -16,4 +16,4 @@ A record is one JSON file under `content/`. The lesson compiler builds lessons o
 - `misconception`: `contrast` with `wrong` and `right` expression ids.
 - `glossary`: `terms` with `id`, `term`, `definition`.
 
-`reviewStatus` starts at `draft`. Only a human changes it.
+`approvalStatus` starts at `draft`. Only a human changes it.

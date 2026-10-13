@@ -2,7 +2,7 @@
   "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
   "locale": "en-IN",
   "licence": "owner-original",
-  "reviewStatus": "draft",
+  "approvalStatus": "draft",
   "id": "quad.sum.steps",
   "kind": "solutionSteps",
   "text": "Factorise the equation, read off the two roots, then add them.",
@@ -109,5 +109,5 @@
     }
   ],
   "sourceNote": "Written for this project as the worked solution of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "4ba32943d8898a36eaa33bd915263596510607708f0f2403adb12df6fba128ff"
+  "hash": "468cb61993388dbc2318abc05456b6994eeeb01df59b7c6c93bcc851d72e4819"
 }

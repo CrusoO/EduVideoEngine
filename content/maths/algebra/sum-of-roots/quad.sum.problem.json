@@ -2,7 +2,7 @@
   "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
   "locale": "en-IN",
   "licence": "owner-original",
-  "reviewStatus": "draft",
+  "approvalStatus": "draft",
   "id": "quad.sum.problem",
   "kind": "passage",
   "text": "Here is a quadratic equation: {expr:quad.eq}. It has two roots. Before we solve it, guess what they add up to.",
@@ -56,5 +56,5 @@
     "t.constant": "green"
   },
   "sourceNote": "Written for this project as the problem of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "8ad212636f0053082b9edf2e4b2a18a43ac490ab4d27aac51b730cd293843abe"
+  "hash": "e19a8544c34cc8c4aaf3da10d0316a5aeb96fb5769951ca98880c7b47247864a"
 }

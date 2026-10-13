@@ -1,4 +1,4 @@
-import { LessonBundle } from "./bundle";
+import { LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { termIds } from "./expr";
 import { computeHashes } from "./hash";
@@ -26,6 +26,102 @@ export const containsLiteralMath = (text: string): boolean => LITERAL_MATH.test(
 
 export const wordsOf = (text: string): string[] => text.replace(PLACEHOLDER, "X").split(/\s+/).filter(Boolean);
 
+/** The longest speakable learning goal, in words (ADR 0029). */
+export const GOAL_MAX_WORDS = 18;
+
+/** Words that may stand alone as a goal check: no digits, no notation, no placeholders. Exported for the gates (WP2b). */
+export const goalProblems = (text: string): string[] => {
+  const out: string[] = [];
+  const words = text.split(/\s+/).filter(Boolean).length;
+  if (words > GOAL_MAX_WORDS) out.push(`a learning goal has at most ${GOAL_MAX_WORDS} words, this has ${words}`);
+  if (/\d/.test(text)) out.push("a learning goal has no digits");
+  if (/[{}=^+*/<>\$]/.test(text) || containsLiteralMath(text)) out.push("a learning goal has no notation or placeholders");
+  return out;
+};
+
+type Bad = (path: string, message: string) => void;
+
+/**
+ * The rules that depend on the spec version (ADR 0030). A 1.0.0 bundle may not carry any 2.0.0 field, so the pinned legacy fixture keeps validating
+ * under its old rules and a half-migrated bundle cannot slip through. A 2.0.0 bundle must carry every new field explicitly: no defaults at parse time.
+ * Optional fields are omitted when absent, never empty.
+ */
+function checkSpecVersion(b: Bundle, bad: Bad): void {
+  if (b.specVersion === LEGACY_SPEC_VERSION) {
+    const v2: Array<[string, boolean]> = [
+      ["subjectId", b.subjectId !== undefined],
+      ["facts", b.facts !== undefined],
+      ["plan.arcId", b.plan.arcId !== undefined],
+      ["plan.prerequisites", b.plan.prerequisites !== undefined],
+      ["plan.level", b.plan.level !== undefined],
+    ];
+    for (const beat of b.plan.beats) v2.push([`plan.beats.${beat.id}`, beat.beatKind !== undefined || beat.slotId !== undefined || beat.learningGoal !== undefined]);
+    for (const s of b.script) v2.push([`script.${s.id}`, s.role !== undefined || s.claimId !== undefined || s.linkClaimIds !== undefined || s.questionId !== undefined || s.status === "approved"]);
+    for (const sc of b.scenes) for (const o of sc.objects) v2.push([`scenes.${sc.id}.objects.${o.id}`, o.role !== undefined || o.textRole !== undefined]);
+    for (const c of b.claims ?? []) v2.push([`claims.${c.id}`, c.claimMode !== undefined || c.dependsOn !== undefined || c.importance !== undefined || c.usesStep !== undefined || c.stepKind !== undefined]);
+    for (const [path, present] of v2) if (present) bad(path, `a ${LEGACY_SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION}`);
+    return;
+  }
+
+  const need = (path: string, present: boolean, what: string) => {
+    if (!present) bad(path, `a ${SPEC_VERSION} bundle must set ${what}`);
+  };
+  need("subjectId", b.subjectId !== undefined, "subjectId");
+  need("plan.arcId", b.plan.arcId !== undefined, "arcId");
+  need("plan.level", b.plan.level !== undefined, "level");
+  for (const [name, list] of [["plan.prerequisites", b.plan.prerequisites], ["facts", b.facts], ["termColors", b.termColors && Object.keys(b.termColors)]] as const) {
+    if (list !== undefined && list.length === 0) bad(name, "omit an optional list when it is empty, never write it empty");
+  }
+  const claimIds = new Set((b.claims ?? []).map((c) => c.id));
+  for (const beat of b.plan.beats) {
+    const at = `plan.beats.${beat.id}`;
+    need(at, beat.beatKind !== undefined && beat.slotId !== undefined && beat.learningGoal !== undefined, "beatKind, slotId and learningGoal");
+    if (beat.learningGoal !== undefined) for (const m of goalProblems(beat.learningGoal)) bad(`${at}.learningGoal`, m);
+  }
+  const questionOk = (id: string | undefined) => id !== undefined;
+  for (const s of b.script) {
+    const at = `script.${s.id}`;
+    if (s.status === "reviewed") bad(`${at}.status`, 'the word "reviewed" is not used from 2.0.0; use "approved" (ADR 0031)');
+    if (s.role === undefined) {
+      bad(at, `a ${SPEC_VERSION} sentence must set role`);
+      continue;
+    }
+    if (s.role === "claim") {
+      if (!s.claimId || !claimIds.has(s.claimId)) bad(`${at}.claimId`, "a claim sentence names a claim of this bundle");
+    } else if (s.claimId !== undefined) bad(`${at}.claimId`, `a ${s.role} sentence carries no claimId`);
+    if (s.role === "link") {
+      if (!s.linkClaimIds || s.linkClaimIds.some((c) => !claimIds.has(c))) bad(`${at}.linkClaimIds`, "a link sentence names two claims of this bundle");
+      else if (s.linkClaimIds[0] === s.linkClaimIds[1]) bad(`${at}.linkClaimIds`, "a link sentence joins two different claims");
+    } else if (s.linkClaimIds !== undefined) bad(`${at}.linkClaimIds`, `a ${s.role} sentence carries no linkClaimIds`);
+    if (s.role === "question") {
+      if (!questionOk(s.questionId)) bad(`${at}.questionId`, "a question sentence names a practice question");
+    } else if (s.questionId !== undefined) bad(`${at}.questionId`, `a ${s.role} sentence carries no questionId`);
+  }
+  for (const c of b.claims ?? []) {
+    const at = `claims.${c.id}`;
+    need(at, c.claimMode !== undefined && c.importance !== undefined, "claimMode and importance");
+    for (const d of c.dependsOn ?? []) if (!claimIds.has(d)) bad(`${at}.dependsOn`, `depends on unknown claim ${d}`);
+    if (c.dependsOn?.length === 0) bad(`${at}.dependsOn`, "omit dependsOn when the claim depends on nothing, never write it empty");
+    if (c.stepKind !== undefined && c.usesStep === undefined) bad(at, "stepKind needs usesStep");
+    if (c.usesStep !== undefined && c.stepKind === undefined) bad(at, "usesStep needs a stepKind");
+  }
+  for (const sc of b.scenes) {
+    const statics = sc.objects.filter((o) => o.role === "static");
+    if (statics.length > 2) bad(`scenes.${sc.id}`, "at most 2 static objects per scene");
+    for (const o of sc.objects) {
+      const at = `scenes.${sc.id}.objects.${o.id}`;
+      if (o.role !== "static") {
+        if (o.textRole !== undefined) bad(at, "textRole belongs to static objects only");
+        continue;
+      }
+      if (o.component !== "text") bad(at, "a static object is a text object (an axis is part of its functionGraph)");
+      if (o.textRole === undefined) bad(at, "a static object sets textRole: title or caption");
+      const text = typeof (o.props as { text?: unknown }).text === "string" ? ((o.props as { text: string }).text) : "";
+      if (/\d/.test(text) || /[{}]/.test(text) || o.exprRef !== undefined) bad(at, "a static object has no digits, placeholders or expression");
+    }
+  }
+}
+
 /**
  * Schema first, then the cross-references no schema can express: ids resolve, cues point at real objects and real
  * sentences of the scene's own beat, sources exist, maths is never literal text, hashes match the content.
@@ -39,6 +135,7 @@ export function validateBundle(input: unknown): Validation {
   const issues: Issue[] = [];
   const bad = (path: string, message: string) => issues.push({ path, message });
 
+  checkSpecVersion(b, bad);
   if (!(b.locale in LOCALES)) bad("locale", `locale ${b.locale} is not in the language registry`);
   const beats = new Map(b.plan.beats.map((x) => [x.id, x]));
   if (beats.size !== b.plan.beats.length) bad("plan.beats", "beat ids must be unique");

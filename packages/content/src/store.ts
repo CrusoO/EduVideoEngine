@@ -65,16 +65,16 @@ export type Retrieval = {
   unresolved: string[];
 };
 
-const RANK: Record<string, number> = Object.fromEntries(CONTENT_CONFIG.reviewStatuses.map((s, i) => [s, i]));
+const RANK: Record<string, number> = Object.fromEntries(CONTENT_CONFIG.approvalStatuses.map((s, i) => [s, i]));
 
 /**
  * The records for one skill in one language, in a fixed order (kind, then id), with the expression tables merged. Records below the minimum review
  * status are left out. Nothing outside the store is ever returned: the pipeline builds lessons from this and from nothing else.
  */
-export function retrieve(records: readonly ContentRecord[], skillId: string, locale: string, minimumStatus: string = CONTENT_CONFIG.minimumReviewStatus): Retrieval {
+export function retrieve(records: readonly ContentRecord[], skillId: string, locale: string, minimumStatus: string = CONTENT_CONFIG.minimumApprovalStatus): Retrieval {
   const order = (k: string) => KINDS.indexOf(k as (typeof KINDS)[number]);
   const chosen = records
-    .filter((r) => r.skillId === skillId && r.locale === locale && (RANK[r.reviewStatus] ?? -1) >= (RANK[minimumStatus] ?? 0))
+    .filter((r) => r.skillId === skillId && r.locale === locale && (RANK[r.approvalStatus] ?? -1) >= (RANK[minimumStatus] ?? 0))
     .sort((a, b) => order(a.kind) - order(b.kind) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
   const byKind = Object.fromEntries(KINDS.map((k) => [k, chosen.filter((r) => r.kind === k)])) as Retrieval["byKind"];
   const expressions: Record<string, Expr> = Object.assign({}, ...chosen.map((r) => r.expressions));

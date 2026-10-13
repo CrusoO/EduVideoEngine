@@ -2,7 +2,7 @@
   "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
   "locale": "en-IN",
   "licence": "owner-original",
-  "reviewStatus": "draft",
+  "approvalStatus": "draft",
   "id": "quad.sum.misconception",
   "kind": "misconception",
   "text": "A common mistake is to add the two numbers written in the equation, five and six, instead of the roots. That gives eleven, which is not the sum of the roots.",
@@ -31,5 +31,5 @@
     "right": "quad.total"
   },
   "sourceNote": "Written for this project as the common mistake of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "eb7ea09568411e94771069b7aff5aa9ae1501197c49f112f895af357be065456"
+  "hash": "b510b5a1937a68706a7ef3b0a20332dacafe97ff3c858e33238066f3fa334891"
 }

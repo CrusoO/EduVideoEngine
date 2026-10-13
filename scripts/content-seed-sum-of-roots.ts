@@ -12,7 +12,7 @@ import { add, eq, mul, named, num, pow, sub, sym } from "../packages/schema/src"
 const x = sym("x");
 const dir = resolve(__dirname, "..", "content", "maths", "algebra", "sum-of-roots");
 const SKILL = "MATH.ALG.QUAD.SUM_OF_ROOTS";
-const base = { skillId: SKILL, locale: "en-IN", licence: "owner-original", reviewStatus: "draft" as const };
+const base = { skillId: SKILL, locale: "en-IN", licence: "owner-original", approvalStatus: "draft" as const };
 const note = (what: string) => `Written for this project as ${what} of the sum-of-roots lesson; first seed of the content plane. No outside text.`;
 
 const quadEq = eq(add(sub(named("t.square", pow(x, num(2))), named("t.linear", mul(num(5), x))), named("t.constant", num(6))), num(0));

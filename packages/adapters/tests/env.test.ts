@@ -43,11 +43,11 @@ describe("configuration comes from the environment alone", () => {
     }
   });
   it("record or live refuses to run while rpm or rpd is null in the profile file", () => {
-    expect(() => loadLlmConfig({ LLM_MODE: "record", GEMINI_API_KEY: KEY })).toThrow(/Limits for gemini\/gemini-3\.8-flash are not filled/);
+    expect(() => loadLlmConfig({ LLM_MODE: "record", LLM_MODEL: "gemini-2.5-flash", GEMINI_API_KEY: KEY })).toThrow(/Limits for gemini\/gemini-2\.5-flash are not filled/);
     const filled = loadLlmConfig({ LLM_MODE: "record", LLM_PROVIDER: "groq", GROQ_API_KEY: GROQ });
     expect(filled.profile.limits).toMatchObject({ rpm: 30, rpd: 1000 });
   });
-  it("replay with a null-limit profile is fine", () => expect(loadLlmConfig({ LLM_MODE: "replay" }).profile.limits.rpm).toBeNull());
+  it("replay with a null-limit profile is fine", () => expect(loadLlmConfig({ LLM_MODE: "replay", LLM_MODEL: "gemini-2.5-flash" }).profile.limits.rpm).toBeNull());
   it("CI is read as a flag", () => expect(loadLlmConfig({ CI: "true" }).ci).toBe(true));
 });
 

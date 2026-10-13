@@ -12,3 +12,9 @@ Status: accepted (AM-1). Builds on ADR 0003 and 0004.
 
 ## Consequences
 Re-record only fixtures whose request changed. A test fails if a field that should not move a scene hash does.
+
+## As built (WP1a)
+* `specVersion` is `"1.0.0"` (legacy, pinned) or `"2.0.0"`. One zod schema accepts both; `validateBundle` applies the rules of the bundle's own version. A 1.0.0 bundle may not carry any 2.0.0 field; a 2.0.0 bundle must carry every required one (no parse-time defaults).
+* The hand-written `quadraticRootsV1` fixture is the pinned legacy fixture; its bundle hash is pinned in `packages/schema/tests/spec-v2.test.ts`. The reference lesson (`sumOfRoots`) stays on 1.0.0 until WP3.
+* A claim's existing `id` is its claim id; the beat's existing `kind` stays beside the new `beatKind`. `migrateToV2` takes the facts a person must decide (goals, slots, sentence roles) as input and never guesses them.
+* The 2.0.0 scene hash adds only `{beatKind, slotId, learningGoal}` of its own beat. Records: `reviewStatus` is now `approvalStatus` (record hashes re-sealed once; the planner request does not contain them, so the Sonnet reference fixtures still replay).

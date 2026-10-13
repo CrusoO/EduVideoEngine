@@ -2,7 +2,7 @@
   "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
   "locale": "en-IN",
   "licence": "owner-original",
-  "reviewStatus": "draft",
+  "approvalStatus": "draft",
   "id": "quad.sum.glossary",
   "kind": "glossary",
   "text": "Words used in this lesson.",
@@ -25,5 +25,5 @@
     }
   ],
   "sourceNote": "Written for this project as the glossary of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "fd9ce37abd40f68ef8e29d77ac012a0134416f81b0da273cfd1d1210816c3ec6"
+  "hash": "279f23e5888152424096060a12ffd622e5ccbfe2904182cde6b1e87de7952872"
 }

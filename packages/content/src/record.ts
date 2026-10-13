@@ -4,14 +4,14 @@ import config from "../../../config/content.json";
 import licences from "../../../config/licences.json";
 
 /** Settings read from config/, never written in code (English only in Phase 1). */
-export const CONTENT_CONFIG = config as { locales: string[]; reviewStatuses: string[]; minimumReviewStatus: string };
+export const CONTENT_CONFIG = config as { locales: string[]; approvalStatuses: string[]; minimumApprovalStatus: string };
 export const ALLOWED_LICENCES: readonly string[] = licences.allowed;
 
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/, "ids are letters, digits and _ . : -");
 const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
 
 export const KINDS = ["passage", "solutionSteps", "misconception", "glossary"] as const;
-export const REVIEW_STATUSES = ["draft", "reviewed", "approved"] as const;
+export const APPROVAL_STATUSES = ["draft", "reviewed", "approved"] as const;
 
 /**
  * One step of a worked solution. A step is an expression tree (an equation), in order, and a ROLE that says what it is for:
@@ -38,7 +38,7 @@ export const ContentRecord = z
     sourceNote: z.string().min(1),
     /** Must be on the allow-list in config/licences.json. */
     licence: z.string(),
-    reviewStatus: z.enum(REVIEW_STATUSES),
+    approvalStatus: z.enum(APPROVAL_STATUSES),
     /** hashOf(the record without this field): changes whenever anything changes. */
     hash: hex64,
     /** solutionSteps: the equation being solved, then the ordered steps. */
