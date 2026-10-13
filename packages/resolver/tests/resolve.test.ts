@@ -79,6 +79,18 @@ describe("resolve: the quadratic fixture", () => {
     expect(t2.scenes.find((s) => s.sceneId === "scene5")!.startMs).toBe(sc.endMs);
   });
 
+  it("a cue with minHoldMs 0 still lasts as long as its action needs to draw", () => {
+    const b = structuredClone(bundle);
+    for (const s of b.scenes) for (const c of s.cues) c.minHoldMs = 0;
+    const t2 = resolve(b, tracksOf(b));
+    for (const s of b.scenes) {
+      for (const c of s.cues) {
+        const e = t2.events.find((x) => x.sceneId === s.id && x.targetObject === c.targetObject && x.action === c.action)!;
+        expect(e.holdUntilMs - e.atMs).toBe(MIN_ACTION_MS[c.action]);
+      }
+    }
+  });
+
   it("events are ordered by time", () => {
     for (let i = 1; i < tl.events.length; i++) expect(tl.events[i]!.atMs).toBeGreaterThanOrEqual(tl.events[i - 1]!.atMs);
   });
