@@ -86,3 +86,18 @@ abc`],
     expect(JSON.stringify(f)).not.toContain(googleKey);
   });
 });
+
+describe("code is not a secret", () => {
+  it("an unquoted member path assigned to a token-like name is source code", () => {
+    expect(findSecrets("thinkingTokens: usage.thinkingTokens,")).toEqual([]);
+    expect(findSecrets("thinkingTokens: u.total_thought_tokens ?? 0")).toEqual([]);
+  });
+  it("a quoted value, or one with digits, is still caught", () => {
+    // built at run time so this file never looks like a leaked key to `pnpm secrets:check`
+    const name = ["api", "Key"].join("");
+    const quote = String.fromCharCode(34);
+    expect(findSecrets(`${name}: ${quote}${["usage", "thinkingTokensAndMore"].join(".")}${quote}`)).toHaveLength(1);
+    expect(findSecrets(`${["to", "ken"].join("")} = ${longValue}`)).toHaveLength(1);
+    expect(findSecrets(`${["to", "ken"].join("")}: ${["abc", "def", "ghi1234567890abcdefgh"].join(".")}`)).toHaveLength(1);
+  });
+});

@@ -28,7 +28,9 @@ const SECRET_SHAPES: Array<[string, RegExp]> = [
 ];
 
 /** name = long-looking-value, with the value not an obvious placeholder or an environment lookup. */
-const ASSIGNED = /\b(?:[A-Za-z_]*(?:api[_-]?key|secret|token|password|passwd)[A-Za-z_]*)\b["']?\s*[:=]\s*["']?([A-Za-z0-9_\-./+=]{20,})/gi;
+const ASSIGNED = /\b(?:[A-Za-z_]*(?:api[_-]?key|secret|token|password|passwd)[A-Za-z_]*)\b["']?\s*[:=]\s*(["']?)([A-Za-z0-9_\-./+=]{20,})/gi;
+/** Source code, not a secret: an unquoted member path such as usage.thinkingTokens (letters, underscores and dots only; real keys and JWTs contain digits). */
+const MEMBER_PATH = /^[A-Za-z_]+(?:\.[A-Za-z_]+)+$/;
 const PLACEHOLDER = /^(?:x+|\*+|<.*>|your[-_a-z0-9]*|changeme|example[-_a-z0-9]*|process\.env.*|env\..*|\$\{.*\}|[a-z_]+\(\)|undefined|null)$/i;
 
 const lineOf = (text: string, index: number): number => text.slice(0, index).split("\n").length;
@@ -58,7 +60,9 @@ export function findSecrets(text: string): SafetyFinding[] {
   const out: SafetyFinding[] = [];
   for (const [kind, re] of SECRET_SHAPES) out.push(...scan(text, kind, re));
   for (const m of text.matchAll(ASSIGNED)) {
-    if (!PLACEHOLDER.test(m[1]!)) out.push({ kind: "a long value assigned to a key, secret or token", line: lineOf(text, m.index!), preview: preview(m[1]!) });
+    const value = m[2]!;
+    if (PLACEHOLDER.test(value) || (m[1] === "" && MEMBER_PATH.test(value))) continue;
+    out.push({ kind: "a long value assigned to a key, secret or token", line: lineOf(text, m.index!), preview: preview(value) });
   }
   return out;
 }

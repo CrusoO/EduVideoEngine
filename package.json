@@ -16,7 +16,8 @@
     "prepare": "git config core.hooksPath .githooks",
     "content:seed": "vite-node scripts/content-seed-sum-of-roots.ts",
     "content:validate": "vite-node scripts/content-validate.ts",
-    "content:seal": "vite-node scripts/content-seal.ts"
+    "content:seal": "vite-node scripts/content-seal.ts",
+    "llm:usage": "vite-node scripts/llm-usage.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",

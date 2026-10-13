@@ -1,0 +1,82 @@
+{
+  "_comment": "One entry per model. Adding a model means adding an entry here and nothing else (ADR 0023). Facts come from Google's official pages read on 2026-10-13: models (https://ai.google.dev/gemini-api/docs/models), thinking (https://ai.google.dev/gemini-api/docs/thinking), structured output (https://ai.google.dev/gemini-api/docs/structured-output), Gemini 3 (https://ai.google.dev/gemini-api/docs/gemini-3), pricing/free tier (https://ai.google.dev/gemini-api/docs/pricing), rate limits (https://ai.google.dev/gemini-api/docs/rate-limits). Google does NOT print free-tier requests per minute or per day on those pages (they point to the AI Studio dashboard), so rpm and dailyRequests below are deliberately LOW placeholders with limitsVerified false: set LLM_RPM and LLM_DAILY_REQUEST_CAP from your AI Studio rate-limit page.",
+  "defaults": {
+    "primary": "gemini-3.8-flash",
+    "fallback": "gemini-3.6-flash",
+    "light": "gemini-3.5-flash-lite"
+  },
+  "profiles": {
+    "gemini-3.8-flash": {
+      "provider": "gemini",
+      "family": "flash",
+      "status": "stable",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "level", "levels": ["low", "medium", "high"], "default": "high" },
+      "maxOutputTokens": 65536,
+      "rpm": 5,
+      "dailyRequests": 20,
+      "limitsVerified": false
+    },
+    "gemini-3.6-flash": {
+      "provider": "gemini",
+      "family": "flash",
+      "status": "stable",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "level", "levels": ["minimal", "low", "medium", "high"], "default": "high" },
+      "maxOutputTokens": 65536,
+      "rpm": 5,
+      "dailyRequests": 20,
+      "limitsVerified": false
+    },
+    "gemini-3.5-flash-lite": {
+      "provider": "gemini",
+      "family": "flash-lite",
+      "status": "stable",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "none" },
+      "maxOutputTokens": 65536,
+      "rpm": 10,
+      "dailyRequests": 50,
+      "limitsVerified": false
+    },
+    "gemini-3.1-flash-lite": {
+      "provider": "gemini",
+      "family": "flash-lite",
+      "status": "stable",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "none" },
+      "maxOutputTokens": 65536,
+      "rpm": 10,
+      "dailyRequests": 50,
+      "limitsVerified": false
+    },
+    "gemini-2.5-flash": {
+      "provider": "gemini",
+      "family": "flash",
+      "status": "legacy",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "budget", "min": 0, "max": 24576 },
+      "maxOutputTokens": 65536,
+      "rpm": 5,
+      "dailyRequests": 20,
+      "limitsVerified": false
+    },
+    "gemini-2.5-flash-lite": {
+      "provider": "gemini",
+      "family": "flash-lite",
+      "status": "legacy",
+      "freeTier": true,
+      "structuredOutput": true,
+      "thinking": { "kind": "none" },
+      "maxOutputTokens": 65536,
+      "rpm": 10,
+      "dailyRequests": 50,
+      "limitsVerified": false
+    }
+  }
+}
