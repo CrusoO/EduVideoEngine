@@ -49,7 +49,7 @@ describe("resolve: the quadratic fixture", () => {
     const e = (id: string, action: string) => tl.events.find((x) => x.targetObject === id && x.action === action)!;
     const a = (id: string) => tl.audio.find((x) => x.sentenceId === id)!;
     expect(e("title", "reveal").atMs).toBe(a("s1.1").startMs);
-    expect(e("eq1", "highlight").atMs).toBe(a("s1.2").endMs);
+    expect(e("eq1", "highlight").atMs).toBe(a("s1.2").endMs - 500); // anchored at the end with an offset of -500 ms
     // word 5 of s1.1 at 400 ms per word is 2000 ms in
     expect(e("eq1", "reveal").atMs).toBe(a("s1.1").startMs + 2000);
   });

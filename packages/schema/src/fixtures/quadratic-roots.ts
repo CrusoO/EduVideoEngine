@@ -81,7 +81,7 @@ export function buildQuadraticRoots(): LessonBundle {
         cues: [
           { targetObject: "title", action: "reveal", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 800 },
           { targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.1", at: { wordIndex: 5 } }, minHoldMs: 1500 },
-          { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.2", at: "end" }, minHoldMs: 1200 },
+          { targetObject: "eq1", action: "highlight", anchor: { sentenceId: "s1.2", at: "end", offsetMs: -500 }, minHoldMs: 1200 },
         ],
         a11y: { altText: "The equation x squared minus five x plus six equals zero, under the title Guess the sum of the roots." },
       },
@@ -119,7 +119,7 @@ export function buildQuadraticRoots(): LessonBundle {
           { targetObject: "factored", action: "reveal", anchor: { sentenceId: "s3.1", at: { wordIndex: 6 } }, minHoldMs: 1500 },
           { targetObject: "total", action: "reveal", anchor: { sentenceId: "s3.2", at: { wordIndex: 8 } }, minHoldMs: 1500 },
           { targetObject: "fromRule", action: "reveal", anchor: { sentenceId: "s3.3", at: { wordIndex: 5 } }, minHoldMs: 1500 },
-          { targetObject: "fromRule", action: "highlight", anchor: { sentenceId: "s3.3", at: "end" }, minHoldMs: 1200 },
+          { targetObject: "fromRule", action: "highlight", anchor: { sentenceId: "s3.3", at: "end", offsetMs: -500 }, minHoldMs: 1200 },
         ],
         interactions: [{ id: "ask3", afterSentenceId: "s3.3", prompt: "Does the shortcut match the long way?", goalExprRef: "total" }],
         a11y: { altText: "Three steps: the factorised equation, the roots added to five, and the rule giving the same five." },

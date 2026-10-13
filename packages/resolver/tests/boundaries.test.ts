@@ -150,8 +150,8 @@ describe("pause points, hash, diagnostics, overlaps, options, chunks", () => {
     expect(d.extraMs).toBeGreaterThan(20000);
     const calm = resolve(bundle, tracksOf(bundle), { sceneTailMs: 5000 });
     expect(calm.diagnostics.stretchedScenes).toEqual([]);
-    // with the default tail, end-anchored highlights in scenes 1 and 3 outlast the speech by 500 ms: reported, not hidden
-    expect(tl.diagnostics.stretchedScenes).toContainEqual({ sceneId: "scene1", extraMs: 500 });
+    // the reference lesson was re-anchored (offset -500 ms) so that it has none; assure.test.ts covers the original anchoring
+    expect(tl.diagnostics.stretchedScenes).toEqual([]);
   });
 
   it("refuses overlapping highlights on one object, and overlapping move and morph", () => {
