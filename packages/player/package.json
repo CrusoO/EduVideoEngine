@@ -17,6 +17,7 @@
     "@playwright/test": "1.49.1",
     "vite": "5.4.11",
     "jsdom": "25.0.1",
-    "katex": "0.16.11"
+    "katex": "0.16.11",
+    "@eve/voice": "workspace:*"
   }
 }

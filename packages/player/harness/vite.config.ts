@@ -1,24 +1,31 @@
 import { createReadStream, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 
-const fonts = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "components", "fonts");
+const here = dirname(fileURLToPath(import.meta.url));
 
-/** Serve the bundled fonts at /fonts/<name>.woff2, the same URLs YourTutor uses (so a shared origin shares one cached copy). */
+/** Serve a folder at a URL prefix, read-only. */
+const serve = (prefix: string, dir: string, type: (file: string) => string): Plugin => ({
+  name: `serve-${prefix}`,
+  configureServer(server) {
+    server.middlewares.use(prefix, (req, res, next) => {
+      const file = join(dir, decodeURIComponent((req.url ?? "").split("?")[0]!));
+      if (!file.startsWith(dir) || !existsSync(file)) return next();
+      res.setHeader("content-type", type(file));
+      createReadStream(file).pipe(res);
+    });
+  },
+});
+
+/**
+ * /fonts: the bundled fonts at the same URLs YourTutor uses (so a shared origin shares one cached copy).
+ * /voice: the pinned development voice files of the reference lesson.
+ */
 export default defineConfig({
   publicDir: false,
   plugins: [
-    {
-      name: "serve-bundled-fonts",
-      configureServer(server) {
-        server.middlewares.use("/fonts", (req, res, next) => {
-          const file = join(fonts, decodeURIComponent((req.url ?? "").split("?")[0]!));
-          if (!file.startsWith(fonts) || !existsSync(file)) return next();
-          res.setHeader("content-type", "font/woff2");
-          createReadStream(file).pipe(res);
-        });
-      },
-    },
+    serve("/fonts", join(here, "..", "..", "components", "fonts"), () => "font/woff2"),
+    serve("/voice", join(here, "..", "..", "voice", "fixtures", "quadratic-roots.en-IN"), (f) => (f.endsWith(".json") ? "application/json" : "audio/wav")),
   ],
 });

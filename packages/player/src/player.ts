@@ -13,6 +13,8 @@ export type PlayerOptions = {
   /** Called when playback reaches a pause point; the lesson stays frozen until the promise resolves. */
   onPause?: (point: PausePoint) => Promise<void>;
   onEnd?: () => void;
+  /** Shown under the caption wherever a synthetic voice is heard (the voice licence asks for it). */
+  credit?: string;
   /** The audio device was interrupted (call, lock screen): the lesson has paused itself, show a play button. */
   onInterrupt?: () => void;
   /** Wall clock for the stall watchdog. Injected for tests. */
@@ -63,6 +65,12 @@ export class Player {
     this.caption.lang = o.bundle.locale;
     this.caption.setAttribute("data-testid", "caption");
     o.root.append(this.stage, this.caption);
+    if (o.credit) {
+      const credit = document.createElement("p");
+      credit.className = "eve-credit";
+      credit.textContent = o.credit;
+      o.root.append(credit);
+    }
     this.o.clock.onInterrupt?.(() => {
       this.pause();
       this.o.onInterrupt?.();

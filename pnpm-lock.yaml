@@ -222,6 +222,9 @@ importers:
         specifier: workspace:*
         version: link:../schema
     devDependencies:
+      '@eve/voice':
+        specifier: workspace:*
+        version: link:../voice
       '@playwright/test':
         specifier: 1.49.1
         version: 1.49.1

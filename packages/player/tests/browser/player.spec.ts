@@ -1,6 +1,4 @@
 import { expect, test, type Page } from "@playwright/test";
-import { writeFileSync, mkdirSync } from "node:fs";
-import { join } from "node:path";
 
 type W = Window &
   typeof globalThis & {
@@ -16,76 +14,9 @@ type W = Window &
   };
 
 async function open(page: Page, mpw: number) {
-  await page.goto(`/?mpw=${mpw}`);
+  await page.goto(`/?voice=tone&mpw=${mpw}`);
   await page.waitForFunction(() => (window as unknown as W).__ready === true);
 }
-const OUT = join(process.cwd(), "test-results");
-
-test("sync measurement: every reveal of the whole lesson, against the audio clock", async ({ page }) => {
-  await open(page, 300);
-  await page.evaluate(() => (window as unknown as W).__setAnswerDelay(0)); // pause points answered at once: this run measures timing, not asking
-  const report = await page.evaluate(
-    () =>
-      new Promise<Record<string, unknown>>((resolveReport) => {
-        const w = window as unknown as W;
-        const tl = w.__timeline;
-        const reveals = tl.events.filter((e) => e.action === "reveal");
-        const firstSeen = new Map<number, number>(); // index -> audio-clock ms at the first frame where it is visible
-        const frameTimes: number[] = [];
-        let naive = 0; // what accumulating frame deltas would say (capped like a typical player loop)
-        let lastWall = performance.now();
-        const ctx0 = w.__ctx.currentTime;
-        const wall0 = performance.now();
-        let maxNaiveGap = 0;
-        w.__hooks.push((drawn) => {
-          const now = performance.now();
-          frameTimes.push(now);
-          naive += Math.min(100, now - lastWall);
-          lastWall = now;
-          const after = w.__clock.nowMs(); // right after the DOM was updated
-          reveals.forEach((e, i) => {
-            if (firstSeen.has(i) || drawn < e.atMs) return;
-            const el = document.querySelector<HTMLElement>(`[data-object-id="${e.targetObject}"]`);
-            if (el && getComputedStyle(el).visibility === "visible" && Number(el.style.opacity || 0) > 0) firstSeen.set(i, after);
-          });
-          maxNaiveGap = Math.max(maxNaiveGap, Math.abs(naive - drawn));
-        });
-        w.__player.play().then(() => {
-          const poll = setInterval(() => {
-            if (!w.__clock.isPlaying() && w.__clock.nowMs() >= tl.totalMs - 1) {
-              clearInterval(poll);
-              const lateness = reveals.map((e, i) => (firstSeen.has(i) ? firstSeen.get(i)! - e.atMs : NaN));
-              const gaps = frameTimes.slice(1).map((t, i) => t - frameTimes[i]!);
-              const sorted = [...lateness].filter((x) => !Number.isNaN(x)).sort((a, b) => a - b);
-              const q = (p: number) => sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))]!;
-              resolveReport({
-                lessonMs: tl.totalMs,
-                reveals: reveals.length,
-                seen: sorted.length,
-                latenessMs: { min: sorted[0], p50: q(0.5), p95: q(0.95), max: sorted.at(-1) },
-                frames: frameTimes.length,
-                frameGapMs: { mean: gaps.reduce((a, b) => a + b, 0) / gaps.length, max: Math.max(...gaps) },
-                audioClockVsWallMs: (w.__ctx.currentTime - ctx0) * 1000 - (performance.now() - wall0),
-                outputLatencyReportedMs: ((w.__ctx.outputLatency ?? 0) as number) * 1000,
-                baseLatencyMs: w.__ctx.baseLatency * 1000,
-                latencyCompensationAppliedMs: w.__clock.latencyMs(),
-                naiveAccumulatedVsAudioMs: maxNaiveGap,
-                userAgent: navigator.userAgent,
-              });
-            }
-          }, 250);
-        });
-      }),
-  );
-  mkdirSync(OUT, { recursive: true });
-  writeFileSync(join(OUT, "sync.json"), JSON.stringify(report, null, 2));
-  console.log("SYNC " + JSON.stringify(report));
-  expect(report.seen, "every reveal was seen").toBe(report.reveals);
-  const late = (report.latenessMs as { max: number; min: number }).max;
-  expect(late, "no reveal appears after its scheduled time by more than the 200 ms gate").toBeLessThanOrEqual(200);
-  expect((report.latenessMs as { min: number }).min, "none appears before its time").toBeGreaterThanOrEqual(0);
-  expect(Math.abs(report.audioClockVsWallMs as number), "the audio clock and the wall clock agree over the whole run").toBeLessThan(250);
-});
 
 test("pause point: freezes on the position, the lesson stands still while the question is open, resume continues from it", async ({ page }) => {
   await open(page, 120);
