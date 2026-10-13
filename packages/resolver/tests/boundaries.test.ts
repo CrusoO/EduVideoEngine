@@ -27,14 +27,18 @@ const variant = fc.record({
   offsets: fc.array(fc.constantFrom(0, -1, 1, -5000, 5000), { minLength: 20, maxLength: 20 }),
   oneWord: fc.boolean(),
   lastWord: fc.boolean(),
+  /** Which cues become a draw or a pop (a cue index modulo 20), to cover the motion vocabulary with zero holds too. */
+  motion: fc.array(fc.constantFrom<"keep" | "draw" | "pop">("keep", "keep", "draw", "pop"), { minLength: 20, maxLength: 20 }),
 });
-function varied(v: { holds: number[]; offsets: number[]; oneWord: boolean; lastWord: boolean }): LessonBundle {
+function varied(v: { holds: number[]; offsets: number[]; oneWord: boolean; lastWord: boolean; motion: Array<"keep" | "draw" | "pop"> }): LessonBundle {
   const b = structuredClone(bundle);
   if (v.oneWord) for (const s of b.script) s.text = s.id === "s1.1" ? "Go {expr:eq1}." : "Go.";
   let i = 0;
   for (const sc of b.scenes) {
     for (const c of sc.cues) {
       c.minHoldMs = v.holds[i % 20]!;
+      const m = v.motion[i % 20]!;
+      if (m !== "keep" && c.action === "reveal") c.action = m;
       const off = v.offsets[i % 20]!;
       i++;
       const sentence = b.script.find((s) => s.id === c.anchor.sentenceId)!;
@@ -280,5 +284,67 @@ describe("refusals name the problem; ordering and chunks are exact", () => {
     // sentence ends exactly at a scene boundary are not smuggled into the next scene's chunk
     expect(c3.audio.every((a) => a.endMs <= c3.durationMs)).toBe(true);
     expect(c1.durationMs + c3.durationMs).toBeLessThan(t.totalMs);
+  });
+});
+
+describe("draw and pop (ADR 0020)", () => {
+  const base = () => structuredClone(bundle);
+  const first = tracksOf(bundle);
+
+  it("their minimum holds are options with defaults, recorded in the Timeline", () => {
+    expect(DEFAULT_OPTIONS.minActionMs.draw).toBe(800);
+    expect(DEFAULT_OPTIONS.minActionMs.pop).toBe(300);
+    expect(resolve(bundle, first).provenance.options.minActionMs).toMatchObject({ draw: 800, pop: 300 });
+    const custom = resolve(bundle, first, { minActionMs: { ...DEFAULT_OPTIONS.minActionMs, draw: 1200 } });
+    expect(custom.provenance.options.minActionMs.draw).toBe(1200);
+  });
+
+  it("a cue with a zero hold still lasts as long as the draw-on or the pop needs", () => {
+    const b = base();
+    b.scenes[0]!.cues = [
+      { targetObject: "title", action: "draw", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 0 },
+      { targetObject: "eq1", action: "pop", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 0 },
+    ];
+    const t = resolve(b, tracksOf(b));
+    const get = (id: string) => t.events.find((e) => e.targetObject === id)!;
+    expect(get("title").holdUntilMs - get("title").atMs).toBe(800);
+    expect(get("eq1").holdUntilMs - get("eq1").atMs).toBe(300);
+  });
+
+  it("a long draw stretches the scene like any other hold", () => {
+    const b = base();
+    b.scenes[0]!.cues = [{ targetObject: "title", action: "draw", anchor: { sentenceId: "s1.2", at: "end" }, minHoldMs: 0 }];
+    expect(resolve(b, tracksOf(b)).diagnostics.stretchedScenes).toEqual([{ sceneId: "scene1", extraMs: 100 }]);
+  });
+
+  it("the same stroke cannot be drawn twice at once, nor popped twice at once; a draw and a pop on one object do not clash", () => {
+    const twice = (action: "draw" | "pop") => {
+      const b = base();
+      b.scenes[0]!.cues = [
+        { targetObject: "title", action, anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+        { targetObject: "title", action, anchor: { sentenceId: "s1.1", at: "start", offsetMs: 100 }, minHoldMs: 1000 },
+      ];
+      return b;
+    };
+    expect(() => resolve(twice("draw"), tracksOf(base()))).toThrow(/draw and draw overlap on title/);
+    expect(() => resolve(twice("pop"), tracksOf(base()))).toThrow(/pop and pop overlap on title/);
+    const mixed = base();
+    mixed.scenes[0]!.cues = [
+      { targetObject: "title", action: "draw", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+      { targetObject: "title", action: "pop", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+    ];
+    expect(() => resolve(mixed, tracksOf(mixed))).not.toThrow();
+  });
+
+  it("parts of one object are separate lanes: two parts may draw at the same time, one part may not twice", () => {
+    const b = base();
+    b.scenes[0]!.cues = [
+      { targetObject: "title#a", action: "draw", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+      { targetObject: "title#b", action: "draw", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 1000 },
+    ];
+    const t = resolve(b, tracksOf(b));
+    expect(t.events.filter((e) => e.sceneId === "scene1").map((e) => e.targetObject)).toEqual(["title#a", "title#b"]);
+    b.scenes[0]!.cues.push({ targetObject: "title#a", action: "draw", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 100 }, minHoldMs: 500 });
+    expect(() => resolve(b, tracksOf(b))).toThrow(/overlap on title#a/);
   });
 });

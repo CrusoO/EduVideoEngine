@@ -248,3 +248,18 @@ describe("resolve: properties for any audio durations", () => {
     );
   });
 });
+
+describe("eventsFor with parts", () => {
+  it("gives an object its own events plainly and the events of its parts with the part name", () => {
+    const b = structuredClone(bundle);
+    b.scenes[0]!.cues = [
+      { targetObject: "eq1", action: "reveal", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 0 },
+      { targetObject: "eq1#curve", action: "draw", anchor: { sentenceId: "s1.1", at: "start", offsetMs: 100 }, minHoldMs: 0 },
+      { targetObject: "eq1x", action: "pop", anchor: { sentenceId: "s1.1", at: "start" }, minHoldMs: 0 },
+    ];
+    const t = resolve(b, tracksOf(b));
+    expect(eventsFor(t, "scene1", "eq1").map((e) => [e.action, e.part])).toEqual([["reveal", undefined], ["draw", "curve"]]);
+    expect(eventsFor(t, "scene1", "eq1x").map((e) => [e.action, e.part])).toEqual([["pop", undefined]]);
+    expect(Object.keys(eventsFor(t, "scene1", "eq1")[0]!)).toEqual(["action", "atMs", "holdUntilMs"]);
+  });
+});

@@ -7,9 +7,11 @@ import type { ColorTheme } from "./latex";
  * these; a component never sees a cue or a sentence, only its own resolved events.
  */
 export type ObjectEvent = {
-  action: "reveal" | "highlight" | "move" | "morph" | "dim";
+  action: "reveal" | "highlight" | "move" | "morph" | "dim" | "draw" | "pop";
   atMs: number;
   holdUntilMs: number;
+  /** A named piece of the object (a cue target written `object#part`): the curve of a graph, one hop of a number line. Absent: the whole object. */
+  part?: string;
 };
 
 /** What an object looks like at one instant. A pure function of (events, t): see state.ts. */
@@ -20,6 +22,10 @@ export type ObjectState = {
   /** 0 to 1: strength of the highlight (eased in and out). */
   highlight: number;
   dimmed: boolean;
+  /** 0 to 1: how much of a stroke has been drawn (1 when nothing draws it). */
+  draw: number;
+  /** Scale of a popping object, 0.6 to 1 (1 when nothing pops it). */
+  scale: number;
 };
 
 /** Typesets LaTeX to HTML (KaTeX markup). The player gets a pre-rendered cache (math-cache.ts), so it ships no KaTeX code. */

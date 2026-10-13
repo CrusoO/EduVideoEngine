@@ -81,7 +81,9 @@ export function validateBundle(input: unknown): Validation {
 
     const beatSentences = new Set(b.script.filter((s) => s.beatId === scene.beatId).map((s) => s.id));
     for (const cue of scene.cues) {
-      if (!objects.has(cue.targetObject)) bad(`${at}.cues`, `cue targets unknown object ${cue.targetObject}`);
+      const [targetId, targetPart] = cue.targetObject.split("#") as [string, string | undefined];
+      if (!objects.has(targetId)) bad(`${at}.cues`, `cue targets unknown object ${targetId}`);
+      else if (targetPart !== undefined && objects.get(targetId)!.component === "highlight") bad(`${at}.cues`, `${targetId} has no parts to target`);
       const sentence = sentences.get(cue.anchor.sentenceId);
       if (!sentence) bad(`${at}.cues`, `cue anchors to unknown sentence ${cue.anchor.sentenceId}`);
       else if (!beatSentences.has(sentence.id)) bad(`${at}.cues`, `cue anchors to ${sentence.id}, which is not in this scene's beat`);

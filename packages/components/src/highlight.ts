@@ -28,7 +28,7 @@ export const highlight: ComponentModule<HighlightProps> = {
   propsSchema: HighlightProps as never,
   render(el, props, t, ctx) {
     const p = HighlightProps.parse(props);
-    const s = objectStateAt(ctx.events, t);
+    const s = objectStateAt(ctx.events, t, ctx.reduceMotion);
     el.className = "eve-obj eve-highlight";
     const rect = ctx.rectOf?.(p.target) ?? null;
     const label = p.label ?? (p.points && p.points.length ? `x = ${p.points.join(", ")}` : "");

@@ -75,7 +75,7 @@ export const functionGraph: ComponentModule<GraphProps> = {
       }
       host.append(svg);
     }
-    applyState(host, objectStateAt(ctx.events, t));
+    applyState(host, objectStateAt(ctx.events, t, ctx.reduceMotion));
   },
   cueTargets: () => ["whole"],
   altText: (props, ctx) => {

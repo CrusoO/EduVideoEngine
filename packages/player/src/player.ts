@@ -23,6 +23,8 @@ export type PlayerOptions = {
   now?: () => number;
   /** Width of the stage in pixels, for the layout solver. Default: the real width of the stage element (0 when nothing is laid out, as in jsdom, in which case the stage stays a plain column). */
   stageWidth?: () => number;
+  /** Jump every motion to its end state. Default: the prefers-reduced-motion setting of the browser, read at every draw. */
+  reduceMotion?: boolean;
   /** Height taken by the lesson sheet around the stage, in pixels (ADR 0017: a parameter, default 184, unconfirmed). */
   chromePx?: number;
   /** Dynamic viewport height in pixels (dvh). Default: the visual viewport, which shrinks when a phone browser shows its address bar. */
@@ -188,6 +190,7 @@ export class Player {
       const r = el.getBoundingClientRect();
       return { x: r.left - s.left, y: r.top - s.top, width: r.width, height: r.height };
     };
+    const reduceMotion = this.o.reduceMotion ?? (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches);
     for (const pass of ["flow", "overlay"] as const) {
       for (const obj of spec.objects) {
         if (OVERLAY.has(obj.component) !== (pass === "overlay")) continue;
@@ -199,6 +202,7 @@ export class Player {
           events: this.events.get(obj.id) ?? [],
           math: this.o.math,
           colors: this.colors,
+          reduceMotion,
           rectOf,
         };
         componentFor(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);

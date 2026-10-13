@@ -33,7 +33,7 @@ export const stepList: ComponentModule<StepListProps> = {
       }
       host.replaceChildren(ol);
     }
-    applyState(host, objectStateAt(ctx.events, t));
+    applyState(host, objectStateAt(ctx.events, t, ctx.reduceMotion));
   },
   cueTargets: () => ["whole"],
   altText: (props, ctx) => props.steps.map((id, i) => `Step ${i + 1}: ${ctx.expressions[id] ? spokenLabel(ctx.expressions[id]!, ctx.locale) : id}`).join(". "),

@@ -18,6 +18,7 @@
     "@playwright/test": "1.49.1",
     "@types/katex": "0.16.7",
     "vite": "5.4.11",
-    "jsdom": "25.0.1"
+    "jsdom": "25.0.1",
+    "fast-check": "3.23.1"
   }
 }

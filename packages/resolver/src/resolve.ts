@@ -1,18 +1,18 @@
 import { Timeline, hashOf, wordsOf, type AudioTrack, type Cue, type LessonBundle, type ResolveOptions, type TimelineEvent } from "@eve/schema";
 
-export const RESOLVER_VERSION = "1.1.0";
+export const RESOLVER_VERSION = "1.2.0";
 
 /**
  * Defaults, in lesson milliseconds. They are options (recorded in every Timeline) so they can be tuned against real
  * viewing data, but a given bundle and option set always resolves to the same Timeline.
  *  - sentenceGapMs: silence between two sentences of a scene
  *  - sceneTailMs: silence after the last sentence of a scene before the next scene begins
- *  - minActionMs: the least an action can last so its component can finish drawing it (reveal 250, highlight eases 150 in and out)
+ *  - minActionMs: the least an action can last so its component can finish drawing it (reveal 250, highlight eases 150 in and out, draw-on 800, pop 300)
  */
 export const DEFAULT_OPTIONS: ResolveOptions = {
   sentenceGapMs: 300,
   sceneTailMs: 700,
-  minActionMs: { reveal: 250, highlight: 300, move: 500, morph: 500, dim: 150 },
+  minActionMs: { reveal: 250, highlight: 300, move: 500, morph: 500, dim: 150, draw: 800, pop: 300 },
 };
 /** Kept for callers and tests that want the defaults by name. */
 export const SENTENCE_GAP_MS = DEFAULT_OPTIONS.sentenceGapMs;
@@ -123,8 +123,8 @@ export function resolve(bundle: LessonBundle, tracks: readonly AudioTrack[], ove
   return Timeline.parse({ ...body, hash: hashOf(body) });
 }
 
-/** Two timed animations of one kind on one object may not run at once (the build prompt's no-overlap rule). Reveal is a one-way state, so repeats are harmless. */
-const EXCLUSIVE: Record<string, string> = { highlight: "highlight", move: "motion", morph: "motion", dim: "dim" };
+/** Two timed animations of one kind on one object may not run at once (the build prompt's no-overlap rule). Reveal is a one-way state, so repeats are harmless. A stroke cannot be drawn twice at once, nor an object popped twice at once. */
+const EXCLUSIVE: Record<string, string> = { highlight: "highlight", move: "motion", morph: "motion", dim: "dim", draw: "draw", pop: "pop" };
 function overlaps(events: TimelineEvent[], sceneId: string, problems: string[]): void {
   const lanes = new Map<string, TimelineEvent[]>();
   for (const e of events) {

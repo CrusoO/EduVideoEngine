@@ -13,6 +13,12 @@ export function applyState(el: HTMLElement, s: ObjectState) {
   el.style.opacity = css(s.dimmed ? Math.min(s.opacity, 0.35) : s.opacity);
   el.style.visibility = s.visible ? "visible" : "hidden";
   el.style.setProperty("--eve-hl", css(s.highlight));
+  el.style.setProperty("--eve-draw", css(s.draw));
+  if (s.scale === 1) el.style.removeProperty("transform");
+  else {
+    el.style.transform = `scale(${css(s.scale)})`;
+    el.style.transformOrigin = "center";
+  }
 }
 
 export const text: ComponentModule<TextProps> = {
@@ -24,7 +30,7 @@ export const text: ComponentModule<TextProps> = {
     el.className = `eve-obj eve-text eve-text-${p.role}`;
     el.setAttribute("lang", ctx.locale);
     if (el.textContent !== p.text) el.textContent = p.text;
-    applyState(el, objectStateAt(ctx.events, t));
+    applyState(el, objectStateAt(ctx.events, t, ctx.reduceMotion));
   },
   cueTargets: () => ["whole"],
   altText: (props) => props.text,

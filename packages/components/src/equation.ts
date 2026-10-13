@@ -28,7 +28,7 @@ export const equation: ComponentModule<EquationProps> = {
     // The label a screen reader speaks is the verbalised tree (same source as the voice); KaTeX's MathML stays inside for tools that read it.
     el.setAttribute("role", "img");
     el.setAttribute("aria-label", spokenLabel(expr, ctx.locale));
-    applyState(el, objectStateAt(ctx.events, t));
+    applyState(el, objectStateAt(ctx.events, t, ctx.reduceMotion));
   },
   cueTargets: () => ["whole"],
   altText: (_props, ctx) => (ctx.exprRef && ctx.expressions[ctx.exprRef] ? `Equation: ${spokenLabel(ctx.expressions[ctx.exprRef]!, ctx.locale)}` : "Equation"),

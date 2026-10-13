@@ -26,7 +26,7 @@ const ctx = (over: Partial<RenderContext> = {}): RenderContext => ({ objectId: "
 
 describe("objectStateAt: appearance is a pure function of (events, t)", () => {
   it("an object with no reveal event is visible from the start", () => {
-    expect(objectStateAt([], 0)).toEqual({ visible: true, opacity: 1, highlight: 0, dimmed: false });
+    expect(objectStateAt([], 0)).toEqual({ visible: true, opacity: 1, highlight: 0, dimmed: false, draw: 1, scale: 1 });
   });
 
   it("reveal: hidden before, fades in over REVEAL_MS, stays", () => {

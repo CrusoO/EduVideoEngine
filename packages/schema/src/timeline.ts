@@ -23,7 +23,7 @@ export const TimelineEvent = z
   .object({
     sceneId: z.string(),
     targetObject: z.string(),
-    action: z.enum(["reveal", "highlight", "move", "morph", "dim"]),
+    action: z.enum(["reveal", "highlight", "move", "morph", "dim", "draw", "pop"]),
     atMs: z.number().int().min(0),
     holdUntilMs: z.number().int().min(0),
   })
@@ -37,7 +37,7 @@ export const ResolveOptions = z
   .object({
     sentenceGapMs: z.number().int().min(0),
     sceneTailMs: z.number().int().min(0),
-    minActionMs: z.object({ reveal: z.number().int().min(1), highlight: z.number().int().min(1), move: z.number().int().min(1), morph: z.number().int().min(1), dim: z.number().int().min(1) }).strict(),
+    minActionMs: z.object({ reveal: z.number().int().min(1), highlight: z.number().int().min(1), move: z.number().int().min(1), morph: z.number().int().min(1), dim: z.number().int().min(1), draw: z.number().int().min(1), pop: z.number().int().min(1) }).strict(),
   })
   .strict();
 

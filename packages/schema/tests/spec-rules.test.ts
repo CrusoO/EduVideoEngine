@@ -312,3 +312,27 @@ describe("term colours (ADR 0019)", () => {
     for (const id of Object.keys(orig.hashes.perScene)) if (id !== "scene5") expect(sealed.hashes.perScene[id]).toBe(orig.hashes.perScene[id]);
   });
 });
+
+describe("cue targets with parts and the new actions", () => {
+  const sealed = (mut: (b: LessonBundle) => void) => {
+    const b = structuredClone(quadraticRoots) as LessonBundle;
+    mut(b);
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    return validateBundle(seal(rest));
+  };
+  it("object#part is accepted when the object exists, with draw and pop", () => {
+    expect(sealed((b) => void (b.scenes[3]!.cues[0] = { targetObject: "graph#curve", action: "draw", anchor: { sentenceId: "s4.1", at: "start" }, minHoldMs: 800 })).ok).toBe(true);
+    expect(sealed((b) => void (b.scenes[3]!.cues[0] = { targetObject: "graph", action: "pop", anchor: { sentenceId: "s4.1", at: "start" }, minHoldMs: 300 })).ok).toBe(true);
+  });
+  it("an unknown object is rejected whatever the part, and a highlight has no parts", () => {
+    const m = (t: string) => sealed((b) => void (b.scenes[3]!.cues[0] = { targetObject: t, action: "draw", anchor: { sentenceId: "s4.1", at: "start" }, minHoldMs: 800 })).issues.map((i) => i.message);
+    expect(m("ghost#curve")).toEqual(["cue targets unknown object ghost"]);
+    expect(m("roots#x")).toEqual(["roots has no parts to target"]);
+  });
+  it("a malformed target is rejected by the schema", () => {
+    for (const t of ["graph#", "#curve", "graph#a#b", "graph #a", ""]) {
+      expect(sealed((b) => void (b.scenes[3]!.cues[0] = { targetObject: t, action: "draw", anchor: { sentenceId: "s4.1", at: "start" }, minHoldMs: 800 })).ok, t).toBe(false);
+    }
+  });
+});

@@ -88,10 +88,15 @@ export const LayoutRule = z.discriminatedUnion("rule", [
 
 const AnchorAt = z.union([z.literal("start"), z.literal("end"), z.object({ wordIndex: z.number().int().min(0) }).strict()]);
 
+/** A cue target: an object id, or `object#part` for a named part of it (the curve of a graph, one hop of a number line). */
+export const CueTarget = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*(#[A-Za-z0-9][A-Za-z0-9_.:-]*)?$/, "a cue target is an object id, or object#part");
+/** What a cue can do. Every action must show a change or direct attention (ADR 0020); morph is not built (ADR 0021). */
+export const CUE_ACTIONS = ["reveal", "highlight", "move", "morph", "dim", "draw", "pop"] as const;
+
 export const Cue = z
   .object({
-    targetObject: id,
-    action: z.enum(["reveal", "highlight", "move", "morph", "dim"]),
+    targetObject: CueTarget,
+    action: z.enum(CUE_ACTIONS),
     anchor: z.object({ sentenceId: id, at: AnchorAt, offsetMs: z.number().int().optional() }).strict(),
     /** Long enough to read: enforced by the resolver, never trusted. */
     minHoldMs: z.number().int().min(0),
