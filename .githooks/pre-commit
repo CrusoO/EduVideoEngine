@@ -1,0 +1,3 @@
+#!/bin/sh
+# Blocks a commit that contains something that looks like an API key (ADR 0022). Installed by `pnpm install` (the prepare script sets core.hooksPath).
+exec pnpm exec vite-node scripts/secrets-check.ts --staged

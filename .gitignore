@@ -11,3 +11,8 @@ test-results/
 tools/piper/
 stryker.measure.json
 stryker.budget.json
+
+# secrets: keys live only in .env, never in git (ADR 0022)
+.env
+.env.*
+!.env.example
