@@ -24,6 +24,7 @@ const SECRET_SHAPES: Array<[string, RegExp]> = [
   ["GitHub token", /\bgh[pousr]_[A-Za-z0-9]{36,}/g],
   ["AWS access key id", /\bAKIA[0-9A-Z]{16}\b/g],
   ["private key block", /-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP )?PRIVATE KEY-----/g],
+  ["Groq API key", /gsk_[A-Za-z0-9]{20,}/g],
   ["Slack token", /\bxox[abprs]-[A-Za-z0-9-]{10,}/g],
 ];
 

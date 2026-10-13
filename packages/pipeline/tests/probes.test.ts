@@ -2,16 +2,16 @@ import { describe, expect, it } from "vitest";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { FIXTURES_DIR, FixtureStore, Ledger, LlmClient, readConfig } from "@eve/adapters";
+import { FIXTURES_DIR, FixtureStore, Ledger, LlmClient, referenceConfig } from "@eve/adapters";
 import { PROBES, runProbe } from "../probes";
 
 /**
- * The behaviour suite, replayed. The answers were recorded once from a real model (Bedrock, Claude Sonnet 4.6, 2026-10-14) through system.v1 and the envelope;
+ * The behaviour suite, replayed. The answers were recorded once from a real model (the read-only Bedrock reference, Claude Sonnet 4.6, 2026-10-14) through system.v1 and the envelope;
  * this test judges them again with no call and no key. If the system prompt, an envelope or a probe changes, the fixture key changes and this fails: re-record on purpose.
  */
 const client = () =>
   new LlmClient({
-    config: { ...readConfig({}), mode: "replay", provider: "bedrock", model: "eu.anthropic.claude-sonnet-4-6" },
+    config: referenceConfig(),
     fixtures: new FixtureStore(FIXTURES_DIR),
     ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-probe-")), "l.jsonl")),
   });

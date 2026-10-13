@@ -1,29 +1,30 @@
 import { UnsafePromptError, assertPromptSafe } from "@eve/safety";
 import type { ZodType } from "zod";
-import type { LlmConfig } from "./config";
+import type { LlmConfig } from "./env";
 import { FixtureStore, fixtureKey, type Fixture } from "./fixtures";
-import { BedrockAdapter } from "./bedrock";
 import { GeminiAdapter } from "./gemini";
-import { Ledger, pacificDay, type LedgerEntry } from "./ledger";
-import { PROFILES, profileOf, type ProfileFile } from "./profiles";
-import { LlmRateLimited, LlmRefused, type JsonSchema, type LLMAdapter, type LlmResponse } from "./types";
+import { GroqAdapter } from "./groq";
+import { Ledger, dayIn, type LedgerEntry } from "./ledger";
+import { RateLimiter, estimateRequest, realClock, type Clock } from "./limiter";
+import { resetTimeZone } from "./profiles";
+import { sanitize } from "./sanitize";
+import { LlmHttpError, LlmRateLimited, LlmRefused, type JsonSchema, type LLMAdapter, type LlmResponse } from "./types";
 
-export type Clock = { now(): number; sleep(ms: number): Promise<void> };
-export const realClock: Clock = { now: () => Date.now(), sleep: (ms) => new Promise((r) => setTimeout(r, ms)) };
-
-export type Role = "primary" | "fallback" | "light";
+export type { Clock };
+export { realClock };
 
 /** One call to a model, in the pipeline's terms. `step` names the pass (planner, scriptwriter, composer) for the ledger. */
 export type CallSpec = {
   step: string;
-  /** The version of the prompt file, such as planner.v1. Part of the fixture key. */
+  /** The version of the pass prompt, such as planner.v2. Part of the fixture key (with the system prompt text, the model id, the temperature and the input). */
   promptVersion: string;
-  role?: Role;
   system: string;
   input: string;
   jsonSchema?: JsonSchema;
+  /** The most the reply may be. Also the output allowance in the token estimate unless expectedOutputTokens is given. */
   maxOutputTokens?: number;
-  /** Ask for JSON output mode even without a schema. */
+  /** What the reply is expected to be, for the per-minute token estimate (default 1024). */
+  expectedOutputTokens?: number;
   json?: boolean;
   kind?: "call" | "repair";
 };
@@ -34,33 +35,30 @@ export type ClientOptions = {
   config: LlmConfig;
   fixtures: FixtureStore;
   ledger: Ledger;
-  /** Defaults to the adapter for config.provider. Tests and a second provider pass their own. */
+  /** Defaults to the adapter for config.provider. Tests and a further provider pass their own. */
   adapter?: LLMAdapter;
   clock?: Clock;
-  profiles?: ProfileFile;
   log?: (message: string) => void;
-  /** How many times a 429 is waited out before the client gives up. */
+  /** How many times a 429 or 503 is waited out before the client gives up. */
   maxRateLimitRetries?: number;
 };
 
-export type Stats = { calls: number; replayed: number; sent: number; repairs: number; rateLimited: number; standIns: number };
+export type Stats = { calls: number; replayed: number; sent: number; repairs: number; rateLimited: number; standIns: number; estimatedTokens: number };
 
 /**
- * The one door to a language model (ADR 0023). It decides replay / record / live, refuses what must not go out (personal data, a missing recorded
- * answer, CI asking for a live call, a daily cap used up), spaces requests to the rate limit, waits out 429s, writes every request to the ledger,
- * and validates every answer against the caller's own schema, with a single repair retry that sends the validator's messages back.
+ * The one door to a language model (ADR 0023, 0026). It decides replay / record / live, refuses what must not go out (personal data, a missing recorded answer,
+ * CI asking for a live call, a daily cap used up, a request too large for the per-minute token limit), spaces requests to the limits, waits out 429 and 503,
+ * writes every request to the ledger, and validates every answer against the caller's own schema, with a single repair retry that sends the validator's messages back.
+ * Resumable by construction: a recorded answer is never asked for twice, so a run that stops at a daily cap loses nothing and the next run makes only the missing calls.
  */
 export class LlmClient {
-  readonly stats: Stats = { calls: 0, replayed: 0, sent: 0, repairs: 0, rateLimited: 0, standIns: 0 };
+  readonly stats: Stats = { calls: 0, replayed: 0, sent: 0, repairs: 0, rateLimited: 0, standIns: 0, estimatedTokens: 0 };
   private readonly clock: Clock;
-  private readonly profiles: ProfileFile;
   private adapter?: LLMAdapter;
-  private lastStart = new Map<string, number>();
-  private warned = new Set<string>();
+  private limiter?: RateLimiter;
 
   constructor(private readonly o: ClientOptions) {
     this.clock = o.clock ?? realClock;
-    this.profiles = o.profiles ?? PROFILES;
     this.adapter = o.adapter;
   }
 
@@ -68,17 +66,26 @@ export class LlmClient {
     return this.o.config.mode;
   }
 
-  modelFor(role: Role = "primary"): string {
-    return { primary: this.o.config.model, fallback: this.o.config.fallbackModel, light: this.o.config.lightModel }[role];
+  get model(): string {
+    return this.o.config.model;
+  }
+
+  /** The model every call goes to (kept as a method for callers that ask). */
+  modelFor(): string {
+    return this.o.config.model;
   }
 
   private log(message: string) {
     this.o.log?.(message);
   }
 
+  private get key(): string {
+    return this.o.config.apiKey?.reveal() ?? "";
+  }
+
   async generate(spec: CallSpec): Promise<LlmResponse> {
     const { config, fixtures } = this.o;
-    const model = this.modelFor(spec.role);
+    const model = config.model;
     const key = fixtureKey({ promptVersion: spec.promptVersion, model, system: spec.system, input: spec.input, temperature: config.temperature });
     this.stats.calls++;
 
@@ -102,9 +109,9 @@ export class LlmClient {
       }
     }
 
-    const profile = profileOf(model, this.profiles);
-    if (!profile) throw new LlmRefused(`model ${model} has no entry in packages/adapters/model-profiles.json. Add one (structured output, thinking, output limit, rpm, daily cap) and try again.`);
-    if (profile.provider !== config.provider) throw new LlmRefused(`model ${model} belongs to provider ${profile.provider}, but LLM_PROVIDER is ${config.provider}.`);
+    const limits = config.profile.limits;
+    if (limits.rpm === null || limits.rpd === null) throw new LlmRefused(`Limits for ${config.provider}/${model} are not filled in model-profiles.json (rpm and rpd are null). Nothing was sent.`);
+    if (!config.apiKey && !this.adapter) throw new LlmRefused(`no API key for ${config.provider} (required in ${config.mode} mode). Nothing was sent.`);
     for (const text of [spec.system, spec.input]) {
       try {
         assertPromptSafe(text);
@@ -114,45 +121,40 @@ export class LlmClient {
       }
     }
     const adapter = (this.adapter ??= this.createAdapter());
-
-    const rpm = config.rpm ?? profile.rpm;
-    const cap = config.dailyCap ?? profile.dailyRequests;
-    if ((config.rpm === undefined || config.dailyCap === undefined) && !profile.limitsVerified && !this.warned.has(model)) {
-      this.warned.add(model);
-      this.log(`WARNING: using placeholder limits for ${model} (${rpm} requests a minute, ${cap} a day). Read your real limits in AI Studio and set LLM_RPM and LLM_DAILY_REQUEST_CAP.`);
-    }
+    const limiter = (this.limiter ??= new RateLimiter(this.clock, `${config.provider}/${model}`, { rpm: limits.rpm, tpm: limits.tpm }));
+    const estimate = estimateRequest(spec.system, spec.input, spec.expectedOutputTokens ?? 1024, config.profile);
+    limiter.failFast(estimate);
 
     const maxTries = (this.o.maxRateLimitRetries ?? 2) + 1;
     for (let attempt = 0; attempt < maxTries; attempt++) {
-      await this.gate(model, rpm, cap);
+      this.checkDaily(limits.rpd);
+      const waited = await limiter.acquire(estimate, this.lastLedgerStart());
+      if (waited > 0) this.log(`waited ${Math.round(waited / 1000)} s for the ${config.provider} rate limits`);
       try {
-        const response = await adapter.generate({
-          model,
-          system: spec.system,
-          input: spec.input,
-          jsonSchema: profile.structuredOutput ? spec.jsonSchema : undefined,
-          maxOutputTokens: Math.min(spec.maxOutputTokens ?? profile.maxOutputTokens, profile.maxOutputTokens),
-          thinking: config.thinking,
-          temperature: config.temperature,
-          json: spec.json,
-        });
+        const response = await adapter.generate({ model, system: spec.system, input: spec.input, jsonSchema: spec.jsonSchema, maxOutputTokens: spec.maxOutputTokens, temperature: config.temperature, json: spec.json });
         this.stats.sent++;
-        this.record(spec, model, spec.kind ?? "call", response.usage, response.status);
-        if (config.mode === "record") fixtures.write({ key, step: spec.step, promptVersion: spec.promptVersion, model, recordedAt: new Date(this.clock.now()).toISOString(), response });
+        this.stats.estimatedTokens += estimate;
+        limiter.settle(response.usage.inputTokens + response.usage.outputTokens + response.usage.thinkingTokens);
+        this.record(spec, spec.kind ?? "call", response.usage, response.status);
+        if (config.mode === "record") fixtures.write({ key, step: spec.step, promptVersion: spec.promptVersion, model, recordedAt: new Date(this.clock.now()).toISOString(), response: { ...response, limitHeaders: undefined } });
+        if (response.limitHeaders && Object.keys(response.limitHeaders).length > 0) this.log(`rate-limit headers seen: ${JSON.stringify(response.limitHeaders)}`);
         return response;
       } catch (e) {
+        if (e instanceof LlmHttpError) {
+          // never a bare status: the status, the retry-after and the sanitised body (keys stripped by pattern)
+          this.log(`${config.provider}/${model} failed: HTTP ${e.status ?? "none"}, retry-after ${e.retryAfter ?? "none"}, body: ${sanitize(e.body || e.message, this.key)}`);
+        }
         if (e instanceof LlmRateLimited) {
           this.stats.rateLimited++;
-          this.record(spec, model, "rate-limited", { inputTokens: 0, outputTokens: 0, thinkingTokens: 0 }, "429");
-          if (attempt === maxTries - 1) throw new LlmRefused(`${model} is still rate limited after ${maxTries} tries; stopping. Wait a few minutes or lower LLM_RPM.`);
-          this.log(`  provider said: ${e.message}`);
+          this.record(spec, "rate-limited", { inputTokens: 0, outputTokens: 0, thinkingTokens: 0 }, String(e.status ?? "429"));
+          if (attempt === maxTries - 1) throw new LlmRefused(`${config.provider}/${model} still says try later (HTTP ${e.status}) after ${maxTries} tries; stopping. Last answer: ${sanitize(e.body || e.message, this.key)}`);
           const wait = e.retryAfterMs ?? Math.min(60_000, 2000 * 2 ** attempt);
-          this.log(`rate limited (429) on ${model}; waiting ${Math.round(wait / 1000)} s before try ${attempt + 2} of ${maxTries}`);
+          this.log(`try later (HTTP ${e.status}); waiting ${Math.round(wait / 1000)} s before try ${attempt + 2} of ${maxTries}`);
           await this.clock.sleep(wait);
           continue;
         }
-        this.record(spec, model, "failed", { inputTokens: 0, outputTokens: 0, thinkingTokens: 0 }, "error");
-        throw e;
+        this.record(spec, "failed", { inputTokens: 0, outputTokens: 0, thinkingTokens: 0 }, e instanceof LlmHttpError ? String(e.status ?? "error") : "error");
+        throw e instanceof Error ? new Error(sanitize(e.message, this.key), { cause: undefined }) : e;
       }
     }
     throw new LlmRefused("unreachable");
@@ -181,48 +183,42 @@ export class LlmClient {
   }
 
   private createAdapter(): LLMAdapter {
-    const { provider, apiKey } = this.o.config;
-    if (provider === "bedrock") {
-      const aws = this.o.config.aws;
-      if (!aws) throw new LlmRefused("AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not set. Put them in .env (ignored by git).");
-      return new BedrockAdapter(aws);
-    }
-    if (provider !== "gemini") throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Built: gemini, bedrock; a new provider is a new adapter file (ADR 0023).`);
-    if (!apiKey) throw new LlmRefused("GEMINI_API_KEY is not set. Put it in .env (ignored by git) or the environment; replay mode needs no key.");
-    return new GeminiAdapter(apiKey);
+    const { provider } = this.o.config;
+    if (provider === "gemini") return new GeminiAdapter(this.o.config);
+    if (provider === "groq") return new GroqAdapter(this.o.config);
+    throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Built: gemini, groq; a further provider is a new adapter file (ADR 0023).`);
   }
 
-  /** Before every request: refuse past the daily cap (per model, Pacific day), and wait until the minute-rate allows another. */
-  private async gate(model: string, rpm: number, cap: number) {
-    const day = pacificDay(this.clock.now());
-    const used = this.o.ledger.requestsOn(day, model);
-    if (used >= cap) {
+  private today(): string {
+    return dayIn(resetTimeZone(this.o.config.provider), this.clock.now());
+  }
+
+  /** Refuses to pass the daily request cap (per model, in the provider's reset time zone), and says when it stops. */
+  private checkDaily(rpd: number) {
+    const model = this.o.config.model;
+    const used = this.o.ledger.requestsOn(this.today(), model);
+    if (used >= rpd) {
       throw new LlmRefused(
-        `daily request cap reached for ${model}: ${used} of ${cap} requests used today (Pacific time, resets at midnight Pacific). Stopped; nothing was sent. ` +
-          `Run again tomorrow, or raise LLM_DAILY_REQUEST_CAP only if your AI Studio dashboard shows a higher limit.`,
+        `daily request cap reached for ${this.o.config.provider}/${model}: ${used} of ${rpd} requests used today (the day resets at midnight ${resetTimeZone(this.o.config.provider)}). Stopped; nothing was sent. ` +
+          `Run the same command again after the reset: it makes only the calls that are still missing.`,
       );
     }
-    const gap = Math.ceil(60_000 / rpm);
-    const last = this.lastStart.get(model) ?? this.lastLedgerStart(model);
-    const wait = last === undefined ? 0 : last + gap - this.clock.now();
-    if (wait > 0) await this.clock.sleep(wait);
-    this.lastStart.set(model, this.clock.now());
   }
 
-  private lastLedgerStart(model: string): number | undefined {
-    const times = this.o.ledger.entries().filter((e) => e.model === model).map((e) => Date.parse(e.at));
+  private lastLedgerStart(): number | undefined {
+    const times = this.o.ledger.entries().filter((e) => e.model === this.o.config.model).map((e) => Date.parse(e.at));
     return times.length === 0 ? undefined : Math.max(...times);
   }
 
-  private record(spec: CallSpec, model: string, kind: LedgerEntry["kind"], usage: LlmResponse["usage"], status: string) {
+  private record(spec: CallSpec, kind: LedgerEntry["kind"], usage: LlmResponse["usage"], status: string) {
     const now = this.clock.now();
     this.o.ledger.append({
       at: new Date(now).toISOString(),
-      day: pacificDay(now),
+      day: this.today(),
       step: spec.step,
       promptVersion: spec.promptVersion,
       provider: this.o.config.provider,
-      model,
+      model: this.o.config.model,
       mode: this.o.config.mode === "live" ? "live" : "record",
       kind,
       inputTokens: usage.inputTokens,

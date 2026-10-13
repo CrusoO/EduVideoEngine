@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { existsSync, mkdtempSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve as resolvePath } from "node:path";
-import { FIXTURES_DIR, FakeAdapter, FixtureStore, Ledger, LlmClient, PROFILES, fixtureKey, readConfig, type LLMAdapter, type LlmConfig, type LlmRequest, type LlmResponse, type ProfileFile } from "@eve/adapters";
+import { FIXTURES_DIR, FakeAdapter, FixtureStore, Ledger, LlmClient, fixtureKey, referenceConfig, testConfig, type LLMAdapter, type LlmConfig, type LlmRequest, type LlmResponse } from "@eve/adapters";
 import { loadStore, retrieve } from "@eve/content";
 import { LIMITS, LessonPlan } from "@eve/schema";
 import { PLANNER_PROMPT_VERSION, checkPlan, loadPrompt, missingForPlanning, planLesson, plannerCall, plannerInput, referencePlan, templateFor, type PlannedBeat } from "../index";
@@ -16,7 +16,7 @@ const ref = referencePlan(r) as { template: "problem-first" | "example-first"; b
 const clock = { now: () => Date.parse("2026-10-13T20:00:00Z"), sleep: async () => {} };
 function client(adapter: LLMAdapter | undefined, over: Partial<LlmConfig> = {}, fixtureDir = mkdtempSync(join(tmpdir(), "eve-pl-"))) {
   const ledger = new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl"));
-  return { c: new LlmClient({ config: { ...readConfig({}), mode: "live", rpm: 600, dailyCap: 100, ...over }, fixtures: new FixtureStore(fixtureDir), ledger, adapter, clock }), ledger };
+  return { c: new LlmClient({ config: testConfig({ mode: "live", ...over }), fixtures: new FixtureStore(fixtureDir), ledger, adapter, clock }), ledger };
 }
 const answer = (a: unknown) => JSON.stringify(a);
 const beats = (edit: (b: PlannedBeat[]) => PlannedBeat[]) => ({ ...ref, beats: edit(structuredClone(ref.beats)) });
@@ -196,7 +196,7 @@ describe("record, then replay, on the seed lesson", () => {
   // The planner answer recorded on 2026-10-14 from a real model (Bedrock, see ADR 0023): replay needs no key and makes no call. CI fails if the fixture goes missing.
   it("the committed recording of the real planner answer replays to a valid plan with no live call", async () => {
     const logs: string[] = [];
-    const config = { ...readConfig({}), mode: "replay" as const, provider: "bedrock", model: "eu.anthropic.claude-sonnet-4-6" };
+    const config = referenceConfig();
     const c = new LlmClient({ config, fixtures: new FixtureStore(FIXTURES_DIR), ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl")), log: (m) => logs.push(m) });
     const out = await planLesson(c, r);
     expect(out).toMatchObject({ ok: true });
@@ -219,10 +219,9 @@ describe("a second provider plans the same lesson with no change to the planner"
       return { text: answer(ref), model: req.model, status: "completed", usage: { inputTokens: 1, outputTokens: 1, thinkingTokens: 0 } };
     }
   }
-  const profiles: ProfileFile = { defaults: { primary: "other-1", fallback: "other-1", light: "other-1" }, profiles: { "other-1": { ...PROFILES.profiles["gemini-3.8-flash"]!, provider: "other", thinking: { kind: "none" }, limitsVerified: true } } };
   it("gives the same plan", async () => {
-    const config = { ...readConfig({}), mode: "live" as const, provider: "other", model: "other-1", rpm: 600, dailyCap: 100 };
-    const other = new LlmClient({ config, fixtures: new FixtureStore(mkdtempSync(join(tmpdir(), "eve-pl-"))), ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl")), adapter: new Other(), profiles, clock });
+    const config = testConfig({ mode: "live", provider: "gemini" });
+    const other = new LlmClient({ config, fixtures: new FixtureStore(mkdtempSync(join(tmpdir(), "eve-pl-"))), ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl")), adapter: new Other(), clock });
     const a = await planLesson(client(new FakeAdapter([answer(ref)])).c, r);
     const b = await planLesson(other, r);
     expect(b).toEqual(a);

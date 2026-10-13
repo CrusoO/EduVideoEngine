@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
-    "@eve/schema": "workspace:*"
+    "@eve/schema": "workspace:*",
+    "@eve/adapters": "workspace:*"
   }
 }

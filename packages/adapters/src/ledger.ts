@@ -7,7 +7,7 @@ import { dirname } from "node:path";
  */
 export type LedgerEntry = {
   at: string;
-  /** The Pacific-time calendar day: the free-tier daily limits reset at midnight Pacific. */
+  /** The calendar day in the provider's reset time zone (Gemini: Pacific, midnight Pacific; the profile file says which). */
   day: string;
   step: string;
   promptVersion: string;
@@ -23,7 +23,8 @@ export type LedgerEntry = {
 };
 
 /** The calendar day in Pacific time, as YYYY-MM-DD. */
-export const pacificDay = (ms: number): string => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ms));
+export const dayIn = (timeZone: string, ms: number): string => new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(ms));
+export const pacificDay = (ms: number): string => dayIn("America/Los_Angeles", ms);
 
 export class Ledger {
   constructor(readonly path: string) {}

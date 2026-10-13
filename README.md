@@ -30,3 +30,17 @@ Phase 0: step (a) schema and fixture done; step (b) components done (127 unit te
 Next: (c) resolver, (d) player, (e) adapters (FileVoiceAdapter first), (f) verifier, then the Phase 0 gate.
 
 Golden frames: `pnpm --filter @eve/components golden` (regenerate with `golden:update`).
+
+## Configuration (language model)
+Copy `.env.example` to `.env` (git ignores it) and fill in what you use. Six variables, nothing else:
+
+| Variable | Meaning |
+|---|---|
+| `LLM_PROVIDER` | `gemini` (main) or `groq` (backup) |
+| `LLM_MODEL` | blank means the provider's default in `packages/adapters/model-profiles.json` |
+| `LLM_MODE` | `replay` (default: recorded answers only, no key, no network), `record` (call once and save) or `live` |
+| `LLM_TEMPERATURE` | 0 to 1, default 0.2 |
+| `GEMINI_API_KEY`, `GROQ_API_KEY` | one key per provider; leave blank if unused |
+
+Limits and model quirks are in `model-profiles.json`, not in variables. In `record` or `live` mode the loader refuses to run while a model's `rpm` or `rpd` is `null`: fill them from the provider's official page. Keys: see `docs/SECURITY.md`.
+Useful commands: `pnpm llm:models` (which profile ids exist for your key), `pnpm llm:smoke`, `pnpm llm:probes`, `pnpm plan:lesson <skillId>`, `pnpm llm:usage`, `pnpm secrets:check`.

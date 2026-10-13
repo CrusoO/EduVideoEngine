@@ -1,5 +1,7 @@
 # ADR 0022: The free tier of the model API, what it means for data, and what a paid tier would change
 
+> **Amended 2026-10-14: the paid exception is retired.** Amazon Bedrock was used for 10 testing requests that returned answers on 2026-10-14 at the owner's request and has been removed (ADR 0023, amendment). The project is free tier only again, with Gemini and Groq (ADR 0026). Groq's free tier has the same kind of terms: assume prompts may be used and read.
+
 Status: accepted (Phase 1). Facts read from Google's official pages on **2026-10-13**; they change, so re-read them before relying on this ADR.
 
 ## What the terms say (free tier)
@@ -7,7 +9,7 @@ Status: accepted (Phase 1). Facts read from Google's official pages on **2026-10
 * Terms (`https://ai.google.dev/gemini-api/terms`), unpaid services: Google uses submitted content "to provide, improve, and develop" its products; **human reviewers may read, annotate and process the input and output**;
   "Do not submit sensitive, confidential, or personal information to the Unpaid Services."
 * Rate limits (`https://ai.google.dev/gemini-api/docs/rate-limits`, updated 2026-10-13): limits are **per project, not per key**; any one limit being exceeded gives a rate-limit error; daily limits reset at midnight Pacific time.
-  **The page prints no free-tier numbers**: it sends the reader to the AI Studio dashboard (which needs a sign-in). The numbers are therefore set by the owner in `.env` (`LLM_RPM`, `LLM_DAILY_REQUEST_CAP`);
+  **The page prints no free-tier numbers**: it sends the reader to the AI Studio dashboard (which needs a sign-in). The numbers are therefore filled in `packages/adapters/model-profiles.json` by the owner or from the provider's own response headers (ADR 0026);
   until they are, the model profile's deliberately low placeholders apply and say so.
 
 ## What a paid tier would change (not used, not allowed without the owner)

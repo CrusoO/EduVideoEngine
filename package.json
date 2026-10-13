@@ -21,7 +21,8 @@
     "plan:lesson": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/plan-lesson.ts",
     "player:size": "vite-node scripts/player-size.ts",
     "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",
-    "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts"
+    "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts",
+    "llm:models": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-models.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",

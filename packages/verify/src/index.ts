@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { childEnv, pythonCommand } from "@eve/adapters";
 import type { LessonBundle } from "@eve/schema";
 
 export type VerifyCheck = { id: string; kind: string; ok: boolean; detail: string };
@@ -15,9 +16,9 @@ export class VerifierUnavailable extends Error {}
  * server). A bundle is verified only when the report says ok: any other outcome, including the verifier not starting,
  * means NOT verified.
  */
-export function verifyBundle(bundle: LessonBundle | unknown, python = process.env.EVE_PYTHON ?? "python"): Promise<VerifyReport> {
+export function verifyBundle(bundle: LessonBundle | unknown, python = pythonCommand()): Promise<VerifyReport> {
   return new Promise((resolve, reject) => {
-    const child = spawn(python, ["-m", "eve_verifier", "--json"], { cwd: SERVICE, env: { ...process.env, PYTHONPATH: SERVICE } });
+    const child = spawn(python, ["-m", "eve_verifier", "--json"], { cwd: SERVICE, env: childEnv({ PYTHONPATH: SERVICE }) });
     let out = "";
     let err = "";
     child.stdout.on("data", (d: Buffer) => (out += d));

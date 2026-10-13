@@ -1,94 +1,29 @@
 {
-  "_comment": "One entry per model. Adding a model means adding an entry here and nothing else (ADR 0023). Facts come from Google's official pages read on 2026-10-13: models (https://ai.google.dev/gemini-api/docs/models), thinking (https://ai.google.dev/gemini-api/docs/thinking), structured output (https://ai.google.dev/gemini-api/docs/structured-output), Gemini 3 (https://ai.google.dev/gemini-api/docs/gemini-3), pricing/free tier (https://ai.google.dev/gemini-api/docs/pricing), rate limits (https://ai.google.dev/gemini-api/docs/rate-limits). Google does NOT print free-tier requests per minute or per day on those pages (they point to the AI Studio dashboard), so rpm and dailyRequests below are deliberately LOW placeholders with limitsVerified false: set LLM_RPM and LLM_DAILY_REQUEST_CAP from your AI Studio rate-limit page.",
-  "defaults": {
-    "primary": "gemini-3.8-flash",
-    "fallback": "gemini-3.6-flash",
-    "light": "gemini-3.5-flash-lite"
+  "_note": "One entry per provider and model. Model ids come from the owner's ranking and must be checked against each provider's list-models endpoint (pnpm llm:models). Limits stay null until filled from the provider's official page or observed in its response headers; in record or live mode the loader refuses to run while rpm or rpd is null. verified is true only when the numbers were read from an official page for the plan in use, or observed in the provider's own rate-limit headers for this account.",
+  "gemini": {
+    "defaultModel": "gemini-3.8-flash",
+    "resetTimeZone": "America/Los_Angeles",
+    "models": {
+      "gemini-3.8-flash": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "thinkingLevel": "low", "expectedReasoningTokens": 1500, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false },
+      "gemini-3.5-flash-lite": { "jsonMode": true, "reasoning": false, "maxOutputTokens": 8192, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false },
+      "gemini-2.5-flash": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "thinkingBudget": null, "expectedReasoningTokens": 1500, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false }
+    }
   },
-  "profiles": {
-    "gemini-3.8-flash": {
-      "provider": "gemini",
-      "family": "flash",
-      "status": "stable",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "level", "levels": ["low", "medium", "high"], "default": "high" },
-      "maxOutputTokens": 65536,
-      "rpm": 5,
-      "dailyRequests": 20,
-      "limitsVerified": false
-    },
-    "gemini-3.6-flash": {
-      "provider": "gemini",
-      "family": "flash",
-      "status": "stable",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "level", "levels": ["minimal", "low", "medium", "high"], "default": "high" },
-      "maxOutputTokens": 65536,
-      "rpm": 5,
-      "dailyRequests": 20,
-      "limitsVerified": false
-    },
-    "gemini-3.5-flash-lite": {
-      "provider": "gemini",
-      "family": "flash-lite",
-      "status": "stable",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "none" },
-      "maxOutputTokens": 65536,
-      "rpm": 10,
-      "dailyRequests": 50,
-      "limitsVerified": false
-    },
-    "gemini-3.1-flash-lite": {
-      "provider": "gemini",
-      "family": "flash-lite",
-      "status": "stable",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "none" },
-      "maxOutputTokens": 65536,
-      "rpm": 10,
-      "dailyRequests": 50,
-      "limitsVerified": false
-    },
-    "gemini-2.5-flash": {
-      "provider": "gemini",
-      "family": "flash",
-      "status": "legacy",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "budget", "min": 0, "max": 24576 },
-      "maxOutputTokens": 65536,
-      "rpm": 5,
-      "dailyRequests": 20,
-      "limitsVerified": false
-    },
-    "eu.anthropic.claude-sonnet-4-6": {
-      "provider": "bedrock",
-      "family": "sonnet",
-      "status": "stable",
-      "freeTier": false,
-      "structuredOutput": false,
-      "thinking": { "kind": "none" },
-      "maxOutputTokens": 8192,
-      "rpm": 10,
-      "dailyRequests": 60,
-      "limitsVerified": false
-    },
-    "gemini-2.5-flash-lite": {
-      "provider": "gemini",
-      "family": "flash-lite",
-      "status": "legacy",
-      "freeTier": true,
-      "structuredOutput": true,
-      "thinking": { "kind": "none" },
-      "maxOutputTokens": 65536,
-      "rpm": 10,
-      "dailyRequests": 50,
-      "limitsVerified": false
+  "groq": {
+    "defaultModel": "openai/gpt-oss-120b",
+    "resetTimeZone": "UTC",
+    "models": {
+      "openai/gpt-oss-120b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false, "note": "numbers are from the 'Free Plan Limits' table of https://console.groq.com/docs/rate-limits read 2026-10-14, whose text also says the table shows Developer-plan base limits: unconfirmed for the free plan until the response headers of a real call agree" },
+      "openai/gpt-oss-20b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false },
+      "qwen/qwen3.8-27b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false }
+    }
+  },
+  "reference": {
+    "_note": "Read-only. The recordings made on Amazon Bedrock (Claude Sonnet 4.6) while a paid exception was allowed, kept as the reference the free models are compared with. There is no adapter for it and no way to select it; tests replay its fixtures with no AWS packages installed.",
+    "defaultModel": "eu.anthropic.claude-sonnet-4-6",
+    "resetTimeZone": "UTC",
+    "models": {
+      "eu.anthropic.claude-sonnet-4-6": { "jsonMode": false, "reasoning": false, "maxOutputTokens": 8192, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false }
     }
   }
 }

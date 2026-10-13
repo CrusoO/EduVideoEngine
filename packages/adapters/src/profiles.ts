@@ -1,49 +1,38 @@
 import { z } from "zod";
 import raw from "../model-profiles.json";
 
-const Thinking = z.discriminatedUnion("kind", [
-  z.object({ kind: z.literal("level"), levels: z.array(z.string().min(1)).min(1), default: z.string().optional() }).strict(),
-  z.object({ kind: z.literal("budget"), min: z.number().int().min(0), max: z.number().int().positive() }).strict(),
-  z.object({ kind: z.literal("none") }).strict(),
-]);
+const nullableCount = z.number().int().positive().nullable();
 
 export const ModelProfile = z
   .object({
-    provider: z.string().min(1),
-    family: z.enum(["flash", "flash-lite", "sonnet"]),
-    status: z.enum(["stable", "legacy", "preview"]),
-    freeTier: z.boolean(),
-    structuredOutput: z.boolean(),
-    /** False if the API rejects a temperature for this model. Default: allowed. */
-    temperature: z.boolean().optional(),
-    thinking: Thinking,
+    /** true: the provider's JSON output mode is used. false: not used. "unknown": detect with a probe and write the result here. */
+    jsonMode: z.union([z.boolean(), z.literal("unknown")]),
+    reasoning: z.boolean(),
     maxOutputTokens: z.number().int().positive(),
-    /** Requests per minute and per day. Placeholders (limitsVerified false) until the owner reads them from the AI Studio dashboard. */
-    rpm: z.number().int().positive(),
-    dailyRequests: z.number().int().positive(),
-    limitsVerified: z.boolean(),
+    /** Gemini 3 models: the thinking level sent in generation_config (from the official thinking page). */
+    thinkingLevel: z.string().min(1).nullable().optional(),
+    thinkingBudget: z.number().int().min(0).nullable().optional(),
+    /** Groq: reasoning_effort, and include_reasoning false (both documented on https://console.groq.com/docs/reasoning). */
+    reasoningEffort: z.string().min(1).optional(),
+    hideReasoning: z.boolean().optional(),
+    /** Added to the output estimate of a request, because reasoning tokens count toward the limits. */
+    expectedReasoningTokens: z.number().int().min(0).optional(),
+    limits: z.object({ rpm: nullableCount, tpm: nullableCount, rpd: nullableCount, tpd: nullableCount.optional() }).strict(),
+    verified: z.boolean(),
+    note: z.string().optional(),
   })
   .strict();
 export type ModelProfile = z.infer<typeof ModelProfile>;
 
-export const ProfileFile = z
-  .object({
-    _comment: z.string().optional(),
-    defaults: z.object({ primary: z.string(), fallback: z.string(), light: z.string() }).strict(),
-    profiles: z.record(ModelProfile),
-  })
-  .strict();
+const ProviderEntry = z.object({ _note: z.string().optional(), defaultModel: z.string().min(1), resetTimeZone: z.string().min(1), models: z.record(ModelProfile) }).strict();
+export const ProfileFile = z.object({ _note: z.string().optional(), gemini: ProviderEntry, groq: ProviderEntry, reference: ProviderEntry }).strict();
 export type ProfileFile = z.infer<typeof ProfileFile>;
 
 export const PROFILES: ProfileFile = ProfileFile.parse(raw);
 
-/** The profile of a model id, or undefined when it has no entry (adding a model means adding an entry to model-profiles.json). */
-export const profileOf = (model: string, file: ProfileFile = PROFILES): ModelProfile | undefined => file.profiles[model];
+/** The providers that can be selected with LLM_PROVIDER. `reference` is read-only recordings and cannot be selected. */
+export const PROVIDERS = ["gemini", "groq"] as const;
+export type ProviderName = (typeof PROVIDERS)[number];
 
-/** The thinking parameter the model understands, from what the owner asked for. Nothing the profile does not allow is ever sent. */
-export function thinkingFor(profile: ModelProfile, asked: string | number | undefined): { level?: string; budget?: number } {
-  const t = profile.thinking;
-  if (asked === undefined || t.kind === "none") return {};
-  if (t.kind === "level") return typeof asked === "string" && t.levels.includes(asked) ? { level: asked } : {};
-  return typeof asked === "number" && asked >= t.min && asked <= t.max ? { budget: asked } : {};
-}
+export const profileFor = (provider: string, model: string, file: ProfileFile = PROFILES): ModelProfile | undefined => (file as unknown as Record<string, { models: Record<string, ModelProfile> }>)[provider]?.models[model];
+export const resetTimeZone = (provider: string, file: ProfileFile = PROFILES): string => (file as unknown as Record<string, { resetTimeZone?: string }>)[provider]?.resetTimeZone ?? "UTC";
