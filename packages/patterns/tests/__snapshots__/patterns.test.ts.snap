@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`the list > gives every pattern a use-when note, components, slots and a cost under the stage 1`] = `
+[
+  [
+    "colour-bound-terms",
+    212,
+  ],
+  [
+    "predict-then-reveal",
+    268,
+  ],
+  [
+    "hops-on-number-line",
+    282,
+  ],
+  [
+    "plot-and-mark-roots",
+    330,
+  ],
+  [
+    "step-by-step-worked-example",
+    234,
+  ],
+  [
+    "common-mistake-contrast",
+    268,
+  ],
+]
+`;

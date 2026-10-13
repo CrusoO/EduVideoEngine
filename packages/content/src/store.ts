@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
-import type { Expr } from "@eve/schema";
+import type { ColorName, Expr } from "@eve/schema";
 import { CONTENT_CONFIG, ContentRecord, KINDS } from "./record";
 import { validateRecord, validateStore, verifyRecord, type ContentProblem } from "./validate";
 
@@ -60,7 +60,7 @@ export type Retrieval = {
   expressions: Record<string, Expr>;
   byKind: Record<(typeof KINDS)[number], ContentRecord[]>;
   /** Colours of named terms across the retrieved records. */
-  termColors: Record<string, string>;
+  termColors: Record<string, ColorName>;
   /** Placeholders and references that point at an expression no retrieved record has: the records cannot stand alone, so the pipeline must not use them. */
   unresolved: string[];
 };
