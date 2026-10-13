@@ -10,3 +10,8 @@ export { functionGraph, GraphProps } from "./functionGraph";
 export { stepList, StepListProps } from "./stepList";
 export { highlight, HighlightProps, HIGHLIGHT_COLOR, STAGE_COLOR, contrast } from "./highlight";
 export * from "./spoken";
+export { numberLine, NumberLineProps, NL_W, NL_H } from "./numberLine";
+export { arrowCallout, CalloutProps, CALLOUT_WORDS } from "./arrowCallout";
+export { shape, ShapeProps, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, SHAPE_LABEL_WORDS } from "./shape";
+export { findRoots, formatRoot, type Root } from "./roots";
+export { GRAPH_W, GRAPH_H } from "./functionGraph";

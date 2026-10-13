@@ -271,3 +271,48 @@ describe("edges of the model (found by mutation testing)", () => {
     expect(measure(steps("eq1"), 320, ctx).facts[0]).toMatchObject({ bold: false });
   });
 });
+
+describe("measure: number line, callout and shape", () => {
+  const nl = (extra: object = {}): LayoutObject => ({ id: "n", component: "numberLine", props: { min: 0, max: 6, ...extra } });
+  const callout = (text: string): LayoutObject => ({ id: "c", component: "arrowCallout", props: { text, direction: "up" } });
+  const shape = (extra: object): LayoutObject => ({ id: "s", component: "shape", props: { kind: "rect", size: "m", color: "blue", ...extra } });
+
+  it("a number line follows its 400 x 200 drawing up to 480 px wide", () => {
+    expect(measure(nl(), 320, ctx)).toMatchObject({ height: 160, maxWidth: 480, aspect: true, words: 0, equations: 0 });
+    expect(measure(nl(), 480, ctx).height).toBe(240);
+    expect(measure(nl(), 900, ctx).height).toBe(240);
+    expect(measure(nl(), 333, ctx).height).toBe(Math.ceil((333 * 200) / 400));
+  });
+  it("its tick numbers are annotations of 15 drawing units; each bracket label is a formula to read", () => {
+    const plain = measure(nl(), 320, ctx);
+    expect(plain.facts).toEqual([{ what: "tick numbers", fontPx: 12, bold: false, fg: COLOR.muted, bg: COLOR.stage, kind: "annotation" }]);
+    const labelled = measure(nl({ brackets: [{ span: "hops", label: "total" }, { span: "hops" }, { span: "hops", label: "total" }] }), 320, ctx);
+    expect(labelled.equations).toBe(2);
+    expect(labelled.facts.filter((f) => f.kind === "reading")).toHaveLength(2);
+    expect(labelled.facts[1]).toMatchObject({ what: "bracket label total", fontPx: 16 * 1.21, fg: COLOR.ink });
+  });
+  it("a callout is one line of 17.6 px text plus 16 px of padding, taller when it wraps, taller again in Hindi", () => {
+    expect(measure(callout("Look here"), 320, ctx).height).toBe(Math.ceil(17.6 * 1.5) + 16);
+    expect(measure(callout("Look here"), 320, { ...ctx, locale: "hi-IN" }).height).toBe(Math.ceil(17.6 * 1.7) + 16);
+    const long = "one two three four five six seven eight";
+    expect(measure(callout(long), 320, ctx).height).toBeGreaterThan(measure(callout("one"), 320, ctx).height);
+    expect(measure(callout(long), 320, ctx)).toMatchObject({ words: 8, equations: 0 });
+    const f = measure(callout("Look here"), 320, ctx).facts[0]!;
+    expect(f).toMatchObject({ fontPx: 17.6, fg: COLOR.ink, kind: "reading", bold: false });
+    expect(measure({ id: "c", component: "arrowCallout", props: {} }, 320, ctx).words).toBe(0);
+  });
+  it("a shape has the height of its size, a line is always 24 px, a circle is as wide as it is tall", () => {
+    expect([measure(shape({ size: "s" }), 320, ctx).height, measure(shape({ size: "m" }), 320, ctx).height, measure(shape({ size: "l" }), 320, ctx).height]).toEqual([48, 96, 144]);
+    expect(measure(shape({ size: "m" }), 320, ctx).height).toBe(96);
+    expect(measure(shape({ kind: "line", size: "l" }), 320, ctx).height).toBe(24);
+    expect(measure(shape({ kind: "circle", size: "l" }), 320, ctx).maxWidth).toBe(144);
+    expect(measure(shape({ kind: "rect", size: "l" }), 320, ctx).maxWidth).toBeUndefined();
+    expect(measure({ id: "s", component: "shape", props: { kind: "rect", color: "red" } }, 320, ctx).height).toBe(96); // size defaults to m
+  });
+  it("a label is read; no label, nothing to read", () => {
+    const m = measure(shape({ label: "The total" }), 320, ctx);
+    expect(m.words).toBe(2);
+    expect(m.facts).toEqual([{ what: "The total", fontPx: 16.8, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }]);
+    expect(measure(shape({}), 320, ctx)).toMatchObject({ words: 0, facts: [] });
+  });
+});

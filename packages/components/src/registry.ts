@@ -4,15 +4,21 @@ import { functionGraph } from "./functionGraph";
 import { highlight } from "./highlight";
 import { stepList } from "./stepList";
 import { text } from "./text";
+import { numberLine } from "./numberLine";
+import { arrowCallout } from "./arrowCallout";
+import { shape } from "./shape";
 import type { ComponentModule } from "./types";
 
-/** Components built so far. The other seven names are in the schema's closed list and arrive in Phase 1 (step i). */
+/** Components built so far. The remaining names of the schema's closed list (fractionBar, areaModel, table, balanceScale) are not built. */
 export const REGISTRY: Partial<Record<ComponentName, ComponentModule<never>>> = {
   text: text as ComponentModule<never>,
   equation: equation as ComponentModule<never>,
   functionGraph: functionGraph as ComponentModule<never>,
   stepList: stepList as ComponentModule<never>,
   highlight: highlight as ComponentModule<never>,
+  numberLine: numberLine as ComponentModule<never>,
+  arrowCallout: arrowCallout as ComponentModule<never>,
+  shape: shape as ComponentModule<never>,
 };
 
 export const IMPLEMENTED = Object.keys(REGISTRY) as ComponentName[];

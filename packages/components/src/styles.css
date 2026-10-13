@@ -139,3 +139,103 @@
   overflow-x: auto;
   overflow-y: hidden;
 }
+
+/* Palette colours by name: a component sets --c from its colour prop. */
+.eve-c-blue { --c: var(--eve-blue); }
+.eve-c-yellow { --c: var(--eve-yellow); }
+.eve-c-green { --c: var(--eve-green); }
+.eve-c-red { --c: var(--eve-red); }
+.eve-c-purple { --c: var(--eve-purple); }
+
+/* Graph: the curve is drawn on (pathLength 1), roots pop in. */
+.eve-curve {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--eve-draw, 1));
+}
+.eve-root-label {
+  fill: var(--eve-ink);
+  font-size: 15px;
+  font-family: Inter, sans-serif;
+}
+
+/* Number line */
+.eve-numberline {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+}
+.eve-nl-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.eve-hop-arc,
+.eve-bracket-path {
+  stroke: var(--c);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--eve-draw, 1));
+}
+.eve-hop-end {
+  fill: var(--c);
+}
+.eve-hop-label {
+  fill: var(--c);
+  font-size: 15px;
+  font-family: Inter, sans-serif;
+}
+.eve-bracket-label {
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  color: var(--eve-ink);
+  font-size: 1rem;
+}
+
+/* Arrow callout */
+.eve-callout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--eve-ink);
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+.eve-callout:lang(hi),
+.eve-callout:lang(ne) {
+  font-family: "Noto Sans Devanagari", Inter, system-ui, sans-serif;
+  line-height: 1.7;
+}
+.eve-callout-arrow {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  stroke: var(--c);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Shapes: drawn on from the left, popped, or revealed */
+.eve-shape {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border: 3px solid var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+  color: var(--eve-ink);
+  font-size: 1.05rem;
+  clip-path: inset(0 calc((1 - var(--eve-draw, 1)) * 100%) 0 0);
+}
+.eve-shape-rect {
+  border-radius: 8px;
+}
+.eve-shape-circle {
+  border-radius: 50%;
+}
+.eve-shape-line {
+  border: 0;
+  background: linear-gradient(var(--c), var(--c)) center / 100% 4px no-repeat;
+}

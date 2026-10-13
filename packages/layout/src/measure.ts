@@ -1,4 +1,4 @@
-import { toPlain } from "@eve/components";
+import { CALLOUT_WORDS, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, toPlain } from "@eve/components";
 import type { Expr } from "@eve/schema";
 import { COLOR, GRAPH_ASPECT, GRAPH_MAX_WIDTH, MIN_READING_PX, MIN_TEXT_PX } from "./tokens";
 
@@ -171,6 +171,33 @@ export function measure(o: LayoutObject, width: number, ctx: MeasureCtx): Intrin
       // Axis numbers are 15 units of a 400-unit-wide drawing: their real size scales with the drawing.
       const tickPx = 15 * (w / GRAPH_ASPECT.w);
       return { height: Math.ceil((w * GRAPH_ASPECT.h) / GRAPH_ASPECT.w), maxWidth: GRAPH_MAX_WIDTH, words: 0, equations: 0, aspect: true, facts: [{ what: "axis numbers", fontPx: tickPx, bold: false, fg: COLOR.muted, bg: COLOR.stage, kind: "annotation" }] };
+    }
+    case "numberLine": {
+      const w = Math.min(width, GRAPH_MAX_WIDTH);
+      const p = o.props as { brackets?: Array<{ label?: string }> };
+      const labels = (p.brackets ?? []).filter((b) => b.label);
+      // Tick numbers and hop lengths are 15 units of a 400-unit drawing, like the graph; a bracket label is a formula under the line.
+      const facts: TextFact[] = [{ what: "tick numbers", fontPx: 15 * (w / 400), bold: false, fg: COLOR.muted, bg: COLOR.stage, kind: "annotation" }];
+      for (const b of labels) facts.push({ what: `bracket label ${b.label}`, fontPx: 16 * 1.21, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" });
+      return { height: Math.ceil((w * 200) / 400), maxWidth: GRAPH_MAX_WIDTH, words: 0, equations: labels.length, aspect: true, facts };
+    }
+    case "arrowCallout": {
+      const text = String((o.props as { text?: string }).text ?? "");
+      const lh = indic(ctx.locale) ? 1.7 : 1.5;
+      const lines = wrapLines(text, 17.6, width - (24 + 8 + 24));
+      return { height: Math.ceil(lines * 17.6 * lh) + 16, words: Math.min(wordsOf(text), CALLOUT_WORDS * 4), equations: 0, facts: [{ what: text, fontPx: 17.6, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }] };
+    }
+    case "shape": {
+      const p = o.props as { kind?: "rect" | "circle" | "line"; size?: "s" | "m" | "l"; label?: string };
+      const h = p.kind === "line" ? SHAPE_LINE_HEIGHT : SHAPE_HEIGHT[p.size ?? "m"];
+      const label = p.label ?? "";
+      return {
+        height: h,
+        maxWidth: p.kind === "circle" ? h : undefined,
+        words: label ? wordsOf(label) : 0,
+        equations: 0,
+        facts: label ? [{ what: label, fontPx: 16.8, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }] : [],
+      };
     }
     case "highlight":
       return { ...none, height: 0 };

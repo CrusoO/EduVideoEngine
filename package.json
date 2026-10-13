@@ -10,6 +10,7 @@
     "mutate": "stryker run",
     "voice:generate": "vite-node scripts/voice/generate.ts",
     "gen:ops": "vite-node scripts/gen-ops.ts",
+    "gen:costs": "vite-node scripts/gen-costs.ts",
     "verify:gate": "vite-node scripts/verify-gate.ts"
   },
   "devDependencies": {

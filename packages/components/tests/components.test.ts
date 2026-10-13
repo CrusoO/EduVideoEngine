@@ -20,7 +20,7 @@ import { cachedMath } from "../src";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-const expressions = quadraticRoots.expressions;
+const expressions = { ...quadraticRoots.expressions, zero: { op: "num", n: 0 }, two: { op: "num", n: 2 }, five: { op: "num", n: 5 } } as typeof quadraticRoots.expressions;
 const ev = (action: ObjectEvent["action"], atMs: number, holdUntilMs = atMs + 1000): ObjectEvent => ({ action, atMs, holdUntilMs });
 const ctx = (over: Partial<RenderContext> = {}): RenderContext => ({ objectId: "o", locale: "en-IN", expressions, events: [], math: katexMath, ...over });
 
@@ -68,11 +68,15 @@ describe("every implemented component honours the contract", () => {
     equation: { name: "equation", props: {}, exprRef: "eq1" },
     functionGraph: { name: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7 }, exprRef: "f1" },
     stepList: { name: "stepList", props: { steps: ["factored", "total", "fromRule"] } },
+    graphRoots: { name: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7, roots: true }, exprRef: "f1" },
+    numberLine: { name: "numberLine", props: { min: 0, max: 6, hops: [{ from: "zero", to: "two" }, { from: "two", to: "five", color: "green" }], brackets: [{ span: "hops", label: "total" }] } },
+    arrowCallout: { name: "arrowCallout", props: { text: "Look at the middle term", direction: "up" } },
+    shape: { name: "shape", props: { kind: "rect", size: "m", color: "green", label: "Total" } },
     highlight: { name: "highlight", props: { target: "eq1", points: [2, 3] } },
   };
 
-  it("five components are implemented and the registry is a subset of the closed schema list", () => {
-    expect([...IMPLEMENTED].sort()).toEqual(["equation", "functionGraph", "highlight", "stepList", "text"]);
+  it("eight components are implemented and the registry is a subset of the closed schema list", () => {
+    expect([...IMPLEMENTED].sort()).toEqual(["arrowCallout", "equation", "functionGraph", "highlight", "numberLine", "shape", "stepList", "text"]);
     for (const n of IMPLEMENTED) expect(REGISTRY[n]).toBeDefined();
   });
 

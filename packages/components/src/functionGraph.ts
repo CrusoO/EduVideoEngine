@@ -1,19 +1,27 @@
 import { z } from "zod";
-import { symbols } from "@eve/schema";
+import { symbols, type Expr } from "@eve/schema";
 import { toPlain } from "./latex";
 import { samplePoints, type Window } from "./sample";
-import { objectStateAt } from "./state";
+import { findRoots, formatRoot } from "./roots";
+import { objectStateAt, partStateAt, css } from "./state";
 import { applyState } from "./text";
-import type { ComponentModule } from "./types";
+import type { ComponentModule, ObjectState } from "./types";
 
+/**
+ * A graph of y = f(x). `roots: true` marks the roots of the expression, computed from it (never typed coordinates). Parts a cue may
+ * address: `curve` (draw-on) and `root0`, `root1`, ... (pop in, labelled with their value), in increasing x.
+ */
 export const GraphProps = z
-  .object({ xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number(), markers: z.array(z.number()).optional() })
+  .object({ xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number(), roots: z.boolean().optional() })
   .strict()
   .refine((p) => p.xMin < p.xMax && p.yMin < p.yMax, "the window must have xMin < xMax and yMin < yMax");
 export type GraphProps = z.infer<typeof GraphProps>;
 
-const W = 400;
-const H = 260;
+/** The drawing is 400 x 260 units. Axis numbers are 15 units: 12 px on a 360 px phone (ADR 0017). */
+export const GRAPH_W = 400;
+export const GRAPH_H = 260;
+const W = GRAPH_W;
+const H = GRAPH_H;
 const PAD = { l: 34, r: 12, t: 12, b: 26 };
 const NS = "http://www.w3.org/2000/svg";
 
@@ -31,6 +39,21 @@ const ticks = (lo: number, hi: number) => {
   for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) out.push(v);
   return out;
 };
+
+const rootsOf = (p: GraphProps, f: Expr | undefined) => (p.roots && f ? findRoots(f, p as Window) : []);
+
+/** Shows or hides one part and writes its draw progress and size. */
+function setPart(el: Element | null, s: ObjectState) {
+  if (!el) return;
+  const st = (el as SVGElement).style;
+  st.visibility = s.visible ? "visible" : "hidden";
+  st.opacity = css(s.opacity);
+  st.setProperty("--eve-draw", css(s.draw));
+  st.transformBox = "fill-box";
+  st.transformOrigin = "center";
+  if (s.scale === 1) st.removeProperty("transform");
+  else st.transform = `scale(${css(s.scale)})`;
+}
 
 export const functionGraph: ComponentModule<GraphProps> = {
   name: "functionGraph",
@@ -68,19 +91,28 @@ export const functionGraph: ComponentModule<GraphProps> = {
         d += `${pen ? "L" : "M"}${sx(s.x).toFixed(2)} ${sy(s.y).toFixed(2)}`;
         pen = true;
       }
-      svg.append(node("path", { d, class: "eve-curve", fill: "none" }));
-      for (const m of p.markers ?? []) {
-        const y = samplePoints(f, { ...p, xMin: m, xMax: m + 1 }, 1)[0]?.y;
-        if (y !== null && y !== undefined) svg.append(node("circle", { cx: String(sx(m)), cy: String(sy(y)), r: "4.5", class: "eve-marker" }));
-      }
+      svg.append(node("path", { d, class: "eve-curve", fill: "none", pathLength: "1", "data-part": "curve" }));
+      rootsOf(p, f).forEach((r, i) => {
+        const g = node("g", { class: "eve-root", "data-part": `root${i}` });
+        g.append(node("circle", { cx: String(sx(r.x)), cy: String(sy(0)), r: "4.5", class: "eve-marker" }));
+        // the label sits above the axis, inside the drawing, and flips to the left of a root near the right edge
+        const right = sx(r.x) > W - 70;
+        g.append(node("text", { x: String(sx(r.x) + (right ? -9 : 9)), y: String(sy(0) - 9), class: "eve-root-label", "text-anchor": right ? "end" : "start" }, `x = ${formatRoot(r)}`));
+        svg.append(g);
+      });
       host.append(svg);
     }
-    applyState(host, objectStateAt(ctx.events, t, ctx.reduceMotion));
+    const reduce = ctx.reduceMotion;
+    setPart(host.querySelector('[data-part="curve"]'), partStateAt(ctx.events, "curve", t, reduce));
+    host.querySelectorAll('[class~="eve-root"]').forEach((g) => setPart(g, partStateAt(ctx.events, g.getAttribute("data-part")!, t, reduce)));
+    applyState(host, objectStateAt(ctx.events, t, reduce));
   },
-  cueTargets: () => ["whole"],
+  cueTargets: (props, ctx) => ["whole", "curve", ...rootsOf(props, ctx?.exprRef ? ctx.expressions[ctx.exprRef] : undefined).map((_r, i) => `root${i}`)],
   altText: (props, ctx) => {
     const f = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
-    return `Graph of y = ${f ? toPlain(f) : "?"} for x from ${props.xMin} to ${props.xMax}`;
+    const roots = rootsOf(props, f);
+    const marked = roots.length ? `, with the roots marked at x = ${roots.map(formatRoot).join(" and ")}` : "";
+    return `Graph of y = ${f ? toPlain(f) : "?"} for x from ${props.xMin} to ${props.xMax}${marked}`;
   },
   verify(props, ctx) {
     const f = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
@@ -93,10 +125,9 @@ export const functionGraph: ComponentModule<GraphProps> = {
     const defined = samples.filter((s) => s.y !== null);
     if (defined.length === 0) problems.push("the expression is undefined everywhere on the window");
     if (defined.length > 0 && !defined.some((s) => (s.y as number) >= props.yMin && (s.y as number) <= props.yMax)) problems.push("the curve never enters the y window");
-    for (const m of props.markers ?? []) {
-      const y = samplePoints(f, { ...props, xMin: m, xMax: m + 1 }, 1)[0]?.y;
-      if (y === null || y === undefined) problems.push(`marker at x = ${m} is where the expression is undefined`);
-    }
+    if (props.roots && free.length === 0 && f.op !== "eq" && findRoots(f, props).length === 0) problems.push("roots are asked for but the expression has none in the window");
+    const known = new Set(functionGraph.cueTargets(props, { expressions: ctx.expressions, exprRef: ctx.exprRef }));
+    for (const part of ctx.cueParts ?? []) if (!known.has(part)) problems.push(`a cue targets the part ${part}, which this graph does not have (it has ${[...known].join(", ")})`);
     return problems;
   },
 };

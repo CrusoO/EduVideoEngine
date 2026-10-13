@@ -60,6 +60,8 @@ export type VerifyContext = {
   objectIds: string[];
   /** When given, verify also checks that every formula typesets. Build time only. */
   math?: MathRenderer;
+  /** The parts of this object that cues address (the part names after the # in cue targets). Each must be one the component lists. */
+  cueParts?: string[];
 };
 
 /**
@@ -72,8 +74,8 @@ export interface ComponentModule<P = unknown> {
   readonly name: ComponentName;
   readonly propsSchema: z.ZodType<P, z.ZodTypeDef, unknown>;
   render(el: HTMLElement, props: P, t: number, ctx: RenderContext): void;
-  /** Parts a cue may address. "whole" always works. */
-  cueTargets(props: P): string[];
+  /** Parts a cue may address (`object#part`). "whole" always works. The expression is given for parts that depend on it (the roots of a graph). */
+  cueTargets(props: P, ctx?: Pick<RenderContext, "expressions" | "exprRef">): string[];
   /** Text alternative for screen readers; equations also expose MathML through KaTeX. */
   altText(props: P, ctx: Pick<RenderContext, "expressions" | "exprRef" | "locale">): string;
   /** Problems found in the instance; an empty array means verified. */
