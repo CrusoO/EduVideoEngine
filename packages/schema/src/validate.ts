@@ -99,6 +99,7 @@ export function validateBundle(input: unknown): Validation {
     if (claimIds.has(claim.id)) bad(at, "claim ids must be unique");
     claimIds.add(claim.id);
     const refs = claim.kind === "equivalent" ? [claim.a, claim.b] : claim.kind === "roots" ? [claim.equation] : [claim.equation, claim.equals];
+    if (!b.plan.beats.some((beat) => beat.id === claim.beatId)) bad(at, `claim names unknown beat ${claim.beatId}`);
     for (const r of refs) {
       const e = b.expressions[r];
       if (!e) bad(at, `claim names unknown expression ${r}`);
@@ -111,6 +112,10 @@ export function validateBundle(input: unknown): Validation {
     if (scenes.length === 0) bad(`plan.beats.${beat.id}`, "every beat needs at least one scene");
     if (b.script.every((s) => s.beatId !== beat.id)) bad(`plan.beats.${beat.id}`, "every beat needs narration");
     if (beat.cueFocus && !scenes.some((s) => s.objects.some((o) => o.id === beat.cueFocus))) bad(`plan.beats.${beat.id}.cueFocus`, "cueFocus names no object of the beat");
+    // A worked beat shows steps that a student will copy: it must declare the claims those steps rely on, so the verifier can prove them.
+    if (beat.kind === "worked" && !(b.claims ?? []).some((c) => c.beatId === beat.id)) {
+      bad(`plan.beats.${beat.id}`, "a worked beat must declare the claims its steps rely on (roots, sums, factorisations): add claims with this beatId");
+    }
     // Planner rule: a pause-and-ask follows a worked beat.
     if (beat.kind === "worked" && !scenes.some((s) => (s.interactions ?? []).length > 0)) bad(`plan.beats.${beat.id}`, "a worked beat needs a pause-and-ask");
   }

@@ -1,6 +1,6 @@
 # ADR 0014: Layout rule vocabulary (fixed now, solver in Phase 1)
 
-Status: accepted. Fixes the words the composer prompt may use; the solver is the first task of Phase 1. Phase 0 is closed as "column layout".
+Status: accepted; the solver and exact semantics are in ADR 0017. Fixes the words the composer prompt may use; the solver is the first task of Phase 1. Phase 0 is closed as "column layout".
 
 ## Why now
 The composer is told to declare layout as rules for a solver, never as pixels. The vocabulary must be fixed before that prompt is written,
@@ -14,7 +14,7 @@ or the model invents words the solver cannot parse. The schema already carries i
 | `below` (item, of) | `item` sits under `of`, left edges aligned. | An anchor. |
 | `beside` (item, of, side) | `item` sits left or right of `of`, tops aligned. | An anchor; collapses to `below` under 480 px. |
 | `center` (item) | Centred in the stage. | |
-| spacing `gap`: `tight` / `normal` / `loose` | 8 / 16 / 28 px on a 360 px stage, scaling with the stage width. | Tokens only; never a number. |
+| spacing `gap`: `tight` / `normal` / `loose` | 8 / 16 / 28 px, fixed. | Tokens only; never a number. (Amended by ADR 0017: they no longer scale with the stage width, so a wider stage is never taller.) |
 
 Overlays (`highlight`) are never laid out: they follow their target's measured rectangle. No absolute positions, no z-order, no sizes.
 At most 5 objects per scene (schema rule); if a beat is too dense, split the beat.

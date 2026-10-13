@@ -69,12 +69,12 @@ export function buildQuadraticRoots(): LessonBundle {
       { id: "s5.2", beatId: "b5", text: "Use the rule, then check your answer.", termSpans: [], exprRefs: [], status: "frozen" },
     ],
     claims: [
-      { id: "c.factored", kind: "equivalent", a: "eq1", b: "factored" },
-      { id: "c.roots", kind: "roots", equation: "eq1", values: [num(2), num(3)] },
-      { id: "c.sum", kind: "sum-of-roots", equation: "eq1", equals: "total" },
-      { id: "c.sum-rule", kind: "sum-of-roots", equation: "eq1", equals: "fromRule" },
-      { id: "c.vieta", kind: "sum-of-roots", equation: "general", equals: "rule" },
-      { id: "c.answer", kind: "sum-of-roots", equation: "eq2", equals: "answer2" },
+      { id: "c.factored", beatId: "b3", kind: "equivalent", a: "eq1", b: "factored" },
+      { id: "c.roots", beatId: "b3", kind: "roots", equation: "eq1", values: [num(2), num(3)] },
+      { id: "c.sum", beatId: "b3", kind: "sum-of-roots", equation: "eq1", equals: "total" },
+      { id: "c.sum-rule", beatId: "b3", kind: "sum-of-roots", equation: "eq1", equals: "fromRule" },
+      { id: "c.vieta", beatId: "b2", kind: "sum-of-roots", equation: "general", equals: "rule" },
+      { id: "c.answer", beatId: "b5", kind: "sum-of-roots", equation: "eq2", equals: "answer2" },
     ],
     scenes: [
       {

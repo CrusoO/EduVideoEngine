@@ -111,15 +111,16 @@ const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
 /**
  * Statements the lesson makes about its equations, in a form the SymPy verifier can prove or refute. Narration is prose and
  * cannot be checked; a claim is the machine-readable twin of a sentence such as "the roots are two and three".
+ * Each claim names the beat whose steps rely on it (`beatId`): a worked beat must declare at least one (validator rule, ADR 0015).
  * Optional and without defaults, so a lesson with no claims hashes exactly as before (ADR 0003).
  */
 export const Claim = z.discriminatedUnion("kind", [
   /** `a` and `b` are equations in one symbol with the same solutions (for example an equation and its factored form). */
-  z.object({ id, kind: z.literal("equivalent"), a: id, b: id }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("equivalent"), a: id, b: id }).strict(),
   /** The solutions of `equation` are exactly `values` (exact numbers, as expression trees). */
-  z.object({ id, kind: z.literal("roots"), equation: id, values: z.array(ExprSchema).min(1) }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("roots"), equation: id, values: z.array(ExprSchema).min(1) }).strict(),
   /** The sum of the roots of `equation` equals the right-hand side of the equation `equals`. */
-  z.object({ id, kind: z.literal("sum-of-roots"), equation: id, equals: id }).strict(),
+  z.object({ id, beatId: id, kind: z.literal("sum-of-roots"), equation: id, equals: id }).strict(),
 ]);
 export type Claim = z.infer<typeof Claim>;
 

@@ -459,12 +459,14 @@
   "claims": [
     {
       "id": "c.factored",
+      "beatId": "b3",
       "kind": "equivalent",
       "a": "eq1",
       "b": "factored"
     },
     {
       "id": "c.roots",
+      "beatId": "b3",
       "kind": "roots",
       "equation": "eq1",
       "values": [
@@ -480,24 +482,28 @@
     },
     {
       "id": "c.sum",
+      "beatId": "b3",
       "kind": "sum-of-roots",
       "equation": "eq1",
       "equals": "total"
     },
     {
       "id": "c.sum-rule",
+      "beatId": "b3",
       "kind": "sum-of-roots",
       "equation": "eq1",
       "equals": "fromRule"
     },
     {
       "id": "c.vieta",
+      "beatId": "b2",
       "kind": "sum-of-roots",
       "equation": "general",
       "equals": "rule"
     },
     {
       "id": "c.answer",
+      "beatId": "b5",
       "kind": "sum-of-roots",
       "equation": "eq2",
       "equals": "answer2"
@@ -901,7 +907,7 @@
     }
   ],
   "hashes": {
-    "bundle": "8c63cee24e2bbd5c957aa7b85764ff21db312ee04047bffa6fea307a8f425249",
+    "bundle": "3f9d7bfc994cbc8442f5d459504882999f316295200b34d8366236d30f8e41ec",
     "perScene": {
       "scene1": "e6945ad0f5ffd9a5299eefc4301cfad6580053f411cb87b826bf7a4da36ac266",
       "scene2": "e254eed5b8365ccc4d7e2b772a8b779c091509c2db361c3d57d7444a68368b3c",

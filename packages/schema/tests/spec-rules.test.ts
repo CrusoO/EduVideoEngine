@@ -133,3 +133,46 @@ describe("the Hindi rendering test", () => {
     expect(hindiPreview.skillId).toMatch(/^TEST\./);
   });
 });
+
+describe("claims rule: a worked beat declares the claims it relies on", () => {
+  const sealed = (mut: (b: LessonBundle) => void) => {
+    const b = structuredClone(quadraticRoots) as LessonBundle;
+    mut(b);
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    return validateBundle(seal(rest));
+  };
+  const messages = (r: ReturnType<typeof validateBundle>) => r.issues.map((i) => `${i.path}: ${i.message}`);
+  const RULE = "plan.beats.b3: a worked beat must declare the claims its steps rely on (roots, sums, factorisations): add claims with this beatId";
+
+  it("the reference lesson passes: its worked beat (b3) declares four claims", () => {
+    expect(validateBundle(quadraticRoots).ok).toBe(true);
+    expect((quadraticRoots.claims ?? []).filter((c) => c.beatId === "b3")).toHaveLength(4);
+  });
+
+  it("a worked beat with no claim of its own is rejected, with the beat named", () => {
+    const r = sealed((b) => void (b.claims = b.claims!.filter((c) => c.beatId !== "b3")));
+    expect(r.ok).toBe(false);
+    expect(messages(r)).toEqual([RULE]);
+  });
+
+  it("claims of other beats do not count for the worked beat", () => {
+    const r = sealed((b) => void b.claims!.forEach((c) => (c.beatId = c.beatId === "b3" ? "b2" : c.beatId)));
+    expect(messages(r)).toEqual([RULE]);
+  });
+
+  it("a lesson with no claims at all is rejected for the same reason", () => {
+    const r = sealed((b) => void delete b.claims);
+    expect(messages(r)).toEqual([RULE]);
+  });
+
+  it("one claim is enough, and beats that are not worked need none", () => {
+    const r = sealed((b) => void (b.claims = b.claims!.filter((c) => c.id === "c.sum")));
+    expect(r.ok).toBe(true);
+  });
+
+  it("a claim for a beat that does not exist is rejected", () => {
+    const r = sealed((b) => void (b.claims![0]!.beatId = "b9"));
+    expect(messages(r)).toContain("claims.c.factored: claim names unknown beat b9");
+  });
+});
