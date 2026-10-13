@@ -37,43 +37,71 @@ function times(left: Out, right: Out): string {
   return startsWithDigit ? `${l}\\cdot ${r}` : `${l}${r}`;
 }
 
-function go(e: Expr): Out {
+/** Colour of a term, by its name: a hex string, or undefined to leave it as it is. */
+export type ColorOf = (term: string) => string | undefined;
+
+const tint = (o: Out, hex: string | undefined): Out => (hex ? { ...o, s: `\\textcolor{${hex}}{${o.s}}` } : o);
+
+/** One node, coloured when it carries a named term that has a colour. `own` false: the caller colours it (an operand with its operator). */
+function go(e: Expr, c?: ColorOf, own = true): Out {
+  const out = base(e, c);
+  return own ? tint(out, e.term && c ? c(e.term) : undefined) : out;
+}
+
+function base(e: Expr, c?: ColorOf): Out {
   switch (e.op) {
     case "num":
       return num(e);
     case "sym":
       return { s: name(e.name), p: P.atom, atom: true };
     case "neg": {
-      const a = go(e.a);
+      const a = go(e.a, c);
       // -x^{2} is -(x^2); -(a+b) and -(-a) need parentheses.
       return { s: `-${wrap(a, P.mul)}`, p: P.neg, atom: false };
     }
     case "add": {
-      const a = go(e.a);
-      const b = go(e.b);
-      return { s: `${wrap(a, P.add)}+${wrap(b, P.neg + 0.1)}`, p: P.add, atom: false };
+      const a = go(e.a, c);
+      const bc = e.b.term && c ? c(e.b.term) : undefined;
+      const b = go(e.b, c, !bc);
+      const tail = `+${wrap(b, P.neg + 0.1)}`;
+      return { s: `${wrap(a, P.add)}${bc ? `\\textcolor{${bc}}{${tail}}` : tail}`, p: P.add, atom: false };
     }
     case "sub": {
-      const a = go(e.a);
-      const b = go(e.b);
-      return { s: `${wrap(a, P.add)}-${wrap(b, P.mul)}`, p: P.add, atom: false };
+      const a = go(e.a, c);
+      const bc = e.b.term && c ? c(e.b.term) : undefined;
+      const b = go(e.b, c, !bc);
+      const tail = `-${wrap(b, P.mul)}`;
+      return { s: `${wrap(a, P.add)}${bc ? `\\textcolor{${bc}}{${tail}}` : tail}`, p: P.add, atom: false };
     }
     case "mul":
-      return { s: times(go(e.a), go(e.b)), p: P.mul, atom: false };
+      return { s: times(go(e.a, c), go(e.b, c)), p: P.mul, atom: false };
     case "div":
       // \frac groups its own operands, so neither needs parentheses; as a power base it does (see pow).
-      return { s: `\\frac{${go(e.a).s}}{${go(e.b).s}}`, p: P.pow, atom: false };
+      return { s: `\\frac{${go(e.a, c).s}}{${go(e.b, c).s}}`, p: P.pow, atom: false };
     case "pow": {
-      const a = go(e.a);
+      const a = go(e.a, c);
       const base = a.atom ? a.s : paren(a.s);
-      return { s: `${base}^{${go(e.b).s}}`, p: P.pow, atom: false };
+      return { s: `${base}^{${go(e.b, c).s}}`, p: P.pow, atom: false };
     }
     case "eq":
-      return { s: `${go(e.a).s}=${go(e.b).s}`, p: P.eq, atom: false };
+      return { s: `${go(e.a, c).s}=${go(e.b, c).s}`, p: P.eq, atom: false };
   }
 }
 
-export const toLatex = (e: Expr): string => go(e).s;
+export const toLatex = (e: Expr, c?: ColorOf): string => go(e, c).s;
+
+/** What the stage knows about colour: the colour of a named term, and the colour of everything that is dimmed. */
+export type ColorTheme = { of: ColorOf; muted: string };
+
+/**
+ * The LaTeX of a formula as the stage draws it. With `focus` (a list of term names) every other part is dimmed to the muted colour and only the
+ * focused terms keep their own colours: "other terms dimmed". Without a colour theme the formula is plain, as before.
+ */
+export function formulaLatex(e: Expr, colors?: ColorTheme, focus?: readonly string[]): string {
+  if (!colors) return toLatex(e);
+  if (!focus) return toLatex(e, colors.of);
+  return `\\textcolor{${colors.muted}}{${toLatex(e, (t) => (focus.includes(t) ? colors.of(t) : undefined))}}`;
+}
 
 /** Plain ASCII reading for fallbacks (alt text when MathML is not enough). */
 export function toPlain(e: Expr): string {

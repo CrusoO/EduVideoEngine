@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { ComponentName, Expr } from "@eve/schema";
+import type { ColorTheme } from "./latex";
 
 /**
  * A scheduled change for ONE object, in milliseconds on the lesson clock. The timeline resolver (step c) produces
@@ -38,6 +39,10 @@ export type RenderContext = {
   events: ObjectEvent[];
   /** Maths typesetter: a cache lookup in the player, live KaTeX at build time and in tests. */
   math: MathRenderer;
+  /** Colours of named terms and the dimmed colour. Absent: formulas are plain. */
+  colors?: ColorTheme;
+  /** Jump every motion to its end state (prefers-reduced-motion). */
+  reduceMotion?: boolean;
   /** Where another object of the scene sits, relative to the stage (null if unknown). For overlays such as highlight. */
   rectOf?: (objectId: string) => Rect | null;
 };

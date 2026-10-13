@@ -1,7 +1,8 @@
-import { componentFor, spokenLabel, toLatex, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
+import { componentFor, formulaLatex, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import { DEFAULT_CHROME_PX, PAD, centerOffset, solve, stageFrame } from "@eve/layout";
+import { colorTheme } from "../theme/palette";
 import type { MasterClock } from "./clock";
 
 export type PlayerOptions = {
@@ -58,6 +59,7 @@ export class Player {
   private readonly sentenceText: Map<string, string>;
   private captionId: string | null = null;
   private laidKey = "";
+  private readonly colors: ReturnType<typeof colorTheme>;
   private resizeObserver: ResizeObserver | null = null;
   private readonly raf: (cb: () => void) => number;
   private readonly caf: (id: number) => void;
@@ -65,6 +67,7 @@ export class Player {
   constructor(private readonly o: PlayerOptions) {
     this.raf = o.raf ?? ((cb) => requestAnimationFrame(cb));
     this.caf = o.caf ?? ((id) => cancelAnimationFrame(id));
+    this.colors = colorTheme(o.bundle.termColors);
     this.sceneById = new Map(o.bundle.scenes.map((s) => [s.id, s]));
     this.sentenceText = new Map(o.bundle.script.map((s) => [s.id, s.text]));
     o.root.replaceChildren();
@@ -195,6 +198,7 @@ export class Player {
           exprRef: obj.exprRef,
           events: this.events.get(obj.id) ?? [],
           math: this.o.math,
+          colors: this.colors,
           rectOf,
         };
         componentFor(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
@@ -224,7 +228,7 @@ export class Player {
       if (!expr) throw new Error(`caption: unknown expression ${m[1]}`);
       const span = document.createElement("span");
       span.className = "eve-caption-math";
-      span.innerHTML = this.o.math(toLatex(expr), false);
+      span.innerHTML = this.o.math(formulaLatex(expr, this.colors), false);
       span.setAttribute("role", "img");
       span.setAttribute("aria-label", spokenLabel(expr, this.o.bundle.locale));
       this.caption.append(span);

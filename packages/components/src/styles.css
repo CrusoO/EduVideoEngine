@@ -1,12 +1,20 @@
 /* Component styles. Colours are variables with safe defaults so a theme can override them. Fonts are bundled
    (Inter, Noto Sans Devanagari: the same files as YourTutor; KaTeX's own maths fonts): nothing is fetched at run time. */
 .eve-stage {
-  --eve-bg: #ffffff;
-  --eve-ink: #14172b;
-  --eve-muted: #464e6b;
-  --eve-accent: #1d4fd8;
+  /* The stage theme (packages/player/theme/palette.ts is the source; tests/theme.test.ts keeps them equal). */
+  --eve-bg: #0B0D14;
+  --eve-grid: #171B2A;
+  --eve-axis: #5B6178;
+  --eve-ink: #E6E8F0;
+  --eve-muted: #8A90A6;
+  --eve-blue: #58C4DD;
+  --eve-yellow: #F5D547;
+  --eve-green: #83C167;
+  --eve-red: #FC6255;
+  --eve-purple: #9A72AC;
+  --eve-accent: var(--eve-blue);
   --eve-hl: 0;
-  --eve-hl-color: #b45309;
+  --eve-hl-color: #F5D547;
   position: relative;
   box-sizing: border-box;
   background: var(--eve-bg);
@@ -67,11 +75,11 @@
   display: block;
 }
 .eve-grid {
-  stroke: #d6d9e8;
+  stroke: var(--eve-grid);
   stroke-width: 1;
 }
 .eve-axis {
-  stroke: var(--eve-ink);
+  stroke: var(--eve-axis);
   stroke-width: 1.5;
 }
 .eve-tick {
@@ -85,7 +93,7 @@
 }
 .eve-marker {
   fill: var(--eve-hl-color);
-  stroke: #fff;
+  stroke: var(--eve-bg);
   stroke-width: 1.5;
 }
 .eve-steps-list {
@@ -98,14 +106,14 @@
 .eve-highlight {
   border: 3px solid var(--eve-hl-color);
   border-radius: 12px;
-  box-shadow: 0 0 0 calc(var(--eve-hl) * 6px) rgba(180, 83, 9, 0.18);
+  box-shadow: 0 0 0 calc(var(--eve-hl) * 6px) rgba(245, 213, 71, 0.18);
 }
 .eve-highlight-label {
   position: absolute;
   left: 12px;
   top: -16px;
   background: var(--eve-hl-color);
-  color: #fff;
+  color: var(--eve-bg);
   font-size: 0.9rem;
   font-weight: 600;
   padding: 2px 10px;

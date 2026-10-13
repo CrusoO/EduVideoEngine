@@ -69,7 +69,7 @@ describe("the checks", () => {
     const withFact = (fg: string, fontPx = 17.6) => layout({ a: box }, { intrinsic: { a: { height: 50, words: 0, equations: 0, facts: [{ what: "label", fontPx, bold: false, fg, bg: COLOR.stage, kind: "reading" }] } } });
     expect(checkLayout(withFact(COLOR.ink), where)).toEqual([]);
     expect(checkLayout(withFact(COLOR.muted), where)).toEqual([]);
-    const f = checkLayout(withFact("#9aa0b8"), where);
+    const f = checkLayout(withFact("#3a4058"), where);
     expect(f.map((x) => x.code)).toEqual(["contrast"]);
     expect(f[0]!.message).toMatch(/needs 4\.5:1/);
   });

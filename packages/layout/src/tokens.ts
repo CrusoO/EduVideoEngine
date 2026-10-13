@@ -14,7 +14,7 @@ export const MIN_TEXT_PX = 12;
 export const MIN_READING_PX = 16;
 
 /** Colours of the player stage (styles.css). */
-export const COLOR = { stage: "#ffffff", ink: "#14172b", muted: "#464e6b", highlight: "#b45309", onHighlight: "#ffffff" } as const;
+export const COLOR = { stage: "#0B0D14", ink: "#E6E8F0", muted: "#8A90A6", highlight: "#F5D547", onHighlight: "#0B0D14" } as const;
 
 /** Reading speed for school-age learners, in words per minute, and what an equation costs in words. Tunable assumptions (ADR 0017). */
 export const READING_WPM = 140;

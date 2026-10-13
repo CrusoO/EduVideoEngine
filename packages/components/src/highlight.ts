@@ -7,8 +7,8 @@ export const HighlightProps = z.object({ target: z.string().min(1), label: z.str
 export type HighlightProps = z.infer<typeof HighlightProps>;
 
 /** The ring colour and the stage colour it must stand out from (WCAG 1.4.11: 3:1 for graphical objects). */
-export const HIGHLIGHT_COLOR = "#b45309";
-export const STAGE_COLOR = "#ffffff";
+export const HIGHLIGHT_COLOR = "#F5D547";
+export const STAGE_COLOR = "#0B0D14";
 
 export function contrast(a: string, b: string): number {
   const lum = (hex: string) => {

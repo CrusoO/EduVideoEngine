@@ -1,12 +1,14 @@
 import { z } from "zod";
 import { symbols } from "@eve/schema";
-import { toLatex } from "./latex";
+import { termIds } from "@eve/schema";
+import { formulaLatex, toLatex } from "./latex";
 import { spokenLabel } from "./spoken";
 import { objectStateAt } from "./state";
 import { applyState } from "./text";
 import type { ComponentModule } from "./types";
 
-export const EquationProps = z.object({ display: z.boolean().optional(), size: z.enum(["m", "l"]).optional() }).strict();
+/** `focus`: the names of the terms that keep their colour; every other part of the formula is dimmed. */
+export const EquationProps = z.object({ display: z.boolean().optional(), size: z.enum(["m", "l"]).optional(), focus: z.array(z.string()).min(1).optional() }).strict();
 export type EquationProps = z.infer<typeof EquationProps>;
 
 export const equation: ComponentModule<EquationProps> = {
@@ -17,7 +19,7 @@ export const equation: ComponentModule<EquationProps> = {
     const expr = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
     if (!expr) throw new Error(`equation ${ctx.objectId}: unknown exprRef ${ctx.exprRef}`);
     el.className = `eve-obj eve-equation eve-size-${p.size ?? "m"}`;
-    const latex = toLatex(expr);
+    const latex = formulaLatex(expr, ctx.colors, p.focus);
     // Same input, same DOM: only re-typeset when the formula changes, never on a time change.
     if (el.dataset.latex !== latex) {
       el.innerHTML = ctx.math(latex, p.display ?? true);
@@ -34,6 +36,7 @@ export const equation: ComponentModule<EquationProps> = {
     const expr = ctx.exprRef ? ctx.expressions[ctx.exprRef] : undefined;
     if (!expr) return [`unknown exprRef ${ctx.exprRef}`];
     const problems: string[] = [];
+    for (const f of props.focus ?? []) if (!termIds(expr).has(f)) problems.push(`focus names the term ${f}, which the expression does not have`);
     if (ctx.math) {
       try {
         ctx.math(toLatex(expr), props.display ?? true);

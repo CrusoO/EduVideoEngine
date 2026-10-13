@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { quadraticRoots, quadraticExpressions, type ComponentName } from "@eve/schema";
 import {
   HIGHLIGHT_COLOR,
+  STAGE_COLOR,
   IMPLEMENTED,
   REGISTRY,
   REVEAL_MS,
@@ -150,7 +151,7 @@ describe("what a component refuses", () => {
   });
 
   it("the highlight colour is at least 3:1 against the stage", () => {
-    expect(contrast(HIGHLIGHT_COLOR, "#ffffff")).toBeGreaterThanOrEqual(3);
+    expect(contrast(HIGHLIGHT_COLOR, STAGE_COLOR)).toBeGreaterThanOrEqual(3);
   });
 });
 
@@ -231,5 +232,53 @@ describe("accessible labels carry the spoken form", () => {
     const el = document.createElement("div");
     componentFor("equation").render(el, {} as never, 0, ctx({ exprRef: "total", locale: "hi-IN" }));
     expect(el.getAttribute("aria-label")).toBe("2 + 3 = 5");
+  });
+});
+
+describe("equation colours and focus", () => {
+  const colors = { of: (t: string) => ({ sq: "#58C4DD", lin: "#F5D547" })[t as "sq"], muted: "#8A90A6" };
+  const named3 = { ...expressions, q: { op: "eq", a: { op: "add", a: { op: "sub", a: { op: "pow", a: { op: "sym", name: "x" }, b: { op: "num", n: 2 }, term: "sq" }, b: { op: "mul", a: { op: "num", n: 5 }, b: { op: "sym", name: "x" }, term: "lin" } }, b: { op: "num", n: 6 } }, b: { op: "num", n: 0 } } } as typeof expressions;
+  const draw = (props: object, c: Partial<RenderContext> = {}) => {
+    const el = document.createElement("div");
+    componentFor("equation").render(el, props as never, 0, ctx({ expressions: named3, exprRef: "q", colors, ...c }));
+    return el;
+  };
+
+  it("draws coloured terms with the colours of the theme", () => {
+    const html = draw({}).innerHTML.toLowerCase();
+    expect(html).toContain("#58c4dd");
+    expect(html).toContain("#f5d547");
+  });
+  it("without a theme the formula is plain", () => {
+    expect(draw({}, { colors: undefined }).innerHTML.toLowerCase()).not.toContain("#58c4dd");
+  });
+  it("focus dims the rest and keeps the colour of the focused term only", () => {
+    const html = draw({ focus: ["lin"] }).innerHTML.toLowerCase();
+    expect(html).toContain("#8a90a6");
+    expect(html).toContain("#f5d547");
+    expect(html).not.toContain("#58c4dd");
+  });
+  it("redraws when the colours change, not on every time change", () => {
+    const el = document.createElement("div");
+    const c = ctx({ expressions: named3, exprRef: "q", colors });
+    componentFor("equation").render(el, {} as never, 0, c);
+    const first = el.firstChild;
+    componentFor("equation").render(el, {} as never, 5000, c);
+    expect(el.firstChild).toBe(first);
+    componentFor("equation").render(el, { focus: ["lin"] } as never, 5000, c);
+    expect(el.firstChild).not.toBe(first);
+  });
+  it("verify refuses a focus on a term the expression does not have", () => {
+    const m = componentFor("equation");
+    expect(m.verify({ focus: ["sq"] } as never, { expressions: named3, exprRef: "q", objectIds: [] })).toEqual([]);
+    expect(m.verify({ focus: ["nope"] } as never, { expressions: named3, exprRef: "q", objectIds: [] })).toEqual(["focus names the term nope, which the expression does not have"]);
+    expect(m.propsSchema.safeParse({ focus: [] }).success).toBe(false);
+  });
+  it("a cache built with the same colours draws the same DOM as live KaTeX", () => {
+    const bundle = { scenes: [{ objects: [{ id: "e", component: "equation", props: { focus: ["lin"] }, exprRef: "q" }] }], script: [], expressions: named3 } as never;
+    const cache = buildMathCache(bundle, katexMath, colors);
+    const live = draw({ focus: ["lin"] });
+    const cached = draw({ focus: ["lin"] }, { math: cachedMath(cache) });
+    expect(cached.innerHTML).toBe(live.innerHTML);
   });
 });

@@ -1,5 +1,6 @@
 import { LessonBundle } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
+import { termIds } from "./expr";
 import { computeHashes } from "./hash";
 import { LOCALES } from "./locales";
 
@@ -92,6 +93,25 @@ export function validateBundle(input: unknown): Validation {
       if (!beatSentences.has(ask.afterSentenceId)) bad(`${at}.interactions.${ask.id}`, "pause-and-ask must follow a sentence of this beat");
       if (ask.goalExprRef && !(ask.goalExprRef in b.expressions)) bad(`${at}.interactions.${ask.id}`, `unknown expression ${ask.goalExprRef}`);
     }
+  }
+
+  // Colours (ADR 0019): a coloured term must exist; inside one scene two different terms may not share a colour. The same term has one
+  // colour everywhere because the colour belongs to the term name, not to the scene.
+  const allTerms = new Set<string>();
+  for (const e of Object.values(b.expressions)) termIds(e, allTerms);
+  for (const t of Object.keys(b.termColors ?? {})) if (!allTerms.has(t)) bad(`termColors.${t}`, `no expression has a term named ${t}`);
+  for (const scene of b.scenes) {
+    const refs = scene.objects.flatMap((o) => [...(o.exprRef ? [o.exprRef] : []), ...(Array.isArray((o.props as { steps?: unknown }).steps) ? ((o.props as { steps: string[] }).steps) : [])]);
+    const byColor = new Map<string, Set<string>>();
+    for (const r of refs) {
+      const e = b.expressions[r];
+      if (!e) continue;
+      for (const t of termIds(e)) {
+        const c = b.termColors?.[t];
+        if (c) byColor.set(c, (byColor.get(c) ?? new Set()).add(t));
+      }
+    }
+    for (const [c, terms] of byColor) if (terms.size > 1) bad(`scenes.${scene.id}`, `terms ${[...terms].sort().join(" and ")} share the colour ${c} in one scene`);
   }
 
   const claimIds = new Set<string>();

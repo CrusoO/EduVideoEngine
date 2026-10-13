@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 import {
   EXPR_OPS,
   hindiPreview,
+  named,
+  termIds,
+  add,
+  neg,
+  num,
+  pow,
+  sym,
   ExprSchema,
   LOCALES,
   SYMPY_NODE,
@@ -205,5 +212,103 @@ describe("beat limit (ADR 0018)", () => {
     expect(withBeats(7).issues).toEqual([]);
     expect(withBeats(10).issues).toEqual([]);
     expect(withBeats(11).issues.map((i) => i.message)).toEqual(["a lesson has 4 to 10 beats"]);
+  });
+});
+
+describe("term colours (ADR 0019)", () => {
+  type B = LessonBundle;
+  /** The reference lesson with the terms of x^2 - 5x + 6 = 0 named, and a colour for each. */
+  const coloured = (mut: (b: B) => void = () => undefined) => {
+    const b = structuredClone(quadraticRoots) as B;
+    const e = b.expressions.eq1 as unknown as { a: { a: { a: { term?: string }; b: { term?: string } }; b: { term?: string } } };
+    e.a.a.a.term = "t.square";
+    e.a.a.b.term = "t.linear";
+    e.a.b.term = "t.constant";
+    b.termColors = { "t.square": "blue", "t.linear": "yellow", "t.constant": "green" };
+    mut(b);
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    return validateBundle(seal(rest));
+  };
+  const msgs = (r: ReturnType<typeof validateBundle>) => r.issues.map((i) => `${i.path}: ${i.message}`);
+
+  it("naming and collecting terms", () => {
+    const e = named("t.a", add(named("t.b", num(1)), sym("x")));
+    expect(e.term).toBe("t.a");
+    expect([...termIds(e)].sort()).toEqual(["t.a", "t.b"]);
+    expect([...termIds(neg(named("t.c", pow(sym("x"), num(2)))))]).toEqual(["t.c"]);
+    expect([...termIds(num(1))]).toEqual([]);
+  });
+
+  it("a lesson with coloured terms is valid", () => {
+    expect(coloured().issues).toEqual([]);
+  });
+
+  it("a colour outside the palette is rejected", () => {
+    const r = coloured((b) => void ((b.termColors as Record<string, string>)["t.square"] = "pink"));
+    expect(r.ok).toBe(false);
+  });
+
+  it("a colour for a term no expression has is rejected", () => {
+    expect(msgs(coloured((b) => void ((b.termColors as Record<string, string>)["t.ghost"] = "red")))).toEqual(["termColors.t.ghost: no expression has a term named t.ghost"]);
+  });
+
+  it("two different terms in one scene may not share a colour", () => {
+    const r = coloured((b) => void ((b.termColors as Record<string, string>)["t.linear"] = "blue"));
+    expect(msgs(r)).toEqual(["scenes.scene1: terms t.linear and t.square share the colour blue in one scene"]);
+  });
+
+  it("two terms that never appear in the same scene may share a colour, and one term keeps its colour in every scene it is in", () => {
+    const r = coloured((b) => {
+      (b.expressions.total as unknown as { b: { term?: string } }).b.term = "t.linear"; // t.linear is now in scenes 1 and 3, yellow in both
+      ((b.expressions.eq2 as unknown as { a: { b: { term?: string } } }).a.b).term = "t.other"; // only in scene 5
+      (b.termColors as Record<string, string>)["t.other"] = "yellow";
+    });
+    expect(r.issues).toEqual([]);
+  });
+
+  it("but in scene 3, where t.linear and t.other both show, the same colour is refused", () => {
+    const r = coloured((b) => {
+      (b.expressions.total as unknown as { b: { term?: string } }).b.term = "t.linear";
+      (b.expressions.fromRule as unknown as { b: { term?: string } }).b.term = "t.other";
+      (b.termColors as Record<string, string>)["t.other"] = "yellow";
+      b.scenes[2]!.objects[0]!.props = { steps: ["factored", "total", "fromRule"] };
+    });
+    expect(msgs(r).some((m) => m.includes("t.linear and t.other share the colour yellow"))).toBe(true);
+  });
+
+  it("colours are part of what a scene looks like: they change the hash of the scenes that show the term, and no other", () => {
+    const plain = quadraticRoots as B;
+    const withColours = (() => {
+      const b = structuredClone(plain) as B;
+      const e = b.expressions.eq1 as unknown as { a: { a: { a: { term?: string } } } };
+      e.a.a.a.term = "t.square";
+      b.termColors = { "t.square": "blue" };
+      const { hashes: _h, ...rest } = b;
+      void _h;
+      return seal(rest);
+    })();
+    const other = (() => {
+      const b = structuredClone(withColours) as B;
+      b.termColors = { "t.square": "red" };
+      const { hashes: _h, ...rest } = b;
+      void _h;
+      return seal(rest);
+    })();
+    expect(withColours.hashes.perScene.scene1).not.toBe(plain.hashes.perScene.scene1);
+    expect(other.hashes.perScene.scene1).not.toBe(withColours.hashes.perScene.scene1);
+    expect(withColours.hashes.perScene.scene2).toBe(plain.hashes.perScene.scene2);
+    expect(withColours.hashes.perScene.scene4).toBe(plain.hashes.perScene.scene4);
+  });
+
+  it("a colour for a term that no scene shows leaves every scene hash alone, and no termColors at all hashes as before", () => {
+    const b = structuredClone(quadraticRoots) as B;
+    (b.expressions.answer2 as unknown as { term?: string }).term = "t.lonely";
+    b.termColors = { "t.lonely": "purple" };
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    const sealed = seal(rest);
+    const orig = quadraticRoots as B;
+    for (const id of Object.keys(orig.hashes.perScene)) if (id !== "scene5") expect(sealed.hashes.perScene[id]).toBe(orig.hashes.perScene[id]);
   });
 });

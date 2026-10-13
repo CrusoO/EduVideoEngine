@@ -111,3 +111,57 @@ describe("toPlain: an ASCII reading for fallbacks", () => {
     expect(toPlain(tree)).toBe(plain);
   });
 });
+
+import { named } from "@eve/schema";
+import { formulaLatex, type ColorTheme } from "../src";
+
+describe("coloured terms", () => {
+  const BS = String.fromCharCode(92);
+  const tc = (hex: string, inner: string) => `${BS}textcolor{${hex}}{${inner}}`;
+  const colorOf = (t: string) => ({ sq: "#58C4DD", lin: "#F5D547", k: "#83C167" })[t as "sq"];
+  const x = sym("x");
+  // x^2 - 5x + 6 = 0 with its three terms named
+  const quad = eq(add(sub(named("sq", pow(x, num(2))), named("lin", mul(num(5), x))), named("k", num(6))), num(0));
+
+  it("no colours: exactly the plain formula", () => {
+    expect(toLatex(quad)).toBe("x^{2}-5x+6=0");
+    expect(toLatex(quad, () => undefined)).toBe("x^{2}-5x+6=0");
+    expect(formulaLatex(quad)).toBe("x^{2}-5x+6=0");
+  });
+
+  it("a coloured first term is wrapped; a coloured later term carries its sign with it", () => {
+    expect(toLatex(quad, colorOf)).toBe(`${tc("#58C4DD", "x^{2}")}${tc("#F5D547", "-5x")}${tc("#83C167", "+6")}=0`);
+  });
+
+  it("only the named terms with a colour are wrapped", () => {
+    expect(toLatex(quad, (t) => (t === "lin" ? "#F5D547" : undefined))).toBe(`x^{2}${tc("#F5D547", "-5x")}+6=0`);
+  });
+
+  it("a coloured operand that needs brackets keeps them inside the colour of the sign", () => {
+    const e = sub(x, named("lin", add(num(1), num(2))));
+    expect(toLatex(e, colorOf)).toBe(`x${tc("#F5D547", "-(1+2)")}`);
+  });
+
+  it("a coloured number, symbol, negation and fraction", () => {
+    expect(toLatex(named("k", num(6)), colorOf)).toBe(tc("#83C167", "6"));
+    expect(toLatex(named("k", x), colorOf)).toBe(tc("#83C167", "x"));
+    expect(toLatex(named("k", neg(x)), colorOf)).toBe(tc("#83C167", "-x"));
+    expect(toLatex(named("k", div(num(1), num(2))), colorOf)).toBe(tc("#83C167", `${BS}frac{1}{2}`));
+  });
+
+  it("nested colours: the inner term keeps its own", () => {
+    const e = named("k", add(named("sq", num(1)), x));
+    expect(toLatex(e, colorOf)).toBe(tc("#83C167", `${tc("#58C4DD", "1")}+x`));
+  });
+
+  it("the colours do not change what the formula says: the plain reading and the spoken form ignore terms", () => {
+    expect(toPlain(quad)).toBe(toPlain(eq(add(sub(pow(x, num(2)), mul(num(5), x)), num(6)), num(0))));
+  });
+
+  it("focus dims everything but the focused terms", () => {
+    const theme: ColorTheme = { of: colorOf, muted: "#8A90A6" };
+    expect(formulaLatex(quad, theme, ["lin"])).toBe(tc("#8A90A6", `x^{2}${tc("#F5D547", "-5x")}+6=0`));
+    expect(formulaLatex(quad, theme)).toBe(`${tc("#58C4DD", "x^{2}")}${tc("#F5D547", "-5x")}${tc("#83C167", "+6")}=0`);
+    expect(formulaLatex(quad, theme, ["lin", "k"])).toBe(tc("#8A90A6", `x^{2}${tc("#F5D547", "-5x")}${tc("#83C167", "+6")}=0`));
+  });
+});

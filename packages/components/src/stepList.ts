@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { toLatex } from "./latex";
+import { formulaLatex } from "./latex";
 import { spokenLabel } from "./spoken";
 import { objectStateAt } from "./state";
 import { applyState } from "./text";
@@ -25,7 +25,7 @@ export const stepList: ComponentModule<StepListProps> = {
         if (!expr) throw new Error(`stepList ${ctx.objectId}: unknown step expression ${id}`);
         const li = document.createElement("li");
         const math = document.createElement("span");
-        math.innerHTML = ctx.math(toLatex(expr), false);
+        math.innerHTML = ctx.math(formulaLatex(expr, ctx.colors), false);
         math.setAttribute("role", "img");
         math.setAttribute("aria-label", spokenLabel(expr, ctx.locale));
         li.append(math);

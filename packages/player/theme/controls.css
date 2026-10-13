@@ -1,0 +1,80 @@
+/* The control bar and the question box follow the YourTutor theme (--c-* tokens; the light values are the fallbacks).
+   The dark stage theme is only for the stage itself. */
+.eve-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--c-card-solid, #ffffff);
+  color: var(--c-text, #0f1b4c);
+  font-family: Inter, "Noto Sans Devanagari", system-ui, sans-serif;
+  font-size: 0.875rem;
+  border-top: 1px solid var(--c-line, rgba(15, 27, 76, 0.22));
+}
+.eve-btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px; /* a touch target */
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  color: var(--c-accent-fg, #ffffff);
+  background: var(--c-accent, #1d4fd8);
+}
+.eve-btn-ghost {
+  color: var(--c-accent-ink, #1d4fd8);
+  background: var(--c-accent-soft, #dbe5fc);
+}
+.eve-btn-primary {
+  padding: 0 18px;
+  font-weight: 600;
+}
+.eve-btn:focus-visible,
+.eve-seek:focus-visible {
+  outline: 3px solid var(--c-focus, #1d4fd8);
+  outline-offset: 2px;
+}
+.eve-time {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--c-muted, #2f3c78);
+}
+.eve-track {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+  height: 44px;
+  display: grid;
+  align-items: center;
+}
+.eve-seek {
+  width: 100%;
+  margin: 0;
+  height: 44px;
+  background: transparent;
+  accent-color: var(--c-accent, #1d4fd8);
+}
+.eve-tick-q {
+  position: absolute;
+  top: 6px;
+  width: 4px;
+  height: 8px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--c-warning, #7a4b00);
+  pointer-events: none;
+}
+.eve-question {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  background: var(--c-card-solid, #ffffff);
+  color: var(--c-text, #0f1b4c);
+  border-top: 1px solid var(--c-line, rgba(15, 27, 76, 0.22));
+  font-family: Inter, "Noto Sans Devanagari", system-ui, sans-serif;
+}
+.eve-question p {
+  margin: 0;
+}

@@ -1,3 +1,10 @@
+/* The card around the stage follows the YourTutor theme; the stage inside it is the dark stage theme (packages/components/src/styles.css). */
+.eve-player-stage {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
 .eve-caption {
   margin: 0;
   padding: 12px 20px 16px;
@@ -6,7 +13,8 @@
   font-synthesis: none;
   font-size: 1rem;
   line-height: 1.5;
-  color: #464e6b;
+  color: var(--c-text, #0f1b4c);
+  background: var(--c-card-solid, #ffffff);
 }
 .eve-caption:lang(hi),
 .eve-caption:lang(ne) {
@@ -18,5 +26,6 @@
   padding: 0 20px 12px;
   font-family: Inter, "Noto Sans Devanagari", system-ui, sans-serif;
   font-size: 0.8rem;
-  color: #464e6b;
+  color: var(--c-muted, #2f3c78);
+  background: var(--c-card-solid, #ffffff);
 }

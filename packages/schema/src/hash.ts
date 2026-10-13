@@ -1,6 +1,7 @@
 import { sha256 } from "@noble/hashes/sha256";
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils";
 import type { LessonBundle, SceneSpec } from "./bundle";
+import { termIds } from "./expr";
 
 /**
  * The canonical serialization every hash is computed over (ADR 0004): UTF-8, strings and keys NFC-normalised, keys
@@ -34,11 +35,15 @@ export const hashOf = (value: unknown): string => sha256Hex(canonicalJson(value)
  * it references. Editing one scene (or a sentence it uses) changes only that scene's hash, so caches, reviews and
  * analytics reopen exactly the affected scene.
  */
-export function sceneHash(bundle: Pick<LessonBundle, "script" | "expressions">, scene: SceneSpec): string {
+export function sceneHash(bundle: Pick<LessonBundle, "script" | "expressions"> & { termColors?: LessonBundle["termColors"] }, scene: SceneSpec): string {
   const sentences = bundle.script.filter((s) => s.beatId === scene.beatId);
   const refs = new Set<string>([...sentences.flatMap((s) => s.exprRefs), ...scene.objects.flatMap((o) => (o.exprRef ? [o.exprRef] : []))]);
   const expressions = Object.fromEntries([...refs].sort().map((r) => [r, bundle.expressions[r] ?? null]));
-  return hashOf({ scene, sentences, expressions });
+  // The colours of the terms this scene shows are part of what it looks like; the key is absent when there are none, so uncoloured scenes hash as before.
+  const used = new Set<string>();
+  for (const e of Object.values(expressions)) if (e) termIds(e, used);
+  const colors = Object.fromEntries([...used].sort().flatMap((t) => (bundle.termColors?.[t] ? [[t, bundle.termColors[t]]] : [])));
+  return hashOf(Object.keys(colors).length > 0 ? { scene, sentences, expressions, termColors: colors } : { scene, sentences, expressions });
 }
 
 /** Recompute every hash of a bundle (the bundle hash covers all content except the hashes themselves). */

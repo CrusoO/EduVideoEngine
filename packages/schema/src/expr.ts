@@ -40,20 +40,28 @@ export const VERIFIER_HANDLERS: Record<ExprOp, string> = {
   eq: "h_eq",
 };
 
+/**
+ * `term` is an optional name for a term of a formula (x squared, minus five x): the same name in two formulas is the same term, so it can keep one
+ * colour across scenes (termColors on the bundle). It never changes what the expression means: the verifier, the voice and the arithmetic ignore it,
+ * and it is absent from lessons that do not colour anything, so their hashes do not change (ADR 0003).
+ */
 export type Expr =
-  | { op: "num"; n: number; d?: number } // n/d, d defaults to 1, d > 0
-  | { op: "sym"; name: string }
-  | { op: "neg"; a: Expr }
-  | { op: "add" | "sub" | "mul" | "div"; a: Expr; b: Expr }
-  | { op: "pow"; a: Expr; b: Expr }
-  | { op: "eq"; a: Expr; b: Expr };
+  | { op: "num"; n: number; d?: number; term?: string } // n/d, d defaults to 1, d > 0
+  | { op: "sym"; name: string; term?: string }
+  | { op: "neg"; a: Expr; term?: string }
+  | { op: "add" | "sub" | "mul" | "div"; a: Expr; b: Expr; term?: string }
+  | { op: "pow"; a: Expr; b: Expr; term?: string }
+  | { op: "eq"; a: Expr; b: Expr; term?: string };
+
+export const TERM_ID = /^[A-Za-z][A-Za-z0-9_.-]*$/;
+const term = z.string().regex(TERM_ID).optional();
 
 export const ExprSchema: z.ZodType<Expr> = z.lazy(() =>
   z.union([
-    z.object({ op: z.literal("num"), n: z.number().int(), d: z.number().int().positive().optional() }).strict(),
-    z.object({ op: z.literal("sym"), name: z.string().regex(/^[a-zA-Z][a-zA-Z0-9_]*$/) }).strict(),
-    z.object({ op: z.literal("neg"), a: ExprSchema }).strict(),
-    z.object({ op: z.enum(["add", "sub", "mul", "div", "pow", "eq"]), a: ExprSchema, b: ExprSchema }).strict(),
+    z.object({ op: z.literal("num"), n: z.number().int(), d: z.number().int().positive().optional(), term }).strict(),
+    z.object({ op: z.literal("sym"), name: z.string().regex(/^[a-zA-Z][a-zA-Z0-9_]*$/), term }).strict(),
+    z.object({ op: z.literal("neg"), a: ExprSchema, term }).strict(),
+    z.object({ op: z.enum(["add", "sub", "mul", "div", "pow", "eq"]), a: ExprSchema, b: ExprSchema, term }).strict(),
   ]),
 );
 
@@ -66,6 +74,20 @@ export const div = (a: Expr, b: Expr): Expr => ({ op: "div", a, b });
 export const pow = (a: Expr, b: Expr): Expr => ({ op: "pow", a, b });
 export const neg = (a: Expr): Expr => ({ op: "neg", a });
 export const eq = (a: Expr, b: Expr): Expr => ({ op: "eq", a, b });
+
+/** Name a term: returns the same tree with `term` set on its root. */
+export const named = <E extends Expr>(term: string, e: E): E => ({ ...e, term });
+
+/** Every term name used in a tree. */
+export function termIds(e: Expr, into = new Set<string>()): Set<string> {
+  if (e.term) into.add(e.term);
+  if (e.op === "neg") termIds(e.a, into);
+  else if (e.op !== "num" && e.op !== "sym") {
+    termIds(e.a, into);
+    termIds(e.b, into);
+  }
+  return into;
+}
 
 /** Every symbol name used in a tree (for checks and for the verifier). */
 export function symbols(e: Expr, into = new Set<string>()): Set<string> {

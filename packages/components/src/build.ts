@@ -1,6 +1,6 @@
 import katex from "katex";
 import type { LessonBundle } from "@eve/schema";
-import { toLatex } from "./latex";
+import { formulaLatex, type ColorTheme } from "./latex";
 import { mathKey, type MathCache } from "./math-cache";
 import type { MathRenderer } from "./types";
 
@@ -13,19 +13,19 @@ export const katexMath: MathRenderer = (latex, display) =>
  * build time. The result is a derived cache (keyed by LaTeX, never part of the hashed bundle): rebuild it freely, it
  * changes nothing the bundle hash covers.
  */
-export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "script" | "expressions">, math: MathRenderer = katexMath): MathCache {
+export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "script" | "expressions">, math: MathRenderer = katexMath, colors?: ColorTheme): MathCache {
   const cache: MathCache = {};
-  const add = (id: string, display: boolean) => {
+  const add = (id: string, display: boolean, focus?: string[]) => {
     const expr = bundle.expressions[id];
     if (!expr) throw new Error(`unknown expression ${id}`);
-    const latex = toLatex(expr);
+    const latex = formulaLatex(expr, colors, focus);
     cache[mathKey(latex, display)] ??= math(latex, display);
   };
   // Captions typeset the formulas inside narration sentences inline.
   for (const sentence of bundle.script) for (const id of sentence.exprRefs) add(id, false);
   for (const scene of bundle.scenes) {
     for (const o of scene.objects) {
-      if (o.component === "equation" && o.exprRef) add(o.exprRef, (o.props as { display?: boolean }).display ?? true);
+      if (o.component === "equation" && o.exprRef) add(o.exprRef, (o.props as { display?: boolean }).display ?? true, (o.props as { focus?: string[] }).focus);
       if (o.component === "stepList") for (const id of (o.props as { steps?: string[] }).steps ?? []) add(id, false);
     }
   }

@@ -21,6 +21,11 @@ export type ComponentName = z.infer<typeof ComponentName>;
 
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/, "ids are letters, digits and _ . : -");
 
+/** The closed colour palette of the stage (ADR 0019). A bundle names colours; the theme owns the hex values. */
+export const COLOR_NAMES = ["blue", "yellow", "green", "red", "purple"] as const;
+export const ColorName = z.enum(COLOR_NAMES);
+export type ColorName = z.infer<typeof ColorName>;
+
 export const BEAT_KINDS = ["predict", "explore", "explain", "worked", "check"] as const;
 
 export const PauseAsk = z
@@ -134,6 +139,8 @@ export const LessonBundle = z
     sourceIds: z.array(id).min(1),
     /** Expression trees by id. Added to the sketched contract: every exprRef must resolve here (ADR 0002). */
     expressions: z.record(ExprSchema),
+    /** Colour of each named term (Expr.term), from the closed palette. Optional and without defaults: a lesson that colours nothing hashes as before. */
+    termColors: z.record(ColorName).optional(),
     plan: LessonPlan,
     script: z.array(NarrationSentence).min(1),
     scenes: z.array(SceneSpec).min(1),
