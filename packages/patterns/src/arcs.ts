@@ -4,8 +4,7 @@ import type { PedagogyBeatKind } from "./types";
 
 /**
  * Lesson arcs (CO-2, ADR 0028, 0038). An arc is an ordered list of slots; each slot is filled by one beat, and each slot has exactly one beat kind (AM-11).
- * The order of the slots and which are required are DESIGN CHOICES recorded here and in docs/PEDAGOGY.md: the CO-2 text that defines the arcs was not available
- * when this was written, so the three arcs follow their names and the slot table of AM-11. Change them by ADR.
+ * The arcs are CO-2 section 5.1; the slot-to-beat-kind table is AM-11. Change either by ADR.
  */
 export const SLOT_BEAT_KIND = {
   hook: "hook",
@@ -20,27 +19,28 @@ export const SLOT_BEAT_KIND = {
 export type SlotId = keyof typeof SLOT_BEAT_KIND;
 export const SLOT_IDS = Object.keys(SLOT_BEAT_KIND) as SlotId[];
 
-/** `always` slots must be filled; `ifPrerequisites` slots must be filled when the skill has prerequisites and may be left out when it has none; `optional` slots may always be left out. */
-export type Need = "always" | "ifPrerequisites" | "optional";
+/** `always` slots must be filled; `ifPrerequisites` slots must be filled when the skill has prerequisites and may be left out when it has none. */
+export type Need = "always" | "ifPrerequisites";
 export type ArcSlot = { slotId: SlotId; need: Need };
 export type Arc = { id: string; slots: readonly ArcSlot[] };
 
-const slot = (slotId: SlotId, need: Need): ArcSlot => ({ slotId, need });
+const slot = (slotId: SlotId, need: Need = "always"): ArcSlot => ({ slotId, need });
+/** The three arcs of CO-2 section 5.1, exactly. Every slot is required except prerequisite activation, which is required only when the skill has prerequisites. An extra slot needs an ADR. */
 export const ARCS = {
-  /** Start with the problem, work it, then name the idea. */
+  /** Start with the problem, then the idea, then work it. */
   problem_first: {
     id: "problem_first",
-    slots: [slot("hook", "always"), slot("prerequisite_activation", "ifPrerequisites"), slot("worked_example", "always"), slot("concept", "always"), slot("second_worked_example", "optional"), slot("common_mistake_contrast", "optional"), slot("check", "always")],
+    slots: [slot("hook"), slot("prerequisite_activation", "ifPrerequisites"), slot("concept"), slot("worked_example"), slot("common_mistake_contrast"), slot("check")],
   },
-  /** Start with the idea, then show it at work. */
+  /** Start with the idea, then show it at work twice. */
   concept_first: {
     id: "concept_first",
-    slots: [slot("hook", "optional"), slot("prerequisite_activation", "ifPrerequisites"), slot("concept", "always"), slot("worked_example", "always"), slot("second_worked_example", "optional"), slot("common_mistake_contrast", "optional"), slot("check", "always")],
+    slots: [slot("prerequisite_activation", "ifPrerequisites"), slot("concept"), slot("worked_example"), slot("second_worked_example"), slot("check")],
   },
-  /** Start from the mistake students make, show why it fails, then the idea. The hook slot is the misconception hook and its beat kind is hook. */
+  /** Start from a mistake students make (the hook shows it; its beat kind is hook), then why it fails. */
   misconception_first: {
     id: "misconception_first",
-    slots: [slot("hook", "always"), slot("common_mistake_contrast", "always"), slot("why_it_fails", "always"), slot("prerequisite_activation", "ifPrerequisites"), slot("concept", "always"), slot("worked_example", "always"), slot("check", "always")],
+    slots: [slot("hook"), slot("why_it_fails"), slot("concept"), slot("worked_example"), slot("check")],
   },
 } as const satisfies Record<string, Arc>;
 export type ArcId = keyof typeof ARCS;
@@ -49,7 +49,7 @@ export const ARC_IDS = Object.keys(ARCS) as ArcId[];
 /** The slot sequences an arc allows for a skill: every required slot, any choice of the others, in arc order. */
 export function slotSequences(arcId: ArcId, hasPrerequisites: boolean): SlotId[][] {
   const slots = ARCS[arcId].slots;
-  const choosable = slots.filter((s) => s.need === "optional" || (s.need === "ifPrerequisites" && !hasPrerequisites));
+  const choosable = slots.filter((s) => s.need === "ifPrerequisites" && !hasPrerequisites);
   const out: SlotId[][] = [];
   for (let mask = 0; mask < 1 << choosable.length; mask++) {
     const dropped = new Set(choosable.filter((_s, i) => (mask & (1 << i)) !== 0).map((s) => s.slotId));

@@ -16,19 +16,17 @@ A lesson follows an arc: `problem_first`, `concept_first` or `misconception_firs
 
 In `misconception_first` the hook slot maps to the hook beat kind. There is no `recap` kind.
 
-## The three arcs (`packages/patterns/src/arcs.ts`)
-`always` = must be filled; `if prerequisites` = must be filled when the skill has prerequisites, optional when it has none; `optional` = may be left out.
+## The three arcs (CO-2 section 5.1, `packages/patterns/src/arcs.ts`)
+Every slot is required, except prerequisite activation, which is required only when the skill has prerequisites (otherwise optional). An extra slot needs an ADR.
 
 | Arc | Slots in order |
 |---|---|
-| problem_first | hook, prerequisite_activation (if prerequisites), worked_example, concept, second_worked_example (optional), common_mistake_contrast (optional), check |
-| concept_first | hook (optional), prerequisite_activation (if prerequisites), concept, worked_example, second_worked_example (optional), common_mistake_contrast (optional), check |
-| misconception_first | hook, common_mistake_contrast, why_it_fails, prerequisite_activation (if prerequisites), concept, worked_example, check |
-
-The order and the required slots are a design choice made from the arc names and the slot table, because the CO-2 text that defines them was not available. Change them by ADR.
+| problem_first | hook, prerequisite_activation, concept, worked_example, common_mistake_contrast, check |
+| concept_first | prerequisite_activation, concept, worked_example, second_worked_example, check |
+| misconception_first | hook (shows a common mistake; beat kind hook), why_it_fails, concept, worked_example, check |
 
 ## The pattern library
-Eight patterns; each says which beat kinds it may fill and carries a text-heavy flag derived from its components. Recap card and check question are new (ADR 0038). `pnpm patterns:report` shows the flags and, per arc and lesson length, whether "at most half text-heavy" can hold. It cannot at some lengths; ADR 0043 proposes the relaxation.
+Eight patterns; each says which beat kinds it may fill and carries a text-heavy flag derived from its components. Recap card and check question are new (ADR 0038). `pnpm patterns:report` shows the flags and, per arc and lesson length, whether "at most half text-heavy" can hold. It cannot for `problem_first` and `misconception_first` at some lengths; ADR 0043 gives the numbers and proposals.
 
 ## Claim model
 Claims may sit in any beat. A claim has an id, its beat, sources, `claimMode` (computed or grounded), `dependsOn`, `importance` (core or support), and optionally `usesStep` with a closed `stepKind`. A claim is introduced at its first claim-role sentence. The graph is acyclic.

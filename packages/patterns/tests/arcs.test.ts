@@ -28,6 +28,14 @@ describe("the slot table (AM-11)", () => {
 });
 
 describe("the arcs", () => {
+  it("are exactly CO-2 section 5.1", () => {
+    const names = (id: (typeof ARC_IDS)[number]) => ARCS[id].slots.map((s) => s.slotId);
+    expect(names("problem_first")).toEqual(["hook", "prerequisite_activation", "concept", "worked_example", "common_mistake_contrast", "check"]);
+    expect(names("concept_first")).toEqual(["prerequisite_activation", "concept", "worked_example", "second_worked_example", "check"]);
+    expect(names("misconception_first")).toEqual(["hook", "why_it_fails", "concept", "worked_example", "check"]);
+    // every slot is required, except prerequisite activation, which is required only when the skill has prerequisites
+    for (const id of ARC_IDS) for (const s of ARCS[id].slots) expect(s.need, `${id}/${s.slotId}`).toBe(s.slotId === "prerequisite_activation" ? "ifPrerequisites" : "always");
+  });
   it("are the three named ones, each with only known slots, no slot twice, a worked example and a check", () => {
     expect(ARC_IDS).toEqual(["problem_first", "concept_first", "misconception_first"]);
     for (const id of ARC_IDS) {
@@ -39,10 +47,13 @@ describe("the arcs", () => {
     }
   });
   it("prerequisite activation is required when the skill has prerequisites and optional when it has none", () => {
-    for (const id of ARC_IDS) {
+    for (const id of ARC_IDS.filter((a) => ARCS[a].slots.some((s) => s.slotId === "prerequisite_activation"))) {
       expect(slotSequences(id, true).every((q) => q.includes("prerequisite_activation")), id).toBe(true);
+      expect(slotSequences(id, true)).toHaveLength(1);
       expect(slotSequences(id, false).some((q) => !q.includes("prerequisite_activation")), id).toBe(true);
     }
+    // an arc without that slot has one sequence either way
+    expect(slotSequences("misconception_first", true)).toEqual(slotSequences("misconception_first", false));
   });
   it("every sequence keeps the order of the arc and all its required slots", () => {
     for (const id of ARC_IDS) {
@@ -127,20 +138,20 @@ describe("at most half the beats text-heavy (ADR 0038, 0043)", () => {
     expect(fewestTextHeavy(["hook", "worked_example", "concept", "check"])).toBe(2);
     expect(fewestTextHeavy(["concept", "worked_example", "second_worked_example", "check"])).toBe(1);
   });
-  it("reports, per arc and length, where the rule cannot be met (this list is the finding; ADR 0043 proposes the relaxation)", () => {
+  it("reports, per arc and length, where the rule cannot be met (this list is the finding; ADR 0043)", () => {
     expect(failing).toEqual([
-      "problem_first/with prerequisites/5",
-      "problem_first/with prerequisites/7",
-      "problem_first/without prerequisites/7",
-      "concept_first/with prerequisites/7",
-      "concept_first/without prerequisites/7",
-      "misconception_first/with prerequisites/7",
-      "misconception_first/without prerequisites/6",
-      "misconception_first/without prerequisites/7",
+      "problem_first/with prerequisites/6",
+      "problem_first/without prerequisites/5",
+      "problem_first/without prerequisites/6",
+      "misconception_first/with prerequisites/5",
+      "misconception_first/without prerequisites/5",
     ]);
   });
-  it("the relaxation 'at most half, rounded up' fixes every arc except misconception_first", () => {
-    const stillFailing = report.flatMap((x) => x.lengths.filter((l) => !l.possibleIfRoundedUp).map(() => x.arcId));
-    expect(new Set(stillFailing)).toEqual(new Set(["misconception_first"]));
+  it("concept_first meets the rule at every length it can have", () => {
+    expect(report.filter((x) => x.arcId === "concept_first").every((x) => x.satisfiable)).toBe(true);
+  });
+  it("rounding the half up fixes misconception_first and the 5-beat problem_first, not the 6-beat problem_first", () => {
+    const stillFailing = report.flatMap((x) => x.lengths.filter((l) => !l.possibleIfRoundedUp).map((l) => `${x.arcId}/${l.beats}`));
+    expect([...new Set(stillFailing)]).toEqual(["problem_first/6"]);
   });
 });
