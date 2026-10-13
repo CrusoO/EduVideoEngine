@@ -45,3 +45,13 @@ Pricing page (`https://ai.google.dev/gemini-api/docs/pricing`): all of these hav
 2. One entry per model in `model-profiles.json` with `provider` set to the new provider's name.
 3. A branch in `LlmClient.createAdapter` (one line) and `LLM_PROVIDER`. **No pipeline code changes**: `packages/adapters/tests/contract.test.ts` runs the same pipeline step against the fake and against a stub of a second provider in a different wire format, with identical results, repair behaviour and ledger shape.
 A paid or higher-limit provider is a money decision and needs an ADR first (ADR 0016, 0022).
+
+## Addendum 2026-10-14: Bedrock as the second provider, for testing, at the owner's request
+* **Why:** the free-tier Gemini models answered only 503 and 429 for a whole session (3.8-flash: high demand; 3.6-flash: retry after 30 s), so nothing could be recorded. The owner supplied AWS credentials and asked to try Amazon Bedrock "just for testing".
+* **This is paid, and it is an exception to the Phase 1 rule** (ADR 0016, 0022: a free tier only). It is allowed here only because the owner said so, it is limited by the same daily cap (placeholder 60 requests a day, to be set from the owner's account), and it is not used by CI: CI replays the recorded fixtures and needs no credentials.
+  Bedrock does not use prompts to train models, which also removes the free-tier data concern of ADR 0022 for these calls; the scan for personal data and keys still runs first.
+* **What it needed** (the "second provider" recipe above, as predicted): `bedrock.ts` (Converse API through the SDK's fetch handler, because the default Node HTTP handler failed with "Protocol error" on this machine), a profile entry, a branch in `createAdapter`, credentials from `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` only. No pipeline code changed.
+* **Model id:** `eu.anthropic.claude-sonnet-4-6`. In eu-central-1 the plain id `anthropic.claude-sonnet-4-6` is refused ("on-demand throughput isn't supported"): an inference profile id is required.
+* No JSON output mode exists in Converse, so the profile says `structuredOutput: false`; the system prompt, the envelope and our own validation carry the contract. It held: 7 of 8 probes passed at first, the eighth was a probe that was too strict (see the report), and the real planner answer was valid on the first request.
+* Node needs `--use-system-ca` on this machine (the certificate store is intercepted); the scripts pass it. Verification is never turned off.
+* The credentials were pasted into a chat. They should be rotated after testing.

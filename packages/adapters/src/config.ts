@@ -15,6 +15,8 @@ export type LlmConfig = {
   dailyCap?: number;
   /** A level name or a token budget, whichever the chosen model's profile supports. */
   thinking?: string | number;
+  /** AWS credentials for provider bedrock, from the environment only. */
+  aws?: { accessKeyId: string; secretAccessKey: string; region: string };
   /** LLM_TEMPERATURE, default 0.2: low, because the reply is parsed by a program. */
   temperature: number;
   /** True when running in CI: only replay is allowed. */
@@ -41,7 +43,7 @@ export function readConfig(env: Record<string, string | undefined> = process.env
   return {
     provider: env.LLM_PROVIDER?.trim() || "gemini",
     apiKey: env.GEMINI_API_KEY?.trim() || undefined,
-    model: env.LLM_MODEL?.trim() || PROFILES.defaults.primary,
+    model: env.LLM_MODEL?.trim() || (env.LLM_PROVIDER?.trim() === "bedrock" && env.BEDROCK_MODEL?.trim()) || PROFILES.defaults.primary,
     fallbackModel: env.LLM_FALLBACK_MODEL?.trim() || PROFILES.defaults.fallback,
     lightModel: env.LLM_LIGHT_MODEL?.trim() || PROFILES.defaults.light,
     mode,
@@ -49,6 +51,7 @@ export function readConfig(env: Record<string, string | undefined> = process.env
     dailyCap: positive("LLM_DAILY_REQUEST_CAP", env.LLM_DAILY_REQUEST_CAP),
     thinking: thinkingBudget ?? (level ? level : undefined),
     temperature,
+    aws: env.AWS_ACCESS_KEY_ID?.trim() && env.AWS_SECRET_ACCESS_KEY?.trim() ? { accessKeyId: env.AWS_ACCESS_KEY_ID.trim(), secretAccessKey: env.AWS_SECRET_ACCESS_KEY.trim(), region: env.AWS_REGION?.trim() || "eu-central-1" } : undefined,
     ci: env.CI === "true" || env.CI === "1",
   };
 }

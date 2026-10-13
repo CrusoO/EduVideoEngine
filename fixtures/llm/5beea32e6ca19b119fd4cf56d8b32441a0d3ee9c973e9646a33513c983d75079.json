@@ -1,0 +1,17 @@
+{
+  "key": "5beea32e6ca19b119fd4cf56d8b32441a0d3ee9c973e9646a33513c983d75079",
+  "step": "planner",
+  "promptVersion": "planner.v2",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:24:30.524Z",
+  "response": {
+    "text": "{\"template\":\"problem-first\",\"beats\":[{\"id\":\"b1\",\"kind\":\"predict\",\"title\":\"Guess the sum of the roots\",\"pattern\":\"colour-bound-terms\",\"durationS\":45,\"pause\":false,\"animate\":true,\"sourceIds\":[\"quad.sum.problem\",\"quad.sum.glossary\"]},{\"id\":\"b2\",\"kind\":\"explore\",\"title\":\"See the parabola and its roots\",\"pattern\":\"plot-and-mark-roots\",\"durationS\":55,\"pause\":false,\"animate\":true,\"sourceIds\":[\"quad.sum.graph\",\"quad.sum.steps\"]},{\"id\":\"b3\",\"kind\":\"worked\",\"title\":\"Find and add the roots step by step\",\"pattern\":\"step-by-step-worked-example\",\"durationS\":70,\"pause\":true,\"animate\":true,\"sourceIds\":[\"quad.sum.steps\"]},{\"id\":\"b4\",\"kind\":\"check\",\"title\":\"Spot the common mistake\",\"pattern\":\"common-mistake-contrast\",\"durationS\":55,\"pause\":false,\"animate\":true,\"sourceIds\":[\"quad.sum.misconception\",\"quad.sum.steps\"]}]}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 3578,
+      "outputTokens": 252,
+      "thinkingTokens": 0
+    }
+  }
+}

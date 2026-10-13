@@ -1,0 +1,17 @@
+{
+  "key": "3dc8ea2872d678c1946e1525b85eceb2bd865ec9ae55455157dd47de74d227f2",
+  "step": "probe-3",
+  "promptVersion": "probe.3.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:39.837Z",
+  "response": {
+    "text": "{\"error\":\"insufficient_content\",\"missing\":[\"expression describing a cubic equation\"]}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1368,
+      "outputTokens": 20,
+      "thinkingTokens": 0
+    }
+  }
+}

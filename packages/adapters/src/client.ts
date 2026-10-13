@@ -2,6 +2,7 @@ import { UnsafePromptError, assertPromptSafe } from "@eve/safety";
 import type { ZodType } from "zod";
 import type { LlmConfig } from "./config";
 import { FixtureStore, fixtureKey, type Fixture } from "./fixtures";
+import { BedrockAdapter } from "./bedrock";
 import { GeminiAdapter } from "./gemini";
 import { Ledger, pacificDay, type LedgerEntry } from "./ledger";
 import { PROFILES, profileOf, type ProfileFile } from "./profiles";
@@ -181,7 +182,12 @@ export class LlmClient {
 
   private createAdapter(): LLMAdapter {
     const { provider, apiKey } = this.o.config;
-    if (provider !== "gemini") throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Only gemini is built; a new provider is a new adapter file (ADR 0023).`);
+    if (provider === "bedrock") {
+      const aws = this.o.config.aws;
+      if (!aws) throw new LlmRefused("AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not set. Put them in .env (ignored by git).");
+      return new BedrockAdapter(aws);
+    }
+    if (provider !== "gemini") throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Built: gemini, bedrock; a new provider is a new adapter file (ADR 0023).`);
     if (!apiKey) throw new LlmRefused("GEMINI_API_KEY is not set. Put it in .env (ignored by git) or the environment; replay mode needs no key.");
     return new GeminiAdapter(apiKey);
   }

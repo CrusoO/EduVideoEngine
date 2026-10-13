@@ -1,0 +1,17 @@
+{
+  "key": "46a2c94a11c7176ea88eee997abf41081c7a48208b03d5bc4ec8988d54f8d53b",
+  "step": "probe-2",
+  "promptVersion": "probe.2.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:33.772Z",
+  "response": {
+    "text": "{\"record_id\":\"p.1\",\"sentence\":\"The sum of the roots of a quadratic equals negative b divided by a.\"}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1431,
+      "outputTokens": 31,
+      "thinkingTokens": 0
+    }
+  }
+}

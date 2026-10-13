@@ -193,21 +193,22 @@ describe("record, then replay, on the seed lesson", () => {
     await expect(planLesson(client(undefined, { mode: "replay" }).c, r)).rejects.toThrow(/no recorded answer for planner/);
     await expect(planLesson(client(new FakeAdapter([answer(ref)]), { mode: "record", ci: true }).c, r)).rejects.toThrow(/CI runs in replay mode only/);
   });
-  // Skipped only while no real planner answer has been recorded (the provider was overloaded when this was written); once fixtures/llm holds one, this runs and CI fails if it goes missing.
-  it.skipIf(!existsSync(join(FIXTURES_DIR, `${fixtureKey({ promptVersion: plannerCall(r).promptVersion, model: readConfig({}).model, system: plannerCall(r).system, input: plannerCall(r).input, temperature: 0.2 })}.json`)))("the committed fixture for the seed lesson replays to a valid plan, and says it is a stand-in if it is one", async () => {
+  // The planner answer recorded on 2026-10-14 from a real model (Bedrock, see ADR 0023): replay needs no key and makes no call. CI fails if the fixture goes missing.
+  it("the committed recording of the real planner answer replays to a valid plan with no live call", async () => {
     const logs: string[] = [];
-    const config = { ...readConfig({}), mode: "replay" as const };
+    const config = { ...readConfig({}), mode: "replay" as const, provider: "bedrock", model: "eu.anthropic.claude-sonnet-4-6" };
     const c = new LlmClient({ config, fixtures: new FixtureStore(FIXTURES_DIR), ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl")), log: (m) => logs.push(m) });
     const out = await planLesson(c, r);
     expect(out).toMatchObject({ ok: true });
     if (!out.ok) return;
     expect(checkPlan(out.plan, r)).toEqual([]);
     const call = plannerCall(r);
-    const fixture = new FixtureStore(FIXTURES_DIR).read(fixtureKey({ promptVersion: call.promptVersion, model: c.modelFor(), system: call.system, input: call.input }))!;
+    const fixture = new FixtureStore(FIXTURES_DIR).read(fixtureKey({ promptVersion: call.promptVersion, model: c.modelFor(), system: call.system, input: call.input, temperature: 0.2 }))!;
     expect(fixture).toBeDefined();
-    if (fixture.provenance === "authored-standin") expect(logs.join()).toContain("authored stand-in");
-    else expect(c.stats.standIns).toBe(0);
-    expect(readFileSync(join(FIXTURES_DIR, `${fixture.key}.json`), "utf8")).not.toMatch(/GEMINI_API_KEY|x-goog/);
+    expect(fixture.provenance ?? "recorded").toBe("recorded");
+    expect(c.stats).toMatchObject({ sent: 0, replayed: 1, standIns: 0 });
+    expect(logs).toEqual([]);
+    expect(readFileSync(join(FIXTURES_DIR, `${fixture.key}.json`), "utf8")).not.toMatch(/GEMINI_API_KEY|x-goog|AKIA|aws_secret/i);
   });
 });
 

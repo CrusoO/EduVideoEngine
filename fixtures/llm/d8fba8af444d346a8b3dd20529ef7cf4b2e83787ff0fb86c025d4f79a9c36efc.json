@@ -1,0 +1,17 @@
+{
+  "key": "d8fba8af444d346a8b3dd20529ef7cf4b2e83787ff0fb86c025d4f79a9c36efc",
+  "step": "smoke",
+  "promptVersion": "smoke.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:06.657Z",
+  "response": {
+    "text": "{\"ok\":true,\"echo\":\"lantern\"}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1260,
+      "outputTokens": 13,
+      "thinkingTokens": 0
+    }
+  }
+}

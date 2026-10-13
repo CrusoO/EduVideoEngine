@@ -10,6 +10,7 @@ export * from "./config";
 export * from "./fixtures";
 export * from "./ledger";
 export * from "./gemini";
+export * from "./bedrock";
 export * from "./fake";
 export * from "./client";
 

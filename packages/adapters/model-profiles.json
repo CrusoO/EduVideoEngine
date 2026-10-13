@@ -66,6 +66,18 @@
       "dailyRequests": 20,
       "limitsVerified": false
     },
+    "eu.anthropic.claude-sonnet-4-6": {
+      "provider": "bedrock",
+      "family": "sonnet",
+      "status": "stable",
+      "freeTier": false,
+      "structuredOutput": false,
+      "thinking": { "kind": "none" },
+      "maxOutputTokens": 8192,
+      "rpm": 10,
+      "dailyRequests": 60,
+      "limitsVerified": false
+    },
     "gemini-2.5-flash-lite": {
       "provider": "gemini",
       "family": "flash-lite",

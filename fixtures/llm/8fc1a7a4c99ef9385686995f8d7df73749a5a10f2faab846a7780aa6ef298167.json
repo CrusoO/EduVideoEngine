@@ -1,0 +1,17 @@
+{
+  "key": "8fc1a7a4c99ef9385686995f8d7df73749a5a10f2faab846a7780aa6ef298167",
+  "step": "probe-6",
+  "promptVersion": "probe.6.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:57.677Z",
+  "response": {
+    "text": "{\"id\":\"r.2\",\"label\":\"Roots\"}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1365,
+      "outputTokens": 15,
+      "thinkingTokens": 0
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "key": "fdb0fd67cc4079f0b0283a74424adab113ae4db38b80cb659a9078c0af933ec5",
+  "step": "probe-5",
+  "promptVersion": "probe.5.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:51.845Z",
+  "response": {
+    "text": "{\"id\":\"r.7\",\"label\":\"Sum of Roots\",\"count\":4}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1475,
+      "outputTokens": 21,
+      "thinkingTokens": 0
+    }
+  }
+}

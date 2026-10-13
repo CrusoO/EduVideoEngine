@@ -1,0 +1,17 @@
+{
+  "key": "6b4b7d81fcb99a8e03a12242f9b51a04ffd86a7f081066b5aa3a91e077a762d6",
+  "step": "probe-4",
+  "promptVersion": "probe.4.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:45.959Z",
+  "response": {
+    "text": "{\"error\":\"unsupported_locale\"}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1335,
+      "outputTokens": 12,
+      "thinkingTokens": 0
+    }
+  }
+}

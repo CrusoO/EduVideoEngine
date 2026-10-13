@@ -1,0 +1,17 @@
+{
+  "key": "dc477d6b2c01179c68e04d86865fb9109665e6c2e8f0155d621e630911f6cbb6",
+  "step": "probe-7",
+  "promptVersion": "probe.7.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:24:03.758Z",
+  "response": {
+    "text": "{\"count\":3}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1398,
+      "outputTokens": 8,
+      "thinkingTokens": 0
+    }
+  }
+}

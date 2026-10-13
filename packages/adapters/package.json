@@ -5,8 +5,10 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.1150.0",
     "@eve/safety": "workspace:*",
     "@eve/schema": "workspace:*",
+    "@smithy/fetch-http-handler": "^5.8.0",
     "zod": "^3.24.1"
   }
 }

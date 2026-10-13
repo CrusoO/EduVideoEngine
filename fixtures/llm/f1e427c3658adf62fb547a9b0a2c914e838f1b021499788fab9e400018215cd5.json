@@ -1,0 +1,17 @@
+{
+  "key": "f1e427c3658adf62fb547a9b0a2c914e838f1b021499788fab9e400018215cd5",
+  "step": "probe-1",
+  "promptVersion": "probe.1.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:23:27.803Z",
+  "response": {
+    "text": "{\"error\":\"insufficient_content\",\"missing\":[\"record of kind solutionSteps\"]}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1389,
+      "outputTokens": 23,
+      "thinkingTokens": 0
+    }
+  }
+}

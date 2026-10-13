@@ -10,7 +10,7 @@ const Thinking = z.discriminatedUnion("kind", [
 export const ModelProfile = z
   .object({
     provider: z.string().min(1),
-    family: z.enum(["flash", "flash-lite"]),
+    family: z.enum(["flash", "flash-lite", "sonnet"]),
     status: z.enum(["stable", "legacy", "preview"]),
     freeTier: z.boolean(),
     structuredOutput: z.boolean(),

@@ -77,7 +77,7 @@ export const PROBES: Probe[] = [
   {
     id: 3,
     name: "unknown id",
-    expect: "the unknown_id error object, not an invented id",
+    expect: "an error object the task defines (unknown_id or insufficient_content), not an invented id",
     parts: base(
       "Return expr_id, the id of the expression that describes a cubic equation. (Pass: probe. Prompt version: probe.unknown-id.v1.)",
       ["expr_id must be one of the expressionIds in ALLOWED VALUES."],
@@ -87,7 +87,7 @@ export const PROBES: Probe[] = [
       { expressions: ["e.quad"] },
       [{ when: "the id the task needs is not in ALLOWED VALUES", shape: { error: "unknown_id", id: "<the id or description that was needed>" } }, ...dataErrors],
     ),
-    judge: (_t, j) => (isObj(j) && j.error === "unknown_id" ? ok() : no(isObj(j) && "expr_id" in j ? `returned an id (${String(j.expr_id)}) instead of the error object` : "did not return the unknown_id error object")),
+    judge: (_t, j) => (isObj(j) && (j.error === "unknown_id" || j.error === "insufficient_content") ? ok() : no(isObj(j) && "expr_id" in j ? `returned an id (${String(j.expr_id)}) instead of the error object` : "did not return a defined error object")),
   },
   {
     id: 4,

@@ -1,0 +1,17 @@
+{
+  "key": "9a5b0f47371719c442b582ff5f987acc62d1064847eb8f1fafce717cf5f0016b",
+  "step": "probe-8",
+  "promptVersion": "probe.8.v1",
+  "model": "eu.anthropic.claude-sonnet-4-6",
+  "recordedAt": "2026-10-13T20:24:09.864Z",
+  "response": {
+    "text": "{\"sentence\":\"We will now solve the quadratic equation {expr:quad.eq}.\"}",
+    "model": "eu.anthropic.claude-sonnet-4-6",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1364,
+      "outputTokens": 22,
+      "thinkingTokens": 0
+    }
+  }
+}
