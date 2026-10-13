@@ -12,6 +12,10 @@ export interface MasterClock {
   play(): Promise<void>;
   pause(): void;
   seek(ms: number): void;
+  /** Subscribe to interruptions the clock detects itself (the audio device stopped under it). The clock has already paused. */
+  onInterrupt?(cb: () => void): void;
+  /** Called from the frame loop with a wall-clock reading: catches a clock that claims to run but has stalled. */
+  watchdog?(wallMs: number): void;
 }
 
 /** The slice of Web Audio the clock uses, so a test can drive it with a fake. */
@@ -23,6 +27,7 @@ export interface ClockContext {
   readonly destination: unknown;
   resume(): Promise<void>;
   createBufferSource(): ClockSource;
+  addEventListener?(type: "statechange", cb: () => void): void;
 }
 export interface ClockSource {
   buffer: unknown;
@@ -30,6 +35,9 @@ export interface ClockSource {
   start(when: number, offset: number): void;
   stop(): void;
 }
+
+/** How long currentTime may stand still while "playing" before it counts as an interruption. */
+export const STALL_MS = 500;
 
 export type AudioClockOptions = {
   /** Seconds between asking for playback and the first sample, so scheduling is never in the past. */
@@ -51,6 +59,8 @@ export class AudioClock implements MasterClock {
   private sources: ClockSource[] = [];
   private readonly lead: number;
   private readonly compensate: boolean;
+  private readonly interruptCbs: Array<() => void> = [];
+  private seen = { ctx: -1, wall: 0 };
 
   constructor(
     private readonly ctx: ClockContext,
@@ -60,6 +70,30 @@ export class AudioClock implements MasterClock {
   ) {
     this.lead = opts.leadS ?? 0.05;
     this.compensate = opts.compensateLatency ?? true;
+    // A phone call, a locked screen or the browser reclaiming the device suspends the context and currentTime stops.
+    ctx.addEventListener?.("statechange", () => {
+      if (this.ctx.state !== "running") this.interrupt();
+    });
+  }
+
+  onInterrupt(cb: () => void): void {
+    this.interruptCbs.push(cb);
+  }
+
+  /** If the context says it is running but currentTime has not moved for STALL_MS, treat it as an interruption. */
+  watchdog(wallMs: number): void {
+    if (!this.playing || this.ctx.currentTime !== this.seen.ctx) {
+      this.seen = { ctx: this.ctx.currentTime, wall: wallMs };
+      return;
+    }
+    if (wallMs - this.seen.wall > STALL_MS) this.interrupt();
+  }
+
+  /** Re-anchor exactly like a pause (the position is whatever the stalled clock last said), then tell the listeners. */
+  private interrupt(): void {
+    if (!this.playing) return;
+    this.pause();
+    for (const cb of this.interruptCbs) cb();
   }
 
   /** Output latency in ms that the browser reports (0 if it does not). */

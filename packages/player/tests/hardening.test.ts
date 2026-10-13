@@ -280,3 +280,111 @@ describe("AudioClock details", () => {
     expect(ctx.created).toHaveLength(1);
   });
 });
+
+class EventCtx extends Ctx {
+  listeners: Array<() => void> = [];
+  addEventListener(_type: "statechange", cb: () => void) {
+    this.listeners.push(cb);
+  }
+  set(state: string) {
+    this.state = state;
+    this.listeners.forEach((l) => l());
+  }
+}
+
+describe("interruptions: a suspended or stalled audio device re-anchors like a pause", () => {
+  it("a statechange away from running pauses at the position the stalled clock reached, stops the audio and tells the listeners", async () => {
+    const ctx = new EventCtx();
+    const clock = new AudioClock(ctx, { audio, totalMs: 6000 }, bufs, { compensateLatency: false });
+    let told = 0;
+    clock.onInterrupt(() => told++);
+    await clock.play();
+    ctx.currentTime += 0.05 + 1.2;
+    ctx.set("interrupted"); // iOS says interrupted, others say suspended
+    expect(clock.isPlaying()).toBe(false);
+    expect(clock.nowMs()).toBeCloseTo(1200, 6);
+    expect(told).toBe(1);
+    expect(ctx.created.every((s) => s.stops === 1)).toBe(true);
+    ctx.currentTime += 30; // whatever the device does afterwards, the position stays
+    expect(clock.nowMs()).toBeCloseTo(1200, 6);
+    // resuming is the student pressing play: it continues from the frozen position
+    ctx.created.length = 0;
+    await clock.play();
+    expect(ctx.state).toBe("running");
+    expect(clock.isPlaying()).toBe(true);
+  });
+
+  it("a state change while already paused, or back to running, does nothing", async () => {
+    const ctx = new EventCtx();
+    ctx.state = "running";
+    const clock = new AudioClock(ctx, { audio, totalMs: 6000 }, bufs);
+    let told = 0;
+    clock.onInterrupt(() => told++);
+    ctx.set("suspended");
+    expect(told).toBe(0);
+    await clock.play();
+    ctx.set("running");
+    expect(told).toBe(0);
+    expect(clock.isPlaying()).toBe(true);
+  });
+
+  it("a clock that says running but whose time stands still for half a second counts as an interruption", async () => {
+    const ctx = new Ctx();
+    const clock = new AudioClock(ctx, { audio, totalMs: 6000 }, bufs, { compensateLatency: false });
+    let told = 0;
+    clock.onInterrupt(() => told++);
+    await clock.play();
+    ctx.currentTime += 0.05 + 0.4;
+    clock.watchdog(1000);
+    ctx.currentTime += 0.1;
+    clock.watchdog(1100); // moving: fine
+    clock.watchdog(1500); // the same currentTime, 400 ms later
+    expect(told).toBe(0);
+    clock.watchdog(1601); // 501 ms with no movement
+    expect(told).toBe(1);
+    expect(clock.isPlaying()).toBe(false);
+    expect(clock.nowMs()).toBeCloseTo(500, 6);
+  });
+
+  it("the watchdog does nothing while paused", () => {
+    const ctx = new Ctx();
+    const clock = new AudioClock(ctx, { audio, totalMs: 6000 }, bufs);
+    let told = 0;
+    clock.onInterrupt(() => told++);
+    clock.watchdog(0);
+    clock.watchdog(10_000);
+    expect(told).toBe(0);
+  });
+
+  it("the player pauses itself, stops its loop and tells the page so it can show a play button", async () => {
+    let told = 0;
+    const ctx = new EventCtx();
+    const clock = new AudioClock(ctx, { audio: timeline.audio, totalMs: timeline.totalMs }, new Map(), { compensateLatency: false });
+    const { f, player } = make({ clock, onInterrupt: () => void told++ });
+    await player.play();
+    ctx.currentTime += 0.05 + 2;
+    f.step();
+    ctx.set("suspended");
+    expect(told).toBe(1);
+    f.step(); // the queued frame finds the loop stopped and schedules nothing
+    expect(f.size()).toBe(0);
+    expect(player.timeMs).toBeCloseTo(2000, 6);
+  });
+
+  it("the frame loop feeds the watchdog, and a stall pauses the lesson", async () => {
+    let wall = 0;
+    let told = 0;
+    const ctx = new Ctx();
+    const clock = new AudioClock(ctx, { audio: timeline.audio, totalMs: timeline.totalMs }, new Map(), { compensateLatency: false });
+    const { f, player } = make({ clock, now: () => wall, onInterrupt: () => void told++ });
+    await player.play();
+    ctx.currentTime += 0.5;
+    wall = 100;
+    f.step();
+    wall = 700; // 600 ms later the audio clock has not moved
+    f.step();
+    expect(told).toBe(1);
+    f.step();
+    expect(f.size()).toBe(0);
+  });
+});

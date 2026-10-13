@@ -13,6 +13,10 @@ export type PlayerOptions = {
   /** Called when playback reaches a pause point; the lesson stays frozen until the promise resolves. */
   onPause?: (point: PausePoint) => Promise<void>;
   onEnd?: () => void;
+  /** The audio device was interrupted (call, lock screen): the lesson has paused itself, show a play button. */
+  onInterrupt?: () => void;
+  /** Wall clock for the stall watchdog. Injected for tests. */
+  now?: () => number;
   /** Called after every draw, with the lesson time that was drawn. For measurement. */
   onFrame?: (drawnMs: number) => void;
   /** Injected for tests. */
@@ -59,6 +63,10 @@ export class Player {
     this.caption.lang = o.bundle.locale;
     this.caption.setAttribute("data-testid", "caption");
     o.root.append(this.stage, this.caption);
+    this.o.clock.onInterrupt?.(() => {
+      this.pause();
+      this.o.onInterrupt?.();
+    });
     this.draw(this.o.clock.nowMs());
   }
 
@@ -100,6 +108,8 @@ export class Player {
 
   /** One scheduling pass: sample the clock, redraw, handle pause points and the end. Exposed so a test can step it. */
   tick(): void {
+    this.o.clock.watchdog?.(this.o.now ? this.o.now() : performance.now());
+    if (!this.running) return; // the watchdog found an interruption and paused us
     const t = this.o.clock.nowMs();
     this.draw(t);
     const due = this.o.timeline.pausePoints.find((p) => !this.answered.has(p.id) && this.lastT <= p.atMs && p.atMs <= t);
