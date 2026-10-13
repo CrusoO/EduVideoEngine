@@ -56,7 +56,7 @@ The owner confirmed option A:
   credit) is UNCONFIRMED**: the owner is measuring the real YourTutor sheet at 360 x 640 and will give the number. Nothing may hard-code 184.
 * **The screen height is dynamic**: `dvh` in CSS, `window.visualViewport.height` in the player, never a fixed 640. A phone browser that shows its address bar has a shorter stage.
 * **Design target 360 x 640.** A phone stage is `dvh - chrome` high. A wide card (880 px and up) is a 16:9 frame, which is always at least as tall as the phone stage (495 px against 456 px
-  at 880 px): desktop is roomier, never the reverse. Content shorter than its frame is centred vertically, so no band of empty stage sits under it. A scene taller than its stage is reported by
+  at 880 px): desktop is roomier, never the reverse. A scene shorter than its frame is spread over it (equal slots above, between and below, at most 72 px each; ADR 0019), so no band of empty stage sits under it on a phone. A scene taller than its stage is reported by
   the player (`onOverflow`) and failed by the build.
 Options B (scroll), C (compact sizes) and D (replace objects inside a scene) from the earlier proposal stay rejected or deferred.
 

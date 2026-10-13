@@ -22,7 +22,9 @@ The ring and label of a highlight are now yellow with a dark label (they were or
 ## The stage frame
 The stage fills the card width. **Wide cards (880 px and up) are 16:9** (495 px at 880, 720 at 1280). **Phones** are `dvh - chrome` high (456 px for a 360 x 640 screen at the default chrome), never 16:9
 and never a fixed screen height. 880 px is where 16:9 becomes at least as tall as the phone stage, so desktop is never less roomy than the phone. The chrome (default 184 px) is a parameter and unconfirmed (ADR 0017).
-Content shorter than its frame is centred vertically, so no band of empty stage sits under it. A stage is never shorter than 240 px.
+A scene shorter than its stage is **spread**: the spare height is divided into equal slots above, between and below the blocks, each slot at most 72 px, and what is left is shared equally above and
+below (`solve(..., { spread: true })`; whole blocks move, so a row stays a row). On the design phone a 282 px scene in a 456 px stage gets 58 px slots and fills it; on a 16:9 desktop frame a sparse scene still has
+margins, because the card is much taller than a scene needs: that is stated here, not hidden (the composer can fill it with a row or a larger object). A stage is never shorter than 240 px.
 
 ## The controls
 The control bar (play and pause, time, a seek bar with a tick for each question, restart) and the question box follow the **YourTutor theme** through its `--c-*` variables (the light values are the
