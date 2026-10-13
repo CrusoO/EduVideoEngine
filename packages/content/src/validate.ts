@@ -1,7 +1,7 @@
 import { containsLiteralMath, evaluate, symbols, termIds, type Expr } from "@eve/schema";
 import { findPersonalData, findSecrets } from "@eve/safety";
 import { verifyBundle } from "@eve/verify";
-import { deriveClaims } from "./derive";
+import { deriveClaimGraph } from "./derive";
 import { ALLOWED_LICENCES, CONTENT_CONFIG, recordHash, type ContentRecord } from "./record";
 
 export type ContentProblem = { recordId: string; path: string; message: string };
@@ -57,6 +57,11 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
         if (e.op !== "eq") return bad(at, `step ${s.id} must be an equation`);
         if (s.role === "root" && !(e.a.op === "sym" && isNumber(e.b))) bad(at, `a root step must read: a symbol equals a number (step ${s.id})`);
         if (s.role === "sum" && !(isNumber(e.a) && isNumber(e.b))) bad(at, `a sum step must be an equation of numbers only (step ${s.id})`);
+        if (s.stepKind === "apply_identity" && !s.identity) bad(at, `step ${s.id}: apply_identity names its identity from the closed list`);
+        if (s.identity && s.stepKind !== "apply_identity") bad(at, `step ${s.id}: identity belongs to apply_identity steps only`);
+        for (const ref of [...(s.uses ? [s.uses] : []), ...(s.needs ?? [])]) {
+          if (!r.steps!.some((o) => o.id === ref)) bad(at, `step ${s.id} refers to ${ref}, which is not a step of this record`);
+        }
       });
       if (r.steps.some((s) => s.role === "sum") && !r.steps.some((s) => s.role === "root")) bad("steps", "a sum step needs root steps: the sum is of the roots");
     }
@@ -112,7 +117,7 @@ export function validateStore(records: readonly ContentRecord[]): ContentProblem
  */
 export async function verifyRecord(r: ContentRecord, table: Readonly<Record<string, Expr>> = {}): Promise<ContentProblem[]> {
   if (Object.keys(r.expressions).length === 0) return [];
-  const claims = deriveClaims(r, "verify");
+  const claims = deriveClaimGraph(r, "verify");
   // A solution refers to the problem and the steps by id, wherever in the store they are written: the verifier sees the whole table.
   const report = await verifyBundle({ expressions: { ...table, ...r.expressions }, claims, scenes: [] });
   return report.failed.map((f) => ({ recordId: r.id, path: `verify.${f.id}`, message: `${f.kind} ${f.id}: ${f.detail}` }));

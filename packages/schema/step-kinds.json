@@ -1,0 +1,32 @@
+{
+  "kinds": [
+    "rearrange",
+    "factorise",
+    "expand",
+    "substitute",
+    "evaluate",
+    "simplify",
+    "take_root",
+    "apply_identity"
+  ],
+  "handlers": {
+    "rearrange": "s_rearrange",
+    "factorise": "s_factorise",
+    "expand": "s_expand",
+    "substitute": "s_substitute",
+    "evaluate": "s_evaluate",
+    "simplify": "s_simplify",
+    "take_root": "s_take_root",
+    "apply_identity": "s_apply_identity"
+  },
+  "identities": [
+    "vieta_sum",
+    "vieta_product",
+    "difference_of_squares"
+  ],
+  "identityHandlers": {
+    "vieta_sum": "i_vieta_sum",
+    "vieta_product": "i_vieta_product",
+    "difference_of_squares": "i_difference_of_squares"
+  }
+}

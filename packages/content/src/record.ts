@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { COLOR_NAMES, ExprSchema, hashOf, type Claim, type Expr } from "@eve/schema";
+import { COLOR_NAMES, ExprSchema, IDENTITIES, IMPORTANCES, STEP_KINDS, hashOf, type Claim, type Expr } from "@eve/schema";
 import config from "../../../config/content.json";
 import licences from "../../../config/licences.json";
 
@@ -21,7 +21,23 @@ export const APPROVAL_STATUSES = ["draft", "reviewed", "approved"] as const;
  *  - note: shown or said, claims nothing
  * The claims of a worked beat are DERIVED from these roles by a fixed rule (derive.ts); a model never writes a claim.
  */
-export const SolutionStep = z.object({ id, role: z.enum(["transform", "root", "sum", "note"]), expr: id, note: z.string().min(1).optional() }).strict();
+export const SolutionStep = z
+  .object({
+    id,
+    role: z.enum(["transform", "root", "sum", "note"]),
+    expr: id,
+    note: z.string().min(1).optional(),
+    /** How this step follows from the step it uses (ADR 0034). Absent on the first step. Omitted, never empty. */
+    stepKind: z.enum(STEP_KINDS).optional(),
+    /** The earlier step this one is derived from. Absent means the previous step that makes a claim. */
+    uses: id.optional(),
+    /** Required with stepKind apply_identity. */
+    identity: z.enum(IDENTITIES).optional(),
+    /** Author overrides of what is derived: other steps this one needs, and its importance (the last step of a chain is core by default). */
+    needs: z.array(id).min(1).optional(),
+    importance: z.enum(IMPORTANCES).optional(),
+  })
+  .strict();
 
 export const GlossaryTerm = z.object({ id, term: z.string().min(1), definition: z.string().min(1) }).strict();
 

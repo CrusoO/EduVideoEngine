@@ -41,6 +41,8 @@ export const IMPORTANCES = ["core", "support"] as const;
 export const PREREQUISITE_STATUSES = ["recapped", "linked", "assumed"] as const;
 /** The closed set of solution-step kinds (ADR 0034). One verifier handler each; unknown kinds are rejected. */
 export const STEP_KINDS = ["rearrange", "factorise", "expand", "substitute", "evaluate", "simplify", "take_root", "apply_identity"] as const;
+/** The closed list of named identities `apply_identity` may cite (ADR 0034). Each is proved symbolically by the verifier. New ones need an ADR. */
+export const IDENTITIES = ["vieta_sum", "vieta_product", "difference_of_squares"] as const;
 export const TEXT_ROLES = ["title", "caption"] as const;
 
 export const PauseAsk = z
@@ -159,12 +161,14 @@ const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
  * Optional and without defaults, so a lesson with no claims hashes exactly as before (ADR 0003).
  */
 const ClaimExtras = {
-  /** Spec 2.0.0 only (ADR 0028, 0034). `id` is the claim id. */
+  /** Spec 2.0.0 only (ADR 0028, 0034). `id` is the claim id; `usesStep` is the id of the claim whose result this claim's step transforms. */
   claimMode: z.enum(CLAIM_MODES).optional(),
   dependsOn: z.array(id).optional(),
   importance: z.enum(IMPORTANCES).optional(),
   usesStep: id.optional(),
   stepKind: z.enum(STEP_KINDS).optional(),
+  /** Required by stepKind apply_identity, and only then. */
+  identity: z.enum(IDENTITIES).optional(),
 };
 export const Claim = z.discriminatedUnion("kind", [
   /** `a` and `b` are equations in one symbol with the same solutions (for example an equation and its factored form). */

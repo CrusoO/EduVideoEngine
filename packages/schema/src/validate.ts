@@ -58,7 +58,7 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     for (const beat of b.plan.beats) v2.push([`plan.beats.${beat.id}`, beat.beatKind !== undefined || beat.slotId !== undefined || beat.learningGoal !== undefined]);
     for (const s of b.script) v2.push([`script.${s.id}`, s.role !== undefined || s.claimId !== undefined || s.linkClaimIds !== undefined || s.questionId !== undefined || s.status === "approved"]);
     for (const sc of b.scenes) for (const o of sc.objects) v2.push([`scenes.${sc.id}.objects.${o.id}`, o.role !== undefined || o.textRole !== undefined]);
-    for (const c of b.claims ?? []) v2.push([`claims.${c.id}`, c.claimMode !== undefined || c.dependsOn !== undefined || c.importance !== undefined || c.usesStep !== undefined || c.stepKind !== undefined]);
+    for (const c of b.claims ?? []) v2.push([`claims.${c.id}`, c.claimMode !== undefined || c.dependsOn !== undefined || c.importance !== undefined || c.usesStep !== undefined || c.stepKind !== undefined || c.identity !== undefined]);
     for (const [path, present] of v2) if (present) bad(path, `a ${LEGACY_SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION}`);
     return;
   }
@@ -104,6 +104,13 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     if (c.dependsOn?.length === 0) bad(`${at}.dependsOn`, "omit dependsOn when the claim depends on nothing, never write it empty");
     if (c.stepKind !== undefined && c.usesStep === undefined) bad(at, "stepKind needs usesStep");
     if (c.usesStep !== undefined && c.stepKind === undefined) bad(at, "usesStep needs a stepKind");
+    if (c.usesStep !== undefined) {
+      if (!claimIds.has(c.usesStep)) bad(`${at}.usesStep`, `uses unknown claim ${c.usesStep}`);
+      else if (c.usesStep === c.id) bad(`${at}.usesStep`, "a claim cannot use itself");
+      else if (!(c.dependsOn ?? []).includes(c.usesStep)) bad(`${at}.dependsOn`, `a claim that uses ${c.usesStep} depends on it`);
+    }
+    if (c.stepKind === "apply_identity" && c.identity === undefined) bad(at, "apply_identity names its identity from the closed list");
+    if (c.identity !== undefined && c.stepKind !== "apply_identity") bad(at, "identity belongs to apply_identity steps only");
   }
   for (const sc of b.scenes) {
     const statics = sc.objects.filter((o) => o.role === "static");

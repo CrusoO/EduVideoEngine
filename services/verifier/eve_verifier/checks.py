@@ -15,6 +15,7 @@ from typing import Any
 from sympy import Eq, FiniteSet, Poly, Rational, S, Symbol, nan, roots, simplify, solveset, zoo
 
 from .handlers import HANDLERS, UnknownNode, to_sympy
+from .steps import UnknownStepKind, check_step
 
 Bundle = dict[str, Any]
 
@@ -207,6 +208,47 @@ def check_claims(bundle: Bundle, report: Report) -> None:
             report.checks.append(Check(cid, "claim", False, f"names an expression that does not exist: {e}"))
 
 
+def _result_of(bundle: Bundle, claim: dict[str, Any]) -> list[Any]:
+    """The equations a claim ends with: what the next step starts from, and what a step produces."""
+    ex = bundle["expressions"]
+    if claim["kind"] == "equivalent":
+        return [to_sympy(ex[claim["b"]])]
+    if claim["kind"] == "sum-of-roots":
+        return [to_sympy(ex[claim["equals"]])]
+    eq = to_sympy(ex[claim["equation"]])
+    x = _unknown(eq.lhs - eq.rhs)
+    if x is None:
+        raise KeyError(f"the equation of {claim['id']} has no single unknown")
+    return [Eq(x, to_sympy(v), evaluate=False) for v in claim["values"]]
+
+
+def check_steps(bundle: Bundle, report: Report) -> None:
+    """Claims that declare a step (usesStep with a stepKind): the step is a valid transformation of the claim it uses (ADR 0034).
+
+    This proves the transformation is valid, not that it was the best one to teach; the link itself is declared by the author.
+    """
+    claims = {c["id"]: c for c in bundle.get("claims", [])}
+    for claim in claims.values():
+        kind = claim.get("stepKind")
+        if kind is None and claim.get("usesStep") is None:
+            continue
+        cid = claim["id"]
+        try:
+            if kind is None or claim.get("usesStep") is None:
+                report.checks.append(Check(cid, "step", False, "a step needs both usesStep and stepKind"))
+                continue
+            used = claims.get(claim["usesStep"])
+            if used is None:
+                report.checks.append(Check(cid, "step", False, f"uses unknown claim {claim['usesStep']}"))
+                continue
+            ok, detail = check_step(kind, _result_of(bundle, used), _result_of(bundle, claim), claim.get("identity"))
+            report.checks.append(Check(cid, "step", ok, f"{kind}: {detail}"))
+        except (UnknownStepKind, UnknownNode) as e:
+            report.checks.append(Check(cid, "step", False, str(e)))
+        except KeyError as e:
+            report.checks.append(Check(cid, "step", False, f"names an expression that does not exist: {e}"))
+
+
 def _value(bundle: Bundle, expr_id: str) -> Any:
     """The exact number an expression id stands for (None if it is not a number)."""
     node = bundle["expressions"].get(expr_id)
@@ -290,4 +332,5 @@ def verify_bundle(bundle: Bundle) -> Report:
     check_points(bundle, report)
     check_numberlines(bundle, report)
     check_claims(bundle, report)
+    check_steps(bundle, report)
     return report

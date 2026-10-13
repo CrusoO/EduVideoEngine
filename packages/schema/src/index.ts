@@ -3,6 +3,7 @@ export * from "./bundle";
 export * from "./timeline";
 export * from "./hash";
 export * from "./migrate";
+export * from "./steps";
 export * from "./validate";
 export { quadraticRootsV1, buildQuadraticRootsV1, expressions as quadraticExpressions } from "./fixtures/quadratic-roots";
 export { sumOfRoots, buildSumOfRoots } from "./fixtures/sum-of-roots";

@@ -8,7 +8,7 @@ Status: accepted (AM-1). Builds on ADR 0003 and 0004.
 * Within one spec version, **editing one sentence changes only its scene hash and the bundle hash**.
 * Optional fields are omitted when absent, never `null` or empty. No parse-time defaults. No timestamps in the hashed bundle.
 * The migration fills every new field explicitly and is idempotent (running it twice equals running it once).
-* Validators are versioned by spec version. The word `reviewStatus` is renamed `approvalStatus` in the same migration (ADR 0032).
+* Validators are versioned by spec version. The word `reviewStatus` is renamed `approvalStatus` in the same migration (ADR 0031).
 
 ## Consequences
 Re-record only fixtures whose request changed. A test fails if a field that should not move a scene hash does.

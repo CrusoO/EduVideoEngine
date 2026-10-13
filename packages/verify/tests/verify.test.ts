@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { EXPR_OPS, SYMPY_NODE, VERIFIER_HANDLERS, add, num, quadraticRootsV1, sumOfRoots, type ExprOp, type LessonBundle } from "@eve/schema";
+import { EXPR_OPS, IDENTITIES, IDENTITY_HANDLERS, STEP_HANDLERS, STEP_KINDS, SYMPY_NODE, VERIFIER_HANDLERS, add, num, quadraticRootsV1, sumOfRoots, type ExprOp, type LessonBundle } from "@eve/schema";
 import { VerifierUnavailable, verifyBundle } from "../src";
 
 const root = join(__dirname, "..", "..", "..");
@@ -11,6 +11,9 @@ const bundle = () => structuredClone(sumOfRoots) as LessonBundle;
 describe("the files the Python verifier reads are generated from this source, and are current", () => {
   it("expr-ops.json lists exactly the node types, handlers and SymPy mapping of the schema", () => {
     expect(json("packages/schema/expr-ops.json")).toEqual({ ops: [...EXPR_OPS], handlers: VERIFIER_HANDLERS, sympy: SYMPY_NODE });
+  });
+  it("step-kinds.json lists exactly the step kinds, identities and handlers of the schema", () => {
+    expect(json("packages/schema/step-kinds.json")).toEqual({ kinds: [...STEP_KINDS], handlers: STEP_HANDLERS, identities: [...IDENTITIES], identityHandlers: IDENTITY_HANDLERS });
   });
   it("the Python fixture is the reference lesson as it is now", () => {
     expect(json("services/verifier/tests/fixtures/sum-of-roots.json")).toEqual(JSON.parse(JSON.stringify(sumOfRoots)));
