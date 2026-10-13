@@ -11,5 +11,6 @@
   "devDependencies": {
     "fast-check": "3.23.1",
     "@eve/resolver": "workspace:*"
-  }
+  },
+  "sideEffects": false
 }

@@ -18,8 +18,13 @@ const katexFonts = ["KaTeX_Main-Regular", "KaTeX_Math-Italic", "KaTeX_Size2-Regu
 
 const ENGLISH_KB = 95;
 const HINDI_KB = 170;
-// 35 until the layout solver joined the player (+3.9 KB measured); raised to 40 with that change, on purpose; raised to 48 when the theme, motion, controls, number line, callout and shape arrived (41.6 KB measured). This is a limit of our own, not one of the approved ceilings.
-const PLAYER_JS_GZIP_KB = 48;
+// The player's size is a budget with a history (ADR 0024). 35, then 40 (layout solver), then 48 (theme, motion, number line, callout, shape: 41.6 KB measured), then 43.4 KB measured
+// with everything in one file. ADR 0024 found the cause of the growth (module-level code of unused fixtures and the hashing library was being bundled) and removed it, and split the
+// two heavy components into chunks a lesson fetches only if it uses them. Ceilings below are measured plus a little headroom. Raising one needs an ADR with the measured cause;
+// 60 KB is the hard ceiling for any lesson (everything loaded) and is never raised.
+const PLAYER_CORE_GZIP_KB = 33; // measured 31.4: the player, layout, resolver, schema and the six small components, with zod
+const PLAYER_ALL_GZIP_KB = 40; // measured 37.0: a lesson that uses every component
+const PLAYER_HARD_CEILING_KB = 60;
 
 describe("budgets", () => {
   it(`English lesson fonts (Inter 400 and 600 + three KaTeX fonts) stay within ${ENGLISH_KB} KB`, () => {
@@ -34,17 +39,26 @@ describe("budgets", () => {
     expect(total).toBeLessThanOrEqual(HINDI_KB);
   });
 
-  it(`the player script is under ${PLAYER_JS_GZIP_KB} KB gzip and contains no KaTeX`, async () => {
+  it(`the player is split: a lesson loads the core (${PLAYER_CORE_GZIP_KB} KB gzip) and only the heavy components it uses; everything loaded stays under ${PLAYER_ALL_GZIP_KB} KB (hard ceiling ${PLAYER_HARD_CEILING_KB}); no KaTeX`, async () => {
     const out = await build({
       configFile: false,
       logLevel: "silent",
       root: join(__dirname, ".."),
       build: { write: false, minify: true, lib: { entry: join(__dirname, "..", "src", "index.ts"), formats: ["es"], fileName: "player" } },
     });
-    const chunk = (Array.isArray(out) ? out[0]! : (out as { output: Array<{ type: string; code?: string }> })).output.find((o) => o.type === "chunk") as { code: string };
-    const gz = gzipSync(chunk.code).length / 1024;
-    console.log(`player script: ${gz.toFixed(1)} KB gzip`);
-    expect(gz).toBeLessThanOrEqual(PLAYER_JS_GZIP_KB);
-    expect(chunk.code, "KaTeX's renderer must not be in the player").not.toMatch(/renderToString|ParseError|katex-mathml/);
+    const outputs = (Array.isArray(out) ? out.flatMap((o) => ("output" in o ? o.output : [])) : "output" in out ? out.output : []) as Array<{ type: string; fileName: string; code?: string }>;
+    const chunks = outputs.filter((o) => o.type === "chunk").map((c) => ({ name: c.fileName, code: c.code!, gz: gzipSync(c.code!).length / 1024 }));
+    const split = chunks.filter((c) => /^(functionGraph|numberLine)-/.test(c.name));
+    const core = chunks.filter((c) => !split.includes(c));
+    const coreGz = core.reduce((n, c) => n + c.gz, 0);
+    const allGz = chunks.reduce((n, c) => n + c.gz, 0);
+    console.log(`player: core ${coreGz.toFixed(1)} KB gzip; ${split.map((c) => `${c.name.split("-")[0]} ${c.gz.toFixed(1)}`).join(", ")}; everything ${allGz.toFixed(1)} KB`);
+    expect(split.map((c) => c.name.split("-")[0]).sort()).toEqual(["functionGraph", "numberLine"]);
+    expect(core.map((c) => c.code).join("\n"), "the heavy components must not be in the core").not.toMatch(/eve-graph-svg|eve-hop/);
+    expect(coreGz).toBeLessThanOrEqual(PLAYER_CORE_GZIP_KB);
+    expect(allGz).toBeLessThanOrEqual(PLAYER_ALL_GZIP_KB);
+    expect(PLAYER_ALL_GZIP_KB).toBeLessThanOrEqual(PLAYER_HARD_CEILING_KB);
+    expect(allGz).toBeLessThanOrEqual(PLAYER_HARD_CEILING_KB);
+    expect(chunks.map((c) => c.code).join("\n"), "KaTeX's renderer must not be in the player").not.toMatch(/renderToString|ParseError|katex-mathml/);
   });
 });

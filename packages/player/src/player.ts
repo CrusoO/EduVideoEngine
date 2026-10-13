@@ -1,4 +1,4 @@
-import { componentFor, formulaLatex, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
+import { componentsUsedBy, formulaLatex, loadComponents, loadedComponent, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import { DEFAULT_CHROME_PX, PAD, solve, stageFrame } from "@eve/layout";
@@ -39,6 +39,12 @@ export type PlayerOptions = {
 };
 
 const OVERLAY = new Set(["highlight"]);
+
+/**
+ * Fetches the components a lesson uses (and only those): call it, and wait, before `new Player`. Each component is its own chunk, so a lesson of text and
+ * equations does not download the graph or the number line (ADR 0024).
+ */
+export const loadLessonComponents = (bundle: LessonBundle): Promise<void> => loadComponents(componentsUsedBy(bundle));
 
 /**
  * Plays a resolved lesson. It reads the Timeline for every time (scene windows, events, pause points) and the bundle only
@@ -208,7 +214,7 @@ export class Player {
           reduceMotion,
           rectOf,
         };
-        componentFor(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
+        loadedComponent(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
       }
     }
     const said = tl.audio.find((a) => a.startMs <= t && t < a.endMs);

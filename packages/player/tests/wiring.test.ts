@@ -4,6 +4,7 @@ import { quadraticRootsV1 as quadraticRoots, wordsOf, type AudioTrack, type Less
 import { resolve } from "@eve/resolver";
 import { katexMath } from "@eve/components/src/build";
 import { AudioClock, Player, STALL_MS, type ClockContext, type ClockSource, type MasterClock } from "../src";
+import "./load-components";
 
 const bundle = quadraticRoots as LessonBundle;
 const tracks: AudioTrack[] = bundle.script.map((s) => ({

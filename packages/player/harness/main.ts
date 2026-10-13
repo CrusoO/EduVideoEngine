@@ -10,7 +10,7 @@ import { hindiPreview, layoutStress, quadraticRootsV1, sumOfRoots, wordsOf, type
 import { FileVoiceAdapter } from "../../voice/src/adapter";
 import { loadBuffers } from "../../voice/src/browser";
 import { colorTheme } from "../theme/palette";
-import { AudioClock, Player, mountControls, showQuestion } from "../src";
+import { AudioClock, Player, loadLessonComponents, mountControls, showQuestion } from "../src";
 
 /**
  * ?voice=piper (default): the pinned development voice files, through FileVoiceAdapter, exactly as a lesson would load them.
@@ -59,6 +59,7 @@ async function main() {
   const timeline = resolve(bundle, tracks);
   const clock = new AudioClock(ctx, timeline, buffers);
   const root = document.getElementById("root")!;
+  await loadLessonComponents(bundle);
   const player = new Player({
     root,
     bundle,

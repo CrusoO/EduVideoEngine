@@ -6,6 +6,7 @@ import { buildMathCache, katexMath } from "@eve/components/src/build";
 import { cachedMath } from "@eve/components";
 import { solve } from "@eve/layout";
 import { Player, type MasterClock } from "../src";
+import "./load-components";
 
 const bundle = quadraticRoots as LessonBundle;
 const tracks: AudioTrack[] = bundle.script.map((s) => ({

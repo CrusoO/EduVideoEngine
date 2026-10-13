@@ -11,7 +11,8 @@ export const CalloutProps = z
 export type CalloutProps = z.infer<typeof CalloutProps>;
 
 /** A callout is a hint, not a paragraph. */
-export const CALLOUT_WORDS = 8;
+import { CALLOUT_WORDS } from "./constants";
+export { CALLOUT_WORDS };
 const ROTATE = { right: 0, down: 90, left: 180, up: 270 } as const;
 const NS = "http://www.w3.org/2000/svg";
 

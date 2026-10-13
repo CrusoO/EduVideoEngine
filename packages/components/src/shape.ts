@@ -5,9 +5,8 @@ import { applyState } from "./text";
 import type { ComponentModule } from "./types";
 
 /** Heights of a shape in pixels, by size. A line is always 24 px tall. */
-export const SHAPE_HEIGHT = { s: 48, m: 96, l: 144 } as const;
-export const SHAPE_LINE_HEIGHT = 24;
-export const SHAPE_LABEL_WORDS = 4;
+import { SHAPE_HEIGHT, SHAPE_LABEL_WORDS, SHAPE_LINE_HEIGHT } from "./constants";
+export { SHAPE_HEIGHT, SHAPE_LABEL_WORDS, SHAPE_LINE_HEIGHT };
 
 /**
  * A plain shape: a rectangle, a circle or a rule, in one palette colour, with an optional short label. Drawn on from the left by `draw`,

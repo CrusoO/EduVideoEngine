@@ -6,22 +6,8 @@ import type { ComponentModule } from "./types";
 export const HighlightProps = z.object({ target: z.string().min(1), label: z.string().optional(), points: z.array(z.number()).optional() }).strict();
 export type HighlightProps = z.infer<typeof HighlightProps>;
 
-/** The ring colour and the stage colour it must stand out from (WCAG 1.4.11: 3:1 for graphical objects). */
-export const HIGHLIGHT_COLOR = "#F5D547";
-export const STAGE_COLOR = "#0B0D14";
-
-export function contrast(a: string, b: string): number {
-  const lum = (hex: string) => {
-    const n = parseInt(hex.slice(1), 16);
-    const f = (v: number) => {
-      const s = v / 255;
-      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-    };
-    return 0.2126 * f((n >> 16) & 255) + 0.7152 * f((n >> 8) & 255) + 0.0722 * f(n & 255);
-  };
-  const [x, y] = [lum(a), lum(b)];
-  return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
-}
+import { HIGHLIGHT_COLOR, STAGE_COLOR, contrast } from "./constants";
+export { HIGHLIGHT_COLOR, STAGE_COLOR, contrast };
 
 export const highlight: ComponentModule<HighlightProps> = {
   name: "highlight",

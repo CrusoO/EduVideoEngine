@@ -9,6 +9,7 @@ import { assureTimeline, resolve } from "@eve/resolver";
 import { sumOfRoots, termIds, validateBundle, wordsOf, type LessonBundle } from "@eve/schema";
 import { FileVoiceAdapter } from "@eve/voice";
 import { SEMANTIC } from "../theme/palette";
+import "./load-components";
 
 const lesson = sumOfRoots as LessonBundle;
 const dir = join(__dirname, "..", "..", "voice", "fixtures", "sum-of-roots.en-IN");
