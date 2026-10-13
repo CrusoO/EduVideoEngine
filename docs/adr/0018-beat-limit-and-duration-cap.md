@@ -1,4 +1,4 @@
-# ADR 0018: Beats per lesson raised to 4 to 10; a duration cap is proposed
+# ADR 0018: Beats per lesson 4 to 10; the duration cap
 
 Status: the beat limit and the duration cap are **accepted and implemented** (the cap was confirmed by the owner on 2026-10-13).
 
