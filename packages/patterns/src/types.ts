@@ -1,4 +1,6 @@
-import type { Claim, Expr, SceneSpec } from "@eve/schema";
+import type { Claim, Expr, PEDAGOGY_BEAT_KINDS, SceneSpec } from "@eve/schema";
+
+export type PedagogyBeatKind = (typeof PEDAGOGY_BEAT_KINDS)[number];
 import type { Retrieval } from "@eve/content";
 
 /**
@@ -37,6 +39,8 @@ export type Pattern<C = unknown> = {
   useWhen: string;
   /** The beat kinds this pattern suits. A worked beat must use a pattern whose claims are derived from a stored solution. */
   kinds: readonly ("predict" | "explore" | "explain" | "worked" | "check")[];
+  /** The CO-2 beat kinds this pattern may fill (ADR 0028, AM-11): what the arcs ask for. */
+  beatKinds: readonly PedagogyBeatKind[];
   pause: PauseSupport;
   /** True when the scene brings claims derived from a stored solution (the worked-beat patterns). */
   derivesClaims: boolean;

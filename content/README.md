@@ -15,5 +15,19 @@ A record is one JSON file under `content/`. The lesson compiler builds lessons o
 - `solutionSteps`: `problem` (an equation id) and ordered `steps`, each with a `role`: `transform` (equivalent form), `root` (`x = value`), `sum` (an equation of numbers), `note`. The claims of the worked beat are derived from the roles; you never write claims.
 - `misconception`: `contrast` with `wrong` and `right` expression ids.
 - `glossary`: `terms` with `id`, `term`, `definition`.
+- `skill`: the skill itself. `prerequisiteSkillIds` (its direct prerequisites) and `assumableAtLevels` (the lesson levels at which a prerequisite may be assumed instead of recapped). Leave a field out when there are none. One skill record per skill and language.
+- `conceptClaim`: one claim of a concept beat. `claimMode` is `computed` (it carries `claim`, a statement the verifier proves: `equivalent`, `roots` or `sum-of-roots`) or `grounded` (prose only: a definition or a misconception; it needs an approval record before it can be used). `importance` is `core` or `support`. `dependsOn` lists the conceptClaim records it needs (no cycles).
+- `practiceQuestion`: `questionType` and `humanApproved` (write it, `false` until a person approves). `recall`: `question` with `problem` and `answer`, both equations; the verifier proves the answer (today the answer must state the sum of the roots). `reasoning`: multiple choice with `options`, `correctOption` (a position, from 0) and `rationaleClaimIds` (the conceptClaim records that explain the right option).
+
+A `solutionSteps` step may also say how it follows from an earlier step: `stepKind` (one of `rearrange`, `factorise`, `expand`, `substitute`, `evaluate`, `simplify`, `take_root`, `apply_identity`), `uses` (the earlier step; by default the previous step that makes a claim), `identity` (for `apply_identity`, from the closed list), `needs` (more steps this one depends on) and `importance`. The first step has no `stepKind`. The verifier proves the step is a valid transformation; it cannot tell whether it was the best one to teach.
+
+### Worked examples (all in `content/maths/algebra/sum-of-roots/`)
+- a concept claim: `quad.sum.claim.vieta.json` (computed, core, depends on `quad.sum.claim.root`);
+- a grounded claim: `quad.sum.claim.root.json`;
+- a misconception: `quad.sum.misconception.json`;
+- a recall question: `quad.sum.q.recall.json`; a reasoning question: `quad.sum.q.reasoning.json`;
+- prerequisites and levels: `quad.sum.skill.json`;
+- step kinds: `quad.sum.steps.json`.
+They are written by `pnpm content:seed`; edit `scripts/content-seed-sum-of-roots.ts` to change them.
 
 `approvalStatus` starts at `draft`. Only a human changes it.

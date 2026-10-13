@@ -53,6 +53,7 @@ const ask = (a: PatternArgs, goalExprRef?: string): NonNullable<SceneSpec["inter
 type ColourContent = { equation: string; recordIds: string[] };
 const colourBoundTerms: Pattern<ColourContent> = {
   id: "colour-bound-terms",
+  beatKinds: ["prerequisite", "concept"],
   kinds: ["predict", "explore", "explain"],
   pause: "none",
   derivesClaims: false,
@@ -88,6 +89,7 @@ const colourBoundTerms: Pattern<ColourContent> = {
 type PredictContent = { problem: string; answer: string; recordIds: string[] };
 const predictThenReveal: Pattern<PredictContent> = {
   id: "predict-then-reveal",
+  beatKinds: ["hook", "check"],
   kinds: ["predict", "check"],
   pause: "required",
   derivesClaims: false,
@@ -132,6 +134,7 @@ const predictThenReveal: Pattern<PredictContent> = {
 type HopsContent = { rec: ContentRecord; problem: string; total: string; stops: number[]; focus: string[] };
 const hopsOnNumberLine: Pattern<HopsContent> = {
   id: "hops-on-number-line",
+  beatKinds: ["worked"],
   kinds: ["worked"],
   pause: "required",
   derivesClaims: true,
@@ -197,6 +200,7 @@ const hopsOnNumberLine: Pattern<HopsContent> = {
 type PlotContent = { problem: string; fn: string; window: { xMin: number; xMax: number; yMin: number; yMax: number }; roots: number; recordIds: string[] };
 const plotAndMarkRoots: Pattern<PlotContent> = {
   id: "plot-and-mark-roots",
+  beatKinds: ["concept"],
   kinds: ["explore", "explain"],
   pause: "none",
   derivesClaims: false,
@@ -245,6 +249,7 @@ type StepsContent = { rec: ContentRecord; problem: string; steps: string[] };
 const MAX_STEPS = 3;
 const stepByStep: Pattern<StepsContent> = {
   id: "step-by-step-worked-example",
+  beatKinds: ["worked"],
   kinds: ["worked"],
   pause: "optional",
   derivesClaims: true,
@@ -287,6 +292,7 @@ const stepByStep: Pattern<StepsContent> = {
 type ContrastContent = { wrong: string; right: string; recordIds: string[] };
 const commonMistakeContrast: Pattern<ContrastContent> = {
   id: "common-mistake-contrast",
+  beatKinds: ["hook", "mistake"],
   kinds: ["explain", "check"],
   pause: "none",
   derivesClaims: false,
@@ -320,14 +326,89 @@ const commonMistakeContrast: Pattern<ContrastContent> = {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 /** The closed list. A composer may choose from these and from nothing else; adding one is a code change with a test. */
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 7. recap card (CO-2, ADR 0038): a claim of the lesson shown as a card, for a prerequisite or a concept beat
+type RecapContent = { rec: ContentRecord; shown: string };
+const claimExpression = (c: NonNullable<ContentRecord["claim"]>): string => (c.kind === "equivalent" ? c.b : c.kind === "roots" ? c.equation : c.equals);
+const recapCard: Pattern<RecapContent> = {
+  id: "recap-card",
+  beatKinds: ["prerequisite", "concept"],
+  kinds: ["explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => [c.rec.id],
+  useWhen: "Show one stated fact of the lesson on a card: a title and the equation that states it. For a prerequisite recap or a short concept beat. Brings the fact's claim to the bundle.",
+  components: ["text", "equation"],
+  slots: [{ name: "claim", source: "content", what: "a conceptClaim record whose computed claim states an equation" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "equation, large"]),
+  fill(r): FillResult<RecapContent> {
+    const rec = r.byKind.conceptClaim.find((c) => c.claimMode === "computed" && c.claim);
+    return rec?.claim ? { ok: true, content: { rec, shown: claimExpression(rec.claim) } } : { ok: false, missing: ["a conceptClaim record with a computed claim that states an equation"] };
+  },
+  build(c, a) {
+    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 1, "fact", "reveal", 1500)];
+    const s = scene(a, [c.rec.id], [{ id: "title", component: "text", props: { text: a.text.title!, role: "title" } }, { id: "fact", component: "equation", props: { size: "l" }, exprRef: c.shown }], [...column(["title", "fact"]), { rule: "center", item: "title" }], cues);
+    const claim = { ...c.rec.claim!, id: `${c.rec.id}.${a.beatId}`, beatId: a.beatId, claimMode: c.rec.claimMode!, importance: c.rec.importance! } as Claim;
+    return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 8. check question (CO-2, ADR 0033): a recall question from a practiceQuestion record; the lesson pauses and asks
+type CheckContent = { rec: ContentRecord; problem: string; answer: string };
+const checkQuestion: Pattern<CheckContent> = {
+  id: "check-question",
+  beatKinds: ["check"],
+  kinds: ["check"],
+  pause: "required",
+  derivesClaims: false,
+  sources: (c) => [c.rec.id],
+  useWhen: "Pause and ask a recall question from a stored practice question: the equation is on screen, the lesson stops for the answer, and the verified answer appears after.",
+  components: ["text", "equation"],
+  slots: [{ name: "question", source: "content", what: "a practiceQuestion record of type recall: its problem and its verified answer" }, TITLE, PROMPT, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "equation", "equation"]),
+  fill(r): FillResult<CheckContent> {
+    const rec = r.byKind.practiceQuestion.find((q) => q.questionType === "recall" && q.question);
+    return rec?.question ? { ok: true, content: { rec, problem: rec.question.problem, answer: rec.question.answer } } : { ok: false, missing: ["a practiceQuestion record of type recall"] };
+  },
+  build(c, a) {
+    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 0, "problem", "reveal", 1500, "end"), cue(a, a.sentenceIds.length - 1, "answer", "reveal", 1500)];
+    const s = scene(
+      a,
+      [c.rec.id],
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "problem", component: "equation", props: { size: "m" }, exprRef: c.problem },
+        { id: "answer", component: "equation", props: { size: "m" }, exprRef: c.answer },
+      ],
+      [...column(["title", "problem", "answer"]), { rule: "center", item: "title" }],
+      cues,
+      ask(a, c.answer).map((q) => ({ ...q, afterSentenceId: a.sentenceIds[a.sentenceIds.length - 2]! })),
+    );
+    const claim: Claim = { id: `${c.rec.id}.answer.${a.beatId}`, beatId: a.beatId, kind: "sum-of-roots", equation: c.problem, equals: c.answer, claimMode: "computed", importance: "core" };
+    return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
+  },
+};
+
+/**
+ * The six patterns planner.v2 and planner.v3 know. Their requests and the recorded reference replies are keyed to exactly this list (ADR 0039), so it does not
+ * grow: the two CO-2 patterns join the planner with the next planner version, through LIBRARY.
+ */
 export const PATTERNS = [colourBoundTerms, predictThenReveal, hopsOnNumberLine, plotAndMarkRoots, stepByStep, commonMistakeContrast] as const;
 export type PatternId = (typeof PATTERNS)[number]["id"];
 export const PATTERN_IDS: readonly PatternId[] = PATTERNS.map((p) => p.id);
 
+/** The whole library: the six above and the two CO-2 patterns (recap card, check question). Eight, every one with a text-heavy flag (ADR 0038). */
+export const LIBRARY = [...PATTERNS, recapCard, checkQuestion] as const;
+export type LibraryPatternId = (typeof LIBRARY)[number]["id"];
+export const LIBRARY_IDS: readonly LibraryPatternId[] = LIBRARY.map((p) => p.id);
+
 type Any = { id: string; slots: readonly Slot[]; minSentences: number; fill(r: Retrieval): FillResult<unknown>; sources(c: never): string[]; build(c: never, a: PatternArgs): Instance };
 const byId = (id: string): Any => {
-  const p = (PATTERNS as unknown as readonly Any[]).find((x) => x.id === id);
-  if (!p) throw new PatternError(`unknown pattern ${id}: the list is closed (${PATTERN_IDS.join(", ")})`);
+  const p = (LIBRARY as unknown as readonly Any[]).find((x) => x.id === id);
+  if (!p) throw new PatternError(`unknown pattern ${id}: the list is closed (${LIBRARY_IDS.join(", ")})`);
   return p;
 };
 
@@ -372,6 +453,11 @@ export function instantiate(id: string, r: Retrieval, args: PatternArgs): Instan
 const VISUAL_COMPONENTS = new Set(["numberLine", "functionGraph", "shape", "fractionBar", "areaModel", "balanceScale", "table"]);
 /** A pattern is text-heavy when none of its components is a picture or a diagram: it shows words and equations only. Derived from the components, never typed. */
 export const isTextHeavy = (p: { components: readonly string[] }): boolean => !p.components.some((c) => VISUAL_COMPONENTS.has(c));
+
+/** The catalogue of the whole library, for the prompts of the next planner version: the same entries as `catalogue()` plus the CO-2 beat kinds, for all eight patterns. */
+export function libraryCatalogue() {
+  return LIBRARY.map((p) => ({ id: p.id, useWhen: p.useWhen, beatKinds: p.beatKinds, pause: p.pause, derivesClaims: p.derivesClaims, textHeavy: isTextHeavy(p), components: p.components, slots: p.slots, minSentences: p.minSentences, heightCostPx: p.heightCostPx }));
+}
 
 /** The catalogue the planner and composer prompts are given: id, when to use, components, slots, minimum sentences and height cost. */
 export function catalogue() {

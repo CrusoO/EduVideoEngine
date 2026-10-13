@@ -2,44 +2,58 @@
 
 Authors write records; the engine compiles lessons from them. Authoring time is the pace-setter, so it is measured (log at the end).
 
-Prompts may contain only content you wrote or that is openly licensed (docs/SECURITY.md). No student or personal data.
+Prompts may contain only content you wrote or that is openly licensed (docs/SECURITY.md). No student or personal data. The shapes and the rules each record must meet are in `content/README.md`; the real examples live in `content/maths/algebra/sum-of-roots/` and are written by `pnpm content:seed`.
 
-## Record kinds, with a worked example each
-The shapes below are the target shape after the CO-2 schema bump (WP1a, WP2a). The templates and the sum-of-roots record are updated in WP2a; until then these are the plan, not a validated example.
+## One worked example per record kind
+Each is an excerpt of a real file that `pnpm content:validate` proves with SymPy.
 
-**Concept claim**
+**Concept claim, computed** (`quad.sum.claim.vieta.json`): the sentence is prose with a placeholder; `claim` is what the verifier proves; `dependsOn` names the claim records it needs.
 
-    id: MATH.ALG.QUAD.SUM_OF_ROOTS.C1
-    kind: claim
-    claimMode: computed
-    importance: core
-    text: for a x squared plus b x plus c, the roots add up to minus b over a
-    dependsOn: []
+    "kind": "conceptClaim",
+    "text": "For any quadratic {expr:quad.general}, the sum of the roots is {expr:quad.rule}.",
+    "claimMode": "computed",
+    "importance": "core",
+    "dependsOn": ["quad.sum.claim.root"],
+    "claim": { "kind": "sum-of-roots", "equation": "quad.general", "equals": "quad.rule" }
 
-**Misconception** (a grounded prose claim; needs an approval record)
+**Concept claim, grounded** (`quad.sum.claim.root.json`): prose only, no statement for the verifier. It needs an approval record before a lesson can use it (ADR 0031).
 
-    id: MATH.ALG.QUAD.SUM_OF_ROOTS.M1
-    kind: misconception
-    claimMode: grounded
-    text: the sum of the roots is b over a, not minus b over a
+    "kind": "conceptClaim",
+    "text": "A root of an equation is a value of the unknown that makes the equation true.",
+    "claimMode": "grounded",
+    "importance": "support"
 
-**Practice question, recall**
+**Misconception** (`quad.sum.misconception.json`): the wrong and the right statement as expressions.
 
-    questionType: recall
-    answer: expression tree, verified by the maths verifier
+    "kind": "misconception",
+    "contrast": { "wrong": "quad.wrong", "right": "quad.total" }
 
-**Practice question, reasoning**
+**Practice question, recall** (`quad.sum.q.recall.json`): the answer is an equation the verifier proves.
 
-    questionType: reasoning
-    options: [...]
-    correctOption: 2
-    rationaleClaimIds: [MATH.ALG.QUAD.SUM_OF_ROOTS.C1]
-    humanApproved: false
+    "kind": "practiceQuestion",
+    "questionType": "recall",
+    "question": { "problem": "quad.q.eq", "answer": "quad.q.answer" },
+    "humanApproved": false
 
-**Skill prerequisites**
+**Practice question, reasoning** (`quad.sum.q.reasoning.json`): multiple choice; the right option is explained by claims.
 
-    prerequisiteSkillIds: [MATH.ALG.QUAD.FACTORISE]
-    assumableAtLevels: [class-10]
+    "kind": "practiceQuestion",
+    "questionType": "reasoning",
+    "options": ["...", "...", "..."],
+    "correctOption": 0,
+    "rationaleClaimIds": ["quad.sum.claim.vieta"],
+    "humanApproved": false
+
+**Skill, prerequisites and levels** (`quad.sum.skill.json`): direct prerequisites only; omit a list that would be empty.
+
+    "kind": "skill",
+    "prerequisiteSkillIds": ["MATH.ALG.QUAD.FACTORISE"],
+    "assumableAtLevels": ["class-10"]
+
+**Step kinds in a solution** (`quad.sum.steps.json`): each step says how it follows from the one before; the verifier checks the transformation.
+
+    { "id": "r1", "role": "root", "expr": "quad.root1", "stepKind": "rearrange" },
+    { "id": "s1", "role": "sum",  "expr": "quad.total",  "stepKind": "evaluate" }
 
 ## Author-minutes log
 Record per finished record and per lesson, date, minutes, kind. Used to set the Phase 1 lesson target (ADR 0041).
