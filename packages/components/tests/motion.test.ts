@@ -179,3 +179,12 @@ describe("properties of the motion state", () => {
     );
   });
 });
+
+describe("nothing moves by itself (ADR 0020)", () => {
+  it("the stylesheet has no animation, transition or keyframes: motion only comes from cues", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const css = readFileSync(join(__dirname, "..", "src", "styles.css"), "utf8") + readFileSync(join(__dirname, "..", "..", "player", "theme", "controls.css"), "utf8") + readFileSync(join(__dirname, "..", "..", "player", "src", "player.css"), "utf8");
+    expect(css).not.toMatch(/\banimation\b|@keyframes|\btransition\s*:/);
+  });
+});
