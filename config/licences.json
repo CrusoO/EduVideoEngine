@@ -1,0 +1,4 @@
+{
+  "_comment": "Licences a content record may carry. A record whose licence is missing or not listed is rejected (ADR 0022). Prompts may hold only content the owner wrote or that is openly licensed.",
+  "allowed": ["owner-original", "CC0-1.0", "CC-BY-4.0", "CC-BY-SA-4.0", "public-domain"]
+}

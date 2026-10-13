@@ -1,0 +1,52 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "reviewStatus": "draft",
+  "id": "quad.sum.graph",
+  "kind": "passage",
+  "text": "The curve of this equation is called a parabola. The roots are the two places where the curve crosses the horizontal axis.",
+  "expressions": {
+    "quad.f": {
+      "op": "add",
+      "a": {
+        "op": "sub",
+        "a": {
+          "op": "pow",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 5
+          },
+          "b": {
+            "op": "sym",
+            "name": "x"
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 6
+      }
+    }
+  },
+  "plot": {
+    "expr": "quad.f",
+    "xMin": 0,
+    "xMax": 5,
+    "yMin": -1,
+    "yMax": 7
+  },
+  "sourceNote": "Written for this project as the graph of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "63b0c36172645d1b3450b035527db4b114637f25371370eb0024546d725e6aa5"
+}

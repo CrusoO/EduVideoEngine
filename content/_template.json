@@ -1,0 +1,14 @@
+{
+  "id": "your.record.id",
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "kind": "passage",
+  "locale": "en-IN",
+  "text": "Plain spoken words. Write maths only as a placeholder, for example {expr:your.expression.id}.",
+  "expressions": {
+    "your.expression.id": { "op": "eq", "a": { "op": "sym", "name": "x" }, "b": { "op": "num", "n": 2 } }
+  },
+  "sourceNote": "Who wrote this and for what. Written by me, or where the open licence text comes from.",
+  "licence": "owner-original",
+  "reviewStatus": "draft",
+  "hash": ""
+}

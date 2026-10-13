@@ -1,0 +1,113 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "reviewStatus": "draft",
+  "id": "quad.sum.steps",
+  "kind": "solutionSteps",
+  "text": "Factorise the equation, read off the two roots, then add them.",
+  "problem": "quad.eq",
+  "expressions": {
+    "quad.factored": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 3
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.root1": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "x"
+      },
+      "b": {
+        "op": "num",
+        "n": 2
+      }
+    },
+    "quad.root2": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "x"
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    },
+    "quad.total": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "num",
+          "n": 2
+        },
+        "b": {
+          "op": "num",
+          "n": 3
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 5,
+        "term": "t.linear"
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "t1",
+      "role": "transform",
+      "expr": "quad.factored",
+      "note": "Factorise the equation."
+    },
+    {
+      "id": "r1",
+      "role": "root",
+      "expr": "quad.root1",
+      "note": "The first root."
+    },
+    {
+      "id": "r2",
+      "role": "root",
+      "expr": "quad.root2",
+      "note": "The second root."
+    },
+    {
+      "id": "s1",
+      "role": "sum",
+      "expr": "quad.total",
+      "note": "Add the two roots."
+    }
+  ],
+  "sourceNote": "Written for this project as the worked solution of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "4ba32943d8898a36eaa33bd915263596510607708f0f2403adb12df6fba128ff"
+}

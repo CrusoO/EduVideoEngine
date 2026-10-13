@@ -13,7 +13,10 @@
     "gen:costs": "vite-node scripts/gen-costs.ts",
     "verify:gate": "vite-node scripts/verify-gate.ts",
     "secrets:check": "vite-node scripts/secrets-check.ts",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "content:seed": "vite-node scripts/content-seed-sum-of-roots.ts",
+    "content:validate": "vite-node scripts/content-validate.ts",
+    "content:seal": "vite-node scripts/content-seal.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",

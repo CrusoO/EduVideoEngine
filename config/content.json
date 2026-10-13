@@ -1,0 +1,6 @@
+{
+  "_comment": "Content plane settings. English only in Phase 1: Hindi and Nepali stay blocked until native reviewers exist (ADR 0016).",
+  "locales": ["en-IN"],
+  "reviewStatuses": ["draft", "reviewed", "approved"],
+  "minimumReviewStatus": "draft"
+}

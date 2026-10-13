@@ -21,6 +21,9 @@ export const BEAT_COUNT = LIMITS.beats;
 /** Components whose appearance must come from an expression tree. */
 const NEEDS_EXPR = new Set(["equation", "functionGraph"]);
 
+/** True when a text writes maths as notation (an equals sign, a caret, LaTeX, digit-operator-digit): such text must use {expr:id} placeholders instead. */
+export const containsLiteralMath = (text: string): boolean => LITERAL_MATH.test(text.replace(PLACEHOLDER, ""));
+
 export const wordsOf = (text: string): string[] => text.replace(PLACEHOLDER, "X").split(/\s+/).filter(Boolean);
 
 /**
