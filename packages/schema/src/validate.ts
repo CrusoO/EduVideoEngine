@@ -13,7 +13,8 @@ const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
  * verbaliser speaks them as words at synthesis time.
  */
 const LITERAL_MATH = /[=^√∑∫²³⁴⁵⁶⁷⁸⁹⁰¹½¼¾]|\\[A-Za-z]+|\$|\d\s*[+\-−×÷*/]\s*\d/;
-export const BEAT_COUNT = { min: 4, max: 7 } as const;
+/** 4 to 10 beats (ADR 0018): the ceiling is raised from 7 so a beat that does not fit a phone stage can be split in two. */
+export const BEAT_COUNT = { min: 4, max: 10 } as const;
 /** Components whose appearance must come from an expression tree. */
 const NEEDS_EXPR = new Set(["equation", "functionGraph"]);
 

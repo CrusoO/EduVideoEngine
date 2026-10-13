@@ -20,16 +20,43 @@ export const COLOR = { stage: "#ffffff", ink: "#14172b", muted: "#464e6b", highl
 export const READING_WPM = 140;
 export const EQUATION_WORDS = 4;
 
+/** The screen every layout is designed for first: a small phone, 360 x 640 CSS pixels. */
+export const DESIGN_SCREEN = { width: 360, height: 640 } as const;
+
 /**
- * Stage height available on a phone: the screen height minus the header of the lesson sheet (56) and the caption and
- * voice credit under the stage (128). An assumption of the player layout, stated in ADR 0017.
+ * Height taken by the lesson sheet around the stage (the sheet header, and the caption and voice credit under the stage). It is a
+ * PARAMETER of the solver and the budget, never a constant inside them. **184 px (56 + 128) is an estimate, not a measurement**: the
+ * owner is measuring the real sheet, and the value is replaced there. Everything downstream takes `chromePx`.
  */
-export const CHROME_PX = 56 + 128;
-export const stageHeight = (screenHeight: number): number => screenHeight - CHROME_PX;
+export const DEFAULT_CHROME_PX = 56 + 128;
 
 export type Viewport = { width: number; height: number };
-/** Screens every reference lesson must fit: a small phone and a desktop window. */
-export const REFERENCE_VIEWPORTS: ReadonlyArray<{ name: string; viewport: Viewport }> = [
-  { name: "phone 360x640", viewport: { width: 360, height: stageHeight(640) } },
-  { name: "desktop 1280x720", viewport: { width: 1280, height: stageHeight(720) } },
-];
+
+/** From this card width the stage is a 16:9 frame; below it, a phone frame. 880 px gives 495 px of height, more than the 456 px of the design phone: desktop is roomier, never the reverse. */
+export const WIDE_MIN_WIDTH = 880;
+/** A stage is never shorter than this, whatever the screen (a phone held sideways). */
+export const MIN_STAGE_PX = 240;
+
+export type Frame = { width: number; height: number; mode: "phone" | "wide" };
+
+/**
+ * The frame the stage is drawn in. Wide cards: 16:9 of the card width. Phones: the dynamic viewport height (dvh) minus the sheet
+ * chrome, never 16:9 and never a fixed screen height. The chrome is a parameter (default 184 px, UNCONFIRMED).
+ */
+export function stageFrame(cardWidth: number, dvhPx: number, chromePx: number = DEFAULT_CHROME_PX): Frame {
+  if (cardWidth >= WIDE_MIN_WIDTH) return { width: cardWidth, height: Math.round((cardWidth * 9) / 16), mode: "wide" };
+  return { width: cardWidth, height: Math.max(MIN_STAGE_PX, Math.floor(dvhPx - chromePx)), mode: "phone" };
+}
+
+/** Spare height above a scene that is shorter than its frame: the content is centred, so no band of empty stage sits under it. */
+export const centerOffset = (contentHeight: number, frameHeight: number): number => Math.max(0, Math.floor((frameHeight - contentHeight) / 2));
+
+/** Screens every reference lesson must fit: the 360 x 640 design phone and a 1280 x 720 desktop window. */
+export const referenceViewports = (chromePx: number = DEFAULT_CHROME_PX): ReadonlyArray<{ name: string; viewport: Viewport }> => {
+  const phone = stageFrame(DESIGN_SCREEN.width, DESIGN_SCREEN.height, chromePx);
+  const wide = stageFrame(1280, 720, chromePx);
+  return [
+    { name: "phone 360x640", viewport: { width: phone.width, height: phone.height } },
+    { name: "desktop 1280x720", viewport: { width: wide.width, height: wide.height } },
+  ];
+};

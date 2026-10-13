@@ -4,7 +4,7 @@ import { quadraticRoots, wordsOf, type AudioTrack, type LessonBundle, type Pause
 import { resolve } from "@eve/resolver";
 import { buildMathCache, katexMath } from "@eve/components/src/build";
 import { cachedMath } from "@eve/components";
-import { solve } from "@eve/layout";
+import { centerOffset, solve } from "@eve/layout";
 import { Player, type MasterClock } from "../src";
 
 const bundle = quadraticRoots as LessonBundle;
@@ -231,7 +231,7 @@ describe("Player: captions are typeset like the screen", () => {
 describe("Player: layout from the solver", () => {
   const withWidth = (w: number) => {
     let width = w;
-    const made = make({ stageWidth: () => width });
+    const made = make({ stageWidth: () => width, viewportHeight: () => 640 });
     return { ...made, setWidth: (n: number) => (width = n) };
   };
   const box = (root: HTMLElement, id: string) => {
@@ -239,14 +239,59 @@ describe("Player: layout from the solver", () => {
     return { x: parseInt(el.style.left), y: parseInt(el.style.top), w: parseInt(el.style.width), h: parseInt(el.style.height), pos: el.style.position };
   };
 
-  it("puts every object in the box the solver computes, and sizes the stage to the content", () => {
-    const { player, root } = withWidth(360);
+  it("puts every object in the box the solver computes (centred in the frame), and sizes the stage to the frame", () => {
+    const root = document.createElement("div");
+    const player = new Player({ root, bundle, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360, viewportHeight: () => 640 });
     player.seek(0);
     const spec = bundle.scenes[0]!;
-    const want = solve({ objects: spec.objects, layout: spec.layout }, { width: 360, height: 0 }, { expressions: bundle.expressions, locale: bundle.locale });
-    for (const [id, b] of Object.entries(want.boxes)) expect(box(root, id), id).toEqual({ x: b.x, y: b.y, w: b.width, h: b.height, pos: "absolute" });
-    expect(root.querySelector<HTMLElement>(".eve-stage")!.style.height).toBe(`${want.contentHeight}px`);
-    expect(root.querySelector(".eve-stage")!.classList.contains("eve-laid")).toBe(true);
+    const want = solve({ objects: spec.objects, layout: spec.layout }, { width: 360, height: 456 }, { expressions: bundle.expressions, locale: bundle.locale });
+    const dy = centerOffset(want.contentHeight, 456);
+    expect(dy).toBeGreaterThan(0);
+    for (const [id, b] of Object.entries(want.boxes)) expect(box(root, id), id).toEqual({ x: b.x, y: b.y + dy, w: b.width, h: b.height, pos: "absolute" });
+    const stage = root.querySelector<HTMLElement>(".eve-stage")!;
+    expect(stage.style.height).toBe("456px");
+    expect(stage.dataset.frame).toBe("phone");
+    expect(stage.classList.contains("eve-laid")).toBe(true);
+  });
+
+  it("the chrome is a parameter and the viewport is dynamic: a different chrome or a shorter dvh gives a different stage, and a wide card is 16:9", () => {
+    const stageOf = (over: Partial<ConstructorParameters<typeof Player>[0]>) => {
+      const root = document.createElement("div");
+      const p = new Player({ root, bundle, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360, viewportHeight: () => 640, ...over });
+      p.seek(0);
+      return root.querySelector<HTMLElement>(".eve-stage")!;
+    };
+    expect(stageOf({ chromePx: 100 }).style.height).toBe("540px");
+    expect(stageOf({ viewportHeight: () => 600 }).style.height).toBe("416px");
+    const wide = stageOf({ stageWidth: () => 1280 });
+    expect(wide.style.height).toBe("720px");
+    expect(wide.dataset.frame).toBe("wide");
+  });
+
+  it("solves again when the dynamic viewport height changes (an address bar appears)", () => {
+    let vh = 640;
+    const root = document.createElement("div");
+    const player = new Player({ root, bundle, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360, viewportHeight: () => vh });
+    player.seek(0);
+    expect(root.querySelector<HTMLElement>(".eve-stage")!.style.height).toBe("456px");
+    vh = 560;
+    player.seek(10);
+    expect(root.querySelector<HTMLElement>(".eve-stage")!.style.height).toBe("376px");
+  });
+
+  it("reports a scene that needs more height than its stage, with the number of pixels, and stays quiet when it fits", () => {
+    const seen: Array<{ sceneId: string; excessPx: number }> = [];
+    const mk = (vh: number) => {
+      const player = new Player({ root: document.createElement("div"), bundle, timeline, math: katexMath, clock: new ManualClock(), stageWidth: () => 360, viewportHeight: () => vh, chromePx: 0, onOverflow: (i) => seen.push(i) });
+      player.seek(timeline.scenes[2]!.startMs + 5);
+    };
+    mk(640);
+    expect(seen).toEqual([]);
+    mk(300);
+    expect(seen).toHaveLength(1);
+    expect(seen[0]).toMatchObject({ sceneId: "scene3" });
+    const need = solve({ objects: bundle.scenes[2]!.objects, layout: bundle.scenes[2]!.layout }, { width: 360, height: 300 }, { expressions: bundle.expressions, locale: bundle.locale }).contentHeight;
+    expect(seen[0]!.excessPx).toBe(need - 300);
   });
 
   it("solves again when the stage width changes, and not otherwise", () => {

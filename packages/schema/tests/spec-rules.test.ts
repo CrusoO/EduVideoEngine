@@ -128,7 +128,7 @@ describe("claims", () => {
 describe("the Hindi rendering test", () => {
   it("is well formed except that it is not a lesson (one beat, not four to seven), entirely draft, and only for rendering", () => {
     const r = validateBundle(hindiPreview);
-    expect(r.issues.map((i) => `${i.path}: ${i.message}`)).toEqual(["plan.beats: a lesson has 4 to 7 beats"]);
+    expect(r.issues.map((i) => `${i.path}: ${i.message}`)).toEqual(["plan.beats: a lesson has 4 to 10 beats"]);
     expect(hindiPreview.script.every((s) => s.status === "draft")).toBe(true);
     expect(hindiPreview.skillId).toMatch(/^TEST\./);
   });
@@ -174,5 +174,36 @@ describe("claims rule: a worked beat declares the claims it relies on", () => {
   it("a claim for a beat that does not exist is rejected", () => {
     const r = sealed((b) => void (b.claims![0]!.beatId = "b9"));
     expect(messages(r)).toContain("claims.c.factored: claim names unknown beat b9");
+  });
+});
+
+describe("beat limit (ADR 0018)", () => {
+  /** The reference lesson with its first beat repeated until it has n beats (each copy with its own scene and sentences). */
+  const withBeats = (n: number) => {
+    const b = structuredClone(quadraticRoots) as LessonBundle;
+    const first = b.plan.beats[0]!;
+    const sentences = b.script.filter((s) => s.beatId === first.id);
+    const scene = b.scenes.find((s) => s.beatId === first.id)!;
+    for (let i = b.plan.beats.length; i < n; i++) {
+      const id = `bx${i}`;
+      b.plan.beats.push({ ...first, id });
+      const ids = new Map(sentences.map((s) => [s.id, `${s.id}.${id}`]));
+      for (const s of sentences) b.script.push({ ...s, id: ids.get(s.id)!, beatId: id });
+      b.scenes.push({
+        ...structuredClone(scene),
+        id: `scene.${id}`,
+        beatId: id,
+        cues: scene.cues.map((c) => ({ ...c, anchor: { ...c.anchor, sentenceId: ids.get(c.anchor.sentenceId)! } })),
+      });
+    }
+    const { hashes: _h, ...rest } = b;
+    void _h;
+    return validateBundle(seal(rest));
+  };
+  it("a lesson of 4, 7 and 10 beats is accepted; 11 is rejected; 3 is rejected", () => {
+    expect(withBeats(5).issues).toEqual([]);
+    expect(withBeats(7).issues).toEqual([]);
+    expect(withBeats(10).issues).toEqual([]);
+    expect(withBeats(11).issues.map((i) => i.message)).toEqual(["a lesson has 4 to 10 beats"]);
   });
 });

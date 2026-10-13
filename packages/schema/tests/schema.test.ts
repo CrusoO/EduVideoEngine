@@ -135,7 +135,7 @@ describe("cross-reference rules", () => {
     expect(messages(resealed((b) => void (b.scenes[0]!.sourceIds = ["src.unknown"]))).join("\n")).toMatch(/unknown source/);
   });
 
-  it("a worked beat needs a pause-and-ask, and a lesson has 4 to 7 beats", () => {
+  it("a worked beat needs a pause-and-ask, and a lesson has 4 to 10 beats", () => {
     expect(messages(resealed((b) => void delete b.scenes[2]!.interactions)).join("\n")).toMatch(/needs a pause-and-ask/);
     const three = messages(
       resealed((b) => {
@@ -144,7 +144,7 @@ describe("cross-reference rules", () => {
         b.script = b.script.filter((s) => ["b1", "b2", "b3"].includes(s.beatId));
       }),
     );
-    expect(three.join("\n")).toMatch(/4 to 7 beats/);
+    expect(three.join("\n")).toMatch(/4 to 10 beats/);
   });
 
   it("layout may only name objects of the scene", () => {

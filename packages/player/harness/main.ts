@@ -66,9 +66,10 @@ async function main() {
     credit,
     onFrame: (t) => frameHooks.forEach((h) => h(t)),
     onInterrupt: () => void log.interrupted++,
-    onPause: async (_p: PausePoint) => {
+    onPause: async (p: PausePoint) => {
       log.pauseAskedAt.push(clock.nowMs());
-      await new Promise((r) => setTimeout(r, answerDelayMs));
+      if (manual) await askByHand(p, bundle);
+      else await new Promise((r) => setTimeout(r, answerDelayMs));
       log.resumedAt.push(clock.nowMs());
     },
   });
@@ -86,6 +87,64 @@ async function main() {
   await document.fonts.load("600 18px Inter");
   await Promise.all([document.fonts.load("400 18px KaTeX_Main"), document.fonts.load("italic 400 18px KaTeX_Math"), document.fonts.load("400 18px KaTeX_Size2")]);
   await document.fonts.ready;
+  if (manual) controls(player, clock, timeline.totalMs, timeline.pausePoints.map((q) => q.atMs));
   (window as unknown as { __ready: boolean }).__ready = true;
 }
+const manual = params.get("manual") === "1";
+
+/** Hand-testing controls (?manual=1): play, pause, a seek bar, speed of nothing else. Not used by the automated tests. */
+function controls(player: Player, clock: AudioClock, totalMs: number, pausePoints: number[]) {
+  const bar = document.createElement("div");
+  bar.style.cssText = "width:360px;margin-top:12px;font:14px Inter,sans-serif;display:flex;flex-direction:column;gap:8px";
+  const row = document.createElement("div");
+  row.style.cssText = "display:flex;gap:8px;align-items:center";
+  const btn = (label: string, fn: () => void) => {
+    const b = document.createElement("button");
+    b.textContent = label;
+    b.style.cssText = "padding:8px 14px;font:inherit;cursor:pointer";
+    b.onclick = fn;
+    return b;
+  };
+  const time = document.createElement("span");
+  const range = document.createElement("input");
+  range.type = "range";
+  range.min = "0";
+  range.max = String(totalMs);
+  range.step = "100";
+  range.value = "0";
+  range.style.width = "100%";
+  range.oninput = () => player.seek(Number(range.value));
+  row.append(btn("Play", () => void player.play()), btn("Pause", () => player.pause()), btn("Restart", () => player.seek(0)), time);
+  const marks = document.createElement("div");
+  marks.textContent = `Question points at: ${pausePoints.map((p) => `${(p / 1000).toFixed(1)} s`).join(", ") || "none"}`;
+  bar.append(row, range, marks);
+  document.body.append(bar);
+  const tick = () => {
+    const t = clock.nowMs();
+    time.textContent = `${(t / 1000).toFixed(1)} / ${(totalMs / 1000).toFixed(1)} s`;
+    if (document.activeElement !== range) range.value = String(t);
+    requestAnimationFrame(tick);
+  };
+  tick();
+}
+
+function askByHand(p: PausePoint, b: LessonBundle): Promise<void> {
+  const scene = b.scenes.find((s) => s.interactions?.some((i) => i.id === p.id));
+  const ask = scene?.interactions?.find((i) => i.id === p.id);
+  return new Promise((done) => {
+    const box = document.createElement("div");
+    box.style.cssText = "width:320px;margin-top:12px;padding:16px;border:2px solid #1d4fd8;border-radius:12px;background:#fff;font:16px Inter,sans-serif";
+    box.innerHTML = `<p style="margin:0 0 12px"><b>Question</b><br>${ask?.prompt ?? "Your turn"}</p>`;
+    const go = document.createElement("button");
+    go.textContent = "I have answered: continue";
+    go.style.cssText = "padding:8px 14px;font:inherit;cursor:pointer";
+    go.onclick = () => {
+      box.remove();
+      done();
+    };
+    box.append(go);
+    document.body.append(box);
+  });
+}
+
 void main();

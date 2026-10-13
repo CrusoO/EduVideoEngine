@@ -1,7 +1,7 @@
 import fc from "fast-check";
 import { describe, expect, it } from "vitest";
 import { quadraticRoots, type LayoutRule } from "@eve/schema";
-import { GAP, LayoutError, PAD, REFERENCE_VIEWPORTS, ROW_COLLAPSE_PX, solve, type LayoutObject, type SceneInput } from "../src";
+import { GAP, LayoutError, PAD, referenceViewports, ROW_COLLAPSE_PX, solve, type LayoutObject, type SceneInput } from "../src";
 
 const expressions = quadraticRoots.expressions;
 const ctx = { expressions, locale: "en-IN" };
@@ -268,7 +268,7 @@ describe("solve: boundary scenes", () => {
 });
 
 describe("the reference viewports", () => {
-  it("are a 360 x 640 phone and a 1280 x 720 window, less the sheet header, caption and credit", () => {
-    expect(REFERENCE_VIEWPORTS.map((v) => v.viewport)).toEqual([{ width: 360, height: 456 }, { width: 1280, height: 536 }]);
+  it("are a 360 x 640 phone and a 1280 x 720 window, phone height less the sheet chrome (a parameter, 184 px by default), desktop 16:9", () => {
+    expect(referenceViewports().map((v) => v.viewport)).toEqual([{ width: 360, height: 456 }, { width: 1280, height: 720 }]);
   });
 });

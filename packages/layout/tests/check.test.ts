@@ -5,18 +5,19 @@ import { add, eq, mul, num, pow, quadraticRoots, sym, wordsOf, type AudioTrack, 
 import { resolve } from "@eve/resolver";
 import {
   COLOR,
-  CHROME_PX,
+  DEFAULT_CHROME_PX,
   EQUATION_WORDS,
   MIN_READING_PX,
   MIN_TEXT_PX,
   PAD,
   READING_WPM,
-  REFERENCE_VIEWPORTS,
+  referenceViewports,
   assureLayout,
   checkLayout,
   requiredContrast,
   solve,
-  stageHeight,
+  stageFrame,
+  centerOffset,
   type Layout,
   type LayoutObject,
   type SceneInput,
@@ -118,9 +119,9 @@ describe("the reference lesson passes every check, at the phone and the desktop"
     expect(assureLayout(bundle, timeline)).toEqual([]);
   });
   it("checks every scene at every reference viewport", () => {
-    const heights = REFERENCE_VIEWPORTS.map((v) => v.viewport.height);
-    expect(heights).toEqual([640 - CHROME_PX, 720 - CHROME_PX]);
-    expect(stageHeight(640)).toBe(456);
+    const heights = referenceViewports().map((v) => v.viewport.height);
+    expect(heights).toEqual([640 - DEFAULT_CHROME_PX, 720]);
+    expect(stageFrame(360, 640)).toEqual({ width: 360, height: 456, mode: "phone" });
   });
 });
 
@@ -134,7 +135,7 @@ describe("a column of five objects on a phone (ADR 0017)", () => {
   ];
 
   it("overflows a 360 x 640 phone: the numbers", () => {
-    const phone = REFERENCE_VIEWPORTS[0]!.viewport;
+    const phone = referenceViewports()[0]!.viewport;
     const l = solve({ objects: five, layout: [] }, phone, ctx);
     const heights = Object.fromEntries(Object.entries(l.boxes).map(([id, b]) => [id, b.height]));
     console.log(`FIVE OBJECTS at 360: content ${l.contentHeight} px, stage ${phone.height} px (screen 640), heights ${JSON.stringify(heights)}`);
@@ -144,18 +145,17 @@ describe("a column of five objects on a phone (ADR 0017)", () => {
     expect(f[0]!.message).toMatch(/the scene needs \d+ px but the stage has 456 px: it overflows by \d+ px/);
   });
 
-  it("also overflows a 1280 x 720 desktop window, because a column wastes the width (a row of the two lightest objects helps there, not on the phone)", () => {
-    const desk = REFERENCE_VIEWPORTS[1]!.viewport;
+  it("fits the 16:9 desktop frame (1280 x 720) as a column: desktop is roomier, never the reverse", () => {
+    const desk = referenceViewports()[1]!.viewport;
+    expect(desk).toEqual({ width: 1280, height: 720 });
     const column = solve({ objects: five, layout: [] }, desk, ctx);
     console.log(`FIVE OBJECTS at 1280: column ${column.contentHeight} px, stage ${desk.height} px`);
-    expect(column.contentHeight).toBeGreaterThan(desk.height);
-    const paired = solve({ objects: five, layout: [{ rule: "row", items: ["graph", "steps"] }, { rule: "row", items: ["rule", "body"] }] }, desk, ctx);
-    console.log(`FIVE OBJECTS at 1280 with two rows: ${paired.contentHeight} px`);
-    expect(paired.contentHeight).toBeLessThan(column.contentHeight);
+    expect(column.contentHeight).toBeLessThanOrEqual(desk.height);
+    expect(checkLayout(column, where)).toEqual([]);
   });
 
   it("the largest scene that fits the phone has three heavy objects (this is what the composer budget will say)", () => {
-    const phone = REFERENCE_VIEWPORTS[0]!.viewport;
+    const phone = referenceViewports()[0]!.viewport;
     const fits = (objs: LayoutObject[]) => solve({ objects: objs, layout: [] }, phone, ctx).contentHeight <= phone.height;
     expect(fits([five[0]!, five[1]!, five[2]!])).toBe(true); // title + equation + graph
     expect(fits([five[0]!, five[1]!, five[2]!, five[3]!])).toBe(false);

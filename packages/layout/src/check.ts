@@ -3,7 +3,7 @@ import type { LessonBundle, Timeline } from "@eve/schema";
 import { minPx } from "./measure";
 import type { Layout, SceneInput } from "./solve";
 import { solve } from "./solve";
-import { EQUATION_WORDS, READING_WPM, REFERENCE_VIEWPORTS, type Viewport } from "./tokens";
+import { EQUATION_WORDS, READING_WPM, referenceViewports, type Viewport } from "./tokens";
 
 export type LayoutFinding = {
   level: "fail";
@@ -80,7 +80,7 @@ export type LayoutBundle = Pick<LessonBundle, "scenes" | "expressions" | "locale
  * The build rule: every scene of a lesson is solved at every reference viewport and checked, with the real scene
  * durations from the resolved timeline. Any finding fails the build. Nothing is shrunk to make it fit.
  */
-export function assureLayout(bundle: LayoutBundle, timeline: Pick<Timeline, "scenes">, viewports: ReadonlyArray<{ name: string; viewport: Viewport }> = REFERENCE_VIEWPORTS): LayoutFinding[] {
+export function assureLayout(bundle: LayoutBundle, timeline: Pick<Timeline, "scenes">, viewports: ReadonlyArray<{ name: string; viewport: Viewport }> = referenceViewports()): LayoutFinding[] {
   const out: LayoutFinding[] = [];
   for (const scene of bundle.scenes) {
     const t = timeline.scenes.find((s) => s.sceneId === scene.id);

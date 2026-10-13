@@ -1,7 +1,7 @@
 import { componentFor, spokenLabel, toLatex, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
-import { PAD, solve } from "@eve/layout";
+import { DEFAULT_CHROME_PX, PAD, centerOffset, solve, stageFrame } from "@eve/layout";
 import type { MasterClock } from "./clock";
 
 export type PlayerOptions = {
@@ -22,6 +22,12 @@ export type PlayerOptions = {
   now?: () => number;
   /** Width of the stage in pixels, for the layout solver. Default: the real width of the stage element (0 when nothing is laid out, as in jsdom, in which case the stage stays a plain column). */
   stageWidth?: () => number;
+  /** Height taken by the lesson sheet around the stage, in pixels (ADR 0017: a parameter, default 184, unconfirmed). */
+  chromePx?: number;
+  /** Dynamic viewport height in pixels (dvh). Default: the visual viewport, which shrinks when a phone browser shows its address bar. */
+  viewportHeight?: () => number;
+  /** A scene needs more height than its stage has (the build should have caught it): by how many pixels. */
+  onOverflow?: (info: { sceneId: string; excessPx: number }) => void;
   /** Called after every draw, with the lesson time that was drawn. For measurement. */
   onFrame?: (drawnMs: number) => void;
   /** Injected for tests. */
@@ -51,7 +57,7 @@ export class Player {
   private readonly sceneById: Map<string, SceneSpec>;
   private readonly sentenceText: Map<string, string>;
   private captionId: string | null = null;
-  private laidWidth = -1;
+  private laidKey = "";
   private resizeObserver: ResizeObserver | null = null;
   private readonly raf: (cb: () => void) => number;
   private readonly caf: (id: number) => void;
@@ -232,30 +238,36 @@ export class Player {
    */
   private relayout(spec: SceneSpec): void {
     const width = this.o.stageWidth ? this.o.stageWidth() : this.stage.clientWidth;
-    if (width === this.laidWidth) return;
-    this.laidWidth = width;
+    const vh = this.o.viewportHeight ? this.o.viewportHeight() : (globalThis.visualViewport?.height ?? globalThis.innerHeight ?? 640);
+    const key = `${width}x${vh}`;
+    if (key === this.laidKey) return;
+    this.laidKey = key;
     if (width <= 2 * PAD) {
       this.stage.classList.remove("eve-laid");
       return;
     }
+    const frame = stageFrame(width, vh, this.o.chromePx ?? DEFAULT_CHROME_PX);
     // A scene the solver cannot place is a build error (assureLayout catches it first); here it throws, never draws a guess.
-    const layout = solve({ objects: spec.objects, layout: spec.layout }, { width, height: 0 }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale });
+    const layout = solve({ objects: spec.objects, layout: spec.layout }, { width, height: frame.height }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale });
+    const dy = centerOffset(layout.contentHeight, frame.height);
     this.stage.classList.add("eve-laid");
-    this.stage.style.height = `${layout.contentHeight}px`;
+    this.stage.dataset.frame = frame.mode;
+    this.stage.style.height = `${frame.height}px`;
     for (const [id, box] of Object.entries(layout.boxes)) {
       const el = this.els.get(id)!;
       el.style.position = "absolute";
       el.style.left = `${box.x}px`;
-      el.style.top = `${box.y}px`;
+      el.style.top = `${box.y + dy}px`;
       el.style.width = `${box.width}px`;
       el.style.height = `${box.height}px`;
       el.style.textAlign = layout.centered.includes(id) ? "center" : "";
     }
+    if (layout.contentHeight > frame.height) this.o.onOverflow?.({ sceneId: spec.id, excessPx: layout.contentHeight - frame.height });
   }
 
   private mount(sceneId: string): void {
     this.sceneId = sceneId;
-    this.laidWidth = -1;
+    this.laidKey = "";
     this.els.clear();
     this.events.clear();
     const spec = this.sceneById.get(sceneId)!;
