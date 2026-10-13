@@ -1,0 +1,9 @@
+{
+  "name": "@eve/resolver",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": { "@eve/schema": "workspace:*" },
+  "devDependencies": { "@eve/components": "workspace:*", "fast-check": "3.23.1" }
+}
