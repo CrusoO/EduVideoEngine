@@ -12,7 +12,14 @@
     "packages/layout/src/solve.ts",
     "packages/layout/src/check.ts",
     "packages/layout/src/measure.ts",
-    "packages/layout/src/budget.ts"
+    "packages/layout/src/budget.ts",
+    "packages/schema/src/migrate.ts",
+    "packages/schema/src/validate.ts",
+    "packages/content/src/derive.ts",
+    "packages/content/src/validate.ts",
+    "packages/patterns/src/arcs.ts",
+    "packages/adapters/src/env.ts",
+    "packages/adapters/src/limiter.ts"
   ],
   "vitest": {
     "configFile": "vitest.stryker.config.ts"
@@ -31,5 +38,5 @@
   },
   "coverageAnalysis": "perTest",
   "concurrency": 6,
-  "timeoutMS": 30000
+  "timeoutMS": 60000
 }
