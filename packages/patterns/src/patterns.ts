@@ -369,7 +369,11 @@ export function instantiate(id: string, r: Retrieval, args: PatternArgs): Instan
   return p.build(filled.content as never, args);
 }
 
+const VISUAL_COMPONENTS = new Set(["numberLine", "functionGraph", "shape", "fractionBar", "areaModel", "balanceScale", "table"]);
+/** A pattern is text-heavy when none of its components is a picture or a diagram: it shows words and equations only. Derived from the components, never typed. */
+export const isTextHeavy = (p: { components: readonly string[] }): boolean => !p.components.some((c) => VISUAL_COMPONENTS.has(c));
+
 /** The catalogue the planner and composer prompts are given: id, when to use, components, slots, minimum sentences and height cost. */
 export function catalogue() {
-  return PATTERNS.map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, derivesClaims: p.derivesClaims, components: p.components, slots: p.slots, minSentences: p.minSentences, heightCostPx: p.heightCostPx }));
+  return PATTERNS.map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, derivesClaims: p.derivesClaims, textHeavy: isTextHeavy(p), components: p.components, slots: p.slots, minSentences: p.minSentences, heightCostPx: p.heightCostPx }));
 }

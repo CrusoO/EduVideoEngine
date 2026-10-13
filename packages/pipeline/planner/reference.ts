@@ -14,7 +14,6 @@ export function referencePlan(r: Retrieval, template: "problem-first" | "example
     { pattern: "plot-and-mark-roots", kind: "explore", title: "Where the curve crosses", durationS: 20, pause: false },
     { pattern: "step-by-step-worked-example", kind: "worked", title: "Factorise and find the roots", durationS: 26, pause: true },
     { pattern: "hops-on-number-line", kind: "worked", title: "Add the roots with hops", durationS: 26, pause: true },
-    { pattern: "common-mistake-contrast", kind: "explain", title: "A common mistake", durationS: 16, pause: false },
   ];
   const beats = wanted
     .filter((w) => usable.has(w.pattern))

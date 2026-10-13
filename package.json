@@ -22,7 +22,8 @@
     "player:size": "vite-node scripts/player-size.ts",
     "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",
     "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts",
-    "llm:models": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-models.ts"
+    "llm:models": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-models.ts",
+    "llm:sizes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-sizes.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",

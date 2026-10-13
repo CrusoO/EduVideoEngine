@@ -1,12 +1,13 @@
 import { LlmClient, type JsonSchema } from "@eve/adapters";
 import type { Retrieval } from "@eve/content";
-import { PATTERNS, patternSources, usablePatterns } from "@eve/patterns";
+import { PATTERNS, isTextHeavy, patternSources, usablePatterns } from "@eve/patterns";
 import { BEAT_KINDS, LIMITS, LessonPlan } from "@eve/schema";
 import { z } from "zod";
 import { allowedValues, buildEnvelope } from "../envelope";
 import { loadPassPrompt, loadPrompt } from "./prompt";
 
-export const PLANNER_PROMPT_VERSION = "planner.v2";
+/** The current planner prompt. planner.v2 is kept (its request is unchanged) because the reference recording was made with it. */
+export const PLANNER_PROMPT_VERSION = "planner.v3";
 /** Sent as the system instruction on every call; its text is part of every fixture key. */
 export const SYSTEM_PROMPT_VERSION = "system.v1";
 
@@ -31,7 +32,8 @@ const Planned = z.object({ template: z.enum(["problem-first", "example-first"]),
 const Insufficient = z.object({ error: z.literal("insufficient_content"), missing: z.array(z.string().min(1)).min(1) }).strict();
 /** What the model may answer: a plan, or the statement that the records cannot support the skill. */
 const Unsupported = z.object({ error: z.literal("unsupported_locale") }).strict();
-export const PlannerAnswer = z.union([Planned, Insufficient, Unsupported]);
+const UnknownId = z.object({ error: z.literal("unknown_id"), id: z.string().min(1) }).strict();
+export const PlannerAnswer = z.union([Planned, Insufficient, Unsupported, UnknownId]);
 export type PlannerAnswer = z.infer<typeof PlannerAnswer>;
 
 export type LessonPlanWithPatterns = { template: "problem-first" | "example-first"; targetLengthS: number; beats: PlannedBeat[] };
@@ -40,6 +42,7 @@ export type PlanResult =
   | { ok: true; plan: LessonPlanWithPatterns; lessonPlan: LessonPlan; warnings: string[]; repaired: boolean; requests: number }
   | { ok: false; reason: "insufficient_content"; missing: string[]; declaredByModel: boolean }
   | { ok: false; reason: "unsupported_locale" }
+  | { ok: false; reason: "unknown_id"; id: string }
   | { ok: false; reason: "invalid"; errors: string[] };
 
 /** The plain-language reasons the records cannot support a lesson at all. Checked before any request is made: no model call is spent on records that cannot work. */
@@ -58,7 +61,7 @@ export function missingForPlanning(r: Retrieval): string[] {
 export const templateFor = (prerequisitesSolid: boolean) => (prerequisitesSolid ? "problem-first" : "example-first") as "problem-first" | "example-first";
 
 /** The INPUT section: the records, the usable patterns and the limits. Plain data, stable key order, nothing but owner-written content. The locale is the language ("en"), as the system prompt expects. */
-export function plannerData(r: Retrieval, prerequisitesSolid = true) {
+export function plannerData(r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION) {
   const usable = usablePatterns(r);
   return (
     {
@@ -74,13 +77,13 @@ export function plannerData(r: Retrieval, prerequisitesSolid = true) {
         ...(rec.steps ? { steps: rec.steps.map((s) => ({ id: s.id, role: s.role, note: s.note })) } : {}),
         ...(rec.terms ? { terms: rec.terms.map((t) => t.term) } : {}),
       })),
-      patterns: PATTERNS.filter((p) => usable.includes(p.id as never)).map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, minSentences: p.minSentences, sources: patternSources(p.id, r) })),
+      patterns: PATTERNS.filter((p) => usable.includes(p.id as never)).map((p) => ({ id: p.id, useWhen: p.useWhen, kinds: p.kinds, pause: p.pause, ...(version !== "planner.v2" ? { textHeavy: isTextHeavy(p) } : {}), minSentences: p.minSentences, sources: patternSources(p.id, r) })),
     }
   );
 }
 
 /** The INPUT section as text. */
-export const plannerInput = (r: Retrieval, prerequisitesSolid = true): string => JSON.stringify(plannerData(r, prerequisitesSolid), null, 2);
+export const plannerInput = (r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION): string => JSON.stringify(plannerData(r, prerequisitesSolid, version), null, 2);
 
 /** A deliberately small JSON schema for providers that take one: every property optional, because our own validation decides. */
 export const PLANNER_JSON_SCHEMA: JsonSchema = {
@@ -114,7 +117,7 @@ export const PLANNER_JSON_SCHEMA: JsonSchema = {
  * beat, every pattern usable (its slots fillable) from the records and listing the records it draws on, beat times within the cap, a pause after every worked
  * beat, at least one worked beat, and the template's opening.
  */
-export function checkPlan(plan: { template: string; beats: readonly PlannedBeat[] }, r: Retrieval, prerequisitesSolid = true): string[] {
+export function checkPlan(plan: { template: string; beats: readonly PlannedBeat[] }, r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION): string[] {
   const out: string[] = [];
   const bad = (m: string) => out.push(m);
   const { beats } = plan;
@@ -156,6 +159,13 @@ export function checkPlan(plan: { template: string; beats: readonly PlannedBeat[
   }
   if (total > LIMITS.durationS.lessonHardMax) bad(`the beats add up to ${total} s, a lesson may last at most ${LIMITS.durationS.lessonHardMax} s`);
   if (!beats.some((b) => b.kind === "worked")) bad("a lesson needs at least one worked beat");
+  if (version !== "planner.v2" && beats.length >= 4) {
+    const heavy = beats.filter((b) => { const p = PATTERNS.find((x) => x.id === b.pattern); return p ? isTextHeavy(p) : false; }).length;
+    if (heavy > Math.floor(beats.length / 2)) {
+      const visual = PATTERNS.filter((p) => usable.has(p.id) && !isTextHeavy(p)).map((p) => p.id);
+      bad(`${heavy} of ${beats.length} beats use text-heavy patterns; at most ${Math.floor(beats.length / 2)} may. Replace some with a pattern that shows a picture (${visual.join(", ") || "none can be used with these records"})`);
+    }
+  }
   const first = beats[0];
   if (first) {
     if (plan.template === "problem-first" && first.kind !== "predict") bad(`a problem-first lesson opens with a predict beat, not ${first.kind}`);
@@ -169,13 +179,13 @@ export function toLessonPlan(plan: LessonPlanWithPatterns): LessonPlan {
 }
 
 /** The call the planner makes, without the schema checks: the prompt file, its version and the input. Shared by the pass and by the tool that authors a stand-in. */
-export function plannerCall(r: Retrieval, prerequisitesSolid = true) {
-  const pass = loadPassPrompt(PLANNER_PROMPT_VERSION);
+export function plannerCall(r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION) {
+  const pass = loadPassPrompt(version);
   const input = buildEnvelope({
     task: pass.task,
     rules: pass.rules,
     allowed: allowedValues({ records: r.records.map((x) => x.id), expressions: Object.keys(r.expressions) }),
-    input: plannerData(r, prerequisitesSolid),
+    input: plannerData(r, prerequisitesSolid, version),
     schema: PLANNER_JSON_SCHEMA,
     errors: pass.errors,
     example: pass.example,
@@ -187,21 +197,22 @@ export function plannerCall(r: Retrieval, prerequisitesSolid = true) {
  * The planner pass: one call (plus the single repair call if the answer is rejected). The records are checked first, so records that cannot support the
  * skill cost no request. A model that says insufficient_content is believed and reported. Anything it returns is validated by our own schema and rules.
  */
-export async function planLesson(client: LlmClient, r: Retrieval, opts: { prerequisitesSolid?: boolean } = {}): Promise<PlanResult> {
+export async function planLesson(client: LlmClient, r: Retrieval, opts: { prerequisitesSolid?: boolean; version?: string } = {}): Promise<PlanResult> {
+  const version = opts.version ?? PLANNER_PROMPT_VERSION;
   const solid = opts.prerequisitesSolid ?? true;
   const missing = missingForPlanning(r);
   if (missing.length > 0) return { ok: false, reason: "insufficient_content", missing, declaredByModel: false };
 
   const before = client.stats.sent + client.stats.replayed;
   const result = await client.generateJson({
-    ...plannerCall(r, solid),
+    ...plannerCall(r, solid, version),
     jsonSchema: PLANNER_JSON_SCHEMA,
     schema: PlannerAnswer,
-    check: (v) => ("error" in v ? [] : checkPlan(v, r, solid)),
+    check: (v) => ("error" in v ? [] : checkPlan(v, r, solid, version)),
   });
   const requests = client.stats.sent + client.stats.replayed - before;
   if (!result.ok) return { ok: false, reason: "invalid", errors: result.errors };
-  if ("error" in result.value) return result.value.error === "unsupported_locale" ? { ok: false, reason: "unsupported_locale" } : { ok: false, reason: "insufficient_content", missing: result.value.missing, declaredByModel: true };
+  if ("error" in result.value) return result.value.error === "unsupported_locale" ? { ok: false, reason: "unsupported_locale" } : result.value.error === "unknown_id" ? { ok: false, reason: "unknown_id", id: result.value.id } : { ok: false, reason: "insufficient_content", missing: result.value.missing, declaredByModel: true };
 
   const total = result.value.beats.reduce((n, b) => n + b.durationS, 0);
   const plan: LessonPlanWithPatterns = { template: result.value.template, targetLengthS: total, beats: result.value.beats };

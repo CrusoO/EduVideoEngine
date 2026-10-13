@@ -5,7 +5,7 @@ import { join, resolve as resolvePath } from "node:path";
 import { FIXTURES_DIR, FakeAdapter, FixtureStore, Ledger, LlmClient, fixtureKey, referenceConfig, testConfig, type LLMAdapter, type LlmConfig, type LlmRequest, type LlmResponse } from "@eve/adapters";
 import { loadStore, retrieve } from "@eve/content";
 import { LIMITS, LessonPlan } from "@eve/schema";
-import { PLANNER_PROMPT_VERSION, checkPlan, loadPrompt, missingForPlanning, planLesson, plannerCall, plannerInput, referencePlan, templateFor, type PlannedBeat } from "../index";
+import { PLANNER_PROMPT_VERSION, checkPlan, loadPassPrompt, loadPrompt, missingForPlanning, planLesson, plannerCall, plannerInput, referencePlan, templateFor, type PlannedBeat } from "../index";
 
 const root = resolvePath(__dirname, "..", "..", "..");
 const { records } = loadStore(join(root, "content"));
@@ -24,8 +24,8 @@ const beats = (edit: (b: PlannedBeat[]) => PlannedBeat[]) => ({ ...ref, beats: e
 describe("the prompt file", () => {
   const p = loadPrompt(PLANNER_PROMPT_VERSION);
   it("is versioned, asks for JSON only, and defines the insufficient_content answer", () => {
-    expect(p.version).toBe("planner.v2");
-    expect(p.text).toMatch(/^# planner\.v2/);
+    expect(p.version).toBe("planner.v3");
+    expect(p.text).toMatch(/^# planner\.v3/);
     expect(p.text).toContain('{"error":"insufficient_content","missing"');
     expect(p.text).toContain('{"error":"unsupported_locale"}');
   });
@@ -86,8 +86,31 @@ describe("the plan rules", () => {
     expect(checkPlan({ ...ref, template: "example-first" }, r, false).join()).toMatch(/example-first lesson opens with an example/);
   });
   it("rejects a pattern that cannot be filled from these records", () => {
-    const noMistake = retrieve(records.filter((x) => x.kind !== "misconception"), SKILL, "en-IN");
-    expect(checkPlan(ref, noMistake).join()).toMatch(/common-mistake-contrast cannot be filled from these records/);
+    const noPlot = retrieve(records.filter((x) => !x.plot), SKILL, "en-IN");
+    expect(checkPlan(ref, noPlot).join()).toMatch(/plot-and-mark-roots cannot be filled from these records/);
+  });
+  it("v3: in a lesson of four or more beats at most half use text-heavy patterns; v2 had no such rule", () => {
+    const heavy = beats((b) => b.map((x, i) => (i === 1 ? { ...x, pattern: "common-mistake-contrast", kind: "explain" as const, sourceIds: ["quad.sum.misconception"] } : x)));
+    const out = checkPlan(heavy, r).join("\n");
+    expect(out).toMatch(/3 of 4 beats use text-heavy patterns; at most 2 may.*\(hops-on-number-line, plot-and-mark-roots\)/);
+    expect(checkPlan(heavy, r, true, "planner.v2")).toEqual([]);
+    expect(checkPlan(ref, r)).toEqual([]);
+    const three = { ...ref, beats: ref.beats.slice(0, 3) };
+    expect(checkPlan(three, r).join()).not.toMatch(/text-heavy/);
+  });
+  it("v3 input carries each pattern's useWhen note and its textHeavy flag; v2 input is unchanged", () => {
+    const v3 = JSON.parse(plannerInput(r));
+    expect(v3.patterns.every((p: { useWhen: string; textHeavy: boolean }) => p.useWhen.length > 20 && typeof p.textHeavy === "boolean")).toBe(true);
+    expect(Object.fromEntries(v3.patterns.map((p: { id: string; textHeavy: boolean }) => [p.id, p.textHeavy]))).toEqual({ "colour-bound-terms": true, "predict-then-reveal": true, "hops-on-number-line": false, "plot-and-mark-roots": false, "step-by-step-worked-example": true, "common-mistake-contrast": true });
+    expect("textHeavy" in JSON.parse(plannerInput(r, true, "planner.v2")).patterns[0]).toBe(false);
+  });
+  it("no rule of the v3 prompt names a pattern", () => {
+    const rules = loadPassPrompt("planner.v3").rules.join("\n");
+    for (const id of ["colour-bound", "predict-then", "hops-on", "plot-and-mark", "step-by-step", "common-mistake"]) expect(rules).not.toContain(id);
+  });
+  it("v3 states which error applies to which condition", () => {
+    const errors = loadPassPrompt("planner.v3").errors;
+    expect(errors.map((e: { when: string; shape: unknown }) => [(e.shape as { error: string }).error, e.when.includes("not in ALLOWED VALUES") || e.when.includes("cannot support") || e.when.includes("locale")])).toEqual([["unknown_id", true], ["insufficient_content", true], ["unsupported_locale", true]]);
   });
 });
 
@@ -160,10 +183,10 @@ describe("the planner pass", () => {
     expect(await planLesson(client(fake).c, r)).toMatchObject({ ok: true, repaired: true });
   });
   it("warns, but does not fail, above the 300 s target", async () => {
-    const long = beats((b) => b.map((x) => ({ ...x, durationS: 70 })));
+    const long = beats((b) => [...b, { ...b[1]!, id: "b5" }].map((x) => ({ ...x, durationS: 75 })));
     const out = await planLesson(client(new FakeAdapter([answer(long)])).c, r);
     expect(out).toMatchObject({ ok: true });
-    if (out.ok) expect(out.warnings[0]).toMatch(/350 s.*300 s target/);
+    if (out.ok) expect(out.warnings[0]).toMatch(/375 s.*300 s target/);
   });
   it("the answer is checked by our schema even when the provider offered structured output", async () => {
     const fake = new FakeAdapter([answer({ template: "problem-first", beats: [{ id: "b1" }] }), answer({ template: "problem-first", beats: [{ id: "b1" }] })]);
@@ -181,7 +204,7 @@ describe("record, then replay, on the seed lesson", () => {
     const first = await planLesson(rec.c, r);
     expect(first).toMatchObject({ ok: true });
     expect(rec.ledger.entries()).toHaveLength(1);
-    expect(rec.ledger.entries()[0]).toMatchObject({ step: "planner", promptVersion: "planner.v2", kind: "call" });
+    expect(rec.ledger.entries()[0]).toMatchObject({ step: "planner", promptVersion: "planner.v3", kind: "call" });
 
     const replay = client(undefined, { mode: "replay" }, dir);
     const second = await planLesson(replay.c, r);
@@ -198,11 +221,12 @@ describe("record, then replay, on the seed lesson", () => {
     const logs: string[] = [];
     const config = referenceConfig();
     const c = new LlmClient({ config, fixtures: new FixtureStore(FIXTURES_DIR), ledger: new Ledger(join(mkdtempSync(join(tmpdir(), "eve-pl-l-")), "l.jsonl")), log: (m) => logs.push(m) });
-    const out = await planLesson(c, r);
+    // recorded with planner.v2, whose request is kept byte-identical for exactly this comparison
+    const out = await planLesson(c, r, { version: "planner.v2" });
     expect(out).toMatchObject({ ok: true });
     if (!out.ok) return;
-    expect(checkPlan(out.plan, r)).toEqual([]);
-    const call = plannerCall(r);
+    expect(checkPlan(out.plan, r, true, "planner.v2")).toEqual([]);
+    const call = plannerCall(r, true, "planner.v2");
     const fixture = new FixtureStore(FIXTURES_DIR).read(fixtureKey({ promptVersion: call.promptVersion, model: c.modelFor(), system: call.system, input: call.input, temperature: 0.2 }))!;
     expect(fixture).toBeDefined();
     expect(fixture.provenance ?? "recorded").toBe("recorded");

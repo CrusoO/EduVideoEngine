@@ -3,6 +3,6 @@ export * from "./scene/compose";
 export * from "./fallback";
 export * from "./planner";
 export { referencePlan } from "./planner/reference";
-export { loadPrompt } from "./planner/prompt";
+export { loadPassPrompt, loadPrompt } from "./planner/prompt";
 export * from "./envelope";
 export { PROBES, runProbe, probeRequest } from "./probes";
