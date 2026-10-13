@@ -4,18 +4,96 @@
     "defaultModel": "gemini-3.8-flash",
     "resetTimeZone": "America/Los_Angeles",
     "models": {
-      "gemini-3.8-flash": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "thinkingLevel": "low", "expectedReasoningTokens": 1500, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false },
-      "gemini-3.5-flash-lite": { "jsonMode": true, "reasoning": false, "maxOutputTokens": 8192, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false },
-      "gemini-2.5-flash": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "thinkingBudget": null, "expectedReasoningTokens": 1500, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false }
+      "gemini-3.8-flash": {
+        "jsonMode": true,
+        "reasoning": true,
+        "maxOutputTokens": 8192,
+        "thinkingLevel": "low",
+        "expectedReasoningTokens": 1500,
+        "limits": {
+          "rpm": 5,
+          "tpm": 250000,
+          "rpd": 20
+        },
+        "verified": true,
+        "note": "limits read from the owner's Google AI Studio 'Gemini API Rate Limit' page (Free tier, project Default Gemini Project) on 2026-10-14: 5 RPM, 250K TPM (input tokens per minute), 20 RPD. The page counts input tokens only for TPM."
+      },
+      "gemini-3.5-flash-lite": {
+        "jsonMode": true,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": null,
+          "tpm": null,
+          "rpd": null
+        },
+        "verified": false
+      },
+      "gemini-2.5-flash": {
+        "jsonMode": true,
+        "reasoning": true,
+        "maxOutputTokens": 8192,
+        "thinkingBudget": null,
+        "expectedReasoningTokens": 1500,
+        "limits": {
+          "rpm": null,
+          "tpm": null,
+          "rpd": null
+        },
+        "verified": false
+      }
     }
   },
   "groq": {
     "defaultModel": "openai/gpt-oss-120b",
     "resetTimeZone": "UTC",
     "models": {
-      "openai/gpt-oss-120b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false, "note": "numbers are from the 'Free Plan Limits' table of https://console.groq.com/docs/rate-limits read 2026-10-14, whose text also says the table shows Developer-plan base limits: unconfirmed for the free plan until the response headers of a real call agree" },
-      "openai/gpt-oss-20b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false },
-      "qwen/qwen3.8-27b": { "jsonMode": true, "reasoning": true, "maxOutputTokens": 8192, "reasoningEffort": "low", "hideReasoning": true, "expectedReasoningTokens": 600, "limits": { "rpm": 30, "tpm": 8000, "rpd": 1000, "tpd": 200000 }, "verified": false }
+      "openai/gpt-oss-120b": {
+        "jsonMode": true,
+        "reasoning": true,
+        "maxOutputTokens": 8192,
+        "reasoningEffort": "low",
+        "hideReasoning": true,
+        "expectedReasoningTokens": 600,
+        "limits": {
+          "rpm": 30,
+          "tpm": 8000,
+          "rpd": 1000,
+          "tpd": 200000
+        },
+        "verified": false,
+        "note": "numbers are from the 'Free Plan Limits' table of https://console.groq.com/docs/rate-limits read 2026-10-14, whose text also says the table shows Developer-plan base limits: unconfirmed for the free plan until the response headers of a real call agree"
+      },
+      "openai/gpt-oss-20b": {
+        "jsonMode": true,
+        "reasoning": true,
+        "maxOutputTokens": 8192,
+        "reasoningEffort": "low",
+        "hideReasoning": true,
+        "expectedReasoningTokens": 600,
+        "limits": {
+          "rpm": 30,
+          "tpm": 8000,
+          "rpd": 1000,
+          "tpd": 200000
+        },
+        "verified": false
+      },
+      "qwen/qwen3.8-27b": {
+        "jsonMode": true,
+        "reasoning": true,
+        "maxOutputTokens": 8192,
+        "reasoningEffort": "low",
+        "hideReasoning": true,
+        "expectedReasoningTokens": 600,
+        "limits": {
+          "rpm": 30,
+          "tpm": 8000,
+          "rpd": 1000,
+          "tpd": 200000
+        },
+        "verified": false
+      }
     }
   },
   "reference": {
@@ -23,7 +101,17 @@
     "defaultModel": "eu.anthropic.claude-sonnet-4-6",
     "resetTimeZone": "UTC",
     "models": {
-      "eu.anthropic.claude-sonnet-4-6": { "jsonMode": false, "reasoning": false, "maxOutputTokens": 8192, "limits": { "rpm": null, "tpm": null, "rpd": null }, "verified": false }
+      "eu.anthropic.claude-sonnet-4-6": {
+        "jsonMode": false,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": null,
+          "tpm": null,
+          "rpd": null
+        },
+        "verified": false
+      }
     }
   }
 }
