@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   EXPR_OPS,
+  hindiPreview,
   ExprSchema,
   LOCALES,
   SYMPY_NODE,
@@ -121,5 +122,14 @@ describe("claims", () => {
     void _claims;
     void _h;
     expect(seal(rest).hashes.perScene).toEqual(quadraticRoots.hashes.perScene);
+  });
+});
+
+describe("the Hindi rendering test", () => {
+  it("is well formed except that it is not a lesson (one beat, not four to seven), entirely draft, and only for rendering", () => {
+    const r = validateBundle(hindiPreview);
+    expect(r.issues.map((i) => `${i.path}: ${i.message}`)).toEqual(["plan.beats: a lesson has 4 to 7 beats"]);
+    expect(hindiPreview.script.every((s) => s.status === "draft")).toBe(true);
+    expect(hindiPreview.skillId).toMatch(/^TEST\./);
   });
 });

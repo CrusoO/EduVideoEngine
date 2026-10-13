@@ -7,3 +7,4 @@ export { quadraticRoots, buildQuadraticRoots, expressions as quadraticExpression
 export * from "./json-schema";
 export * from "./locales";
 export * from "./verbalise";
+export { hindiPreview } from "./fixtures/hindi-preview";
