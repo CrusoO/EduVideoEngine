@@ -134,7 +134,7 @@ describe("resolve: refuses instead of guessing", () => {
 
 // ---- properties: hold for any audio durations ---------------------------------------------------------------
 
-const durations = fc.array(fc.integer({ min: 200, max: 12000 }), { minLength: bundle.script.length, maxLength: bundle.script.length });
+const durations = fc.array(fc.oneof({ weight: 1, arbitrary: fc.constantFrom(1, 2, 50) }, { weight: 4, arbitrary: fc.integer({ min: 1, max: 12000 }) }), { minLength: bundle.script.length, maxLength: bundle.script.length });
 const tracksFrom = (ds: number[]) => bundle.script.map((s, i) => track(s.id, ds[i]!));
 const cfg = { numRuns: 200 };
 
@@ -185,7 +185,7 @@ describe("resolve: properties for any audio durations", () => {
 
   it("locality: changing the audio of the last scene never moves anything in the earlier scenes", () => {
     fc.assert(
-      fc.property(durations, fc.integer({ min: 200, max: 12000 }), (ds, extra) => {
+      fc.property(durations, fc.integer({ min: 1, max: 12000 }), (ds, extra) => {
         const before = resolve(bundle, tracksFrom(ds));
         const ds2 = [...ds];
         ds2[bundle.script.length - 1] = extra;

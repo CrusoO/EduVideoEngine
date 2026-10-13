@@ -29,16 +29,38 @@ export const TimelineEvent = z
   })
   .strict();
 
-export const Timeline = z
+/** A point in lesson time where playback freezes for a question. A position, not a duration (the player decides how long). */
+export const PausePoint = z.object({ id: z.string(), atMs: z.number().int().min(0), sceneId: z.string(), sentenceId: z.string() }).strict();
+
+/** Every tunable the resolver used. Recorded in the Timeline so a timing can be reproduced and tuned against viewing data. */
+export const ResolveOptions = z
   .object({
-    bundleId: z.string(),
-    totalMs: z.number().int().positive(),
-    scenes: z.array(z.object({ sceneId: z.string(), startMs: z.number().int().min(0), endMs: z.number().int().positive() }).strict()),
-    audio: z.array(z.object({ sentenceId: z.string(), startMs: z.number().int().min(0), endMs: z.number().int().positive() }).strict()),
-    events: z.array(TimelineEvent),
+    sentenceGapMs: z.number().int().min(0),
+    sceneTailMs: z.number().int().min(0),
+    minActionMs: z.object({ reveal: z.number().int().min(1), highlight: z.number().int().min(1), move: z.number().int().min(1), morph: z.number().int().min(1), dim: z.number().int().min(1) }).strict(),
   })
   .strict();
 
+export const Timeline = z
+  .object({
+    bundleId: z.string(),
+    /** hashes.bundle of the bundle this was resolved from. */
+    bundleHash: z.string().regex(/^[0-9a-f]{64}$/),
+    totalMs: z.number().int().positive(),
+    scenes: z.array(z.object({ sceneId: z.string(), startMs: z.number().int().min(0), endMs: z.number().int().positive() }).strict()),
+    audio: z.array(z.object({ sentenceId: z.string(), startMs: z.number().int().min(0), endMs: z.number().int().positive(), trackHash: z.string() }).strict()),
+    events: z.array(TimelineEvent),
+    pausePoints: z.array(PausePoint),
+    /** Non-fatal findings for the assurance plane. stretchedScenes: a hold outlasted the speech, so the scene has silent time. */
+    diagnostics: z.object({ stretchedScenes: z.array(z.object({ sceneId: z.string(), extraMs: z.number().int().positive() }).strict()) }).strict(),
+    provenance: z.object({ resolverVersion: z.string(), options: ResolveOptions }).strict(),
+    /** Hash of everything above (canonical JSON of the Timeline without this field), pausePoints included. */
+    hash: z.string().regex(/^[0-9a-f]{64}$/),
+  })
+  .strict();
+
+export type PausePoint = z.infer<typeof PausePoint>;
+export type ResolveOptions = z.infer<typeof ResolveOptions>;
 export type AudioTrack = z.infer<typeof AudioTrack>;
 export type TimelineEvent = z.infer<typeof TimelineEvent>;
 export type Timeline = z.infer<typeof Timeline>;
