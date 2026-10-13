@@ -11,6 +11,11 @@
 The free tiers may use prompts to improve the provider's products, and people may read them (ADR 0022). So a prompt holds only content the owner wrote or that is openly licensed (the licence allow-list in `config/licences.json`). No student data, no personal data, no copied textbook text.
 Before every live call the client scans the system prompt and the request for email addresses, phone numbers and key shapes and refuses to send if it finds one.
 
+## Network filters and key transport
+* **Never bypass a network filter.** A corporate filter currently returns 403 to Node for `api.groq.com` while `curl` gets 200. That is a control. Groq stays unrun until IT allows it for `node.exe` or the step is run elsewhere (ADR 0040).
+* If a curl transport is ever approved, the key travels by file or standard input, never as a command-line argument (other programs can read arguments). It sits behind the same adapter and needs an ADR.
+* Provider terms: Gemini free-tier prompts may be read by humans; Groq may log inference for up to 30 days. Only own or openly licensed content goes into prompts.
+
 ## Checks
 * `pnpm secrets:check` scans every file git knows about that is not ignored (tracked and untracked), the `fixtures/` folder, and the added lines of the last 200 commits, for Google, Groq and AWS key shapes and for any `.env` file in git. It runs in the pre-commit hook (staged files).
   A key found in history is reported with its commit. The tool never rewrites history: that needs the owner's decision.

@@ -44,3 +44,23 @@ Copy `.env.example` to `.env` (git ignores it) and fill in what you use. Six var
 
 Limits and model quirks are in `model-profiles.json`, not in variables. In `record` or `live` mode the loader refuses to run while a model's `rpm` or `rpd` is `null`: fill them from the provider's official page. Keys: see `docs/SECURITY.md`.
 Useful commands: `pnpm llm:models` (which profile ids exist for your key), `pnpm llm:smoke`, `pnpm llm:probes`, `pnpm plan:lesson <skillId>`, `pnpm llm:usage`, `pnpm secrets:check`.
+
+### Provider status (2026-10-14)
+| Provider / model | Limits | Verified | State |
+|---|---|---|---|
+| Gemini `gemini-3.8-flash` (primary) | 5 RPM, 250K TPM, 20 RPD | yes (AI Studio, free tier) | one smoke recorded; often answers 503 "high demand"; probes not yet run |
+| Gemini `gemini-2.5-flash`, `gemini-3.5-flash-lite` | unknown | no | live calls refused until limits are filled |
+| Groq `openai/gpt-oss-120b` (optional backup) | 30 RPM, 8K TPM, 1000 RPD, 200K TPD | no (Developer-plan table) | blocked: a network filter returns 403 to Node (ADR 0040) |
+| Sonnet 4.6 (reference) | n/a | n/a | read-only recordings, replay only |
+
+## How the pedagogy layer works (CO-2)
+Lessons follow an **arc** (problem first, concept first, misconception first). Each beat fills a **slot**, has one speakable **learning goal**, and may carry **claims** that depend on each other. Every sentence has a **role** (goal, claim, link, transition, question). Seven pure-function **gates** (G1 to G7) check order, delivery time, visual cues, arc, roles, prerequisites and core coverage. Rules: `docs/PEDAGOGY.md`; decisions: ADR 0027 to 0041.
+
+    pnpm verify:gate          # clean lesson must pass; every corrupted copy must be rejected
+    pnpm verify:gate --list   # (WP2b) each corruption and the gate that must reject it
+
+## Adding a lesson or a record
+See `docs/AUTHORING.md` for the templates (concept claim, misconception, practice question, prerequisites) and the author-minutes log.
+
+## Known limits
+Code checks structure and every number on screen, not teaching quality. It cannot check that a sentence paraphrases its claim faithfully, or that an author-declared step link is the best one to teach; only direct prerequisites are checked. Nothing is called "reviewed" until a sentence-level approval gate exists.
