@@ -239,3 +239,11 @@
   border: 0;
   background: linear-gradient(var(--c), var(--c)) center / 100% 4px no-repeat;
 }
+/* Heights by size when nothing lays the shape out (the solver sets the real box inline). */
+.eve-shape-size-s { height: 48px; }
+.eve-shape-size-m { height: 96px; }
+.eve-shape-size-l { height: 144px; }
+.eve-shape-line { height: 24px; }
+.eve-shape-circle.eve-shape-size-s { width: 48px; }
+.eve-shape-circle.eve-shape-size-m { width: 96px; }
+.eve-shape-circle.eve-shape-size-l { width: 144px; }

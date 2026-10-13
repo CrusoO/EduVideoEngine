@@ -290,7 +290,7 @@ describe("arrowCallout and shape", () => {
     const s = componentFor("shape");
     const el = document.createElement("div");
     s.render(el, { kind: "circle", size: "l", color: "green", label: "Total" } as never, 0, ctx({ events: [ev("draw", 1000)] }));
-    expect(el.className).toBe("eve-obj eve-shape eve-shape-circle eve-c-green");
+    expect(el.className).toBe("eve-obj eve-shape eve-shape-circle eve-shape-size-l eve-c-green");
     expect(el.textContent).toBe("Total");
     expect(el.style.visibility).toBe("hidden");
     s.render(el, { kind: "circle", size: "l", color: "green", label: "Total" } as never, 1400, ctx({ events: [ev("draw", 1000)] }));

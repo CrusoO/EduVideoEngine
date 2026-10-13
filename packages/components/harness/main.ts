@@ -2,6 +2,7 @@ import "../src/fonts.css";
 import "katex/dist/katex.min.css";
 import "../src/styles.css";
 import { katexMath } from "../src/build";
+import { colorTheme } from "../../player/theme/palette";
 import { componentFor, type ObjectEvent, type Rect, type RenderContext } from "../src";
 import { CASES, type Case } from "./cases";
 
@@ -42,6 +43,7 @@ function draw(t: number) {
     events: (c.events[id] ?? []) as ObjectEvent[],
     rectOf,
     math: katexMath,
+    colors: colorTheme(c.termColors),
   });
   // Two passes: flow objects first, so highlights can measure the objects they ring.
   for (const pass of ["flow", "overlay"] as const) {

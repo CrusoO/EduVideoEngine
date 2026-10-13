@@ -23,7 +23,7 @@ export const shape: ComponentModule<ShapeProps> = {
   propsSchema: ShapeProps as never,
   render(el, props, t, ctx) {
     const p = ShapeProps.parse(props);
-    el.className = `eve-obj eve-shape eve-shape-${p.kind} eve-c-${p.color}`;
+    el.className = `eve-obj eve-shape eve-shape-${p.kind} eve-shape-size-${p.size} eve-c-${p.color}`;
     el.setAttribute("lang", ctx.locale);
     if (el.textContent !== (p.label ?? "")) el.textContent = p.label ?? "";
     applyState(el, objectStateAt(ctx.events, t, ctx.reduceMotion));

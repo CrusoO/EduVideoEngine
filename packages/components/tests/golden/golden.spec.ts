@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const CASES = ["scene1-predict", "scene3-worked", "scene4-graph", "hindi-text"] as const;
+const CASES = ["scene1-predict", "scene3-worked", "scene4-graph", "graph-drawing", "equations-coloured", "numberline", "shapes", "hindi-text"] as const;
 const WIDTHS = [360, 1280] as const;
 
 async function open(page: Page, name: string, width: number, t?: number) {
