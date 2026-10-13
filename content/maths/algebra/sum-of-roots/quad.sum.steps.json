@@ -93,21 +93,24 @@
       "id": "r1",
       "role": "root",
       "expr": "quad.root1",
-      "note": "The first root."
+      "note": "The first root.",
+      "stepKind": "rearrange"
     },
     {
       "id": "r2",
       "role": "root",
       "expr": "quad.root2",
-      "note": "The second root."
+      "note": "The second root.",
+      "stepKind": "rearrange"
     },
     {
       "id": "s1",
       "role": "sum",
       "expr": "quad.total",
-      "note": "Add the two roots."
+      "note": "Add the two roots.",
+      "stepKind": "evaluate"
     }
   ],
   "sourceNote": "Written for this project as the worked solution of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "468cb61993388dbc2318abc05456b6994eeeb01df59b7c6c93bcc851d72e4819"
+  "hash": "3a0b9f9acb606fe72f97f438c074cbd8a3fce4b20cef4c86417a95dc7bdaaca5"
 }

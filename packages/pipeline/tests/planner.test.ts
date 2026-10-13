@@ -5,7 +5,7 @@ import { join, resolve as resolvePath } from "node:path";
 import { FIXTURES_DIR, FakeAdapter, FixtureStore, Ledger, LlmClient, fixtureKey, referenceConfig, testConfig, type LLMAdapter, type LlmConfig, type LlmRequest, type LlmResponse } from "@eve/adapters";
 import { loadStore, retrieve } from "@eve/content";
 import { LIMITS, LessonPlan } from "@eve/schema";
-import { PLANNER_PROMPT_VERSION, checkPlan, loadPassPrompt, loadPrompt, missingForPlanning, planLesson, plannerCall, plannerInput, referencePlan, templateFor, type PlannedBeat } from "../index";
+import { PLANNER_PROMPT_VERSION, checkPlan, legacyView, loadPassPrompt, loadPrompt, missingForPlanning, planLesson, plannerCall, plannerInput, referencePlan, templateFor, type PlannedBeat } from "../index";
 
 const root = resolvePath(__dirname, "..", "..", "..");
 const { records } = loadStore(join(root, "content"));
@@ -42,7 +42,9 @@ describe("what the model is given", () => {
     expect(input.template).toBe("problem-first");
     expect(input.locale).toBe("en");
     expect(input.limits).toEqual({ beats: LIMITS.beats, beatMaxSeconds: LIMITS.durationS.beatMax, lessonTargetSeconds: LIMITS.durationS.lessonTargetWarn, lessonHardMaxSeconds: LIMITS.durationS.lessonHardMax });
-    expect(input.records.map((x: { id: string }) => x.id)).toEqual(r.records.map((x) => x.id));
+    // the CO-2 record kinds are hidden from planner.v2 and v3, so the recorded request stays byte-identical (ADR 0039)
+    expect(input.records.map((x: { id: string }) => x.id)).toEqual(legacyView(r).records.map((x) => x.id));
+    expect(r.records.length).toBeGreaterThan(input.records.length);
     expect(input.patterns.map((x: { id: string }) => x.id)).toHaveLength(6);
     expect(input.patterns.find((x: { id: string }) => x.id === "hops-on-number-line").sources).toEqual(["quad.sum.steps"]);
   });

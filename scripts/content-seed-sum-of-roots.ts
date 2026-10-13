@@ -7,7 +7,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { sealRecord, type ContentRecord } from "../packages/content/src";
-import { add, eq, mul, named, num, pow, sub, sym } from "../packages/schema/src";
+import { add, div, eq, mul, named, neg, num, pow, sub, sym } from "../packages/schema/src";
 
 const x = sym("x");
 const dir = resolve(__dirname, "..", "content", "maths", "algebra", "sum-of-roots");
@@ -18,6 +18,7 @@ const note = (what: string) => `Written for this project as ${what} of the sum-o
 const quadEq = eq(add(sub(named("t.square", pow(x, num(2))), named("t.linear", mul(num(5), x))), named("t.constant", num(6))), num(0));
 const fn = add(sub(pow(x, num(2)), mul(num(5), x)), num(6));
 
+const general = add(add(mul(sym("a"), pow(x, num(2))), mul(sym("b"), x)), sym("c"));
 const records: Array<Omit<ContentRecord, "hash">> = [
   {
     ...base,
@@ -51,9 +52,9 @@ const records: Array<Omit<ContentRecord, "hash">> = [
     },
     steps: [
       { id: "t1", role: "transform", expr: "quad.factored", note: "Factorise the equation." },
-      { id: "r1", role: "root", expr: "quad.root1", note: "The first root." },
-      { id: "r2", role: "root", expr: "quad.root2", note: "The second root." },
-      { id: "s1", role: "sum", expr: "quad.total", note: "Add the two roots." },
+      { id: "r1", role: "root", expr: "quad.root1", note: "The first root.", stepKind: "rearrange" },
+      { id: "r2", role: "root", expr: "quad.root2", note: "The second root.", stepKind: "rearrange" },
+      { id: "s1", role: "sum", expr: "quad.total", note: "Add the two roots.", stepKind: "evaluate" },
     ],
     sourceNote: note("the worked solution"),
   },
@@ -78,6 +79,63 @@ const records: Array<Omit<ContentRecord, "hash">> = [
       { id: "g.coefficient", term: "coefficient", definition: "The number that multiplies the unknown." },
     ],
     sourceNote: note("the glossary"),
+  },
+  // CO-2 records (ADR 0028, 0033, 0035): the skill, two concept claims, and one practice question of each type.
+  {
+    ...base,
+    id: "quad.sum.skill",
+    kind: "skill",
+    text: "Find the sum of the roots of a quadratic equation from its coefficients.",
+    expressions: {},
+    prerequisiteSkillIds: ["MATH.ALG.QUAD.FACTORISE"],
+    assumableAtLevels: ["class-10"],
+    sourceNote: note("the skill description"),
+  },
+  {
+    ...base,
+    id: "quad.sum.claim.root",
+    kind: "conceptClaim",
+    text: "A root of an equation is a value of the unknown that makes the equation true.",
+    expressions: {},
+    claimMode: "grounded",
+    importance: "support",
+    sourceNote: note("the definition of a root"),
+  },
+  {
+    ...base,
+    id: "quad.sum.claim.vieta",
+    kind: "conceptClaim",
+    text: "For any quadratic {expr:quad.general}, the sum of the roots is {expr:quad.rule}.",
+    expressions: { "quad.general": eq(general, num(0)), "quad.rule": eq(sym("S"), neg(div(sym("b"), sym("a")))) },
+    claimMode: "computed",
+    importance: "core",
+    dependsOn: ["quad.sum.claim.root"],
+    claim: { kind: "sum-of-roots", equation: "quad.general", equals: "quad.rule" },
+    sourceNote: note("the rule for the sum of the roots"),
+  },
+  {
+    ...base,
+    id: "quad.sum.q.recall",
+    kind: "practiceQuestion",
+    text: "What do the roots of {expr:quad.q.eq} add up to?",
+    expressions: { "quad.q.eq": eq(add(sub(pow(x, num(2)), mul(num(7), x)), num(10)), num(0)), "quad.q.answer": eq(sym("S"), num(7)) },
+    questionType: "recall",
+    question: { problem: "quad.q.eq", answer: "quad.q.answer" },
+    humanApproved: false,
+    sourceNote: note("a recall question"),
+  },
+  {
+    ...base,
+    id: "quad.sum.q.reasoning",
+    kind: "practiceQuestion",
+    text: "Two quadratics have the same first two coefficients but different last numbers. What can you say about the sum of their roots?",
+    expressions: {},
+    questionType: "reasoning",
+    options: ["The sums are the same, because the rule uses only the first two coefficients.", "The sums are different, because the last number changes the roots.", "The sums are the same only if the roots are whole numbers."],
+    correctOption: 0,
+    rationaleClaimIds: ["quad.sum.claim.vieta"],
+    humanApproved: false,
+    sourceNote: note("a reasoning question"),
   },
 ];
 

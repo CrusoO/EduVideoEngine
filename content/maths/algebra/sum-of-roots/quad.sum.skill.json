@@ -1,0 +1,18 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.skill",
+  "kind": "skill",
+  "text": "Find the sum of the roots of a quadratic equation from its coefficients.",
+  "expressions": {},
+  "prerequisiteSkillIds": [
+    "MATH.ALG.QUAD.FACTORISE"
+  ],
+  "assumableAtLevels": [
+    "class-10"
+  ],
+  "sourceNote": "Written for this project as the skill description of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "31a056b31469642abd04fa905f0d0abdb5b1b8d2b47076da0b7f66f91fffece2"
+}

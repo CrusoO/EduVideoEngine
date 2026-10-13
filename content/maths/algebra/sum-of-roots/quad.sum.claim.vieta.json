@@ -1,0 +1,90 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.claim.vieta",
+  "kind": "conceptClaim",
+  "text": "For any quadratic {expr:quad.general}, the sum of the roots is {expr:quad.rule}.",
+  "expressions": {
+    "quad.general": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "a"
+            },
+            "b": {
+              "op": "pow",
+              "a": {
+                "op": "sym",
+                "name": "x"
+              },
+              "b": {
+                "op": "num",
+                "n": 2
+              }
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "b"
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "sym",
+          "name": "c"
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.rule": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "S"
+      },
+      "b": {
+        "op": "neg",
+        "a": {
+          "op": "div",
+          "a": {
+            "op": "sym",
+            "name": "b"
+          },
+          "b": {
+            "op": "sym",
+            "name": "a"
+          }
+        }
+      }
+    }
+  },
+  "claimMode": "computed",
+  "importance": "core",
+  "dependsOn": [
+    "quad.sum.claim.root"
+  ],
+  "claim": {
+    "kind": "sum-of-roots",
+    "equation": "quad.general",
+    "equals": "quad.rule"
+  },
+  "sourceNote": "Written for this project as the rule for the sum of the roots of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "11bb5e249558bf5046980d6488bf2ecc00f8db2df3a366434d2aa90572319812"
+}

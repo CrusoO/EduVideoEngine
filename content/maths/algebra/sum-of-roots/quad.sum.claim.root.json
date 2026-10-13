@@ -1,0 +1,14 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.claim.root",
+  "kind": "conceptClaim",
+  "text": "A root of an equation is a value of the unknown that makes the equation true.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "sourceNote": "Written for this project as the definition of a root of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "fc3c5c54a8b570b8b2712340efc43a9614ddecc5b109de1ee2778bc980b511fb"
+}

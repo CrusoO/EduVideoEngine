@@ -1,5 +1,5 @@
 import { LlmClient, type JsonSchema } from "@eve/adapters";
-import type { Retrieval } from "@eve/content";
+import { LEGACY_KINDS, type Retrieval } from "@eve/content";
 import { PATTERNS, isTextHeavy, patternSources, usablePatterns } from "@eve/patterns";
 import { BEAT_KINDS, LIMITS, LessonPlan } from "@eve/schema";
 import { z } from "zod";
@@ -46,7 +46,18 @@ export type PlanResult =
   | { ok: false; reason: "invalid"; errors: string[] };
 
 /** The plain-language reasons the records cannot support a lesson at all. Checked before any request is made: no model call is spent on records that cannot work. */
+/**
+ * planner.v2 and planner.v3 know four record kinds. The CO-2 kinds (skill, conceptClaim, practiceQuestion) and their expressions join in the next planner
+ * version (ADR 0039); until then they are hidden from every part of the planner, so the v2 request stays byte-identical to the recorded one.
+ */
+export function legacyView(r: Retrieval): Retrieval {
+  const kept = r.records.filter((rec) => (LEGACY_KINDS as readonly string[]).includes(rec.kind));
+  if (kept.length === r.records.length) return r;
+  return { ...r, records: kept, expressions: Object.assign({}, ...kept.map((rec) => rec.expressions)), byKind: { ...r.byKind, skill: [], conceptClaim: [], practiceQuestion: [] } };
+}
+
 export function missingForPlanning(r: Retrieval): string[] {
+  r = legacyView(r);
   const missing: string[] = [];
   if (r.records.length === 0) return [`no records for ${r.skillId} in ${r.locale}`];
   if (r.unresolved.length > 0) missing.push(`expressions the records refer to but no record defines: ${r.unresolved.join(", ")}`);
@@ -62,6 +73,7 @@ export const templateFor = (prerequisitesSolid: boolean) => (prerequisitesSolid 
 
 /** The INPUT section: the records, the usable patterns and the limits. Plain data, stable key order, nothing but owner-written content. The locale is the language ("en"), as the system prompt expects. */
 export function plannerData(r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION) {
+  r = legacyView(r);
   const usable = usablePatterns(r);
   return (
     {
@@ -118,6 +130,7 @@ export const PLANNER_JSON_SCHEMA: JsonSchema = {
  * beat, at least one worked beat, and the template's opening.
  */
 export function checkPlan(plan: { template: string; beats: readonly PlannedBeat[] }, r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION): string[] {
+  r = legacyView(r);
   const out: string[] = [];
   const bad = (m: string) => out.push(m);
   const { beats } = plan;
@@ -180,6 +193,7 @@ export function toLessonPlan(plan: LessonPlanWithPatterns): LessonPlan {
 
 /** The call the planner makes, without the schema checks: the prompt file, its version and the input. Shared by the pass and by the tool that authors a stand-in. */
 export function plannerCall(r: Retrieval, prerequisitesSolid = true, version: string = PLANNER_PROMPT_VERSION) {
+  r = legacyView(r);
   const pass = loadPassPrompt(version);
   const input = buildEnvelope({
     task: pass.task,
@@ -198,6 +212,7 @@ export function plannerCall(r: Retrieval, prerequisitesSolid = true, version: st
  * skill cost no request. A model that says insufficient_content is believed and reported. Anything it returns is validated by our own schema and rules.
  */
 export async function planLesson(client: LlmClient, r: Retrieval, opts: { prerequisitesSolid?: boolean; version?: string } = {}): Promise<PlanResult> {
+  r = legacyView(r);
   const version = opts.version ?? PLANNER_PROMPT_VERSION;
   const solid = opts.prerequisitesSolid ?? true;
   const missing = missingForPlanning(r);

@@ -1,0 +1,23 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.q.reasoning",
+  "kind": "practiceQuestion",
+  "text": "Two quadratics have the same first two coefficients but different last numbers. What can you say about the sum of their roots?",
+  "expressions": {},
+  "questionType": "reasoning",
+  "options": [
+    "The sums are the same, because the rule uses only the first two coefficients.",
+    "The sums are different, because the last number changes the roots.",
+    "The sums are the same only if the roots are whole numbers."
+  ],
+  "correctOption": 0,
+  "rationaleClaimIds": [
+    "quad.sum.claim.vieta"
+  ],
+  "humanApproved": false,
+  "sourceNote": "Written for this project as a reasoning question of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "37528509f4c84c742f92b8c3ffe52bdcbfc36debcce4fde3db7f62f1e6cbc6ed"
+}

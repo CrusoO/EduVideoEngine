@@ -36,12 +36,12 @@ describe("the seed records", () => {
   it("validate with the real verifier", async () => {
     const store = await checkStore(root);
     expect(store.problems).toEqual([]);
-    expect(store.records.length).toBe(5);
+    expect(store.records.length).toBe(10);
   }, 120_000);
   it("are retrievable in a fixed order with nothing unresolved", () => {
     const { records } = loadStore(root);
     const r = retrieve(records, "MATH.ALG.QUAD.SUM_OF_ROOTS", "en-IN");
-    expect(r.records.map((c) => c.kind)).toEqual(["passage", "passage", "solutionSteps", "misconception", "glossary"]);
+    expect(r.records.map((c) => c.kind)).toEqual(["passage", "passage", "solutionSteps", "misconception", "glossary", "skill", "conceptClaim", "conceptClaim", "practiceQuestion", "practiceQuestion"]);
     expect(r.unresolved).toEqual([]);
     expect(r.termColors["t.square"]).toBe("blue");
     expect(retrieve(records, "MATH.ALG.QUAD.SUM_OF_ROOTS", "hi-IN").records).toEqual([]);

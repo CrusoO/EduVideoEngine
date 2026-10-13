@@ -1,0 +1,69 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.q.recall",
+  "kind": "practiceQuestion",
+  "text": "What do the roots of {expr:quad.q.eq} add up to?",
+  "expressions": {
+    "quad.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "pow",
+            "a": {
+              "op": "sym",
+              "name": "x"
+            },
+            "b": {
+              "op": "num",
+              "n": 2
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 7
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 10
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "S"
+      },
+      "b": {
+        "op": "num",
+        "n": 7
+      }
+    }
+  },
+  "questionType": "recall",
+  "question": {
+    "problem": "quad.q.eq",
+    "answer": "quad.q.answer"
+  },
+  "humanApproved": false,
+  "sourceNote": "Written for this project as a recall question of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "abb9ee99b9136feeb7cfd88b6a01e82883ad50c6093f97b3f818902a0c6fd8d2"
+}
