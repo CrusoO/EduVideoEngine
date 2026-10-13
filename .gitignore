@@ -8,3 +8,4 @@ playwright-report
 reports/
 .measure*/
 test-results/
+tools/piper/

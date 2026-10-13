@@ -178,6 +178,9 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
+      vite-node:
+        specifier: 2.1.9
+        version: 2.1.9(@types/node@22.20.5)
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@22.20.5)(jsdom@25.0.1)
@@ -260,6 +263,19 @@ importers:
       fast-check:
         specifier: 3.23.1
         version: 3.23.1
+
+  packages/voice:
+    dependencies:
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
+    devDependencies:
+      '@eve/resolver':
+        specifier: workspace:*
+        version: link:../resolver
 
 packages:
 
@@ -3009,7 +3025,7 @@ snapshots:
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 1.1.2
-      vite: 5.4.21(@types/node@22.20.5)
+      vite: 5.4.11(@types/node@22.20.5)
     transitivePeerDependencies:
       - '@types/node'
       - less

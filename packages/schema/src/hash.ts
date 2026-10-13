@@ -51,3 +51,6 @@ export function computeHashes(bundle: Omit<LessonBundle, "hashes">): LessonBundl
 export function seal(bundle: Omit<LessonBundle, "hashes">): LessonBundle {
   return { ...bundle, hashes: computeHashes(bundle) };
 }
+
+/** SHA-256 of raw bytes (voice files), hex. */
+export const sha256Bytes = (bytes: Uint8Array): string => bytesToHex(sha256(bytes));
