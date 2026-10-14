@@ -15,7 +15,7 @@ export const TRANSITION_MAX_WORDS = 8;
  *  - a claim sentence carries a claim of its own beat and uses only placeholders of that claim;
  *  - a link sentence cites two different claims joined by a dependsOn edge;
  *  - a question sentence cites a practice question and carries its text.
- * Numbers written as words in prose cannot be matched to a claim by code and are not checked (docs/conformance-co2.md, question 8).
+ * Numbers written as words in prose cannot be matched to a claim by code and are not checked (docs/gate-reports/co-2-conformance.md, question 8).
  */
 export function g5Role(ctx: GateContext): Finding[] {
   const out: Finding[] = [];

@@ -62,7 +62,7 @@ export function g1Coherence(ctx: GateContext): Finding[] {
   }
 
   // Beats respect the prerequisite skills of the skills they teach. A hook beat only poses the problem, so it may come before the recap of a prerequisite (the
-  // arcs put the hook first): hook beats are not held to this rule (docs/conformance-co2.md, question 7).
+  // arcs put the hook first): hook beats are not held to this rule (docs/gate-reports/co-2-conformance.md, question 7).
   const beatIndex = new Map(ctx.bundle.plan.beats.map((b, i) => [b.id, i] as const));
   const beatSkills = (sourceIds: readonly string[]) => new Set(sourceIds.flatMap((r) => (ctx.recordSkill[r] ? [ctx.recordSkill[r]!] : [])));
   for (const beat of ctx.bundle.plan.beats.filter((b) => b.beatKind !== "hook")) {

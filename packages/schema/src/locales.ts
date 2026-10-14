@@ -13,7 +13,7 @@ export type LocaleSpec = {
   status: "active" | "preview";
   /**
    * The closed list of transition sentences a lesson may use (AM-7, gate G5): 8 words or fewer, no digits, no placeholders. A sentence not on the list is
-   * not a transition. `proposed` = written by the engineers and waiting for the owner's approval (docs/conformance-co2.md, question 3); `none` = no list yet
+   * not a transition. `proposed` = written by the engineers and waiting for the owner's approval (docs/gate-reports/co-2-conformance.md, question 3); `none` = no list yet
    * (Hindi and Nepali wait for native reviewers, so a lesson in those languages cannot use a transition).
    */
   transitions: readonly string[];
