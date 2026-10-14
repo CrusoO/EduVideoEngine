@@ -16,7 +16,7 @@ Run everything from the repository root.
     pnpm exec tsc --noEmit -p tsconfig.json   # type check (pnpm typecheck does the same)
     pnpm secrets:check                        # no key may be in a file or in the last commits
     pnpm verify:gate                          # the clean lessons must pass; every corrupted copy must be rejected
-    pnpm verify:gate --list                   # each of the 28 corruptions and the gate that must reject it
+    pnpm verify:gate --list                   # each of the 28 corruptions (7 maths, 21 pedagogy) and the gate that must reject it
     pnpm patterns:report                      # the variety rule per arc and lesson length
     pnpm docs:check                           # the doc set is complete and the frozen prompts are unchanged
     pnpm mutate                               # Stryker on the main configuration, then the 90-per-file floor
@@ -52,4 +52,4 @@ Useful commands: `pnpm llm:models` (which profile ids exist for your key), `pnpm
 | Sonnet 4.6 (reference) | n/a | n/a | read-only recordings, replay only |
 
 ## Known limits
-Code checks structure and every number on screen, not teaching quality. It cannot check that a sentence paraphrases its claim faithfully, or that an author-declared step link is the best one to teach; only direct prerequisites are checked. Nothing is called "reviewed" until a sentence-level approval gate exists.
+A function graph counts toward gate G3(c) through the claimCode checks structure and every number on screen, not teaching quality. It cannot check that a sentence paraphrases its claim faithfully, or that an author-declared step link is the best one to teach; only direct prerequisites are checked. Nothing is called "reviewed" until a sentence-level approval gate exists.

@@ -54,7 +54,7 @@ A claim sentence matches its claim; a link sentence matches either of its two cl
 | G6 Prerequisites | every direct prerequisite recapped, linked or assumed at an allowed level | no | fail |
 | G7 Core coverage | every core claim in the bundle has a claim sentence | no | fail |
 
-Each gate has at least one deliberately corrupted lesson it must reject (28 corruptions with the 7 maths ones: the 27 of AM-15 and C21 of ADR 0049; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
+Each gate has at least one deliberately corrupted lesson it must reject (28 corruptions: 7 maths and 21 pedagogy, the 27 of AM-15 plus C21 of ADR 0049; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
 
 ## What code can and cannot check
 * Can: order, coverage, anchors, closed lists, numbers on screen (verifier), step transformations (verifier).
