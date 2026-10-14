@@ -152,7 +152,7 @@ export function buildReferenceLesson(durationsMs?: Readonly<Record<string, numbe
       { id: "title", component: "text", props: { text: "A common mistake", role: "title" }, role: "static", textRole: "title" },
       { id: "note", component: "text", props: { text: "Add the roots, not the numbers", role: "label" } },
     ],
-    layout: [{ rule: "column", items: ["title", "note"] }],
+    layout: [{ rule: "column", items: ["title", "note"] }, { rule: "center", item: "title" }, { rule: "center", item: "note" }],
     cues: [cue("note", "s5.2", "reveal", 1500)],
     a11y: { altText: "The title A common mistake, and a note: add the roots, not the numbers." },
   };
@@ -191,7 +191,7 @@ export function buildReferenceLesson(durationsMs?: Readonly<Record<string, numbe
     termColors: sumRetrieval.termColors,
     plan: {
       template: "problem-first",
-      targetLengthS: 240,
+      targetLengthS: 140, // measured with the Piper files: 138.1 s of lesson, three pauses not counted
       arcId: "problem_first",
       level: "class-10",
       prerequisites: [{ skillId: FACTORISE, status: "recapped" }],

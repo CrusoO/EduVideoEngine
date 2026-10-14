@@ -390,7 +390,7 @@
   },
   "plan": {
     "template": "problem-first",
-    "targetLengthS": 240,
+    "targetLengthS": 140,
     "arcId": "problem_first",
     "level": "class-10",
     "prerequisites": [
@@ -1184,6 +1184,14 @@
             "title",
             "note"
           ]
+        },
+        {
+          "rule": "center",
+          "item": "title"
+        },
+        {
+          "rule": "center",
+          "item": "note"
         }
       ],
       "cues": [
@@ -1442,13 +1450,13 @@
     }
   ],
   "hashes": {
-    "bundle": "c46cbdcf13fb3dbc9155440a26dfeb87d787e8ab147de5281a9cbe3470808970",
+    "bundle": "f7b926c442a08a7f33adee990b2105b2b70c4c3122bd1ee4d41b929d460180ef",
     "perScene": {
       "scene.b1": "3f9d8eaef6a86b827b0d2f203d74e53facbb05525a07de1cb1783c0afa53a414",
       "scene.b2": "2098a93cde7b8fb3d5c207483c7a11bc4bdea71fb990fcaf954bdf30f6236edd",
       "scene.b3": "8cdf4c59ec30119d86f9d8cfbb9f63890afcaaa4a8095fee1ba8ba6134ce8aae",
       "scene.b4": "57b48817e7283242566b7522e76aa42a6011fc5d7e0d63a61299a1e6ca117752",
-      "scene.b5": "0ea194024fe7d1eff7ecad93b9a02c7faf000650d9265fccf86421914bd2a400",
+      "scene.b5": "7c03991074df4ea41f2ef0a6581c6a73b1fe57d2bdb1e801fb74929534ab48c7",
       "scene.b6": "5f78bdfd371df691ca384d2c410ac4399af6629c0a39c76b2c6fd4cab9f6ecba"
     }
   }

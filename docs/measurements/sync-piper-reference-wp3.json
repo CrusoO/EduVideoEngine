@@ -1,0 +1,21 @@
+{
+  "lessonMs": 138127,
+  "reveals": 16,
+  "seen": 16,
+  "latenessMs": {
+    "min": 0.33333333333575865,
+    "p50": 4.333333333328483,
+    "p95": 19.666666666671517,
+    "max": 19.666666666671517
+  },
+  "frames": 8319,
+  "frameGapMs": {
+    "mean": 16.655229622503978,
+    "p95": 31,
+    "max": 38.099999994039536
+  },
+  "audioClockVsWallMs": 2.7999999821186066,
+  "outputLatencyReportedMs": 48,
+  "latencyCompensationAppliedMs": 48,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/131.0.6778.33 Safari/537.36"
+}

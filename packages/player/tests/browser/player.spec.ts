@@ -64,7 +64,7 @@ test("seek while playing lands on the same picture as a fresh draw, in any order
 });
 
 /** One golden frame per scene of the reference lesson, at a phone and a desktop width, when everything the scene shows has been shown. */
-for (const scene of [1, 2, 3, 4]) {
+for (const scene of [1, 2, 3, 4, 5, 6]) {
   for (const width of [360, 1280]) {
     test(`reference lesson, scene ${scene} at ${width}px: laid out by the solver, in the stage theme (golden)`, async ({ page }) => {
       await page.setViewportSize({ width: width + 40, height: 640 });
