@@ -49,4 +49,16 @@ Six beats at the Piper pace make a 138 s lesson (126.7 s of speech plus gaps and
 - Numbers written as words in claim sentences ("which is two") are not checked by code (known limit).
 - Sentences are hand-written here because the scriptwriter is WP5; the transition list is the four phrases of `en-IN`, status proposed.
 - The browser tests had been reusing a harness server that an earlier session left running from the old folder (`C:\Users\thakur\EduVideoEngine`); it served the old lesson and the specs passed against it. It was stopped, and the specs were rerun against this folder. `playwright.config.ts` still reuses any server on port 5198, so a stale one can recur.
-- The CO-4 spec bump (hints and isomorphic variants on practice questions, U2 and U3) and the point cue (U1) are not in WP3, by the owner's choice.
+''s choice.
+
+## As built, 2026-10-15: the stale harness server can no longer pass the specs
+The finding above is fixed (WP3 follow-ups). Three changes, all in the test setup:
+1. **The port depends on the folder.** `scripts/harness-port.ts` derives each harness port (20000 to 29999) from the folder the Playwright config runs in, so a copy of the repository, or a folder it was moved from, never shares a port with this one.
+2. **No server is reused.** Both Playwright configs (`packages/player`, `packages/components`) set `reuseExistingServer: false`: a server already on the port is an error, not a stand-in.
+3. **The harness reports the lesson it serves.** `packages/player/harness/main.ts` sets `window.__bundleId` and `window.__bundleHash`; every player spec waits through `tests/browser/served.ts`, which fails when the served hash is not the hash of this folder's lesson (`tests/browser/lesson-hashes.json`, made by `pnpm harness:hashes`; a unit test, `tests/lesson-hashes.test.ts`, fails when that file is out of date). Run `pnpm harness:hashes` after a lesson changes.
+
+Proved once, with a real stale server: the engine as tagged `co-2-wp2b` (whose harness serves the old four-scene lesson) was installed in a throwaway worktree and started on this folder's port.
+- With the fix, Playwright stops at once: `http://127.0.0.1:24456 is already used, make sure that nothing is running on the port/url or set reuseExistingServer:true in config.webServer`.
+- With reuse switched on in a temporary config (to test the hash check alone), the specs failed with `the harness served lesson (no id) with bundle hash (none), but this folder's reference lesson has hash f7b926c4...: a stale server?`
+- With the stale server stopped, the player specs `player.spec.ts` and `layout.spec.ts` (22) passed. The worktree and the server were removed. Afterwards the complete browser suites passed: the 26 player specs (golden frames, layout, offline, Devanagari, sync) and the 21 component golden frames.
+The port of this folder's player harness is 24456; it changes if the folder moves.

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { ready } from "./served";
 
 /** Phase 0 gate evidence that is not timing: playing with the network cut, and Devanagari through the player. */
 type W = Window &
@@ -19,7 +20,7 @@ test("offline: after the lesson has loaded, with the network cut, the whole less
     if (cut) afterCut.push(r.url());
   });
   await page.goto("/?voice=piper");
-  await page.waitForFunction(() => (window as unknown as W).__ready === true);
+  await ready(page);
   await context.setOffline(true);
   cut = true;
   await page.evaluate(() => (window as unknown as W).__setAnswerDelay(0));
@@ -36,7 +37,7 @@ test("offline: after the lesson has loaded, with the network cut, the whole less
 
 test("Devanagari through the player: conjuncts shaped by Noto Sans Devanagari, Latin words in the same family, nothing clipped, equation free of Devanagari", async ({ page, context }) => {
   await page.goto("/?voice=tone&lesson=hindi&mpw=300");
-  await page.waitForFunction(() => (window as unknown as W).__ready === true);
+  await ready(page, "hindi");
   await page.evaluate(() => {
     const w = window as unknown as W;
     w.__player.seek(w.__timeline.totalMs - 100);

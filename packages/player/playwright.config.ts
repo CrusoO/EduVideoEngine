@@ -1,4 +1,7 @@
 import { defineConfig } from "@playwright/test";
+import { harnessPort } from "../../scripts/harness-port";
+
+const port = harnessPort("player", process.cwd());
 
 /**
  * Player checks in a real browser: the audio clock, seeking, pause points, and the sync measurement.
@@ -13,7 +16,7 @@ export default defineConfig({
   timeout: 240_000,
   expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: "disabled", caret: "hide" } },
   use: {
-    baseURL: "http://127.0.0.1:5198",
+    baseURL: `http://127.0.0.1:${port}`,
     viewport: { width: 400, height: 900 },
     deviceScaleFactor: 1,
     colorScheme: "light",
@@ -22,9 +25,9 @@ export default defineConfig({
     launchOptions: { args: ["--autoplay-policy=no-user-gesture-required"] },
   },
   webServer: {
-    command: "pnpm exec vite harness --port 5198 --strictPort --host 127.0.0.1",
-    url: "http://127.0.0.1:5198",
-    reuseExistingServer: true,
+    command: `pnpm exec vite harness --port ${port} --strictPort --host 127.0.0.1`,
+    url: `http://127.0.0.1:${port}`,
+    reuseExistingServer: false, // a server left over from another folder once served an old lesson and the old golden frames passed (ADR 0050)
     timeout: 60_000,
   },
 });

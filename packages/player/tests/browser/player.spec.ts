@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { ready } from "./served";
 
 type W = Window &
   typeof globalThis & {
@@ -15,7 +16,7 @@ type W = Window &
 
 async function open(page: Page, mpw: number) {
   await page.goto(`/?voice=tone&mpw=${mpw}`);
-  await page.waitForFunction(() => (window as unknown as W).__ready === true);
+  await ready(page);
 }
 
 test("pause point: freezes on the position, the lesson stands still while the question is open, resume continues from it", async ({ page }) => {
@@ -69,7 +70,7 @@ for (const scene of [1, 2, 3, 4, 5, 6]) {
     test(`reference lesson, scene ${scene} at ${width}px: laid out by the solver, in the stage theme (golden)`, async ({ page }) => {
       await page.setViewportSize({ width: width + 40, height: 640 });
       await page.goto(`/?voice=tone&mpw=300&w=${width}`);
-      await page.waitForFunction(() => (window as unknown as W).__ready === true);
+      await ready(page);
       const t = await page.evaluate((n) => {
         const w = window as unknown as W;
         const sc = w.__timeline.scenes[n - 1]!;

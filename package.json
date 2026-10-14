@@ -10,6 +10,7 @@
     "mutate": "stryker run && vite-node scripts/mutation-floor.ts",
     "voice:generate": "vite-node scripts/voice/generate.ts",
     "reference:build": "vite-node scripts/reference-lesson.ts",
+    "harness:hashes": "vite-node scripts/harness-hashes.ts",
     "gen:ops": "vite-node scripts/gen-ops.ts",
     "gen:costs": "vite-node scripts/gen-costs.ts",
     "verify:gate": "vite-node scripts/verify-gate.ts",

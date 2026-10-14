@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { ready } from "./served";
 
 /**
  * The size model of the layout solver against the real components, in a real browser: for every scene of three lessons, at a phone
@@ -17,7 +18,7 @@ type Row = { id: string; box: { left: number; top: number; width: number; height
 async function scenes(page: Page, lesson: string, width: number) {
   await page.setViewportSize({ width: Math.max(width + 40, 400), height: 1200 });
   await page.goto(`/?voice=tone&lesson=${lesson}&w=${width}&mpw=300`);
-  await page.waitForFunction(() => (window as unknown as W).__ready === true);
+  await ready(page, lesson);
   const timeline = await page.evaluate(() => (window as unknown as W).__timeline.scenes);
   const out: Array<{ scene: string; stageHeight: number; stageWidth: number; scrollW: number; rows: Row[] }> = [];
   for (const sc of timeline) {

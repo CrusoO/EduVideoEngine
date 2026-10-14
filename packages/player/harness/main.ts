@@ -77,6 +77,8 @@ async function main() {
     },
   });
   Object.assign(window, {
+    __bundleId: bundle.bundleId,
+    __bundleHash: bundle.hashes.bundle, // the specs check this against the lesson of their own folder, so a stale server fails them
     __timeline: timeline,
     __player: player,
     __clock: clock,

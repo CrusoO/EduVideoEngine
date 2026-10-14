@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { ready } from "./served";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -20,7 +21,7 @@ type W = Window &
 
 async function measure(page: Page) {
   await page.goto("/?voice=piper");
-  await page.waitForFunction(() => (window as unknown as W).__ready === true);
+  await ready(page);
   await page.evaluate(() => (window as unknown as W).__setAnswerDelay(0)); // questions answered at once: this run measures timing
   return page.evaluate(
     () =>
