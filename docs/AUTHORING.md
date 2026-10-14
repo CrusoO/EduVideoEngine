@@ -44,10 +44,12 @@ Each is an excerpt of a real file that `pnpm content:validate` proves with SymPy
     "rationaleClaimIds": ["quad.sum.claim.vieta"],
     "humanApproved": false
 
-**Skill, prerequisites and levels** (`quad.sum.skill.json`): direct prerequisites only; omit a list that would be empty.
+**Skill, prerequisites and levels** (`quad.sum.skill.json`, `quad.factorise.skill.json`): direct prerequisites only; omit a list that would be empty. `assumableAtLevels` belongs to the skill that may be assumed: a lesson at a listed level may assume it instead of recapping it.
 
     "kind": "skill",
-    "prerequisiteSkillIds": ["MATH.ALG.QUAD.FACTORISE"],
+    "prerequisiteSkillIds": ["MATH.ALG.QUAD.FACTORISE"]
+
+    "kind": "skill",
     "assumableAtLevels": ["class-10"]
 
 **Step kinds in a solution** (`quad.sum.steps.json`): each step says how it follows from the one before; the verifier checks the transformation.

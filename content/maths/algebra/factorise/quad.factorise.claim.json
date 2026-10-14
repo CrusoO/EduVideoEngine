@@ -1,0 +1,91 @@
+{
+  "skillId": "MATH.ALG.QUAD.FACTORISE",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.factorise.claim",
+  "kind": "conceptClaim",
+  "text": "Factorising {expr:quad.fac.start} gives {expr:quad.fac.done}.",
+  "expressions": {
+    "quad.fac.start": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "pow",
+            "a": {
+              "op": "sym",
+              "name": "x"
+            },
+            "b": {
+              "op": "num",
+              "n": 2
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 5
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 6
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.fac.done": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 3
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    }
+  },
+  "claimMode": "computed",
+  "importance": "support",
+  "claim": {
+    "kind": "equivalent",
+    "a": "quad.fac.start",
+    "b": "quad.fac.done"
+  },
+  "sourceNote": "Written for this project as the worked example of the factorising skill, so the recap of the prerequisite has a claim to show.",
+  "hash": "d554eecbf8d590a01753d137c37cbca57e9e973adba98340b960b289aa104c10"
+}

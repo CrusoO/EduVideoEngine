@@ -179,6 +179,8 @@ export const Claim = z.discriminatedUnion("kind", [
   z.object({ id, beatId: id, kind: z.literal("roots"), equation: id, values: z.array(ExprSchema).min(1), ...ClaimExtras }).strict(),
   /** The sum of the roots of `equation` equals the right-hand side of the equation `equals`. */
   z.object({ id, beatId: id, kind: z.literal("sum-of-roots"), equation: id, equals: id, ...ClaimExtras }).strict(),
+  /** A claim in prose with nothing for the verifier to prove (a definition, a misconception). Spec 2.0.0 only, and always `grounded`: a person approves it (AM-3, ADR 0031). */
+  z.object({ id, beatId: id, kind: z.literal("statement"), ...ClaimExtras }).strict(),
 ]);
 export type Claim = z.infer<typeof Claim>;
 

@@ -59,6 +59,7 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     for (const s of b.script) v2.push([`script.${s.id}`, s.role !== undefined || s.claimId !== undefined || s.linkClaimIds !== undefined || s.questionId !== undefined || s.status === "approved"]);
     for (const sc of b.scenes) for (const o of sc.objects) v2.push([`scenes.${sc.id}.objects.${o.id}`, o.role !== undefined || o.textRole !== undefined]);
     for (const c of b.claims ?? []) v2.push([`claims.${c.id}`, c.sourceIds !== undefined || c.claimMode !== undefined || c.dependsOn !== undefined || c.importance !== undefined || c.usesStep !== undefined || c.stepKind !== undefined || c.identity !== undefined]);
+    for (const c of b.claims ?? []) if (c.kind === "statement") v2.push([`claims.${c.id}`, true]);
     for (const [path, present] of v2) if (present) bad(path, `a ${LEGACY_SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION}`);
     return;
   }
@@ -101,6 +102,8 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     const at = `claims.${c.id}`;
     need(at, c.claimMode !== undefined && c.importance !== undefined, "claimMode and importance");
     need(at, c.sourceIds !== undefined, "sourceIds");
+    if (c.kind === "statement" && c.claimMode !== "grounded") bad(at, "a statement claim is prose: its claimMode is grounded");
+    if (c.claimMode === "grounded" && c.kind !== "statement") bad(at, "a grounded claim is a statement claim: the verifier proves the other kinds, so they are computed");
     for (const src of c.sourceIds ?? []) if (!b.sourceIds.includes(src)) bad(`${at}.sourceIds`, `unknown source ${src}`);
     for (const d of c.dependsOn ?? []) if (!claimIds.has(d)) bad(`${at}.dependsOn`, `depends on unknown claim ${d}`);
     if (c.dependsOn?.length === 0) bad(`${at}.dependsOn`, "omit dependsOn when the claim depends on nothing, never write it empty");
@@ -236,7 +239,7 @@ export function validateBundle(input: unknown): Validation {
     const at = `claims.${claim.id}`;
     if (claimIds.has(claim.id)) bad(at, "claim ids must be unique");
     claimIds.add(claim.id);
-    const refs = claim.kind === "equivalent" ? [claim.a, claim.b] : claim.kind === "roots" ? [claim.equation] : [claim.equation, claim.equals];
+    const refs = claim.kind === "equivalent" ? [claim.a, claim.b] : claim.kind === "roots" ? [claim.equation] : claim.kind === "statement" ? [] : [claim.equation, claim.equals];
     if (!b.plan.beats.some((beat) => beat.id === claim.beatId)) bad(at, `claim names unknown beat ${claim.beatId}`);
     for (const r of refs) {
       const e = b.expressions[r];

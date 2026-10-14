@@ -168,6 +168,8 @@ def check_claims(bundle: Bundle, report: Report) -> None:
     ex = bundle["expressions"]
     for claim in bundle.get("claims", []):
         cid, kind = claim["id"], claim["kind"]
+        if kind == "statement":
+            continue  # prose a person approves (AM-3): there is nothing for the verifier to prove, and the approval is checked at compile time
         try:
             if kind == "equivalent":
                 a, b = to_sympy(ex[claim["a"]]), to_sympy(ex[claim["b"]])

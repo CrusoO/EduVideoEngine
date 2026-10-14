@@ -243,6 +243,25 @@ importers:
         specifier: ^3.24.1
         version: 3.25.76
 
+  packages/gates:
+    dependencies:
+      '@eve/content':
+        specifier: workspace:*
+        version: link:../content
+      '@eve/patterns':
+        specifier: workspace:*
+        version: link:../patterns
+      '@eve/schema':
+        specifier: workspace:*
+        version: link:../schema
+    devDependencies:
+      '@eve/verify':
+        specifier: workspace:*
+        version: link:../verify
+      fast-check:
+        specifier: 3.23.1
+        version: 3.23.1
+
   packages/layout:
     dependencies:
       '@eve/components':

@@ -1,0 +1,14 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.claim.mistake",
+  "kind": "conceptClaim",
+  "text": "Adding the numbers written in the equation does not give the sum of the roots.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "sourceNote": "Written for this project as the common mistake, as a claim of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "cfa3fcfeab48af8a0b17f7a88cc8d2f1741dbb2764928b16a08362718bf91ebd"
+}

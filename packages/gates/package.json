@@ -1,0 +1,17 @@
+{
+  "name": "@eve/gates",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@eve/content": "workspace:*",
+    "@eve/patterns": "workspace:*",
+    "@eve/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@eve/verify": "workspace:*",
+    "fast-check": "3.23.1"
+  },
+  "sideEffects": false
+}

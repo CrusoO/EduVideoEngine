@@ -10,9 +10,6 @@
   "prerequisiteSkillIds": [
     "MATH.ALG.QUAD.FACTORISE"
   ],
-  "assumableAtLevels": [
-    "class-10"
-  ],
   "sourceNote": "Written for this project as the skill description of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "31a056b31469642abd04fa905f0d0abdb5b1b8d2b47076da0b7f66f91fffece2"
+  "hash": "4c6b945ad56d3b0e8fb30b6ee3fb774243d03589be899af3ceba40887494cdfb"
 }

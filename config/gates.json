@@ -1,0 +1,5 @@
+{
+  "_comment": "Settings of the pedagogy gates (CO-2 section 6, AM-2, AM-6). Starting values, to be tuned in Phase 3. Change them here; code never writes these numbers.",
+  "coreClaimMinMs": 8000,
+  "speakingRateWordsPerMinute": 150
+}

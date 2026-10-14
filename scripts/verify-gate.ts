@@ -1,38 +1,56 @@
 /**
- * The verifier half of the Phase 0 gate, on the current reference lesson: it is verified, and deliberately corrupted copies are rejected.
- * Run: pnpm verify:gate
+ * The gate of the pedagogy layer and of the maths verifier.
+ *   pnpm verify:gate           the clean lessons pass; every corrupted copy (20 pedagogy and 7 maths, 27 in all) is rejected, and each by the check it names
+ *   pnpm verify:gate --list    prints every corruption and the check that must reject it, and runs nothing
+ * Fails (exit 1) if a clean lesson is rejected, a corrupted copy is accepted, or a copy is rejected only by a check it does not name.
  */
-import { add, num, sumOfRoots, type LessonBundle } from "../packages/schema/src";
-import { verifyBundle, type VerifyReport } from "../packages/verify/src";
+import { CORRUPTIONS, MATHS_CORRUPTIONS, buildCleanFixture, judgeAll, rejectionsOf } from "../packages/gates/src";
+import { sumOfRoots, type LessonBundle } from "../packages/schema/src";
+import { verifyBundle } from "../packages/verify/src";
 
-const fresh = () => structuredClone(sumOfRoots) as LessonBundle;
-const show = (title: string, r: VerifyReport) => {
-  console.log(`\n== ${title}`);
-  console.log(`   ${r.ok ? "VERIFIED" : "REJECTED"}  (${Object.entries(r.counts).map(([k, n]) => `${n} ${k}`).join(", ")})`);
-  for (const f of r.failed) console.log(`   FAILED ${f.kind} ${f.id}: ${f.detail}`);
-};
-
-const cases: Array<[string, (b: LessonBundle) => void]> = [
-  ["the reference lesson, untouched", () => undefined],
-  ["corrupted: the hops do not add up to the coefficient (the second hop lands on 6)", (b) => void (b.expressions.five = num(6))],
-  ["corrupted: the second hop does not start where the first ended (it starts at 3)", (b) => {
-    b.expressions.three = num(3);
-    const line = b.scenes[3]!.objects.find((o) => o.id === "line")!;
-    (line.props as { hops: Array<{ from: string }> }).hops[1]!.from = "three";
-  }],
-  ["corrupted: the label of the bracket says the roots add up to 6", (b) => void ((b.expressions.total as { b: unknown }).b = num(6))],
-  ["corrupted: the sum is written 2 + 4 = 5", (b) => void (b.expressions.total = { op: "eq", a: add(num(2), num(4)), b: num(5) })],
-  ["corrupted: the lesson claims the roots are 2 and 4", (b) => void ((b.claims![0] as { values: unknown }).values = [num(2), num(4)])],
-  ["corrupted: an expression with a node type nobody can verify (sqrt)", (b) => void ((b.expressions as Record<string, unknown>).total = { op: "sqrt", a: num(4) })],
-];
+const MATHS_TARGET = "Verifier";
+if (process.argv.includes("--list")) {
+  console.log("id    must be rejected by   what");
+  for (const c of CORRUPTIONS) console.log(`${c.id.padEnd(5)} ${c.target.padEnd(21)} ${c.what}`);
+  for (const m of MATHS_CORRUPTIONS) console.log(`${m.id.padEnd(5)} ${MATHS_TARGET.padEnd(21)} ${m.what}   (from the ${m.base === "fixture" ? "clean fixture" : "reference lesson"})`);
+  console.log(`\n${CORRUPTIONS.length + MATHS_CORRUPTIONS.length} corruptions`);
+  process.exit(0);
+}
 
 let wrong = 0;
-for (const [i, [title, corrupt]] of cases.entries()) {
-  const b = fresh();
-  corrupt(b);
-  const r = await verifyBundle(b);
-  show(title, r);
-  if (r.ok !== (i === 0)) wrong++;
+const clean = buildCleanFixture();
+
+console.log("== the clean synthetic lesson");
+const cleanRejections = rejectionsOf(clean);
+const cleanVerified = await verifyBundle(clean.ctx.bundle);
+const cleanOk = Object.keys(cleanRejections).length === 0 && cleanVerified.ok;
+console.log(`   ${cleanOk ? "PASSES every gate, the validators, the compile check and the SymPy verifier" : "REJECTED"}  (${Object.entries(cleanVerified.counts).map(([k, n]) => `${n} ${k}`).join(", ")})`);
+for (const [target, messages] of Object.entries(cleanRejections)) for (const m of messages!) console.log(`   ${target}: ${m}`);
+for (const f of cleanVerified.failed) console.log(`   Verifier: ${f.kind} ${f.id}: ${f.detail}`);
+if (!cleanOk) wrong++;
+
+console.log("\n== pedagogy corruptions");
+for (const r of judgeAll(clean)) {
+  const others = r.rejectedBy.filter((t) => t !== r.corruption.target);
+  const ok = r.named && r.forTheRightReason;
+  if (!ok) wrong++;
+  console.log(`${ok ? "ok    " : "WRONG "} ${r.corruption.id.padEnd(4)} ${r.corruption.target.padEnd(9)} ${ok ? "rejected" : r.rejectedBy.length === 0 ? "ACCEPTED" : `rejected only by ${r.rejectedBy.join(", ")}`}${others.length && ok ? ` (also ${others.join(", ")})` : ""}: ${r.corruption.what}`);
+  if (ok) console.log(`         ${r.messages.find((m) => r.corruption.reason.test(m))}`);
 }
-console.log(`\n${wrong === 0 ? "GATE OK: the clean lesson verified, every corrupted copy was rejected." : `GATE BROKEN: ${wrong} case(s) behaved the wrong way.`}`);
-process.exit(wrong === 0 ? 0 : 1);
+
+console.log("\n== maths corruptions (SymPy verifier)");
+const reference = await verifyBundle(sumOfRoots);
+console.log(`   the reference lesson: ${reference.ok ? "VERIFIED" : "REJECTED"}`);
+if (!reference.ok) wrong++;
+for (const m of MATHS_CORRUPTIONS) {
+  const base = structuredClone(m.base === "fixture" ? clean.ctx.bundle : sumOfRoots) as LessonBundle;
+  m.corrupt(base);
+  const report = await verifyBundle(base);
+  const ok = !report.ok;
+  if (!ok) wrong++;
+  console.log(`${ok ? "ok    " : "WRONG "} ${m.id.padEnd(4)} Verifier  ${ok ? "rejected" : "ACCEPTED"}: ${m.what}`);
+  if (ok) console.log(`         ${report.failed[0]!.kind} ${report.failed[0]!.id}: ${report.failed[0]!.detail}`);
+}
+
+console.log(`\n${wrong === 0 ? `GATE OK: both clean lessons passed, all ${CORRUPTIONS.length + MATHS_CORRUPTIONS.length} corrupted copies were rejected by the check named for them.` : `GATE BROKEN: ${wrong} case(s) behaved the wrong way.`}`);
+process.exitCode = wrong === 0 ? 0 : 1;

@@ -7,6 +7,9 @@
   "kind": "skill",
   "text": "Write a quadratic expression as a product of two brackets.",
   "expressions": {},
+  "assumableAtLevels": [
+    "class-10"
+  ],
   "sourceNote": "Written for this project as the description of the factorising skill, so the sum-of-roots skill has a prerequisite that exists in the store. Prose only.",
-  "hash": "5b4fec8a3617fccc8d87e86545ebf4a610fe9edab1fc5304340e3f7fd6b69c17"
+  "hash": "1acb57fa7635aa9d317235bb42ff3470a9649e41a506b2ecc098722e2fe4b257"
 }
