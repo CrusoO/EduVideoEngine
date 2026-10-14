@@ -131,7 +131,9 @@ describe("check question", () => {
 });
 
 describe("the variety rule (ADR 0043): five or more beats need two pictures and no more than two text-heavy beats in a row", () => {
-  const report = textHeavyReport();
+  // computed inside the tests, not while the file is collected: a call made at collection counts as a static mutant for Stryker, whose verdict on those is unstable
+  let cached: ReturnType<typeof textHeavyReport> | undefined;
+  const report = () => (cached ??= textHeavyReport());
 
   it("counts pictures and the longest text-heavy run", () => {
     expect(varietyCheck([true, true, false, false, true])).toEqual({ pictureBeats: 2, longestTextHeavyRun: 2, problems: [] });
@@ -148,8 +150,8 @@ describe("the variety rule (ADR 0043): five or more beats need two pictures and 
     expect(bestFlags(["hook", "why_it_fails"])).toEqual([true, true]);
   });
   it("every arc meets the rule at every length it can have, with and without prerequisites", () => {
-    expect(report.filter((x) => !x.satisfiable).map((x) => `${x.arcId}/${x.hasPrerequisites}`)).toEqual([]);
-    expect(report.flatMap((x) => x.lengths.map((l) => `${x.arcId}/${x.hasPrerequisites ? "with" : "without"}/${l.beats}/${l.pictureBeats}/${l.longestTextHeavyRun}`))).toEqual([
+    expect(report().filter((x) => !x.satisfiable).map((x) => `${x.arcId}/${x.hasPrerequisites}`)).toEqual([]);
+    expect(report().flatMap((x) => x.lengths.map((l) => `${x.arcId}/${x.hasPrerequisites ? "with" : "without"}/${l.beats}/${l.pictureBeats}/${l.longestTextHeavyRun}`))).toEqual([
       "problem_first/with/6/2/2",
       "problem_first/without/5/2/2",
       "problem_first/without/6/2/2",
