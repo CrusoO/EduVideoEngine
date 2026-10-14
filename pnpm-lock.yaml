@@ -255,9 +255,21 @@ importers:
         specifier: workspace:*
         version: link:../schema
     devDependencies:
+      '@eve/components':
+        specifier: workspace:*
+        version: link:../components
+      '@eve/layout':
+        specifier: workspace:*
+        version: link:../layout
+      '@eve/resolver':
+        specifier: workspace:*
+        version: link:../resolver
       '@eve/verify':
         specifier: workspace:*
         version: link:../verify
+      '@eve/voice':
+        specifier: workspace:*
+        version: link:../voice
       fast-check:
         specifier: 3.23.1
         version: 3.23.1

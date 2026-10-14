@@ -13,3 +13,4 @@ export { g4Arc } from "./g4-arc";
 export { TRANSITION_MAX_WORDS, g5Role } from "./g5-role";
 export { g6Prerequisites } from "./g6-prerequisites";
 export { g7Coverage } from "./g7-coverage";
+export * from "./reference";

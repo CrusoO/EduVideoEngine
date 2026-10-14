@@ -10,7 +10,11 @@
     "@eve/schema": "workspace:*"
   },
   "devDependencies": {
+    "@eve/components": "workspace:*",
+    "@eve/layout": "workspace:*",
+    "@eve/resolver": "workspace:*",
     "@eve/verify": "workspace:*",
+    "@eve/voice": "workspace:*",
     "fast-check": "3.23.1"
   },
   "sideEffects": false
