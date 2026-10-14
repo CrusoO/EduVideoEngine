@@ -87,8 +87,8 @@ export class ConfigError extends Error {}
 export function loadLlmConfig(env: EnvLike = readEnv(), profiles: ProfileFile = PROFILES): LlmConfig {
   const parsed = EnvSchema.safeParse(env);
   if (!parsed.success) {
-    // only the names of the variables and the reasons, never the values
-    throw new ConfigError(`Invalid LLM environment: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ")}`);
+    // only the names of the variables and the reasons, never the values (zod echoes the value it received for an enum, so that message is written here)
+    throw new ConfigError(`Invalid LLM environment: ${parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.code === "invalid_enum_value" ? `must be one of ${i.options.join(", ")}` : i.message}`).join("; ")}`);
   }
   const e = parsed.data;
   const provider = e.LLM_PROVIDER;
