@@ -1,5 +1,5 @@
 /* Component styles. Colours are variables with safe defaults so a theme can override them. Fonts are bundled
-   (Inter, Noto Sans Devanagari: the same files as YourTutor; KaTeX's own maths fonts): nothing is fetched at run time. */
+   (Inter, Noto Sans Devanagari: the same files as the host application; KaTeX's own maths fonts): nothing is fetched at run time. */
 .eve-stage {
   /* The stage theme (packages/player/theme/palette.ts is the source; tests/theme.test.ts keeps them equal). */
   --eve-bg: #0B0D14;

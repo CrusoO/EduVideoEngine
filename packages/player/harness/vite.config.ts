@@ -19,7 +19,7 @@ const serve = (prefix: string, dir: string, type: (file: string) => string): Plu
 });
 
 /**
- * /fonts: the bundled fonts at the same URLs YourTutor uses (so a shared origin shares one cached copy).
+ * /fonts: the bundled fonts at the same URLs the host application uses (so a shared origin shares one cached copy).
  * /voice: the pinned development voice files of the reference lesson.
  */
 export default defineConfig({

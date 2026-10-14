@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 
 const fonts = join(dirname(fileURLToPath(import.meta.url)), "..", "fonts");
 
-/** Serve the bundled fonts at /fonts/<name>.woff2, the same URLs YourTutor uses (so a shared origin shares one cached copy). */
+/** Serve the bundled fonts at /fonts/<name>.woff2, the same URLs the host application uses (so a shared origin shares one cached copy). */
 export default defineConfig({
   publicDir: false,
   plugins: [

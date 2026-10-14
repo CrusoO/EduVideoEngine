@@ -1,4 +1,4 @@
-/* The control bar and the question box follow the YourTutor theme (--c-* tokens; the light values are the fallbacks).
+/* The control bar and the question box follow the host theme (--c-* tokens; the light values are the fallbacks).
    The dark stage theme is only for the stage itself. */
 .eve-controls {
   display: flex;

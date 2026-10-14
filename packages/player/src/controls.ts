@@ -28,7 +28,7 @@ export const formatTime = (ms: number): string => {
 };
 
 /**
- * The control bar: play and pause, the time, a seek bar with ticks where questions come, restart. It follows the YourTutor theme through its
+ * The control bar: play and pause, the time, a seek bar with ticks where questions come, restart. It follows the host theme through its
  * --c-* variables (with the light values as fallbacks) and never the dark stage theme. It only calls the player and reads the clock.
  */
 export function mountControls(o: ControlsOptions): { destroy(): void; update(): void } {
