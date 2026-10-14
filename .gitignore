@@ -16,3 +16,8 @@ stryker.budget.json
 .env
 .env.*
 !.env.example
+
+ledger/
+logs/
+reports/
+.stryker-tmp/
