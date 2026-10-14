@@ -1,6 +1,6 @@
 # ADR 0045: Waiver: the mutation floor of 90 for the CO-2 and configuration files
 
-Status: accepted as a **waiver, expires 2026-10-28** (before WP3 starts, as AM-20 requires). On that date either every file below is at 90 or above in one full run, or this waiver is renewed by a new ADR with the owner's say.
+Status: waived until 2026-10-28; superseded by 0048 (closed on 2026-10-15, every file at 90 or above). Original status: accepted as a **waiver, expires 2026-10-28** (before WP3 starts, as AM-20 requires). On that date either every file below is at 90 or above in one full run, or this waiver is renewed by a new ADR with the owner's say.
 
 ## What was run
 One full Stryker run over 15 files (3,317 mutants, 2026-10-14 to 15), with `break` at 90. The eight files of the earlier scope all hold; the seven added files do not.
