@@ -127,6 +127,17 @@ const records: Array<Omit<ContentRecord, "hash">> = [
   },
   {
     ...base,
+    id: "quad.sum.claim.roots",
+    kind: "conceptClaim",
+    text: "The roots of {expr:quad.eq} are two and three.",
+    expressions: {},
+    claimMode: "computed",
+    importance: "support",
+    claim: { kind: "roots", equation: "quad.eq", values: [num(2), num(3)] },
+    sourceNote: note("the roots of the example equation, as a claim the plotted curve can be tied to"),
+  },
+  {
+    ...base,
     id: "quad.sum.claim.root",
     kind: "conceptClaim",
     text: "A root of an equation is a value of the unknown that makes the equation true.",

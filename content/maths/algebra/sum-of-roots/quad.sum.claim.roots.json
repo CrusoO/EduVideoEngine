@@ -1,0 +1,28 @@
+{
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "quad.sum.claim.roots",
+  "kind": "conceptClaim",
+  "text": "The roots of {expr:quad.eq} are two and three.",
+  "expressions": {},
+  "claimMode": "computed",
+  "importance": "support",
+  "claim": {
+    "kind": "roots",
+    "equation": "quad.eq",
+    "values": [
+      {
+        "op": "num",
+        "n": 2
+      },
+      {
+        "op": "num",
+        "n": 3
+      }
+    ]
+  },
+  "sourceNote": "Written for this project as the roots of the example equation, as a claim the plotted curve can be tied to of the sum-of-roots lesson; first seed of the content plane. No outside text.",
+  "hash": "e5e924d0309aaa010ab6cd41af4ca39cbeb62c69432b957ec3e2353804d9b322"
+}

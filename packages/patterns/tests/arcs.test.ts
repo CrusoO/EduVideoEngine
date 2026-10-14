@@ -99,7 +99,9 @@ describe("the library of eight patterns", () => {
 describe("recap card", () => {
   const args = { sceneId: "s", beatId: "b2", sentenceIds: ["b2.1", "b2.2"], text: { title: "The rule", altText: "The rule for the sum of the roots." } };
   it("is built from a computed concept claim and brings that claim to the bundle", async () => {
-    const inst = instantiate("recap-card", r, args);
+    // the recap card takes the first computed claim of the retrieval; the roots claim of the example (WP3) sorts before the rule, so it is left out here
+    const withRule = retrieve(records.filter((x) => x.id !== "quad.sum.claim.roots"), SKILL, "en-IN");
+    const inst = instantiate("recap-card", withRule, args);
     expect(inst.recordIds).toEqual(["quad.sum.claim.vieta"]);
     expect(inst.scene.objects.map((o) => o.exprRef)).toEqual([undefined, "quad.rule"]);
     expect(inst.claims).toEqual([expect.objectContaining({ id: "quad.sum.claim.vieta.b2", beatId: "b2", kind: "sum-of-roots", claimMode: "computed", importance: "core" })]);
