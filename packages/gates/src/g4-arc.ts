@@ -12,7 +12,7 @@ const fail = (code: string, message: string, ids: string[]): Finding => ({ gate:
 export function g4Arc(ctx: GateContext): Finding[] {
   const out: Finding[] = [];
   const { plan } = ctx.bundle;
-  const arc = plan.arcId !== undefined && plan.arcId in ARCS ? ARCS[plan.arcId as ArcId] : undefined;
+  const arc = plan.arcId !== undefined && Object.hasOwn(ARCS, plan.arcId) ? ARCS[plan.arcId as ArcId] : undefined;
   if (!arc) {
     out.push(fail("unknown-arc", `arc ${String(plan.arcId)} is not in the arc registry`, [String(plan.arcId)]));
   }
