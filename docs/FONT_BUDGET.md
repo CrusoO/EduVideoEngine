@@ -13,6 +13,8 @@ URLs** (`/fonts/<name>.woff2`) with the **same `unicode-range`**, so a student's
 Devanagari files download only when a Hindi character is drawn; an English lesson never fetches them. No bold or italic is
 shipped, and `font-synthesis: none` stops the browser faking one (titles are 600 in Latin and 500 in Devanagari).
 
+Drift against YourTutor is checked at integration by the manifest hashes, not by engine tests reading YourTutor (ADR 0046); the test now covers only the engine's own lock. This replaces "a test compares the hashes where both repos are present" above.
+
 | Purpose | Files | KB |
 |---|---|---:|
 | Latin text | Inter latin 400, 600 | 23.1 + 23.9 = 47.0 (shared with the YourTutor home page) |
