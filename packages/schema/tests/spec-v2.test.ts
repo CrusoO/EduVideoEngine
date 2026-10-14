@@ -189,3 +189,38 @@ describe("the verification label (AM-3)", () => {
     expect(JSON.stringify(v2())).not.toMatch(/computed_only|verification/);
   });
 });
+
+describe("migration edges", () => {
+  it("turns the legacy status reviewed into approved, and leaves the others as they were", () => {
+    const old = structuredClone(legacy);
+    old.script[0]!.status = "reviewed";
+    old.script[1]!.status = "draft";
+    old.script[2]!.status = "frozen";
+    const out = migrateToV2(old, input);
+    expect(out.script.slice(0, 3).map((s) => s.status)).toEqual(["approved", "draft", "frozen"]);
+  });
+  it("says what it cannot migrate, naming the version", () => {
+    const odd = { ...structuredClone(legacy), specVersion: "0.9.0" } as unknown as LessonBundle;
+    expect(() => migrateToV2(odd, input)).toThrow("cannot migrate spec 0.9.0");
+  });
+  it("names every missing piece of input, beats before sentences, in one message", () => {
+    expect(() => migrateToV2(legacy, { ...input, beats: {}, sentences: {} })).toThrow(/^migration input is missing: beat b1, beat b2, beat b3, beat b4, beat b5, sentence s1\.1,/);
+  });
+  it("writes no claims when the bundle has none, and takes a claim's sources from its beat", () => {
+    const none = structuredClone(legacy) as { claims?: unknown };
+    delete none.claims;
+    const out = migrateToV2(none as LessonBundle, input);
+    expect("claims" in out).toBe(false);
+    expect(v2().claims!.find((c) => c.beatId === "b3")!.sourceIds).toEqual(legacy.plan.beats.find((b) => b.id === "b3")!.sourceIds);
+  });
+  it("lets the input override a claim's mode, importance and edges", () => {
+    const out = migrateToV2(legacy, { ...input, claims: { "c.sum": { importance: "support", dependsOn: ["c.roots"] } } });
+    expect(out.claims!.find((c) => c.id === "c.sum")).toMatchObject({ claimMode: "computed", importance: "support", dependsOn: ["c.roots"] });
+    expect(out.claims!.find((c) => c.id === "c.roots")).toMatchObject({ importance: "core" });
+  });
+  it("writes the prerequisites when there are some and the beat kind from the legacy kind when the input does not say", () => {
+    expect(v2().plan.prerequisites).toEqual(input.prerequisites);
+    const kinds = migrateToV2(legacy, { ...input, beats: Object.fromEntries(Object.entries(input.beats).map(([k, v]) => [k, { slotId: v.slotId, learningGoal: v.learningGoal }])) }).plan.beats.map((b) => b.beatKind);
+    expect(kinds).toEqual(["hook", "concept", "worked", "concept", "check"]);
+  });
+});
