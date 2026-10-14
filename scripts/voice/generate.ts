@@ -1,5 +1,5 @@
 /**
- * Regenerates the pinned development voice files for the reference lesson. Run only when a sentence or the voice changes:
+ * Regenerates the pinned development voice files for the reference lesson (WP3: packages/schema/src/fixtures/reference-lesson.en-IN.json). Run only when a sentence or the voice changes:
  *   pnpm voice:generate
  * Tests never run this; they read the committed files and manifest. Needs tools/piper (see docs/adr/0013-voice-piper.md):
  *   tools/piper/piper/piper.exe  (Piper 2023.11.14-2, MIT)
@@ -9,12 +9,12 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { spokenText, sumOfRoots as lesson } from "../../packages/schema/src";
+import { referenceLesson as lesson, spokenText } from "../../packages/schema/src";
 import { trackHash, wavInfo, type VoiceManifest } from "../../packages/voice/src";
 
 const root = resolve(__dirname, "..", "..");
 const tools = join(root, "tools", "piper");
-const out = join(root, "packages", "voice", "fixtures", "sum-of-roots.en-IN");
+const out = join(root, "packages", "voice", "fixtures", "reference.en-IN");
 const sha = (p: string) => createHash("sha256").update(readFileSync(p)).digest("hex");
 
 const exe = join(tools, "piper", "piper.exe");

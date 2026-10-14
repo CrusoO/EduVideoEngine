@@ -303,5 +303,5 @@ export const MATHS_CORRUPTIONS: readonly MathsCorruption[] = [
   },
   { id: "M5", what: "a wrong practice answer: the answer is S = 8", base: "fixture", corrupt: (b) => void ((b.expressions["quad.q.answer"] as { b: unknown }).b = { op: "num", n: 8 }) },
   { id: "M6", what: "an expression with a node type nobody can verify (sqrt)", base: "fixture", corrupt: (b) => void ((b.expressions as Record<string, unknown>)["quad.total"] = { op: "sqrt", a: { op: "num", n: 4 } }) },
-  { id: "M7", what: "a hop that lands on the wrong total (the second hop ends at 6)", base: "reference", corrupt: (b) => void (b.expressions.five = { op: "num", n: 6 }) },
+  { id: "M7", what: "a hop that lands on the wrong total (the second hop ends at 6)", base: "reference", corrupt: (b) => void (b.expressions["scene.b4.stop.2"] = { op: "num", n: 6 }) },
 ];

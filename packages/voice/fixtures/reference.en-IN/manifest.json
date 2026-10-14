@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "bundleId": "bundle.reference.sum-of-roots.en-IN",
+  "locale": "en-IN",
+  "voice": {
+    "id": "piper:en_GB-jenny_dioco-medium",
+    "provider": "piper",
+    "modelVersion": "piper-2023.11.14-2+469c630d209e",
+    "engine": {
+      "name": "Piper",
+      "version": "2023.11.14-2",
+      "archiveSha256": "f3c58906402b24f3a96d92145f58acba6d86c9b5db896d207f78dc80811efcea"
+    },
+    "model": {
+      "name": "en_GB-jenny_dioco-medium",
+      "modelSha256": "469c630d209e139dd392a66bf4abde4ab86390a0269c1e47b4e5d7ce81526b01",
+      "configSha256": "a9a7a93a317c9a3cb6563e37eb057df9ef09c06188a8a4341b0fcb58cba54dd4"
+    },
+    "credit": "AI-generated voice: Jenny (Dioco)",
+    "status": "development-only",
+    "licences": {
+      "engine": "Piper 2023.11.14-2 is MIT. Its Windows build bundles espeak-ng (GPL-3.0) as the phonemiser; used here only as a development tool and not redistributed. Piper 1.x on PyPI (piper-tts) is GPL-3.0-or-later.",
+      "model": "Jenny (Dioco) dataset: commercial use permitted, attribution required where the voice is heard. BUT the model was fine-tuned from the lessac voice, trained on Blizzard 2013 data under a research-only licence agreement: whether weights derived from it may ship in a product is unresolved. Development fixtures only."
+    }
+  },
+  "tracks": [
+    {
+      "sentenceId": "s1.1",
+      "spokenText": "Can you guess what the two roots of this equation add up to?",
+      "trackHash": "0830061947f802de67dfb48d132e339dc6e61170be966eff4cc5257929ea288a",
+      "file": "s1.1.wav",
+      "fileSha256": "604a886debb29cabaa8cd303edce6535e8ea0f72d2078aa0130821b38e87c5c4",
+      "sampleRate": 22050,
+      "durationMs": 3195
+    },
+    {
+      "sentenceId": "s1.2",
+      "spokenText": "Let us see why.",
+      "trackHash": "7b83d9725a2a9044fb286795ea92e936bc6a12ff150dbeaaaf8117df1723187d",
+      "file": "s1.2.wav",
+      "fileSha256": "68a5a53ea2250ca504f777bd03cd345dbc07ed512f060bc406755f2c5ab8347c",
+      "sampleRate": 22050,
+      "durationMs": 1326
+    },
+    {
+      "sentenceId": "s2.1",
+      "spokenText": "What does it mean to factorise a quadratic?",
+      "trackHash": "4e6863b5c1cb6241d8a2f49943eaeca1c1627f3eccfaceaac768ef3811b7954f",
+      "file": "s2.1.wav",
+      "fileSha256": "778ef03c2eabe700ec1c5901816ff9d4065440ed8e3ff75fa552ae216d0bdd8f",
+      "sampleRate": 22050,
+      "durationMs": 2545
+    },
+    {
+      "sentenceId": "s2.2",
+      "spokenText": "Factorising x squared minus five x plus six equals zero gives open bracket x minus two close bracket open bracket x minus three close bracket equals zero.",
+      "trackHash": "c1351a7b74c80b6514ac050e40685f54b78084e5296c9158908f654dfa23e73d",
+      "file": "s2.2.wav",
+      "fileSha256": "e5fc833ff48c1e6b2993621eee47290943faf8bc57a5368c6d56da9812039757",
+      "sampleRate": 22050,
+      "durationMs": 11798
+    },
+    {
+      "sentenceId": "s2.3",
+      "spokenText": "The two brackets multiplied together make the same quadratic again.",
+      "trackHash": "6ba1f61607b0ea12085f5c71f1e61084ec4b3bcfe813b7fb088762cd9c1a810a",
+      "file": "s2.3.wav",
+      "fileSha256": "f3c6d781f3130214b77b77d138fb6962631116b7856432fe3cfe249b65bd20ef",
+      "sampleRate": 22050,
+      "durationMs": 3683
+    },
+    {
+      "sentenceId": "s3.1",
+      "spokenText": "Why does the sum of the roots depend only on the first two coefficients?",
+      "trackHash": "f5e013eaf3f962af02a771b406204926ef6610086b9b64db61b2593423dea2be",
+      "file": "s3.1.wav",
+      "fileSha256": "f2bae6c0d9609a2bf8d1b999e7f6fb4f890404f7ab5c589b65e506cd06678db6",
+      "sampleRate": 22050,
+      "durationMs": 3915
+    },
+    {
+      "sentenceId": "s3.2",
+      "spokenText": "A root is a value of the unknown that makes the equation true.",
+      "trackHash": "f6f194bba8a1724e21d94e98b7074925f753998c477e713a6c22eb281e230f7f",
+      "file": "s3.2.wav",
+      "fileSha256": "b5e0f7a0c39ec4ff956577c6fe7fddb2e913ee2888b48a1684caf8b33712f712",
+      "sampleRate": 22050,
+      "durationMs": 3741
+    },
+    {
+      "sentenceId": "s3.3",
+      "spokenText": "Here is our equation x squared minus five x plus six equals zero, drawn as a curve.",
+      "trackHash": "62c4193bee36fa23f4b312f49bd93aac043d8d383ecb75e5a34e34758754bf1c",
+      "file": "s3.3.wav",
+      "fileSha256": "0e20198b6c4fb779405e8337b5784826451a569a7410ddba3757f5f0c1207ae0",
+      "sampleRate": 22050,
+      "durationMs": 6075
+    },
+    {
+      "sentenceId": "s3.4",
+      "spokenText": "The curve crosses the axis at the first root, which is two.",
+      "trackHash": "d7137b19cc27e972b8b500a679e10e5ddedc1c5a055a2b77472f3f447b4d1388",
+      "file": "s3.4.wav",
+      "fileSha256": "dc5548369aeb0e143b424644c9de2d755a6ef79aea76671c4eac176cb6834ac1",
+      "sampleRate": 22050,
+      "durationMs": 3590
+    },
+    {
+      "sentenceId": "s3.5",
+      "spokenText": "It crosses again at the second root, which is three.",
+      "trackHash": "4f18b252a6570221fb0b7288022b109da32341bc1397d32d58ba56d862398afe",
+      "file": "s3.5.wav",
+      "fileSha256": "29b0ec78c6aa1b0db70963ee3cd0582bac6cb23a6ed0bc06a5aad0574c0f90ba",
+      "sampleRate": 22050,
+      "durationMs": 2928
+    },
+    {
+      "sentenceId": "s3.6",
+      "spokenText": "Now notice something. For any quadratic a x squared plus b x plus c equals zero, the sum of the roots is S equals minus b over a.",
+      "trackHash": "32f239fc0b16791b00f5a8d0daf16b8aa9dc16fd62539895d3d7d21e77b8393f",
+      "file": "s3.6.wav",
+      "fileSha256": "e995293ba80c55df1bffd93b0dcb0d1f9e5e2ca86300e96fc8f63d61e3ebf741",
+      "sampleRate": 22050,
+      "durationMs": 9885
+    },
+    {
+      "sentenceId": "s3.7",
+      "spokenText": "So the roots themselves decide the sum.",
+      "trackHash": "571a4984491639e028b4dcd4b6886078055dfd3e850b14145222da960c79a85e",
+      "file": "s3.7.wav",
+      "fileSha256": "6113c592d08cf8d7be643896559d78a4b40c946400ddca0ca9451ee5f4412e3a",
+      "sampleRate": 22050,
+      "durationMs": 2209
+    },
+    {
+      "sentenceId": "s3.8",
+      "spokenText": "Only the first two coefficients matter, and the last one does not.",
+      "trackHash": "a45a1b2cee0f1e2be0f37b46a9fb79ac3614edd0dfa49be3c1028cdaaec56161",
+      "file": "s3.8.wav",
+      "fileSha256": "fd437e601b282042edf1f95b303ad60ec69f6197c5d604dc4d8acb4eb52746d7",
+      "sampleRate": 22050,
+      "durationMs": 3892
+    },
+    {
+      "sentenceId": "s3.9",
+      "spokenText": "Remember the rule: the sum is S equals minus b over a, whatever the constant term is.",
+      "trackHash": "ad4421a0e2db23b4b33bfd13b9b258dc79182817ba38811c31bf79d23b437736",
+      "file": "s3.9.wav",
+      "fileSha256": "dda8bbb70212c98d0a38b61c02a636b218ba4c883848fa0d52a2b5e0fd3fdd86",
+      "sampleRate": 22050,
+      "durationMs": 5668
+    },
+    {
+      "sentenceId": "s4.1",
+      "spokenText": "Does the shortcut agree with solving the long way?",
+      "trackHash": "ccdaa05889dc070d153a95dade0a249e976c897bfb53d5e5979223c1e7db9e30",
+      "file": "s4.1.wav",
+      "fileSha256": "29a79177016377f7088d4ecf03741227fd000c32e3bb6eb09f7fb3c6ba92e9fe",
+      "sampleRate": 22050,
+      "durationMs": 2754
+    },
+    {
+      "sentenceId": "s4.2",
+      "spokenText": "First factorise the equation to get open bracket x minus two close bracket open bracket x minus three close bracket equals zero.",
+      "trackHash": "a78e8452d91ad17f163948a982c6a737dcb8a080b488c9b2ca1fae7054c2e432",
+      "file": "s4.2.wav",
+      "fileSha256": "cc55c50390fd2a7a560c241ee5a5a8a38cd78d08757883ff5d78a590f1192fbb",
+      "sampleRate": 22050,
+      "durationMs": 8478
+    },
+    {
+      "sentenceId": "s4.3",
+      "spokenText": "Start at zero. The first root is two, so hop to two.",
+      "trackHash": "9d58261ab5515e23e07a6f9d417e3af356507d19ee3a9b5c9bb6b25ac4a5b142",
+      "file": "s4.3.wav",
+      "fileSha256": "72c3f5671541306f20362126aedf3c2ac4b3324f82669f86fc9140697c0ff203",
+      "sampleRate": 22050,
+      "durationMs": 3953
+    },
+    {
+      "sentenceId": "s4.4",
+      "spokenText": "The second root is three, so hop three more and land on five.",
+      "trackHash": "6bc9780eee248a60c2579384fb305d96ae5d3eaacad1093fbd6f07035baf9135",
+      "file": "s4.4.wav",
+      "fileSha256": "03d8f62809b5c999151a0f4e27b3a45e51ee2887a58f466e7ba3fad8bb35ca57",
+      "sampleRate": 22050,
+      "durationMs": 3718
+    },
+    {
+      "sentenceId": "s4.5",
+      "spokenText": "The two roots add up to two plus three equals five.",
+      "trackHash": "f6d7d4d23a42e1b68d7ce07c4d30cbd9150630355b301e16ea9720984778ec8e",
+      "file": "s4.5.wav",
+      "fileSha256": "0bbed3631ab44394274ce4b3e1cdc7cc884aa66ab1aac63bbba09a40a8bb4a87",
+      "sampleRate": 22050,
+      "durationMs": 3834
+    },
+    {
+      "sentenceId": "s4.6",
+      "spokenText": "So adding the roots gives the sum.",
+      "trackHash": "41a390a4b297e50e2839c4137990c2abd3558e79b95a94cff95da828bf44b15d",
+      "file": "s4.6.wav",
+      "fileSha256": "dd4fbaf272f5957f8a323a5ccd2026411499e30c12f079097ec9a2819365534f",
+      "sampleRate": 22050,
+      "durationMs": 1860
+    },
+    {
+      "sentenceId": "s4.7",
+      "spokenText": "Look at the minus five x term. The sum is five, the same number with its sign flipped.",
+      "trackHash": "ed95a453de8c4728b2fc675f8bfe292ed51d6448e0165e630177cdb50d46566d",
+      "file": "s4.7.wav",
+      "fileSha256": "8115d540f23ed1b03b47664d5f9901be9caebc1379f1ceb8c819f9984bfb93fb",
+      "sampleRate": 22050,
+      "durationMs": 5392
+    },
+    {
+      "sentenceId": "s4.8",
+      "spokenText": "This matches what the rule told us in the last beat, so the shortcut works.",
+      "trackHash": "bb608fa536f249959cc97e814a7c1ad54ea329bdb437b2673880f2446d34242b",
+      "file": "s4.8.wav",
+      "fileSha256": "c363416fd55e0391142dbc885868c184f5aa7afa364e7058a0ede8f78d29e668",
+      "sampleRate": 22050,
+      "durationMs": 4565
+    },
+    {
+      "sentenceId": "s5.1",
+      "spokenText": "What goes wrong when we add the numbers in the equation?",
+      "trackHash": "7984df614b2125f42d6a809c3959eebedb7541f43d384d41d00e754f28ffa72d",
+      "file": "s5.1.wav",
+      "fileSha256": "b8a438a717230f07888f07ad7a87b29ec498b9636516e72446b9862a947626af",
+      "sampleRate": 22050,
+      "durationMs": 2963
+    },
+    {
+      "sentenceId": "s5.2",
+      "spokenText": "Adding the numbers written in the equation does not give the sum of the roots.",
+      "trackHash": "d792f06677f42a603ebced6e45e7ac1c1f3989827ee63b8107bc1ed5515d213c",
+      "file": "s5.2.wav",
+      "fileSha256": "59175352bc86ecc13f9b80e3d1812c15857ce39caa32e3edacc16a1fe2f26006",
+      "sampleRate": 22050,
+      "durationMs": 3695
+    },
+    {
+      "sentenceId": "s5.3",
+      "spokenText": "Now try one yourself.",
+      "trackHash": "f15f739ccb7e5897a6ad900c9f04c642d55a2598e0fc5d7eb89108b67fc64eb2",
+      "file": "s5.3.wav",
+      "fileSha256": "22dea61dbd7bc241982eef312ebfd50672ad6147f616d1f4520cabbc7f517e03",
+      "sampleRate": 22050,
+      "durationMs": 1465
+    },
+    {
+      "sentenceId": "s6.1",
+      "spokenText": "Can you find the sum of the roots yourself?",
+      "trackHash": "2e1aa8e2082163703ca8ba1854af2b9f5633dc337f88150709ae630c7cb5862a",
+      "file": "s6.1.wav",
+      "fileSha256": "b7df90280ca9379b2496cba91473b110d9c4c3be91dd2d2fbf4b6fda04d9159b",
+      "sampleRate": 22050,
+      "durationMs": 2081
+    },
+    {
+      "sentenceId": "s6.2",
+      "spokenText": "What do the roots of x squared minus seven x plus ten equals zero add up to?",
+      "trackHash": "2bde5f53d07309783b585a4309eee4bcff3c9950ec17b761fa4cb6210262f93c",
+      "file": "s6.2.wav",
+      "fileSha256": "ebc71d9af37614db373a796aaf6d59ae7f9db656467637eec6486fa9748d5b85",
+      "sampleRate": 22050,
+      "durationMs": 5227
+    },
+    {
+      "sentenceId": "s6.3",
+      "spokenText": "The roots add up to S equals seven.",
+      "trackHash": "87a1898408b82f8a0100fb258a084e6e0ef01b5e4a5afd55f7395103e2f669d5",
+      "file": "s6.3.wav",
+      "fileSha256": "a34e85db27ee56fb48538d9f2eb27bd1a1627ab4384383b40d624b60f3b84328",
+      "sampleRate": 22050,
+      "durationMs": 2847
+    },
+    {
+      "sentenceId": "s6.4",
+      "spokenText": "Check it with the rule: the sum is minus the second coefficient over the first.",
+      "trackHash": "c6e4bccd47f862906f9c3a42a0273aca5b4e24b4340d37afb0c703fb2462e64e",
+      "file": "s6.4.wav",
+      "fileSha256": "d27e6cc7706851bbe3ad5796629b660728d2bd4132e43a291461a092de6978c0",
+      "sampleRate": 22050,
+      "durationMs": 4647
+    },
+    {
+      "sentenceId": "s6.5",
+      "spokenText": "Each root is a value that makes the equation true, so you can test your answer.",
+      "trackHash": "25e4f3caba26fc248ae58669432eea65812b049fc98bfcc8c1f82866efb622a7",
+      "file": "s6.5.wav",
+      "fileSha256": "7f70ed31461855f463ba1cb2a6234779abdc4920bec5a941dacf304e8c8fbd1d",
+      "sampleRate": 22050,
+      "durationMs": 4798
+    }
+  ]
+}

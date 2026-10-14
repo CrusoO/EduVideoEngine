@@ -6,7 +6,7 @@ import "../theme/controls.css";
 import { buildMathCache } from "../../components/src/build";
 import { cachedMath } from "@eve/components";
 import { resolve } from "@eve/resolver";
-import { hindiPreview, layoutStress, quadraticRootsV1, sumOfRoots, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
+import { hindiPreview, layoutStress, quadraticRootsV1, referenceLesson, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
 import { FileVoiceAdapter } from "../../voice/src/adapter";
 import { loadBuffers } from "../../voice/src/browser";
 import { colorTheme } from "../theme/palette";
@@ -20,7 +20,7 @@ const params = new URLSearchParams(location.search);
 const voice = params.get("voice") ?? "piper";
 const msPerWord = Number(params.get("mpw") ?? 300);
 const lessons = { v1: quadraticRootsV1, hindi: hindiPreview, stress: layoutStress } as Record<string, LessonBundle>;
-const bundle = (lessons[params.get("lesson") ?? ""] ?? sumOfRoots) as LessonBundle;
+const bundle = (lessons[params.get("lesson") ?? ""] ?? referenceLesson) as LessonBundle;
 document.getElementById("root")!.style.width = `${params.get("w") ?? 360}px`;
 const ctx = new AudioContext();
 

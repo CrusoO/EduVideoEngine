@@ -3,7 +3,7 @@ import {
   EXPR_OPS,
   hindiPreview,
   LIMITS,
-  sumOfRoots,
+  referenceLesson,
   named,
   termIds,
   add,
@@ -341,7 +341,7 @@ describe("cue targets with parts and the new actions", () => {
 
 describe("lesson length (ADR 0018, config/limits.json)", () => {
   const withTarget = (s: number) => {
-    const b = structuredClone(sumOfRoots) as LessonBundle;
+    const b = structuredClone(referenceLesson) as LessonBundle;
     b.plan.targetLengthS = s;
     const { hashes: _h, ...rest } = b;
     void _h;

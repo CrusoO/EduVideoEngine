@@ -4,7 +4,7 @@ import type { LessonBundle } from "../bundle";
 
 /**
  * The Phase 0 reference lesson, kept as a TEST FIXTURE ("V1"): "the sum of the roots of a quadratic" in five scenes, with the general rule,
- * a factorisation and a practice question. It has more kinds of content than the current reference lesson (src/fixtures/sum-of-roots.ts), so the
+ * a factorisation and a practice question. It has more kinds of content than the Phase 0 reference lesson (replaced by src/fixtures/reference-lesson.ts in WP3), so the
  * generic rules of the schema, the resolver and the components are still tested against it. Every number and equation is an expression tree;
  * the sentences carry {expr:id} placeholders only.
  */

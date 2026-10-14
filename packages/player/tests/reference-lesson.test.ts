@@ -2,84 +2,68 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { componentFor } from "@eve/components";
-import { katexMath } from "@eve/components/src/build";
 import { DEFAULT_CHROME_PX, assureLayout, referenceViewports, sceneCost } from "@eve/layout";
 import { assureTimeline, resolve } from "@eve/resolver";
-import { sumOfRoots, termIds, validateBundle, wordsOf, type LessonBundle } from "@eve/schema";
+import { referenceLesson, validateBundle, wordsOf, type LessonBundle } from "@eve/schema";
 import { FileVoiceAdapter } from "@eve/voice";
 import { SEMANTIC } from "../theme/palette";
 import "./load-components";
 
-const lesson = sumOfRoots as LessonBundle;
-const dir = join(__dirname, "..", "..", "voice", "fixtures", "sum-of-roots.en-IN");
+/**
+ * The reference lesson of WP3 with its pinned development voice files. What the lesson IS (arc, roles, claims, gates, SymPy, components) is tested in
+ * packages/gates/tests/reference.test.ts; this file tests it with real audio: the timeline, the layout, and the cues on the words.
+ */
+const lesson = referenceLesson as LessonBundle;
+const dir = join(__dirname, "..", "..", "voice", "fixtures", "reference.en-IN");
 const adapter = new FileVoiceAdapter(JSON.parse(readFileSync(join(dir, "manifest.json"), "utf8")), async (f) => new Uint8Array(readFileSync(join(dir, f))));
 
-describe("the reference lesson: four scenes", () => {
-  it("passes the validator: four beats, a worked beat with its question and its claims, colours that never clash", () => {
-    const r = validateBundle(lesson);
-    expect(r.issues).toEqual([]);
-    expect(lesson.plan.beats.map((b) => b.kind)).toEqual(["predict", "explain", "explain", "worked"]);
-    expect(lesson.scenes.map((s) => s.id)).toEqual(["scene1", "scene2", "scene3", "scene4"]);
-    expect((lesson.claims ?? []).filter((c) => c.beatId === "b4").map((c) => c.id)).toEqual(["c.roots.worked", "c.sum"]);
+describe("the reference lesson: six scenes", () => {
+  it("passes the validator and has one scene per beat, in the order of the arc", () => {
+    expect(validateBundle(lesson).issues).toEqual([]);
+    expect(lesson.plan.beats.map((b) => b.kind)).toEqual(["predict", "explain", "explore", "worked", "explain", "check"]);
+    expect(lesson.scenes.map((s) => s.id)).toEqual(["scene.b1", "scene.b2", "scene.b3", "scene.b4", "scene.b5", "scene.b6"]);
     expect(lesson.scenes[3]!.interactions).toHaveLength(1);
   });
 
-  it("scene 1: the question and the equation, x squared blue, minus five x yellow, plus six green", () => {
+  it("colours: x squared blue, minus five x yellow, plus six green, and the 5 of the sum in yellow like minus five x", () => {
     expect(lesson.termColors).toEqual({ "t.square": "blue", "t.linear": "yellow", "t.constant": "green" });
     expect(SEMANTIC.blue).toBe("#58C4DD");
-    expect(lesson.scenes[0]!.objects.map((o) => `${o.id}:${o.component}`)).toEqual(["title:text", "eq:equation"]);
-    expect([...termIds(lesson.expressions.eq1!)].sort()).toEqual(["t.constant", "t.linear", "t.square"]);
-    expect(lesson.scenes[0]!.objects[1]!.props).toEqual({ size: "l" });
-  });
-
-  it("scene 2: the parabola draws on while the equation, now smaller, stays at the top", () => {
-    const s = lesson.scenes[1]!;
-    expect(s.objects.map((o) => `${o.id}:${o.component}`)).toEqual(["eq:equation", "graph:functionGraph"]);
-    expect(s.objects[0]!.props).toEqual({ size: "m" });
-    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["graph#curve", "draw"]]);
-  });
-
-  it("scene 3: the two roots pop in, one after the other, each labelled by the graph from the expression", () => {
-    const s = lesson.scenes[2]!;
-    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["graph#root0", "pop"], ["graph#root1", "pop"]]);
-    const graph = s.objects.find((o) => o.id === "graph")!;
-    expect(graph.props).toMatchObject({ roots: true });
-    expect(JSON.stringify(graph.props)).not.toMatch(/points|markers/); // no typed coordinates
-  });
-
-  it("scene 4: hops 0 to 2 and 2 to 5, a bracket labelled 2 + 3 = 5, the other terms dimmed, and the 5 of the total in the colour of minus five x", () => {
-    const s = lesson.scenes[3]!;
-    const line = s.objects.find((o) => o.id === "line")!;
-    expect(line.props).toMatchObject({ hops: [{ from: "zero", to: "two" }, { from: "two", to: "five" }], brackets: [{ span: "hops", label: "total" }] });
-    expect(s.objects.find((o) => o.id === "eq")!.props).toEqual({ size: "m" });
-    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["eq#t.square", "dim"], ["eq#t.constant", "dim"], ["line#hop0", "draw"], ["line#hop1", "draw"], ["line#bracket0", "draw"]]);
-    const total = lesson.expressions.total as { b: { term?: string } };
-    const minusFiveX = (lesson.expressions.eq1 as { a: { a: { b: { term?: string } } } }).a.a.b;
-    expect(total.b.term).toBe(minusFiveX.term);
+    const total = lesson.expressions["quad.total"] as { b: { term?: string } };
+    expect(total.b.term).toBe("t.linear");
     expect(lesson.termColors![total.b.term!]).toBe("yellow");
   });
 
-  it("every component of every scene passes its own verification, including the parts its cues address", () => {
-    for (const scene of lesson.scenes) {
-      for (const o of scene.objects) {
-        const mine = scene.cues.filter((c) => c.targetObject.startsWith(`${o.id}#`));
-        const parts = mine.map((c) => c.targetObject.split("#")[1]!);
-        const cueActions = mine.map((c) => ({ part: c.targetObject.split("#")[1]!, action: c.action }));
-        const problems = componentFor(o.component).verify(o.props as never, { expressions: lesson.expressions, exprRef: o.exprRef, objectIds: scene.objects.map((x) => x.id), math: katexMath, cueParts: parts, cueActions });
-        expect(problems, `${scene.id}/${o.id}`).toEqual([]);
-      }
-    }
+  it("scene 3: the curve draws on, then the two roots pop in one after the other, each found from the expression", () => {
+    const s = lesson.scenes[2]!;
+    expect(s.objects.map((o) => `${o.id}:${o.component}`)).toEqual(["eq:equation", "graph:functionGraph"]);
+    expect(s.cues.map((c) => [c.targetObject, c.action])).toEqual([["eq", "reveal"], ["graph#curve", "draw"], ["graph#root0", "pop"], ["graph#root1", "pop"]]);
+    expect(JSON.stringify(s.objects[1]!.props)).not.toMatch(/points|markers/); // no typed coordinates
+  });
+
+  it("scene 4: hops 0 to 2 and 2 to 5, a bracket labelled with the sum, the other terms dimmed", () => {
+    const s = lesson.scenes[3]!;
+    const line = s.objects.find((o) => o.id === "line")!;
+    expect(line.props).toMatchObject({ min: 0, max: 6, brackets: [{ span: "hops", label: "quad.total" }] });
+    expect((line.props as { hops: unknown[] }).hops).toHaveLength(2);
+    expect(s.cues.filter((c) => c.action === "dim").map((c) => c.targetObject).sort()).toEqual(["eq#t.constant", "eq#t.square"]);
+    expect(s.cues.filter((c) => c.action === "draw").map((c) => c.targetObject)).toEqual(["line#hop0", "line#hop1", "line#bracket0"]);
   });
 });
 
 describe("the reference lesson with its voice files", () => {
+  it("has a track for every sentence, as long as the manifest says", async () => {
+    const tracks = await adapter.tracksFor(lesson);
+    expect(tracks.map((t) => t.sentenceId)).toEqual(lesson.script.map((s) => s.id));
+    expect(tracks.every((t) => t.durationMs > 0)).toBe(true);
+  });
+
   it("resolves with no dead air and no stretched scene (the dead-air rule for reference lessons)", async () => {
     const tracks = await adapter.tracksFor(lesson);
     const timeline = resolve(lesson, tracks);
     expect(timeline.diagnostics.stretchedScenes).toEqual([]);
     expect(assureTimeline(timeline, { kind: "reference" })).toEqual([]);
-    expect(timeline.totalMs).toBeGreaterThan(38_000);
+    expect(timeline.totalMs).toBeGreaterThan(120_000);
+    expect(timeline.totalMs).toBeLessThan(420_000); // the hard limit of a lesson
   });
 
   it("fits the 360 x 640 phone after the chrome and the 16:9 desktop frame: the height budget", async () => {
@@ -94,15 +78,28 @@ describe("the reference lesson with its voice files", () => {
     for (const [id] of costs) expect(sceneCost({ objects: lesson.scenes.find((s) => s.id === id)!.objects, layout: [] }, { width: 360, height: phone!.viewport.height - 40 }, ctx).fits, `${id} with 40 px more chrome`).toBe(true);
   });
 
-  it("puts the cues on the words: the hops on 'hop', the bracket at the start of the sum, the question after it", async () => {
-    const tracks = await adapter.tracksFor(lesson);
-    const timeline = resolve(lesson, tracks);
+  it("puts the cues on the sentences that speak the claims: the hops on the root sentences, the bracket at the start of the sum, the question after it", async () => {
+    const timeline = resolve(lesson, await adapter.tracksFor(lesson));
     const audio = (id: string) => timeline.audio.find((a) => a.sentenceId === id)!;
     const ev = (t: string) => timeline.events.find((e) => e.targetObject === t)!;
-    expect(ev("line#hop0").atMs).toBe(audio("s4.1").startMs + Math.floor((9 * audio("s4.1").endMs - 9 * audio("s4.1").startMs) / wordsOf(lesson.script.find((s) => s.id === "s4.1")!.text).length));
-    expect(ev("line#bracket0").atMs).toBe(audio("s4.3").startMs);
+    expect(ev("line#hop0").atMs).toBe(audio("s4.3").startMs);
+    expect(ev("line#hop1").atMs).toBe(audio("s4.4").startMs);
+    expect(ev("line#bracket0").atMs).toBe(audio("s4.5").startMs);
     expect(ev("line#bracket0").action).toBe("draw");
-    expect(timeline.pausePoints).toEqual([{ id: "ask4", atMs: audio("s4.3").endMs, sceneId: "scene4", sentenceId: "s4.3" }]);
+    expect(ev("graph#curve").atMs).toBe(audio("s3.3").startMs);
+    expect(ev("graph#root0").atMs).toBe(audio("s3.4").startMs);
+    expect(ev("graph#root1").atMs).toBe(audio("s3.5").startMs);
     expect(timeline.events.filter((e) => e.action === "pop").map((e) => e.targetObject)).toEqual(["graph#root0", "graph#root1"]);
+  });
+
+  it("pauses three times, each after the sentence that asks: the guess, the hops, the question", async () => {
+    const timeline = resolve(lesson, await adapter.tracksFor(lesson));
+    const audio = (id: string) => timeline.audio.find((a) => a.sentenceId === id)!;
+    expect(timeline.pausePoints).toEqual([
+      { id: "ask.scene.b1", atMs: audio("s1.1").endMs, sceneId: "scene.b1", sentenceId: "s1.1" },
+      { id: "ask.scene.b4", atMs: audio("s4.5").endMs, sceneId: "scene.b4", sentenceId: "s4.5" },
+      { id: "ask.scene.b6", atMs: audio("s6.2").endMs, sceneId: "scene.b6", sentenceId: "s6.2" },
+    ]);
+    expect(wordsOf(lesson.script.find((s) => s.id === "s4.5")!.text).length).toBeGreaterThan(0);
   });
 });

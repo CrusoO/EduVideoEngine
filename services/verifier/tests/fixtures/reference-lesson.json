@@ -1,0 +1,1455 @@
+{
+  "bundleId": "bundle.reference.sum-of-roots.en-IN",
+  "specVersion": "2.0.0",
+  "skillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+  "locale": "en-IN",
+  "subjectId": "maths",
+  "sourceIds": [
+    "quad.sum.problem",
+    "quad.sum.graph",
+    "quad.sum.steps",
+    "quad.sum.misconception",
+    "quad.sum.claim.root",
+    "quad.sum.claim.roots",
+    "quad.sum.claim.vieta",
+    "quad.sum.claim.mistake",
+    "quad.factorise.claim",
+    "quad.sum.q.recall"
+  ],
+  "expressions": {
+    "quad.eq": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "pow",
+            "a": {
+              "op": "sym",
+              "name": "x"
+            },
+            "b": {
+              "op": "num",
+              "n": 2
+            },
+            "term": "t.square"
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 5
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            },
+            "term": "t.linear"
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 6,
+          "term": "t.constant"
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.f": {
+      "op": "add",
+      "a": {
+        "op": "sub",
+        "a": {
+          "op": "pow",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 5
+          },
+          "b": {
+            "op": "sym",
+            "name": "x"
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 6
+      }
+    },
+    "quad.factored": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 3
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.root1": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "x"
+      },
+      "b": {
+        "op": "num",
+        "n": 2
+      }
+    },
+    "quad.root2": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "x"
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    },
+    "quad.total": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "num",
+          "n": 2
+        },
+        "b": {
+          "op": "num",
+          "n": 3
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 5,
+        "term": "t.linear"
+      }
+    },
+    "quad.wrong": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "num",
+          "n": 5
+        },
+        "b": {
+          "op": "num",
+          "n": 6
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 11
+      }
+    },
+    "quad.general": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "a"
+            },
+            "b": {
+              "op": "pow",
+              "a": {
+                "op": "sym",
+                "name": "x"
+              },
+              "b": {
+                "op": "num",
+                "n": 2
+              }
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "b"
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "sym",
+          "name": "c"
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.rule": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "S"
+      },
+      "b": {
+        "op": "neg",
+        "a": {
+          "op": "div",
+          "a": {
+            "op": "sym",
+            "name": "b"
+          },
+          "b": {
+            "op": "sym",
+            "name": "a"
+          }
+        }
+      }
+    },
+    "quad.fac.start": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "pow",
+            "a": {
+              "op": "sym",
+              "name": "x"
+            },
+            "b": {
+              "op": "num",
+              "n": 2
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 5
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 6
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.fac.done": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 2
+          }
+        },
+        "b": {
+          "op": "sub",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 3
+          }
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "sub",
+          "a": {
+            "op": "pow",
+            "a": {
+              "op": "sym",
+              "name": "x"
+            },
+            "b": {
+              "op": "num",
+              "n": 2
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 7
+            },
+            "b": {
+              "op": "sym",
+              "name": "x"
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 10
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    },
+    "quad.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "S"
+      },
+      "b": {
+        "op": "num",
+        "n": 7
+      }
+    },
+    "scene.b4.stop.0": {
+      "op": "num",
+      "n": 0
+    },
+    "scene.b4.stop.1": {
+      "op": "num",
+      "n": 2
+    },
+    "scene.b4.stop.2": {
+      "op": "num",
+      "n": 5
+    }
+  },
+  "termColors": {
+    "t.square": "blue",
+    "t.linear": "yellow",
+    "t.constant": "green"
+  },
+  "plan": {
+    "template": "problem-first",
+    "targetLengthS": 240,
+    "arcId": "problem_first",
+    "level": "class-10",
+    "prerequisites": [
+      {
+        "skillId": "MATH.ALG.QUAD.FACTORISE",
+        "status": "recapped"
+      }
+    ],
+    "beats": [
+      {
+        "id": "b1",
+        "kind": "predict",
+        "title": "Guess the sum",
+        "animate": false,
+        "sourceIds": [
+          "quad.sum.steps"
+        ],
+        "cueFocus": "problem",
+        "beatKind": "hook",
+        "slotId": "hook",
+        "learningGoal": "Can you guess what the two roots of this equation add up to?"
+      },
+      {
+        "id": "b2",
+        "kind": "explain",
+        "title": "Factorising",
+        "animate": true,
+        "sourceIds": [
+          "quad.factorise.claim"
+        ],
+        "cueFocus": "fact",
+        "beatKind": "prerequisite",
+        "slotId": "prerequisite_activation",
+        "learningGoal": "What does it mean to factorise a quadratic?"
+      },
+      {
+        "id": "b3",
+        "kind": "explore",
+        "title": "Where the curve crosses",
+        "animate": true,
+        "sourceIds": [
+          "quad.sum.graph",
+          "quad.sum.steps"
+        ],
+        "cueFocus": "graph",
+        "beatKind": "concept",
+        "slotId": "concept",
+        "learningGoal": "Why does the sum of the roots depend only on the first two coefficients?"
+      },
+      {
+        "id": "b4",
+        "kind": "worked",
+        "title": "Add the roots with hops",
+        "animate": true,
+        "sourceIds": [
+          "quad.sum.steps"
+        ],
+        "cueFocus": "line",
+        "beatKind": "worked",
+        "slotId": "worked_example",
+        "learningGoal": "Does the shortcut agree with solving the long way?"
+      },
+      {
+        "id": "b5",
+        "kind": "explain",
+        "title": "A common mistake",
+        "animate": true,
+        "sourceIds": [
+          "quad.sum.misconception",
+          "quad.sum.claim.mistake"
+        ],
+        "cueFocus": "note",
+        "beatKind": "mistake",
+        "slotId": "common_mistake_contrast",
+        "learningGoal": "What goes wrong when we add the numbers in the equation?"
+      },
+      {
+        "id": "b6",
+        "kind": "check",
+        "title": "Your turn",
+        "animate": true,
+        "sourceIds": [
+          "quad.sum.q.recall"
+        ],
+        "cueFocus": "problem",
+        "beatKind": "check",
+        "slotId": "check",
+        "learningGoal": "Can you find the sum of the roots yourself?"
+      }
+    ]
+  },
+  "script": [
+    {
+      "id": "s1.1",
+      "beatId": "b1",
+      "text": "Can you guess what the two roots of this equation add up to?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s1.2",
+      "beatId": "b1",
+      "text": "Let us see why.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "transition"
+    },
+    {
+      "id": "s2.1",
+      "beatId": "b2",
+      "text": "What does it mean to factorise a quadratic?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s2.2",
+      "beatId": "b2",
+      "text": "Factorising {expr:quad.fac.start} gives {expr:quad.fac.done}.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.fac.start",
+        "quad.fac.done"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "quad.factorise.claim.b2"
+    },
+    {
+      "id": "s2.3",
+      "beatId": "b2",
+      "text": "The two brackets multiplied together make the same quadratic again.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "quad.factorise.claim.b2"
+    },
+    {
+      "id": "s3.1",
+      "beatId": "b3",
+      "text": "Why does the sum of the roots depend only on the first two coefficients?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s3.2",
+      "beatId": "b3",
+      "text": "A root is a value of the unknown that makes the equation true.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.root"
+    },
+    {
+      "id": "s3.3",
+      "beatId": "b3",
+      "text": "Here is our equation {expr:quad.eq}, drawn as a curve.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.eq"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.roots"
+    },
+    {
+      "id": "s3.4",
+      "beatId": "b3",
+      "text": "The curve crosses the axis at the first root, which is two.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.roots"
+    },
+    {
+      "id": "s3.5",
+      "beatId": "b3",
+      "text": "It crosses again at the second root, which is three.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.roots"
+    },
+    {
+      "id": "s3.6",
+      "beatId": "b3",
+      "text": "Now notice something. For any quadratic {expr:quad.general}, the sum of the roots is {expr:quad.rule}.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.general",
+        "quad.rule"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.vieta"
+    },
+    {
+      "id": "s3.7",
+      "beatId": "b3",
+      "text": "So the roots themselves decide the sum.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "link",
+      "linkClaimIds": [
+        "claim.root",
+        "claim.vieta"
+      ]
+    },
+    {
+      "id": "s3.8",
+      "beatId": "b3",
+      "text": "Only the first two coefficients matter, and the last one does not.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.vieta"
+    },
+    {
+      "id": "s3.9",
+      "beatId": "b3",
+      "text": "Remember the rule: the sum is {expr:quad.rule}, whatever the constant term is.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.rule"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.vieta"
+    },
+    {
+      "id": "s4.1",
+      "beatId": "b4",
+      "text": "Does the shortcut agree with solving the long way?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s4.2",
+      "beatId": "b4",
+      "text": "First factorise the equation to get {expr:quad.factored}.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.factored"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.equivalent.1"
+    },
+    {
+      "id": "s4.3",
+      "beatId": "b4",
+      "text": "Start at zero. The first root is two, so hop to two.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.roots"
+    },
+    {
+      "id": "s4.4",
+      "beatId": "b4",
+      "text": "The second root is three, so hop three more and land on five.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.roots"
+    },
+    {
+      "id": "s4.5",
+      "beatId": "b4",
+      "text": "The two roots add up to {expr:quad.total}.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.total"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.sum.1"
+    },
+    {
+      "id": "s4.6",
+      "beatId": "b4",
+      "text": "So adding the roots gives the sum.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "link",
+      "linkClaimIds": [
+        "c.quad.sum.steps.roots",
+        "c.quad.sum.steps.sum.1"
+      ]
+    },
+    {
+      "id": "s4.7",
+      "beatId": "b4",
+      "text": "Look at the minus five x term. The sum is five, the same number with its sign flipped.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.sum.1"
+    },
+    {
+      "id": "s4.8",
+      "beatId": "b4",
+      "text": "This matches what the rule told us in the last beat, so the shortcut works.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "c.quad.sum.steps.sum.1"
+    },
+    {
+      "id": "s5.1",
+      "beatId": "b5",
+      "text": "What goes wrong when we add the numbers in the equation?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s5.2",
+      "beatId": "b5",
+      "text": "Adding the numbers written in the equation does not give the sum of the roots.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "claim.mistake"
+    },
+    {
+      "id": "s5.3",
+      "beatId": "b5",
+      "text": "Now try one yourself.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "transition"
+    },
+    {
+      "id": "s6.1",
+      "beatId": "b6",
+      "text": "Can you find the sum of the roots yourself?",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "goal"
+    },
+    {
+      "id": "s6.2",
+      "beatId": "b6",
+      "text": "What do the roots of {expr:quad.q.eq} add up to?",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.q.eq"
+      ],
+      "status": "draft",
+      "role": "question",
+      "questionId": "quad.sum.q.recall"
+    },
+    {
+      "id": "s6.3",
+      "beatId": "b6",
+      "text": "The roots add up to {expr:quad.q.answer}.",
+      "termSpans": [],
+      "exprRefs": [
+        "quad.q.answer"
+      ],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "quad.sum.q.recall.answer.b6"
+    },
+    {
+      "id": "s6.4",
+      "beatId": "b6",
+      "text": "Check it with the rule: the sum is minus the second coefficient over the first.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "quad.sum.q.recall.answer.b6"
+    },
+    {
+      "id": "s6.5",
+      "beatId": "b6",
+      "text": "Each root is a value that makes the equation true, so you can test your answer.",
+      "termSpans": [],
+      "exprRefs": [],
+      "status": "draft",
+      "role": "claim",
+      "claimId": "quad.sum.q.recall.answer.b6"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene.b1",
+      "beatId": "b1",
+      "sourceIds": [
+        "quad.sum.steps"
+      ],
+      "objects": [
+        {
+          "id": "title",
+          "component": "text",
+          "props": {
+            "text": "Guess the sum",
+            "role": "title"
+          },
+          "role": "static",
+          "textRole": "title"
+        },
+        {
+          "id": "problem",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.eq"
+        },
+        {
+          "id": "answer",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.total"
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "title",
+            "problem",
+            "answer"
+          ]
+        },
+        {
+          "rule": "center",
+          "item": "title"
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "title",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s1.1",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "problem",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s1.1",
+            "at": "end"
+          },
+          "minHoldMs": 1500
+        },
+        {
+          "targetObject": "answer",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s1.2",
+            "at": "start"
+          },
+          "minHoldMs": 1500
+        }
+      ],
+      "interactions": [
+        {
+          "id": "ask.scene.b1",
+          "afterSentenceId": "s1.1",
+          "prompt": "What do the two roots add up to?",
+          "goalExprRef": "quad.total"
+        }
+      ],
+      "a11y": {
+        "altText": "The title Guess the sum, a quadratic equation, and after a pause the sum of its roots."
+      }
+    },
+    {
+      "id": "scene.b2",
+      "beatId": "b2",
+      "sourceIds": [
+        "quad.factorise.claim"
+      ],
+      "objects": [
+        {
+          "id": "title",
+          "component": "text",
+          "props": {
+            "text": "Factorising",
+            "role": "title"
+          },
+          "role": "static",
+          "textRole": "title"
+        },
+        {
+          "id": "fact",
+          "component": "equation",
+          "props": {
+            "size": "l"
+          },
+          "exprRef": "quad.fac.done"
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "title",
+            "fact"
+          ]
+        },
+        {
+          "rule": "center",
+          "item": "title"
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "title",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s2.2",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "fact",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s2.3",
+            "at": "start"
+          },
+          "minHoldMs": 1500
+        }
+      ],
+      "a11y": {
+        "altText": "The title Factorising, and a quadratic written as a product of two brackets."
+      }
+    },
+    {
+      "id": "scene.b3",
+      "beatId": "b3",
+      "sourceIds": [
+        "quad.sum.graph",
+        "quad.sum.steps"
+      ],
+      "objects": [
+        {
+          "id": "eq",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.eq"
+        },
+        {
+          "id": "graph",
+          "component": "functionGraph",
+          "props": {
+            "xMin": 0,
+            "xMax": 5,
+            "yMin": -1,
+            "yMax": 7,
+            "roots": true
+          },
+          "exprRef": "quad.f"
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "eq",
+            "graph"
+          ]
+        },
+        {
+          "rule": "center",
+          "item": "graph"
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "eq",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s3.3",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "graph#curve",
+          "action": "draw",
+          "anchor": {
+            "sentenceId": "s3.3",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "graph#root0",
+          "action": "pop",
+          "anchor": {
+            "sentenceId": "s3.4",
+            "at": "start"
+          },
+          "minHoldMs": 300
+        },
+        {
+          "targetObject": "graph#root1",
+          "action": "pop",
+          "anchor": {
+            "sentenceId": "s3.5",
+            "at": "start"
+          },
+          "minHoldMs": 300
+        }
+      ],
+      "a11y": {
+        "altText": "The equation and its curve, drawn on; the two places where the curve crosses the axis pop in as roots."
+      }
+    },
+    {
+      "id": "scene.b4",
+      "beatId": "b4",
+      "sourceIds": [
+        "quad.sum.steps"
+      ],
+      "objects": [
+        {
+          "id": "eq",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.eq"
+        },
+        {
+          "id": "line",
+          "component": "numberLine",
+          "props": {
+            "min": 0,
+            "max": 6,
+            "hops": [
+              {
+                "from": "scene.b4.stop.0",
+                "to": "scene.b4.stop.1"
+              },
+              {
+                "from": "scene.b4.stop.1",
+                "to": "scene.b4.stop.2",
+                "color": "green"
+              }
+            ],
+            "brackets": [
+              {
+                "span": "hops",
+                "label": "quad.total"
+              }
+            ]
+          }
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "eq",
+            "line"
+          ]
+        },
+        {
+          "rule": "center",
+          "item": "line"
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "eq#t.square",
+          "action": "dim",
+          "anchor": {
+            "sentenceId": "s4.3",
+            "at": "end"
+          },
+          "minHoldMs": 0
+        },
+        {
+          "targetObject": "eq#t.constant",
+          "action": "dim",
+          "anchor": {
+            "sentenceId": "s4.3",
+            "at": "end"
+          },
+          "minHoldMs": 0
+        },
+        {
+          "targetObject": "line#hop0",
+          "action": "draw",
+          "anchor": {
+            "sentenceId": "s4.3",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "line#hop1",
+          "action": "draw",
+          "anchor": {
+            "sentenceId": "s4.4",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "line#bracket0",
+          "action": "draw",
+          "anchor": {
+            "sentenceId": "s4.5",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        }
+      ],
+      "interactions": [
+        {
+          "id": "ask.scene.b4",
+          "afterSentenceId": "s4.5",
+          "prompt": "How is the sum related to the minus five x term?",
+          "goalExprRef": "quad.total"
+        }
+      ],
+      "a11y": {
+        "altText": "The equation; when the hops begin, all its terms but minus five x fade. A number line: a hop from zero to two, a hop from two to five, and a bracket labelled with the sum."
+      }
+    },
+    {
+      "id": "scene.b5",
+      "beatId": "b5",
+      "sourceIds": [
+        "quad.sum.misconception",
+        "quad.sum.claim.mistake"
+      ],
+      "objects": [
+        {
+          "id": "title",
+          "component": "text",
+          "props": {
+            "text": "A common mistake",
+            "role": "title"
+          },
+          "role": "static",
+          "textRole": "title"
+        },
+        {
+          "id": "note",
+          "component": "text",
+          "props": {
+            "text": "Add the roots, not the numbers",
+            "role": "label"
+          }
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "title",
+            "note"
+          ]
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "note",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s5.2",
+            "at": "start"
+          },
+          "minHoldMs": 1500
+        }
+      ],
+      "a11y": {
+        "altText": "The title A common mistake, and a note: add the roots, not the numbers."
+      }
+    },
+    {
+      "id": "scene.b6",
+      "beatId": "b6",
+      "sourceIds": [
+        "quad.sum.q.recall"
+      ],
+      "objects": [
+        {
+          "id": "title",
+          "component": "text",
+          "props": {
+            "text": "Your turn",
+            "role": "title"
+          },
+          "role": "static",
+          "textRole": "title"
+        },
+        {
+          "id": "problem",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.q.eq"
+        },
+        {
+          "id": "answer",
+          "component": "equation",
+          "props": {
+            "size": "m"
+          },
+          "exprRef": "quad.q.answer"
+        }
+      ],
+      "layout": [
+        {
+          "rule": "column",
+          "items": [
+            "title",
+            "problem",
+            "answer"
+          ]
+        },
+        {
+          "rule": "center",
+          "item": "title"
+        }
+      ],
+      "cues": [
+        {
+          "targetObject": "title",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s6.2",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        },
+        {
+          "targetObject": "problem",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s6.2",
+            "at": "end"
+          },
+          "minHoldMs": 1500
+        },
+        {
+          "targetObject": "answer",
+          "action": "reveal",
+          "anchor": {
+            "sentenceId": "s6.3",
+            "at": "start"
+          },
+          "minHoldMs": 1500
+        },
+        {
+          "targetObject": "problem",
+          "action": "highlight",
+          "anchor": {
+            "sentenceId": "s6.3",
+            "at": "start"
+          },
+          "minHoldMs": 800
+        }
+      ],
+      "interactions": [
+        {
+          "id": "ask.scene.b6",
+          "afterSentenceId": "s6.2",
+          "prompt": "What do the roots add up to?",
+          "goalExprRef": "quad.q.answer"
+        }
+      ],
+      "a11y": {
+        "altText": "The title Your turn, a quadratic equation, and after a pause the sum of its roots."
+      }
+    }
+  ],
+  "claims": [
+    {
+      "kind": "equivalent",
+      "a": "quad.fac.start",
+      "b": "quad.fac.done",
+      "id": "quad.factorise.claim.b2",
+      "beatId": "b2",
+      "sourceIds": [
+        "quad.factorise.claim"
+      ],
+      "claimMode": "computed",
+      "importance": "support"
+    },
+    {
+      "id": "claim.root",
+      "beatId": "b3",
+      "kind": "statement",
+      "sourceIds": [
+        "quad.sum.claim.root"
+      ],
+      "claimMode": "grounded",
+      "importance": "support"
+    },
+    {
+      "id": "claim.roots",
+      "beatId": "b3",
+      "kind": "roots",
+      "equation": "quad.eq",
+      "values": [
+        {
+          "op": "num",
+          "n": 2
+        },
+        {
+          "op": "num",
+          "n": 3
+        }
+      ],
+      "sourceIds": [
+        "quad.sum.claim.roots"
+      ],
+      "claimMode": "computed",
+      "importance": "support"
+    },
+    {
+      "id": "claim.vieta",
+      "beatId": "b3",
+      "kind": "sum-of-roots",
+      "equation": "quad.general",
+      "equals": "quad.rule",
+      "sourceIds": [
+        "quad.sum.claim.vieta"
+      ],
+      "claimMode": "computed",
+      "importance": "core",
+      "dependsOn": [
+        "claim.root"
+      ]
+    },
+    {
+      "id": "c.quad.sum.steps.equivalent.1",
+      "beatId": "b4",
+      "kind": "equivalent",
+      "a": "quad.eq",
+      "b": "quad.factored",
+      "sourceIds": [
+        "quad.sum.steps"
+      ],
+      "claimMode": "computed",
+      "importance": "support"
+    },
+    {
+      "id": "c.quad.sum.steps.roots",
+      "beatId": "b4",
+      "kind": "roots",
+      "equation": "quad.eq",
+      "values": [
+        {
+          "op": "num",
+          "n": 2
+        },
+        {
+          "op": "num",
+          "n": 3
+        }
+      ],
+      "sourceIds": [
+        "quad.sum.steps"
+      ],
+      "claimMode": "computed",
+      "importance": "support",
+      "dependsOn": [
+        "c.quad.sum.steps.equivalent.1"
+      ],
+      "usesStep": "c.quad.sum.steps.equivalent.1",
+      "stepKind": "rearrange"
+    },
+    {
+      "id": "c.quad.sum.steps.sum.1",
+      "beatId": "b4",
+      "kind": "sum-of-roots",
+      "equation": "quad.eq",
+      "equals": "quad.total",
+      "sourceIds": [
+        "quad.sum.steps"
+      ],
+      "claimMode": "computed",
+      "importance": "core",
+      "dependsOn": [
+        "c.quad.sum.steps.roots",
+        "claim.vieta"
+      ],
+      "usesStep": "c.quad.sum.steps.roots",
+      "stepKind": "evaluate"
+    },
+    {
+      "id": "claim.mistake",
+      "beatId": "b5",
+      "kind": "statement",
+      "sourceIds": [
+        "quad.sum.claim.mistake"
+      ],
+      "claimMode": "grounded",
+      "importance": "support",
+      "dependsOn": [
+        "claim.vieta"
+      ]
+    },
+    {
+      "id": "quad.sum.q.recall.answer.b6",
+      "beatId": "b6",
+      "kind": "sum-of-roots",
+      "equation": "quad.q.eq",
+      "equals": "quad.q.answer",
+      "sourceIds": [
+        "quad.sum.q.recall"
+      ],
+      "claimMode": "computed",
+      "importance": "core"
+    }
+  ],
+  "hashes": {
+    "bundle": "c46cbdcf13fb3dbc9155440a26dfeb87d787e8ab147de5281a9cbe3470808970",
+    "perScene": {
+      "scene.b1": "3f9d8eaef6a86b827b0d2f203d74e53facbb05525a07de1cb1783c0afa53a414",
+      "scene.b2": "2098a93cde7b8fb3d5c207483c7a11bc4bdea71fb990fcaf954bdf30f6236edd",
+      "scene.b3": "8cdf4c59ec30119d86f9d8cfbb9f63890afcaaa4a8095fee1ba8ba6134ce8aae",
+      "scene.b4": "57b48817e7283242566b7522e76aa42a6011fc5d7e0d63a61299a1e6ca117752",
+      "scene.b5": "0ea194024fe7d1eff7ecad93b9a02c7faf000650d9265fccf86421914bd2a400",
+      "scene.b6": "5f78bdfd371df691ca384d2c410ac4399af6629c0a39c76b2c6fd4cab9f6ecba"
+    }
+  }
+}

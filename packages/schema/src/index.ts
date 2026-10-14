@@ -7,7 +7,7 @@ export * from "./steps";
 export * from "./verification";
 export * from "./validate";
 export { quadraticRootsV1, buildQuadraticRootsV1, expressions as quadraticExpressions } from "./fixtures/quadratic-roots";
-export { sumOfRoots, buildSumOfRoots } from "./fixtures/sum-of-roots";
+export { referenceLesson } from "./fixtures/reference-lesson";
 export * from "./json-schema";
 export * from "./locales";
 export * from "./verbalise";

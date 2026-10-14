@@ -5,7 +5,7 @@
  * Fails (exit 1) if a clean lesson is rejected, a corrupted copy is accepted, or a copy is rejected only by a check it does not name.
  */
 import { CORRUPTIONS, MATHS_CORRUPTIONS, buildCleanFixture, judgeAll, rejectionsOf } from "../packages/gates/src";
-import { sumOfRoots, type LessonBundle } from "../packages/schema/src";
+import { referenceLesson, type LessonBundle } from "../packages/schema/src";
 import { verifyBundle } from "../packages/verify/src";
 
 const MATHS_TARGET = "Verifier";
@@ -39,11 +39,11 @@ for (const r of judgeAll(clean)) {
 }
 
 console.log("\n== maths corruptions (SymPy verifier)");
-const reference = await verifyBundle(sumOfRoots);
+const reference = await verifyBundle(referenceLesson);
 console.log(`   the reference lesson: ${reference.ok ? "VERIFIED" : "REJECTED"}`);
 if (!reference.ok) wrong++;
 for (const m of MATHS_CORRUPTIONS) {
-  const base = structuredClone(m.base === "fixture" ? clean.ctx.bundle : sumOfRoots) as LessonBundle;
+  const base = structuredClone(m.base === "fixture" ? clean.ctx.bundle : referenceLesson) as LessonBundle;
   m.corrupt(base);
   const report = await verifyBundle(base);
   const ok = !report.ok;

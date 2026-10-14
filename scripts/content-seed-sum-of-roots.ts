@@ -1,7 +1,7 @@
 /**
  * Converts the hand-written sum-of-roots lesson into content records (the first seed of the content plane). Run once, or again to regenerate the files:
  *   pnpm content:seed
- * The numbers and equations are the expression trees of the hand-written lesson (packages/schema/src/fixtures/sum-of-roots.ts); the prose is the narration
+ * The numbers and equations are the expression trees of the hand-written lesson (the Phase 0 lesson, replaced in WP3 by the reference lesson built from these records); the prose is the narration
  * and on-screen text of that lesson, split into records by kind. The records are the owner's own work: licence "owner-original".
  */
 import { mkdirSync, writeFileSync } from "node:fs";
