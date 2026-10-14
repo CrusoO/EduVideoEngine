@@ -109,3 +109,10 @@ Write the next two topics (linear equations and one more algebra topic) in your 
 Confirm the old paid-provider access key is deleted.
 Run the sync harness once on a real Android phone.
 Keep the two repositories independent: one Claude session per repository, each working in its own folder (both folders may be open together to look at changes). Remove stray engine files from YourTutor, and give YourTutor its own docs pass with the same method (docs/ENGINE_WORKFLOW.md section 10, docs/ENGINE_INTERFACE.md).
+
+9. Backlog and notes (carried over from docs/ROADMAP.md, which this file replaces)
+Budget rule: no paid service, paid API or paid dependency; if something needs money, write an ADR with the options and stop (ADR 0016).
+Done in Phase 1 before the CO-2 packages: layout solver and height budget (ADR 0017, 0018), the claims rule (ADR 0015), the stage theme, the motion vocabulary, the diagram components, the reference lesson rewrite, and the configuration cleanup (ADR 0026).
+Backlog: more picture patterns, for example a balance scale for linear equations and a picture for mistake or hook beats, because pictures exist only for concept and worked beats (ADR 0043).
+Phase 2 detail not stated above: playback rate by pre-rendered rates or a time-stretch library (ADR 0012); the blind listening test also covers the goal, link and transition sentences; the player and its voice files must load only when a lesson opens so they never count toward the 249.7 KB home page; no Piper voice is cleared for a shipped product, Jenny stays development-only (ADR 0013); morphing through an expression-tree diff only after the motion vocabulary has been in use (ADR 0021); Hindi and Nepali speech vocabularies stay blocked until native reviewers exist (ADR 0006, 0016).
+Indic Parler-TTS (ai4bharat/indic-parler-tts) is a production voice candidate, self-hosted. The model is gated: access is free on request, and its licence text must be re-read on the model card once access is granted. The public metadata said Apache-2.0 on 2026-10-13; that covers weights and code, not the terms of its training data. Self-hosting on a GPU costs money and needs its own ADR first.

@@ -23,7 +23,7 @@ Compared on 2026-10-15: `docs/change-orders/CO-2.md` and `docs/change-orders/AM-
 | CO-2 5.4 | `arcId` and per-beat `slotId` are in the hash | `hash.ts` |
 | AM-11 | Slot-to-beat-kind table | `SLOT_BEAT_KIND` |
 | CO-2 3.4, 11 | What code can and cannot check is stated; UI wording "numbers and equations checked by code" | `docs/PEDAGOGY.md`, ADR 0031 |
-| AM-13, AM-19, AM-21 | Sequencing, provider plan with no filter bypass, one roadmap numbering | ADR 0040, 0041, `docs/ROADMAP.md` |
+| AM-13, AM-19, AM-21 | Sequencing, provider plan with no filter bypass, one roadmap numbering | ADR 0040, 0041, `docs/ENGINE_PLAN.md` (formerly `docs/ROADMAP.md`) |
 
 ## 2. Differs, with the fix
 
@@ -40,7 +40,7 @@ Compared on 2026-10-15: `docs/change-orders/CO-2.md` and `docs/change-orders/AM-
 | 2.9 | CO-2 header: "Per-scene hashes of unchanged scenes must not change". AM-1: "Hashes change once at the spec bump, by design." | AM wins. Within 2.0.0 the rule holds (tested). | Follows the AM. |
 | 2.10 | CO-2 2.7: a practice question has `stem` and an `answer` expression tree. Mine has `text` and `question {problem, answer}` (two equation ids). | Same content, different shape; the equation form is what the verifier proves. | Left as built; say if you want the names changed (record hashes would change). |
 | 2.11 | AM-20 names `secrets-check.ts` in the mutation scope; it is an untested script. | Hardening H3 (refactor into a module with tests). | In this prompt. |
-| 2.12 | AM-17 / AM-18 as pasted now carry the D1 and D3 changes (variety rule; algebra-only exit). Earlier ADR 0041 and 0043 and `docs/ROADMAP.md` still said the old rule and the 3-subject exit. | ADR 0043 rewritten, ADR 0041 and `docs/ROADMAP.md` amended, `textHeavyReport` and its tests changed. | **Fixed** (same pass as WP2b). |
+| 2.12 | AM-17 / AM-18 as pasted now carry the D1 and D3 changes (variety rule; algebra-only exit). Earlier ADR 0041 and 0043 and `docs/ENGINE_PLAN.md` (formerly `docs/ROADMAP.md`) still said the old rule and the 3-subject exit. | ADR 0043 rewritten, ADR 0041 and `docs/ENGINE_PLAN.md` (formerly `docs/ROADMAP.md`) amended, `textHeavyReport` and its tests changed. | **Fixed** (same pass as WP2b). |
 
 ## 3. Unclear in the text: questions for you
 
