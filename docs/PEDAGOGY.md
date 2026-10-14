@@ -41,7 +41,7 @@ Every sentence has one role. A sentence is 18 words or fewer, carries one idea, 
 A `goal` or `transition` sentence adds no new number, fact or placeholder (a placeholder for an expression already introduced is allowed), carries no claim, and does not count toward a core claim's narration time. An unroled explanatory sentence is not allowed.
 
 ## Anchor rules (AM-6, ADR 0036)
-A claim sentence matches its claim; a link sentence matches either of its two claims; goal and transition sentences satisfy no claim-based requirement but count for "at least one cue". An object that shows an expression needs a cue anchored to a sentence whose claim uses that expression. Any other non-static object needs a cue anchored to a claim-carrying sentence of its beat when the beat has claims; a beat with no claims is exempt. Static objects (title, caption) are exempt; an axis is part of its function graph, not a static object.
+A claim sentence matches its claim; a link sentence matches either of its two claims; goal and transition sentences satisfy no claim-based requirement but count for "at least one cue". An object that shows an expression needs a cue anchored to a sentence whose claim uses that expression. Any other non-static object needs a cue anchored to a claim-carrying sentence of its beat when the beat has claims; a beat with no claims is exempt. A function graph shows a function in x, which no claim names, so for a graph the claim may instead use an equation that has the function as one side (ADR 0049). Static objects (title, caption) are exempt; an axis is part of its function graph, not a static object.
 
 ## Gates
 | Gate | Rule | Audio timings | Severity |
@@ -54,7 +54,7 @@ A claim sentence matches its claim; a link sentence matches either of its two cl
 | G6 Prerequisites | every direct prerequisite recapped, linked or assumed at an allowed level | no | fail |
 | G7 Core coverage | every core claim in the bundle has a claim sentence | no | fail |
 
-Each gate has at least one deliberately corrupted lesson it must reject (27 corruptions with the 7 maths ones; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
+Each gate has at least one deliberately corrupted lesson it must reject (28 corruptions with the 7 maths ones: the 27 of AM-15 and C21 of ADR 0049; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
 
 ## What code can and cannot check
 * Can: order, coverage, anchors, closed lists, numbers on screen (verifier), step transformations (verifier).

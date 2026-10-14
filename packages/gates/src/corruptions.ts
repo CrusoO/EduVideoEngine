@@ -5,7 +5,7 @@ import type { Fixture } from "./fixture";
 /**
  * The corruption catalogue as DATA (AM-15, CO-2 section 7): each entry derives a corrupted copy of the clean lesson with a small function, and names the check
  * that must reject it. A gate with no failing corruption is not built. The seven maths corruptions of the Phase 0 gate (`MATHS_CORRUPTIONS` in
- * scripts/verify-gate.ts) work on the reference lesson and the SymPy verifier; they are listed here so `--list` shows all 27.
+ * scripts/verify-gate.ts) work on the reference lesson and the SymPy verifier; they are listed here so `--list` shows all 28 (the 27 of AM-15 and C21 of ADR 0049).
  */
 export type Target = "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7" | "Validator" | "Compile" | "Verifier";
 export type Corruption = {
@@ -247,6 +247,20 @@ export const CORRUPTIONS: readonly Corruption[] = [
     corrupt: (c) =>
       editBundle(c, (b) => {
         sentence(b, "s1.1").text = "Can you guess what the roots add up to?";
+      }),
+  },
+  {
+    id: "C21",
+    reason: /\(c\)/,
+    what: "a function graph cued to a claim whose equation does not have that function as a side (ADR 0049)",
+    target: "G3",
+    corrupt: (c) =>
+      editBundle(c, (b) => {
+        (b.expressions as Record<string, unknown>)["quad.other"] = { op: "sub", a: { op: "pow", a: { op: "sym", name: "x" }, b: { op: "num", n: 2 } }, b: { op: "num", n: 4 } };
+        const s = scene(b, "scene.b4");
+        s.objects.push({ id: "graph", component: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7 }, exprRef: "quad.other" });
+        s.layout = [{ rule: "column", items: s.objects.map((o) => o.id) }];
+        s.cues.push({ targetObject: "graph", action: "reveal", anchor: { sentenceId: "s4.4", at: "start" }, minHoldMs: 1500 });
       }),
   },
 ];

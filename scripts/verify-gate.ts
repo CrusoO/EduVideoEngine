@@ -1,6 +1,6 @@
 /**
  * The gate of the pedagogy layer and of the maths verifier.
- *   pnpm verify:gate           the clean lessons pass; every corrupted copy (20 pedagogy and 7 maths, 27 in all) is rejected, and each by the check it names
+ *   pnpm verify:gate           the clean lessons pass; every corrupted copy (21 pedagogy and 7 maths, 28 in all) is rejected, and each by the check it names
  *   pnpm verify:gate --list    prints every corruption and the check that must reject it, and runs nothing
  * Fails (exit 1) if a clean lesson is rejected, a corrupted copy is accepted, or a copy is rejected only by a check it does not name.
  */

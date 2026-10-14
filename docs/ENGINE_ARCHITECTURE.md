@@ -133,13 +133,13 @@ Gates (pure functions; each has at least one corrupted lesson it must reject)
 Gate	Rule	Severity
 G1 Coherence	A claim is used only after its prerequisites are introduced; graph acyclic; link after both claims; skill prerequisites respected	Fail
 G2 Delivery	Core-claim narration reaches a floor (starting value 8000 ms)	Fail for reference lessons, warning for generated
-G3 Active visual	(a) every non-static object has a cue; (b) worked beats: a claim-anchored cue; (c) expression objects anchored to a sentence whose claim uses them	Fail
+G3 Active visual	(a) every non-static object has a cue; (b) worked beats: a claim-anchored cue; (c) expression objects anchored to a sentence whose claim uses them (a function graph: a claim whose equation has the function as one side, ADR 0049)	Fail
 G4 Arc	Arc exists; beats map to legal slots and kinds; required slots filled; speakable learning goal	Fail
 G5 Role	Goal copy first; claim ids; transitions from the list; link and question rules	Fail
 G6 Prerequisites	Every prerequisite recapped, linked or assumed	Fail
 G7 Core coverage	Every core claim has a claim sentence	Fail
 
-Corruption set: 27 corrupted copies (7 maths, 20 pedagogy). The list is pnpm verify:gate --list and AM-15. verify:gate fails if any corruption is accepted, the clean fixture is rejected, or a corruption is rejected by a gate other than the one named for it.
+Corruption set: 28 corrupted copies (7 maths, 21 pedagogy). The list is pnpm verify:gate --list; the 27 of AM-15 plus C21 of ADR 0049. verify:gate fails if any corruption is accepted, the clean fixture is rejected, or a corruption is rejected by a gate other than the one named for it.
 
 What code cannot check. That a sentence faithfully paraphrases its claim. That stays with human review. UI wording is "numbers and equations checked by code" until every sentence is claim-bound. The word "reviewed" stays out of UI and lesson metadata until a sentence-level approval gate exists.
 
@@ -182,7 +182,7 @@ Level	Check	Status
 Specification	Schema, sources, cross-references, glossary, alt text, duration cap	Built
 Meaning	SymPy verifier: every number, equation, solution step, graph point and claim; one handler per node type and per step kind	Built
 Layout and timing	Solver checks, resolver errors, dead-air rule, sync measurement	Built
-Pedagogy	Gates G1 to G7 and 27 corruptions	Built (WP2b)
+Pedagogy	Gates G1 to G7 and 28 corruptions	Built (WP2b)
 Audio	Transcript and spoken-equation round trip	Partly built
 Clarity	Vision critic that can only flag	Not built
 Learning	Model screen (recall-biased proxy, gates nothing), then student study with recall and reasoning reported separately	Phase 3

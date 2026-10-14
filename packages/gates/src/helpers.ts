@@ -1,4 +1,4 @@
-import type { Claim, NarrationSentence } from "@eve/schema";
+import { canonicalJson, type Claim, type Expr, type NarrationSentence } from "@eve/schema";
 import type { GateContext } from "./types";
 
 type Sentence = NarrationSentence;
@@ -12,6 +12,26 @@ export function sentenceOrder(ctx: Pick<GateContext, "bundle">): Map<string, num
 }
 
 export const claimsOf = (ctx: Pick<GateContext, "bundle">): readonly Claim[] => ctx.bundle.claims ?? [];
+
+/** An expression without its term names (a named term only gives a colour; the maths is the same). */
+const bare = (e: Expr): unknown => {
+  const { term: _term, ...rest } = e as Expr & { term?: string };
+  void _term;
+  if ("a" in rest && "b" in rest) return { ...rest, a: bare(rest.a as Expr), b: bare(rest.b as Expr) };
+  if ("a" in rest) return { ...rest, a: bare(rest.a as Expr) };
+  return rest;
+};
+export const sameMaths = (a: Expr, b: Expr): boolean => canonicalJson(bare(a)) === canonicalJson(bare(b));
+
+/**
+ * Whether a function graph of expression `fnId` is a picture of the equation `eqId` (ADR 0049): the equation has that function as one side, so the graph shows
+ * where the two sides meet. A graph takes a function in x, never an equation, so no claim names it directly.
+ */
+export function isSideOf(ctx: Pick<GateContext, "bundle">, fnId: string, eqId: string): boolean {
+  const f = ctx.bundle.expressions[fnId];
+  const e = ctx.bundle.expressions[eqId];
+  return f !== undefined && e !== undefined && e.op === "eq" && (sameMaths(e.a, f) || sameMaths(e.b, f));
+}
 
 /** The expression ids a claim states or uses. */
 export function claimExpressions(claim: Claim): string[] {

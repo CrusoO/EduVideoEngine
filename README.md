@@ -16,7 +16,7 @@ Run everything from the repository root.
     pnpm exec tsc --noEmit -p tsconfig.json   # type check (pnpm typecheck does the same)
     pnpm secrets:check                        # no key may be in a file or in the last commits
     pnpm verify:gate                          # the clean lessons must pass; every corrupted copy must be rejected
-    pnpm verify:gate --list                   # each of the 27 corruptions and the gate that must reject it
+    pnpm verify:gate --list                   # each of the 28 corruptions and the gate that must reject it
     pnpm patterns:report                      # the variety rule per arc and lesson length
     pnpm docs:check                           # the doc set is complete and the frozen prompts are unchanged
     pnpm mutate                               # Stryker on the main configuration, then the 90-per-file floor

@@ -1,4 +1,4 @@
-import { claimExpressions, claimsOf, claimsSpokenBy } from "./helpers";
+import { claimExpressions, claimsOf, claimsSpokenBy, isSideOf } from "./helpers";
 import type { Finding, GateContext } from "./types";
 
 const fail = (code: string, message: string, ids: string[]): Finding => ({ gate: "G3", level: "fail", code, message, ids });
@@ -8,7 +8,8 @@ const fail = (code: string, message: string, ids: string[]): Finding => ({ gate:
  *  (a) it is the target of at least one cue (a cue on a goal or transition sentence counts for this);
  *  (b) in a beat that has claims, it has a cue anchored to a sentence that carries a claim (a claim sentence, or a link sentence for either of its two claims).
  *      A beat with no claims is exempt. In a worked beat this is the rule that each object is tied to a claim;
- *  (c) an object that shows an expression has a cue anchored to a sentence whose claim uses that expression.
+ *  (c) an object that shows an expression has a cue anchored to a sentence whose claim uses that expression. A function graph shows a function in x, which no
+ *      claim names, so for a graph the claim may instead use an equation that has the function as one side (ADR 0049).
  */
 export function g3ActiveVisual(ctx: GateContext): Finding[] {
   const out: Finding[] = [];
@@ -35,7 +36,13 @@ export function g3ActiveVisual(ctx: GateContext): Finding[] {
         out.push(fail("cue-not-on-claim", `(b) ${where}object ${at} has no cue anchored to a sentence that carries a claim`, [scene.id, o.id]));
         continue;
       }
-      if (o.exprRef !== undefined && !spoken.some((id) => claims.get(id) && claimExpressions(claims.get(id)!).includes(o.exprRef!))) {
+      const uses = (claimId: string): boolean => {
+        const claim = claims.get(claimId);
+        if (!claim) return false;
+        const ids = claimExpressions(claim);
+        return ids.includes(o.exprRef!) || (o.component === "functionGraph" && ids.some((id) => isSideOf(ctx, o.exprRef!, id)));
+      };
+      if (o.exprRef !== undefined && !spoken.some(uses)) {
         out.push(fail("cue-on-unrelated-claim", `(c) object ${at} shows ${o.exprRef}, but no cue is anchored to a sentence whose claim uses it`, [scene.id, o.id]));
       }
     }
