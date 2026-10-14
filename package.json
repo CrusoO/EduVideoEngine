@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "mutate": "stryker run",
+    "mutate": "stryker run && vite-node scripts/mutation-floor.ts",
     "voice:generate": "vite-node scripts/voice/generate.ts",
     "gen:ops": "vite-node scripts/gen-ops.ts",
     "gen:costs": "vite-node scripts/gen-costs.ts",
@@ -25,7 +25,6 @@
     "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts",
     "llm:models": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-models.ts",
     "llm:sizes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-sizes.ts",
-    "mutate:waived": "stryker run stryker.waived.config.json",
     "mutate:floor": "vite-node scripts/mutation-floor.ts"
   },
   "devDependencies": {
