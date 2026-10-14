@@ -28,6 +28,35 @@ describe("pnpm docs:check", () => {
     expect(rows.find((r) => r.paths.includes("ledger/"))!.state).toMatch(/local/);
   });
 
+  it("reads the table in the plain-text layout (tab-separated, several paths to a cell) and in the Markdown layout, to the same rows", () => {
+    const text = ["1. The doc set (and nothing else)", "Path\tWhat it is\tState", "README.md\tOverview\tcurrent", "packages/, services/verifier/, scripts/\tCode\tcurrent", "fixtures folder\tRecorded replies\tgenerated", "ledger/\tUsage ledger\tlocal", "", "Do not create: docs/INDEX.md", "2. Which source wins"].join("\n");
+    const markdown = ["## 1. The doc set", "| Path | What it is | State |", "|---|---|---|", "| `README.md` | Overview | current |", "| `packages/`, `services/verifier/`, `scripts/` | Code | current |", "| fixtures folder | Recorded replies | generated |", "| `ledger/` | Usage ledger | local |", "", "## 2. Which source wins"].join("\n");
+    const expected = [
+      { paths: ["README.md"], state: "current" },
+      { paths: ["packages/", "services/verifier/", "scripts/"], state: "current" },
+      { paths: [], state: "generated" },
+      { paths: ["ledger/"], state: "local" },
+    ];
+    expect(docSetRows(text)).toEqual(expected);
+    expect(docSetRows(markdown)).toEqual(expected);
+    expect(docSetRows("no table here")).toEqual([]);
+  });
+
+  it("finds the whole doc set table of the real workflow file", () => {
+    const rows = docSetRows(readFileSync(join(repo, "docs", "ENGINE_WORKFLOW.md"), "utf8"));
+    expect(rows.length).toBeGreaterThanOrEqual(15);
+    expect(rows.flatMap((r) => r.paths)).toEqual(expect.arrayContaining(["README.md", "CLAUDE.md", "docs/ENGINE_PLAN.md", "docs/PEDAGOGY.md", "prompts/", "config/", ".githooks/"]));
+  });
+
+  it("fails, instead of passing without checking, when the workflow file has no doc set table", () => {
+    const dir = sandbox();
+    try {
+      writeFileSync(join(dir, "docs", "ENGINE_WORKFLOW.md"), "Engine workflow\n\nNo table in this version.\n");
+      expect(checkDocs(dir)).toEqual(["docs/ENGINE_WORKFLOW.md has no doc set table under section 1 (rows of Path, What it is, State), so the doc set cannot be checked"]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
   it("fails when a path of the doc set is missing, naming it", () => {
     const dir = sandbox();
     try {

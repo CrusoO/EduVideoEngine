@@ -15,28 +15,44 @@ export const sha256Lf = (text: Buffer | string): string => createHash("sha256").
 
 const read = (root: string, rel: string): string => readFileSync(join(root, rel), "utf8");
 
-/** The rows of the table under "## 1." of the workflow file: [paths in the first column, state]. */
+/**
+ * The rows of the doc set table under section 1 of the workflow file: [paths in the first column, state]. Two layouts are read, because the file is kept as a
+ * Markdown table (`| Path | What | State |`, paths in backticks, heading `## 1.`) or as plain text pasted from a document (tab-separated columns, paths without
+ * backticks and several to a cell separated by commas, heading `1.`). A cell word that is not path-like ("fixtures folder") is not a path.
+ */
 export function docSetRows(workflow: string): Array<{ paths: string[]; state: string }> {
-  const start = workflow.indexOf("## 1.");
-  const end = workflow.indexOf("\n## 2.");
-  const section = workflow.slice(start, end === -1 ? undefined : end);
+  const lines = workflow.split(/\r?\n/);
+  const start = lines.findIndex((l) => /^(## )?1\.\s/.test(l));
+  if (start === -1) return [];
+  const next = lines.findIndex((l, i) => i > start && /^(## )?2\.\s/.test(l));
   const rows: Array<{ paths: string[]; state: string }> = [];
-  for (const line of section.split(/\r?\n/)) {
-    if (!line.startsWith("|") || /^\|\s*-/.test(line) || /^\|\s*Path\s*\|/.test(line)) continue;
-    const cells = line.split("|").slice(1, -1).map((c) => c.trim());
+  for (const line of lines.slice(start + 1, next === -1 ? undefined : next)) {
+    let cells: string[];
+    let paths: (cell: string) => string[];
+    if (line.startsWith("|")) {
+      if (/^\|\s*-/.test(line) || /^\|\s*Path\s*\|/.test(line)) continue;
+      cells = line.split("|").slice(1, -1).map((c) => c.trim());
+      paths = (cell) => [...cell.matchAll(/`([^`]+)`/g)].map((m) => m[1]!);
+    } else if (line.includes("\t")) {
+      cells = line.split("\t").map((c) => c.trim());
+      if (cells[0] === "Path") continue;
+      paths = (cell) => cell.split(",").map((w) => w.trim()).filter((w) => w !== "" && !/\s/.test(w) && /[/.]/.test(w));
+    } else continue;
     if (cells.length < 3) continue;
-    rows.push({ paths: [...cells[0]!.matchAll(/`([^`]+)`/g)].map((m) => m[1]!), state: cells[2]! });
+    rows.push({ paths: paths(cells[0]!), state: cells[2]! });
   }
   return rows;
 }
-
 export function checkDocs(root: string): string[] {
   const problems: string[] = [];
 
   // 1. the doc set
   const workflowPath = "docs/ENGINE_WORKFLOW.md";
   if (!existsSync(join(root, workflowPath))) return [`${workflowPath} is missing`];
-  for (const row of docSetRows(read(root, workflowPath))) {
+  const rows = docSetRows(read(root, workflowPath));
+  // an empty table would make this check pass without checking anything
+  if (rows.length === 0) problems.push(`${workflowPath} has no doc set table under section 1 (rows of Path, What it is, State), so the doc set cannot be checked`);
+  for (const row of rows) {
     if (/\b(planned|local|generated)\b/i.test(row.state) && !/\bcurrent\b/i.test(row.state)) continue;
     for (const p of row.paths) {
       // a pattern such as docs/adr/NNNN-title.md stands for a folder of files
