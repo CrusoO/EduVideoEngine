@@ -24,6 +24,8 @@ Lives outside the YourTutor repository on purpose (see `docs/adr/0001-separate-r
     pnpm test          # vitest
     pnpm typecheck     # tsc --noEmit
 
+pnpm 12 blocks dependency build scripts unless they are allowed. The only one allowed is esbuild (`allowBuilds` in `pnpm-workspace.yaml`), which vitest and Stryker need; `pnpm install` exits 0 with nothing else ignored. Do not run the interactive `pnpm approve-builds`: a new dependency with a build script is added to `allowBuilds` by hand, after reading what the script does.
+
 ## Status
 
 Phase 0: step (a) schema and fixture done; step (b) components done (127 unit tests, 13 browser tests).
