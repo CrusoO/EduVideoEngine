@@ -162,6 +162,8 @@ const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
  */
 const ClaimExtras = {
   /** Spec 2.0.0 only (ADR 0028, 0034). `id` is the claim id; `usesStep` is the id of the claim whose result this claim's step transforms. */
+  /** The content records the claim comes from (CO-2 section 2.2). Each must be a source of the bundle. */
+  sourceIds: z.array(id).min(1).optional(),
   claimMode: z.enum(CLAIM_MODES).optional(),
   dependsOn: z.array(id).optional(),
   importance: z.enum(IMPORTANCES).optional(),

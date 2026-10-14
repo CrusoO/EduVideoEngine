@@ -33,7 +33,7 @@ describe("the claim graph derived from a solution", () => {
   it("links each step to the previous claim, marks the end of the chain core and the rest support", () => {
     const g = deriveClaimGraph(record(chain), "b1");
     const [fac, roots, sum] = g;
-    expect(g.every((c) => c.claimMode === "computed")).toBe(true);
+    expect(g.every((c) => c.claimMode === "computed" && c.sourceIds?.[0] === "s.one")).toBe(true);
     expect(fac).toMatchObject({ importance: "support" });
     expect(fac).not.toHaveProperty("dependsOn");
     expect(fac).not.toHaveProperty("usesStep");
@@ -42,7 +42,7 @@ describe("the claim graph derived from a solution", () => {
   });
   it("is deterministic and adds nothing to the claims themselves", () => {
     expect(deriveClaimGraph(record(chain), "b1")).toEqual(deriveClaimGraph(record(chain), "b1"));
-    const strip = (c: Record<string, unknown>) => Object.fromEntries(Object.entries(c).filter(([k]) => !["claimMode", "importance", "dependsOn", "usesStep", "stepKind", "identity"].includes(k)));
+    const strip = (c: Record<string, unknown>) => Object.fromEntries(Object.entries(c).filter(([k]) => !["sourceIds", "claimMode", "importance", "dependsOn", "usesStep", "stepKind", "identity"].includes(k)));
     expect(deriveClaimGraph(record(chain), "b1").map(strip)).toEqual(deriveClaims(record(chain), "b1"));
   });
   it("lets the author name the step used, add dependencies and set the importance", () => {

@@ -43,7 +43,7 @@ export class DeriveError extends Error {}
  */
 export function deriveClaimGraph(record: ContentRecord, beatId: string): Claim[] {
   const base = deriveClaims(record, beatId);
-  if (base.length === 0 || !record.steps) return base.map((c) => ({ ...c, claimMode: "computed" as const, importance: "core" as const }));
+  if (base.length === 0 || !record.steps) return base.map((c) => ({ ...c, sourceIds: [record.id], claimMode: "computed" as const, importance: "core" as const }));
   // which claim each step ends up in
   const claimOfStep = new Map<string, string>();
   let transforms = 0;
@@ -101,6 +101,7 @@ export function deriveClaimGraph(record: ContentRecord, beatId: string): Claim[]
     const d = [...(deps.get(c.id) ?? [])];
     return {
       ...c,
+      sourceIds: [record.id],
       claimMode: "computed" as const,
       importance: importance.get(c.id) ?? (used.has(c.id) ? ("support" as const) : ("core" as const)),
       ...(d.length ? { dependsOn: d } : {}),

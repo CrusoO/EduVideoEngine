@@ -349,7 +349,7 @@ const recapCard: Pattern<RecapContent> = {
   build(c, a) {
     const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 1, "fact", "reveal", 1500)];
     const s = scene(a, [c.rec.id], [{ id: "title", component: "text", props: { text: a.text.title!, role: "title" } }, { id: "fact", component: "equation", props: { size: "l" }, exprRef: c.shown }], [...column(["title", "fact"]), { rule: "center", item: "title" }], cues);
-    const claim = { ...c.rec.claim!, id: `${c.rec.id}.${a.beatId}`, beatId: a.beatId, claimMode: c.rec.claimMode!, importance: c.rec.importance! } as Claim;
+    const claim = { ...c.rec.claim!, id: `${c.rec.id}.${a.beatId}`, beatId: a.beatId, sourceIds: [c.rec.id], claimMode: c.rec.claimMode!, importance: c.rec.importance! } as Claim;
     return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
   },
 };
@@ -387,7 +387,7 @@ const checkQuestion: Pattern<CheckContent> = {
       cues,
       ask(a, c.answer).map((q) => ({ ...q, afterSentenceId: a.sentenceIds[a.sentenceIds.length - 2]! })),
     );
-    const claim: Claim = { id: `${c.rec.id}.answer.${a.beatId}`, beatId: a.beatId, kind: "sum-of-roots", equation: c.problem, equals: c.answer, claimMode: "computed", importance: "core" };
+    const claim: Claim = { id: `${c.rec.id}.answer.${a.beatId}`, beatId: a.beatId, kind: "sum-of-roots", equation: c.problem, equals: c.answer, sourceIds: [c.rec.id], claimMode: "computed", importance: "core" };
     return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
   },
 };

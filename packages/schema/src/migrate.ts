@@ -8,7 +8,7 @@ import { seal } from "./hash";
  */
 export type BeatMigration = { beatKind?: NonNullable<LessonBundle["plan"]["beats"][number]["beatKind"]>; slotId: string; learningGoal: string };
 export type SentenceMigration = Pick<LessonBundle["script"][number], "role" | "claimId" | "linkClaimIds" | "questionId">;
-export type ClaimMigration = Pick<NonNullable<LessonBundle["claims"]>[number], "claimMode" | "importance" | "dependsOn" | "usesStep" | "stepKind">;
+export type ClaimMigration = Pick<NonNullable<LessonBundle["claims"]>[number], "sourceIds" | "claimMode" | "importance" | "dependsOn" | "usesStep" | "stepKind">;
 
 export type MigrationInput = {
   subjectId: string;
@@ -17,7 +17,7 @@ export type MigrationInput = {
   prerequisites?: NonNullable<LessonBundle["plan"]["prerequisites"]>;
   beats: Record<string, BeatMigration>;
   sentences: Record<string, SentenceMigration>;
-  /** Per claim; a claim not listed is `computed` and `core` (every legacy claim is checked by the verifier). */
+  /** Per claim; a claim not listed is `computed` and `core` (every legacy claim is checked by the verifier), with the sources of its beat. */
   claims?: Record<string, Partial<ClaimMigration>>;
 };
 
@@ -51,7 +51,7 @@ export function migrateToV2(bundle: LessonBundle, input: MigrationInput): Lesson
     return { ...rest, status: status === "reviewed" ? ("approved" as const) : status, ...compact(m) };
   });
   if (missing.length) throw new MigrationError(`migration input is missing: ${missing.join(", ")}`);
-  const claims = bundle.claims?.map((c) => ({ ...c, claimMode: "computed" as const, importance: "core" as const, ...compact(input.claims?.[c.id] ?? {}) }));
+  const claims = bundle.claims?.map((c) => ({ ...c, sourceIds: bundle.plan.beats.find((b) => b.id === c.beatId)?.sourceIds ?? bundle.sourceIds, claimMode: "computed" as const, importance: "core" as const, ...compact(input.claims?.[c.id] ?? {}) }));
   const { hashes: _old, ...rest } = bundle;
   void _old;
   return seal({

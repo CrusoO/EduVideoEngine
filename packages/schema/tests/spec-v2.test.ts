@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MigrationError, goalProblems, migrateToV2, quadraticRootsV1 as legacy, seal, validateBundle, type LessonBundle, type MigrationInput } from "../src";
+import { MigrationError, goalProblems, migrateToV2, verificationLabel, quadraticRootsV1 as legacy, seal, validateBundle, type LessonBundle, type MigrationInput } from "../src";
 
 /** The pinned hash of the legacy fixture (ADR 0030): it must never change, whatever happens to the 2.0.0 shape. */
 const LEGACY_BUNDLE_HASH = "3f9d7bfc994cbc8442f5d459504882999f316295200b34d8366236d30f8e41ec";
@@ -128,6 +128,11 @@ describe("the 2.0.0 rules", () => {
     rejects((b) => void delete b.plan.arcId, /arcId/);
     rejects((b) => void delete b.plan.level, /level/);
   });
+  it("requires sourceIds on every claim, from the bundle's sources", () => {
+    rejects((b) => void delete b.claims![0]!.sourceIds, /must set sourceIds/);
+    rejects((b) => void (b.claims![0]!.sourceIds = ["src.nowhere"]), /unknown source src\.nowhere/);
+    expect(v2().claims!.every((c) => c.sourceIds && c.sourceIds.length > 0)).toBe(true);
+  });
   it("requires beatKind, slotId and a speakable learningGoal on every beat", () => {
     rejects((b) => void delete b.plan.beats[0]!.learningGoal, /beatKind, slotId and learningGoal/);
     rejects((b) => void (b.plan.beats[0]!.learningGoal = "Find 2 roots"), /no digits/);
@@ -171,5 +176,16 @@ describe("the 2.0.0 rules", () => {
     rejects(withStatic({ ...staticText("t1", "Roots"), component: "shape" }), /is a text object/);
     rejects(withStatic(staticText("t1", "A"), staticText("t2", "B"), staticText("t3", "C")), /at most 2 static/);
     rejects((b) => void (b.scenes[0]!.objects[0]!.textRole = "title"), /textRole belongs to static objects only/);
+  });
+});
+
+describe("the verification label (AM-3)", () => {
+  it("is derived from the claims, never stored in the bundle", () => {
+    expect(verificationLabel(v2())).toBe("computed_only");
+    expect(verificationLabel({})).toBe("computed_only");
+    const mixed = structuredClone(v2());
+    mixed.claims![0]!.claimMode = "grounded";
+    expect(verificationLabel(mixed)).toBe("mixed");
+    expect(JSON.stringify(v2())).not.toMatch(/computed_only|verification/);
   });
 });
