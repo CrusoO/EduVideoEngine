@@ -1,5 +1,7 @@
 # planner.v3
 
+Status: superseded. Written but never recorded; its text-heavy rule folds into the next planner version (prompts/VERSIONS.md, ADR 0039).
+
 ## TASK
 Plan one short maths lesson from the records in INPUT: choose its beats, their order, how long each lasts and one scene pattern for each, choosing each pattern by its useWhen note. (Pass: planner. Prompt version: planner.v3.)
 
