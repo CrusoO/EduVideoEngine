@@ -1,0 +1,67 @@
+# Engine interface (the only contact with YourTutor)
+
+Status: contract v0, DRAFT. Nothing in sections 3 to 7 is built until work package INT (Phase 2, see `docs/ENGINE_PLAN.md`). The engine owns this file. YourTutor keeps a short consumer-side file (`docs/ENGINE_INTEGRATION.md` in its repository) that points here by version. A change to this contract is an engine ADR plus a version bump, followed by a YourTutor ADR when it adopts the new version.
+
+## 1. Rule of independence
+
+Two repositories, two Claude sessions, each working only in its own folder (both folders may be open together in one workspace to look at changes). Neither imports the other's code, edits the other's files, shares `node_modules`, or links into the other's source. They meet only through (a) a built package of static files and (b) this contract. When both folders sit side by side in one parent folder, the YourTutor-side copy script may read the engine's built package; nothing else reads across.
+
+## 2. Versions (three numbers, independent)
+
+| What | Where it lives | Now |
+| --- | --- | --- |
+| Contract version | This file and the package manifest | v0 (draft) |
+| Lesson spec version | The bundle's `specVersion` | 2.0.0 (1.0.0 legacy, pinned) |
+| Player API version | The package manifest | Fixed at INT |
+
+A host built for contract vN accepts packages of contract vN only. The manifest carries the version; the host refuses a mismatch with a clear message.
+
+## 3. What the engine hands over: the engine package
+
+Built by one engine command (name decided at INT) into `dist/engine-package/`:
+
+```
+manifest.json                   contract, spec and player API versions; every file with sha256 and size; the budgets it meets; the font files and their sha256
+player/                         the lazy-loadable player: one script, one stylesheet
+lessons/<lessonId>/<locale>/    lesson JSON (timeline, scene specs, pre-rendered maths markup, captions, alt text, source ids) and the audio files
+```
+
+Rules:
+- Static files only; no server. Every path is listed in the manifest.
+- The player script stays under the 60 KB gzip ceiling. Maths is pre-rendered; the package contains no maths library.
+- The package contains no keys, no prompts, no personal data and no raw model replies.
+- The audio format is set by an ADR (development files are WAV).
+- A lesson's package hash changes only when its bundle hash changes.
+
+## 4. What the host (YourTutor) provides
+
+- Serves the package files, with long cache lifetimes for hashed files.
+- A container element and a theme (light or dark) for the controls. The stage itself is always dark.
+- The font files at the URLs the lesson stylesheet names. The engine uses the same files as YourTutor, hash-locked; the manifest lists each file's sha256. A font change in YourTutor needs an engine ADR first.
+- A user gesture before audio starts (browsers block audio until then).
+- The stage height: the screen height or dvh, minus the sheet chrome (a parameter, default 184 px, still unmeasured on the real sheet).
+- Lazy loading: the player loads only when a lesson opens, so it never counts toward the home-page budget.
+
+## 5. Player API (shape only; names come from `packages/player/src` at INT)
+
+The host must be able to: mount a lesson into a container with a lesson location, a locale, a theme and a caption setting; play, pause and seek (speed is not available yet); receive events (ready, play, pause, ended, a question point reached, interrupted, error); and destroy the player and release the audio. At a question point the player stops and waits for an answer before it resumes. When audio is suspended (a call, a hidden tab) the player stops itself and reports `interrupted`, so the host can show a play button. The player plays the resolved timeline and never reads anchors from the bundle.
+
+## 6. Guarantees and limits
+
+- After load, no network requests. Cold-start offline (a service worker and a lesson pack) is Phase 2 work.
+- Reduced motion jumps each cue to its end state. Captions are on by default. Synthetic voices carry a visible credit line.
+- No analytics by default. Play events, if the host wants them, are emitted as events only; the host decides what to store; no personal data leaves the device through the player.
+- Not provided by the engine: accounts, progress storage, personalisation, doubt routing, grading beyond the verified answers. Those belong to YourTutor.
+
+## 7. Contract tests (one set in each repository)
+
+Engine: the built package matches its manifest hashes and budgets; the manifest validates against the contract schema.
+YourTutor: a smoke test loads the fixture package, mounts a lesson, plays to the first question point, answers it and reaches the end; a budget test shows the home page meets its limits with the player not loaded; a test that a contract version mismatch is refused.
+
+## 8. Getting the package into YourTutor
+
+During development, a copy script in YourTutor reads `../EduVideoEngine/dist/engine-package` (the two folders are siblings), copies it into YourTutor's static assets and verifies every manifest hash after copying. No symlinks and no imports. Publishing the package as a versioned archive instead is allowed later by ADR.
+
+## 9. Open points, decided at INT
+
+The package command name; audio format and bitrate; the exact player API names; whether the question interface lives in the player or the host; the service worker plan; how lesson ids map to YourTutor skills; the measured sheet chrome height.
