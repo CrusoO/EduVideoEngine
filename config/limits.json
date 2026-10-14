@@ -5,5 +5,14 @@
     "lessonTargetWarn": 300,
     "lessonHardMax": 420
   },
-  "beats": { "min": 4, "max": 10 }
+  "beats": {
+    "min": 4,
+    "max": 10
+  },
+  "variety": {
+    "fromBeats": 5,
+    "minPictureBeats": 2,
+    "maxTextHeavyRun": 2
+  },
+  "_variety": "ADR 0043: in a lesson of fromBeats or more beats, at least minPictureBeats beats use a picture pattern and no more than maxTextHeavyRun text-heavy beats run in a row."
 }

@@ -64,49 +64,59 @@ export function patternsForSlot(slotId: SlotId) {
   return { all: fit.map((p) => p.id), picture: fit.filter((p) => !isTextHeavy(p)).map((p) => p.id), textHeavy: fit.filter((p) => isTextHeavy(p)).map((p) => p.id) };
 }
 
-/** The fewest text-heavy beats a slot sequence can have: a slot with a picture pattern costs none, any other costs one. A slot no pattern fills makes the sequence impossible. */
-export function fewestTextHeavy(sequence: readonly SlotId[]): number | null {
-  let heavy = 0;
+export type VarietyCheck = { pictureBeats: number; longestTextHeavyRun: number; problems: string[] };
+
+/** The variety rule (ADR 0043) for the beats of a lesson, given which are text-heavy. Lessons shorter than the threshold are not constrained. */
+export function varietyCheck(textHeavy: readonly boolean[]): VarietyCheck {
+  const { fromBeats, minPictureBeats, maxTextHeavyRun } = LIMITS.variety;
+  let run = 0;
+  let longest = 0;
+  for (const heavy of textHeavy) {
+    run = heavy ? run + 1 : 0;
+    longest = Math.max(longest, run);
+  }
+  const pictures = textHeavy.filter((h) => !h).length;
+  const problems: string[] = [];
+  if (textHeavy.length >= fromBeats) {
+    if (pictures < minPictureBeats) problems.push(`${pictures} picture beat(s), at least ${minPictureBeats} needed`);
+    if (longest > maxTextHeavyRun) problems.push(`${longest} text-heavy beats in a row, at most ${maxTextHeavyRun} allowed`);
+  }
+  return { pictureBeats: pictures, longestTextHeavyRun: longest, problems };
+}
+
+/**
+ * The best the patterns can do for a slot sequence: each slot gets a picture pattern when one fits (that is never worse for either part of the rule),
+ * otherwise a text-heavy one. A slot no pattern fills makes the sequence impossible (null).
+ */
+export function bestFlags(sequence: readonly SlotId[]): boolean[] | null {
+  const flags: boolean[] = [];
   for (const s of sequence) {
     const p = patternsForSlot(s);
     if (p.all.length === 0) return null;
-    if (p.picture.length === 0) heavy++;
+    flags.push(p.picture.length === 0);
   }
-  return heavy;
+  return flags;
 }
 
-export type ArcLengthResult = {
-  beats: number;
-  /** At most half (rounded down) are text-heavy: the rule of ADR 0038. */
-  possible: boolean;
-  fewestHeavy: number | null;
-  allowed: number;
-  /** For the relaxation proposed in ADR 0043 (at most half, rounded up). Reported beside the rule, not used by it. */
-  possibleIfRoundedUp: boolean;
-  allowedIfRoundedUp: number;
-  sequence?: SlotId[];
-};
+export type ArcLengthResult = { beats: number; possible: boolean; pictureBeats: number; longestTextHeavyRun: number; problems: string[]; sequence: SlotId[]; textHeavy: boolean[] };
 export type ArcResult = { arcId: ArcId; hasPrerequisites: boolean; lengths: ArcLengthResult[]; satisfiable: boolean };
 
 /**
- * For each arc and each lesson length of four beats or more that the arc can produce, can the beats be given patterns so that at most half are text-heavy?
- * (ADR 0038). Reported, never bent: if an arc cannot, the rule is relaxed by ADR, the patterns are not changed to pass.
+ * For each arc, with and without prerequisites, and each lesson length the arc can produce (up to the beat limit), can the beats be given patterns that meet the
+ * variety rule? Reported, never bent: if an arc cannot, the rule is changed by ADR; the patterns are not changed to pass.
  */
 export function textHeavyReport(): ArcResult[] {
   const out: ArcResult[] = [];
   for (const arcId of ARC_IDS) {
     for (const hasPrerequisites of [true, false]) {
-      const byLength = new Map<number, ArcLengthResult>();
-      for (const seq of slotSequences(arcId, hasPrerequisites)) {
-        const n = seq.length;
-        if (n < 4 || n > LIMITS.beats.max) continue;
-        const fewest = fewestTextHeavy(seq);
-        const allowed = Math.floor(n / 2);
-        const cur = byLength.get(n);
-        const better = !cur || (fewest !== null && (cur.fewestHeavy === null || fewest < cur.fewestHeavy));
-        if (better) byLength.set(n, { beats: n, possible: fewest !== null && fewest <= allowed, fewestHeavy: fewest, allowed, possibleIfRoundedUp: fewest !== null && fewest <= Math.ceil(n / 2), allowedIfRoundedUp: Math.ceil(n / 2), sequence: seq });
+      const lengths: ArcLengthResult[] = [];
+      for (const sequence of slotSequences(arcId, hasPrerequisites)) {
+        const flags = bestFlags(sequence);
+        if (sequence.length < LIMITS.beats.min || sequence.length > LIMITS.beats.max) continue;
+        const check = flags ? varietyCheck(flags) : { pictureBeats: 0, longestTextHeavyRun: 0, problems: ["a slot has no pattern"] };
+        lengths.push({ beats: sequence.length, possible: flags !== null && check.problems.length === 0, pictureBeats: check.pictureBeats, longestTextHeavyRun: check.longestTextHeavyRun, problems: check.problems, sequence, textHeavy: flags ?? [] });
       }
-      const lengths = [...byLength.values()].sort((a, b) => a.beats - b.beats);
+      lengths.sort((a, b) => a.beats - b.beats);
       out.push({ arcId, hasPrerequisites, lengths, satisfiable: lengths.length > 0 && lengths.every((l) => l.possible) });
     }
   }

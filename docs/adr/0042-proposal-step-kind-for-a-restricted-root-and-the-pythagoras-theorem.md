@@ -1,6 +1,6 @@
 # ADR 0042: Proposal: what the three chains need beyond the closed set
 
-Status: **proposed, not added.** ADR 0034 says a chain that needs something outside the closed set stops the work and gets a proposal here. The eight step kinds, the three claim kinds and the one recall-answer form are unchanged. Nothing below is built.
+Status: **partly accepted 2026-10-15 (owner decision D2); nothing is built.** Accepted for a later package, **WP2c, built after WP3 and before WP4**: the linear-equation part (claim kind `satisfied-by`, solution-step role `check`) and the recall answer forms **product-of-roots, the roots themselves, and a linear solution**. **Deferred** (still proposals, no package assigned): `restrict`, `restricted-roots`, the Pythagoras theorem as a grounded claim, and the other answer forms (a number from arithmetic, a length from the theorem). Original status line: ADR 0034 says a chain that needs something outside the closed set stops the work and gets a proposal here. The eight step kinds, the three claim kinds and the one recall-answer form are unchanged. Nothing below is built.
 
 ## What the full verifier said
 The three chains were run through the whole verifier (every claim check and every step check), not only the step handlers. Tested in `services/verifier/tests/test_steps.py`.

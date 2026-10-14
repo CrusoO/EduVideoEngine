@@ -72,7 +72,7 @@ describe("assurance: how long a beat and a lesson may be (ADR 0018)", () => {
     expect(hard[0]!.message).toBe("the lesson lasts 421.0 s, over the hard limit of 420 s");
   });
   it("the limits can be given (a test, or a later change of mind) without touching the code", () => {
-    const limits = { durationS: { beatMax: 10, lessonTargetWarn: 20, lessonHardMax: 30 }, beats: { min: 4, max: 10 } };
+    const limits = { durationS: { beatMax: 10, lessonTargetWarn: 20, lessonHardMax: 30 }, beats: { min: 4, max: 10 }, variety: { fromBeats: 5, minPictureBeats: 2, maxTextHeavyRun: 2 } };
     expect(assureTimeline(timeline([[0, 31_000]]), { kind: "standard", limits }).map((f) => f.code)).toEqual(["beat-too-long", "lesson-too-long"]);
   });
   it("the reference lesson is well inside all three", () => {

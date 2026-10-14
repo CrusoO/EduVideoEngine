@@ -26,7 +26,7 @@ Every slot is required, except prerequisite activation, which is required only w
 | misconception_first | hook (shows a common mistake; beat kind hook), why_it_fails, concept, worked_example, check |
 
 ## The pattern library
-Eight patterns; each says which beat kinds it may fill and carries a text-heavy flag derived from its components. Recap card and check question are new (ADR 0038). `pnpm patterns:report` shows the flags and, per arc and lesson length, whether "at most half text-heavy" can hold. It cannot for `problem_first` and `misconception_first` at some lengths; ADR 0043 gives the numbers and proposals.
+Eight patterns; each says which beat kinds it may fill and carries a text-heavy flag derived from its components. Recap card and check question are new (ADR 0038). `pnpm patterns:report` shows the flags and, per arc and lesson length, whether the variety rule can hold: in a lesson of five or more beats, at least two picture beats and no more than two text-heavy beats in a row (ADR 0043). Every arc meets it, with no margin for `problem_first` and `misconception_first`; pictures exist only for concept and worked beats.
 
 ## Claim model
 Claims may sit in any beat. A claim has an id, its beat, sources, `claimMode` (computed or grounded), `dependsOn`, `importance` (core or support), and optionally `usesStep` with a closed `stepKind`. A claim is introduced at its first claim-role sentence. The graph is acyclic.

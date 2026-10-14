@@ -3,7 +3,7 @@ import { resolve as resolvePath } from "node:path";
 import { loadStore, retrieve } from "@eve/content";
 import { PEDAGOGY_BEAT_KINDS } from "@eve/schema";
 import { verifyBundle } from "@eve/verify";
-import { ARCS, ARC_IDS, LIBRARY, LIBRARY_IDS, PATTERN_IDS, PatternError, SLOT_BEAT_KIND, SLOT_IDS, fewestTextHeavy, instantiate, isTextHeavy, libraryCatalogue, patternsForSlot, slotSequences, textHeavyReport, usablePatterns, type SlotId } from "../src";
+import { ARCS, ARC_IDS, LIBRARY, LIBRARY_IDS, PATTERN_IDS, PatternError, SLOT_BEAT_KIND, SLOT_IDS, bestFlags, instantiate, isTextHeavy, libraryCatalogue, patternsForSlot, slotSequences, textHeavyReport, usablePatterns, varietyCheck, type SlotId } from "../src";
 
 const { records } = loadStore(resolvePath(__dirname, "..", "..", "..", "content"));
 const SKILL = "MATH.ALG.QUAD.SUM_OF_ROOTS";
@@ -130,28 +130,39 @@ describe("check question", () => {
   });
 });
 
-describe("at most half the beats text-heavy (ADR 0038, 0043)", () => {
+describe("the variety rule (ADR 0043): five or more beats need two pictures and no more than two text-heavy beats in a row", () => {
   const report = textHeavyReport();
-  const failing = report.flatMap((x) => x.lengths.filter((l) => !l.possible).map((l) => `${x.arcId}/${x.hasPrerequisites ? "with" : "without"} prerequisites/${l.beats}`));
 
-  it("counts the fewest text-heavy beats of a sequence", () => {
-    expect(fewestTextHeavy(["hook", "worked_example", "concept", "check"])).toBe(2);
-    expect(fewestTextHeavy(["concept", "worked_example", "second_worked_example", "check"])).toBe(1);
+  it("counts pictures and the longest text-heavy run", () => {
+    expect(varietyCheck([true, true, false, false, true])).toEqual({ pictureBeats: 2, longestTextHeavyRun: 2, problems: [] });
+    expect(varietyCheck([false, true, true, true, false]).problems).toEqual(["3 text-heavy beats in a row, at most 2 allowed"]);
+    expect(varietyCheck([false, true, true, false, true]).problems).toEqual([]);
+    expect(varietyCheck([true, true, false, true, true]).problems).toEqual(["1 picture beat(s), at least 2 needed"]);
   });
-  it("reports, per arc and length, where the rule cannot be met (this list is the finding; ADR 0043)", () => {
-    expect(failing).toEqual([
-      "problem_first/with prerequisites/6",
-      "problem_first/without prerequisites/5",
-      "problem_first/without prerequisites/6",
-      "misconception_first/with prerequisites/5",
-      "misconception_first/without prerequisites/5",
+  it("does not constrain a lesson of four beats, and does from five", () => {
+    expect(varietyCheck([true, true, true, true]).problems).toEqual([]);
+    expect(varietyCheck([true, true, true, true, false]).problems).toHaveLength(2);
+  });
+  it("picks a picture pattern whenever a slot has one", () => {
+    expect(bestFlags(["hook", "concept", "worked_example", "check"])).toEqual([true, false, false, true]);
+    expect(bestFlags(["hook", "why_it_fails"])).toEqual([true, true]);
+  });
+  it("every arc meets the rule at every length it can have, with and without prerequisites", () => {
+    expect(report.filter((x) => !x.satisfiable).map((x) => `${x.arcId}/${x.hasPrerequisites}`)).toEqual([]);
+    expect(report.flatMap((x) => x.lengths.map((l) => `${x.arcId}/${x.hasPrerequisites ? "with" : "without"}/${l.beats}/${l.pictureBeats}/${l.longestTextHeavyRun}`))).toEqual([
+      "problem_first/with/6/2/2",
+      "problem_first/without/5/2/2",
+      "problem_first/without/6/2/2",
+      "concept_first/with/5/3/1",
+      "concept_first/without/4/3/1",
+      "concept_first/without/5/3/1",
+      "misconception_first/with/5/2/2",
+      "misconception_first/without/5/2/2",
     ]);
   });
-  it("concept_first meets the rule at every length it can have", () => {
-    expect(report.filter((x) => x.arcId === "concept_first").every((x) => x.satisfiable)).toBe(true);
-  });
-  it("rounding the half up fixes misconception_first and the 5-beat problem_first, not the 6-beat problem_first", () => {
-    const stillFailing = report.flatMap((x) => x.lengths.filter((l) => !l.possibleIfRoundedUp).map((l) => `${x.arcId}/${l.beats}`));
-    expect([...new Set(stillFailing)]).toEqual(["problem_first/6"]);
+  it("is tight: pictures exist only for concept and worked beats, so dropping either picture pattern breaks problem_first and misconception_first", () => {
+    expect(patternsForSlot("concept").picture).toEqual(["plot-and-mark-roots"]);
+    expect(patternsForSlot("worked_example").picture).toEqual(["hops-on-number-line"]);
+    for (const slot of ["hook", "prerequisite_activation", "common_mistake_contrast", "why_it_fails", "check"] as const) expect(patternsForSlot(slot).picture, slot).toEqual([]);
   });
 });
