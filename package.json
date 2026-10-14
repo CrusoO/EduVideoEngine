@@ -24,7 +24,9 @@
     "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",
     "llm:probes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-probes.ts",
     "llm:models": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-models.ts",
-    "llm:sizes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-sizes.ts"
+    "llm:sizes": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-sizes.ts",
+    "mutate:waived": "stryker run stryker.waived.config.json",
+    "mutate:floor": "vite-node scripts/mutation-floor.ts"
   },
   "devDependencies": {
     "@stryker-mutator/core": "8.7.1",
