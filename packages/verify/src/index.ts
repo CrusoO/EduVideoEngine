@@ -18,7 +18,7 @@ export class VerifierUnavailable extends Error {}
  */
 export function verifyBundle(bundle: LessonBundle | unknown, python = pythonCommand()): Promise<VerifyReport> {
   return new Promise((resolve, reject) => {
-    const child = spawn(python, ["-m", "eve_verifier", "--json"], { cwd: SERVICE, env: childEnv({ PYTHONPATH: SERVICE }) });
+    const child = spawn(python, ["-m", "eve_verifier", "--json"], { cwd: SERVICE, env: childEnv({ PYTHONPATH: SERVICE, PYTHONDONTWRITEBYTECODE: "1" }) });
     let out = "";
     let err = "";
     child.stdout.on("data", (d: Buffer) => (out += d));

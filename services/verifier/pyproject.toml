@@ -8,3 +8,4 @@ dependencies = ["sympy>=1.13", "fastapi>=0.110"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+addopts = "-p no:cacheprovider"

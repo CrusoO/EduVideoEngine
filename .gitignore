@@ -21,3 +21,10 @@ ledger/
 logs/
 reports/
 .stryker-tmp/
+
+# Python caches and Cosmic Ray (ADR 0047)
+__pycache__/
+*.pyc
+.pytest_cache/
+*.sqlite
+stryker.quick.json
