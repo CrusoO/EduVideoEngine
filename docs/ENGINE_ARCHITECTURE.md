@@ -101,9 +101,9 @@ A reviewed store with validators. If a statement is not in an approved record, n
 - Providers: Gemini primary (profile default `gemini-3.8-flash`), Groq an optional backup (blocked from Node by a network filter; do not bypass it without approval). The paid reference provider is retired; its recordings stay read-only and replay with no key or network.
 - Fixtures are keyed by prompt version, system prompt hash, model id and input. CI replays only. The pipeline is resumable; a daily cap never loses work. A ledger records requests and tokens per call.
 
-## 6. The lesson bundle (spec 2.0.0)
+## 6. The lesson bundle (spec 2.1.0)
 
-One document read or written by every part. One spec bump carries every CO-2 field. The legacy five-scene fixture is pinned to 1.0.0 (bundle hash `3f9d7bfc…41ec`) and still validates under its old rules; a 1.0.0 bundle may not carry any 2.0.0 field.
+One document read or written by every part. One spec bump carries every CO-2 field. The legacy five-scene fixture is pinned to 1.0.0 (bundle hash `3f9d7bfc…41ec`) and still validates under its old rules; a 1.0.0 bundle may not carry any 2.0.0 field. Spec 2.1.0 (ADR 0053) is additive: it adds two claim kinds, `satisfied-by` (the check by substitution) and `product-of-roots`, and nothing else to the bundle; 2.0.0 and 1.0.0 bundles keep their hashes and may not carry them. The content plane gains the step role `check`, an explicit `answerKind` on recall questions and `exprRefs` on a grounded conceptClaim. The reference lesson stays at 2.0.0 until WP2c part b rebuilds it.
 
 | Field | Lives in | Hash scope |
 | --- | --- | --- |
@@ -150,11 +150,11 @@ Slot to beat kind: hook to hook; prerequisite_activation to prerequisite; concep
 | G2 Delivery | Core-claim narration reaches a floor (starting value 8000 ms) | Fail for reference lessons, warning for generated |
 | G3 Active visual | (a) every non-static object has a cue; (b) worked beats: a claim-anchored cue; (c) expression objects anchored to a sentence whose claim uses them; a function graph counts through the claim's equation (ADR 0049) | Fail |
 | G4 Arc | Arc exists; beats map to legal slots and kinds; required slots filled; speakable learning goal | Fail |
-| G5 Role | Goal copy first; claim ids; transitions from the list; link and question rules | Fail |
+| G5 Role | Goal copy first; claim ids; transitions from the list; link and question rules; (d) a number said in words in a claim or link sentence is a number of its claim (English, ADR 0054) | Fail |
 | G6 Prerequisites | Every prerequisite recapped, linked or assumed | Fail |
 | G7 Core coverage | Every core claim has a claim sentence | Fail |
 
-Corruption set: 28 corrupted copies (7 maths, 21 pedagogy; C21 was added with ADR 0049). The list is `pnpm verify:gate --list` and AM-15. `verify:gate` fails if any corruption is accepted, the clean fixture is rejected, or a corruption is rejected by a gate other than the one named for it.
+Corruption set: 32 corrupted copies (10 maths, 22 pedagogy; C21 was added with ADR 0049, C22 with ADR 0054, M8 to M10 with ADR 0053). The list is `pnpm verify:gate --list` and AM-15. `verify:gate` fails if any corruption is accepted, the clean fixture is rejected, or a corruption is rejected by a gate other than the one named for it.
 
 **What code cannot check.** That a sentence faithfully paraphrases its claim. That stays with human review. UI wording is "numbers and equations checked by code" until every sentence is claim-bound. The word "reviewed" stays out of UI and lesson metadata until a sentence-level approval gate exists.
 
@@ -199,17 +199,17 @@ The browser is the single renderer: it shapes Devanagari correctly, plays offlin
 | Specification | Schema, sources, cross-references, glossary, alt text, duration cap | Built |
 | Meaning | SymPy verifier: every number, equation, solution step, graph point and claim; one handler per node type and per step kind | Built |
 | Layout and timing | Solver checks, resolver errors, dead-air rule, sync measurement | Built |
-| Pedagogy | Gates G1 to G7 and 28 corruptions | Built (WP2b, WP3) |
+| Pedagogy | Gates G1 to G7 and 32 corruptions | Built (WP2b, WP3) |
 | Audio | Transcript and spoken-equation round trip | Partly built |
 | Clarity | Vision critic that can only flag | Not built |
 | Learning | Model screen (recall-biased proxy, gates nothing), then student study with recall and reasoning reported separately | Phase 3 |
 | Human | Teacher and native-speaker review tied to content hashes | Not built |
 
-Testing the tests: fast-check property tests with boundary generators; Stryker mutation testing with a floor of 90 per file in one full run; golden frames at 360 and 1280 px with bundled fonts. The earlier mutation waiver (ADR 0045) is closed (ADR 0048): in one full run all 26 files reached 90 (overall 94.80). Stryker's own break applies to the overall score, so `scripts/mutation-floor.ts` enforces the per-file floor. The waiver mechanism stays dormant: a waiver needs an ADR with an expiry date, and a test fails after the date. The Python step handlers are mutation-tested with Cosmic Ray (ADR 0047): 79.75% at the last run, 84.5% without harmless equivalent mutants; there is no floor on them yet.
+Testing the tests: fast-check property tests with boundary generators; Stryker mutation testing with a floor of 90 per file in one full run; golden frames at 360 and 1280 px with bundled fonts. The earlier mutation waiver (ADR 0045) is closed (ADR 0048): in one full run all 26 files reached 90 (overall 94.80). Stryker's own break applies to the overall score, so `scripts/mutation-floor.ts` enforces the per-file floor. The waiver mechanism stays dormant: a waiver needs an ADR with an expiry date, and a test fails after the date. The Python step handlers are mutation-tested with Cosmic Ray (ADR 0047): `steps.py` 79.75% (84.5% without harmless equivalent mutants), and since WP2c part a the claim and check handlers in `checks.py` 88.61% (92.6% without the 39 equivalent mutants found; ADR 0056). A ratchet file (`services/verifier/cr-floor.json`, `cr_floor.py`) stops either score falling; the target is 90.
 
 ## 12. Languages, delivery, privacy
 
-English now. Hindi after native-speaker review and a 100% correct maths read-aloud test; Nepali last with a stricter gate. Digits on screen default to Latin per locale registry, pending reviewer confirmation. Delivery is a versioned lesson package per language (timeline, assets, audio, captions, alt text, source ids); MP4 export is Phase 2. Analytics (later) are privacy-preserving play events only. The first event to design is per-claim drop-off (which claim was playing when a student left), because it shows where a lesson confuses and tunes the gates. Students are minors: no personal data in prompts, moderation before synthesis, AI labels on synthetic voices, human review before sharing. Keys are read in one file, scanned for before every commit, and rotated if ever shown.
+English now. Hindi after native-speaker review and a 100% correct maths read-aloud test; Nepali last with a stricter gate. Digits on screen default to Latin per locale registry, pending reviewer confirmation. Delivery is a versioned lesson package per language (timeline, assets, audio, captions, alt text, source ids); MP4 export is Phase 2. The export renders the same timeline with a headless browser and FFmpeg. Scenes are vector, so they stay sharp at any size; the export profile sets the size. Portrait 1080 by 1920 is the phone layout (360 by 640 CSS pixels at a device scale factor of 3); landscape 1920 by 1080 is the desktop layout (16:9). Profiles, bitrate and file size are decided by ADR in Phase 2. The 360 by 640 figures in these documents are CSS pixels for layout, not video resolution. Analytics (later) are privacy-preserving play events only. The first event to design is per-claim drop-off (which claim was playing when a student left), because it shows where a lesson confuses and tunes the gates. Students are minors: no personal data in prompts, moderation before synthesis, AI labels on synthetic voices, human review before sharing. Keys are read in one file, scanned for before every commit, and rotated if ever shown.
 
 ## 13. Subject expansion (gated, not built)
 

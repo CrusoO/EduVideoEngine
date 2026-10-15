@@ -50,15 +50,18 @@ A claim sentence matches its claim; a link sentence matches either of its two cl
 | G2 Delivery | core-claim narration at least the configured floor (8000 ms start) | track durations only | fail for reference, warning for generated |
 | G3 Active visual | (a) every non-static object has a cue; (b) in worked beats a cue anchored to a claim sentence; (c) expression-reference objects cued to a sentence whose claim uses it | no | fail |
 | G4 Arc | arc exists; beats map to legal slots and kinds; required slots filled; each beat has a speakable goal | no | fail |
-| G5 Role | goal copy first; claim sentences carry ids; goal and transition add no number, fact or placeholder; closed transitions; link and question rules; no unroled sentence | no | fail |
+| G5 Role | goal copy first; claim sentences carry ids; goal and transition add no number, fact or placeholder; closed transitions; link and question rules; no unroled sentence; (d) a number written as words in a claim or link sentence is a number of its claim (English, ADR 0054) | no | fail |
 | G6 Prerequisites | every direct prerequisite recapped, linked or assumed at an allowed level | no | fail |
 | G7 Core coverage | every core claim in the bundle has a claim sentence | no | fail |
 
-Each gate has at least one deliberately corrupted lesson it must reject (28 corruptions: 7 maths and 21 pedagogy, the 27 of AM-15 plus C21 of ADR 0049; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
+Each gate has at least one deliberately corrupted lesson it must reject (32 corruptions: 10 maths and 22 pedagogy, the 27 of AM-15 plus C21 of ADR 0049, C22 of ADR 0054 and M8 to M10 of ADR 0053; `pnpm verify:gate --list`). A gate without a failing corruption does not count as built.
 
 ## What code can and cannot check
-* Can: order, coverage, anchors, closed lists, numbers on screen (verifier), step transformations (verifier).
-* Cannot: that a sentence paraphrases its claim faithfully; that an author-declared step link is the best one to teach; transitive prerequisite gaps. These stay with human review.
+* Can: order, coverage, anchors, closed lists, numbers on screen (verifier), step transformations (verifier), and that a number said in words in a claim or link sentence is one of the numbers of its claim.
+* Cannot: that a number said in words is the right one in its sentence (a count passes when the claim happens to have that number; the lone word "one" and the sign are not checked); that a sentence paraphrases its claim faithfully; that an author-declared step link is the best one to teach; transitive prerequisite gaps. These stay with human review.
+
+## Minimum stage height
+A lesson needs a stage slot at least as tall as its tallest scene at 360 px wide plus a 40 px margin (`lessonMinStagePx`, ADR 0051). It is printed in the `verify:gate` report and by `pnpm reference:build` (the reference lesson: 370 px) and goes into the package manifest at INT. The 184 px of chrome is a budget for a dedicated compact layout, not a measurement: the existing YourTutor lesson sheet measures 272 to 298 px and cannot host a lesson as it is. A host that cannot give the slot refuses the lesson; scenes are never shrunk.
 
 ## UI wording rules
 Say "numbers and equations checked by code", taken from package metadata. Do not say "reviewed" in the UI or lesson metadata until a sentence-level approval gate exists.
