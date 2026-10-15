@@ -1,4 +1,5 @@
 import { claimExpressions, claimsOf, wordCount } from "./helpers";
+import { claimNumbers, spokenNumbers } from "./numberwords";
 import type { Finding, GateContext } from "./types";
 
 const fail = (code: string, message: string, ids: string[]): Finding => ({ gate: "G5", level: "fail", code, message, ids });
@@ -14,14 +15,17 @@ export const TRANSITION_MAX_WORDS = 8;
  *  - a transition is 8 words or fewer and is on the closed list of the language;
  *  - a claim sentence carries a claim of its own beat and uses only placeholders of that claim;
  *  - a link sentence cites two different claims joined by a dependsOn edge;
+ *  - (d) a number written as words in a claim or link sentence is a number of the claim (of one of the two, for a link): the size of a `num` node of its expressions
+ *    or of its own values. English only; ordinals and a lone "one" are ignored, and the sign is not compared (ADR 0054, `numberwords.ts`);
  *  - a question sentence cites a practice question and carries its text.
- * Numbers written as words in prose cannot be matched to a claim by code and are not checked (docs/gate-reports/co-2-conformance.md, question 8).
+ * What (d) cannot do: tell a count from a number of the claim ("the first two coefficients" passes when the claim has a 2 in it); that stays with human review.
  */
 export function g5Role(ctx: GateContext): Finding[] {
   const out: Finding[] = [];
   const claims = new Map(claimsOf(ctx).map((c) => [c.id, c] as const));
   const edge = (a: string, b: string) => (claims.get(a)?.dependsOn ?? []).includes(b) || (claims.get(b)?.dependsOn ?? []).includes(a);
   const transitions = new Set(ctx.transitions);
+  const english = ctx.bundle.locale.startsWith("en");
 
   for (const beat of ctx.bundle.plan.beats) {
     const sentences = ctx.bundle.script.filter((s) => s.beatId === beat.id);
@@ -47,6 +51,16 @@ export function g5Role(ctx: GateContext): Finding[] {
         if (claim.beatId !== s.beatId) out.push(fail("claim-of-another-beat", `claim sentence ${s.id} states claim ${claim.id}, which belongs to beat ${claim.beatId}`, [s.id, claim.id]));
         const own = claimExpressions(claim);
         for (const ref of s.exprRefs) if (!own.includes(ref)) out.push(fail("foreign-placeholder", `claim sentence ${s.id} uses ${ref}, which is not an expression of claim ${claim.id}`, [s.id, claim.id]));
+      }
+    }
+    if ((s.role === "claim" || s.role === "link") && english) {
+      const cited = (s.role === "claim" ? [s.claimId] : (s.linkClaimIds ?? [])).flatMap((id) => (id !== undefined && claims.has(id) ? [claims.get(id)!] : []));
+      if (cited.length > 0) {
+        const closed = new Set(cited.flatMap((c) => [...claimNumbers(c, ctx.bundle.expressions)]));
+        const names = cited.map((c) => c.id);
+        for (const n of spokenNumbers(s.text)) {
+          if (!closed.has(n.value)) out.push(fail("number-not-in-claim", `${s.role} sentence ${s.id} says "${n.words}", which is not a number of ${cited.length === 1 ? `claim ${names[0]}` : `claims ${names.join(" and ")}`}`, [s.id, ...names]));
+        }
       }
     }
     if (s.role === "link") {

@@ -5,7 +5,7 @@ import type { Fixture } from "./fixture";
 /**
  * The corruption catalogue as DATA (AM-15, CO-2 section 7): each entry derives a corrupted copy of the clean lesson with a small function, and names the check
  * that must reject it. A gate with no failing corruption is not built. The seven maths corruptions of the Phase 0 gate (`MATHS_CORRUPTIONS` in
- * scripts/verify-gate.ts) work on the reference lesson and the SymPy verifier; they are listed here so `--list` shows all 28 (the 27 of AM-15 and C21 of ADR 0049).
+ * scripts/verify-gate.ts) work on the reference lesson and the SymPy verifier; they are listed here so `--list` shows all 32 (the 27 of AM-15, C21 of ADR 0049, C22 of ADR 0054, and M8 to M10 of ADR 0053).
  */
 export type Target = "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7" | "Validator" | "Compile" | "Verifier";
 export type Corruption = {
@@ -261,6 +261,16 @@ export const CORRUPTIONS: readonly Corruption[] = [
         s.objects.push({ id: "graph", component: "functionGraph", props: { xMin: 0, xMax: 5, yMin: -1, yMax: 7 }, exprRef: "quad.other" });
         s.layout = [{ rule: "column", items: s.objects.map((o) => o.id) }];
         s.cues.push({ targetObject: "graph", action: "reveal", anchor: { sentenceId: "s4.4", at: "start" }, minHoldMs: 1500 });
+      }),
+  },
+  {
+    id: "C22",
+    reason: /number-not-in-claim/,
+    what: "a claim sentence that says a wrong number in words (the roots are two and four) (ADR 0054)",
+    target: "G5",
+    corrupt: (c) =>
+      editBundle(c, (b) => {
+        sentence(b, "s4.3").text = "So the roots are two and four.";
       }),
   },
 ];

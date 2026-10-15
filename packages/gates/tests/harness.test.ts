@@ -67,8 +67,8 @@ describe("the clean synthetic fixture", () => {
 });
 
 describe("the corruption catalogue", () => {
-  it("has 21 pedagogy corruptions and 10 maths ones, 31 in all, each named once", () => {
-    expect(CORRUPTIONS.map((c) => c.id)).toEqual(Array.from({ length: 21 }, (_x, i) => `C${i + 1}`));
+  it("has 22 pedagogy corruptions and 10 maths ones, 32 in all, each named once", () => {
+    expect(CORRUPTIONS.map((c) => c.id)).toEqual(Array.from({ length: 22 }, (_x, i) => `C${i + 1}`));
     expect(MATHS_CORRUPTIONS.map((m) => m.id)).toEqual(Array.from({ length: 10 }, (_x, i) => `M${i + 1}`));
     for (const c of CORRUPTIONS) expect(c.what.length).toBeGreaterThan(10);
   });
