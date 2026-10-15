@@ -6,7 +6,7 @@ Current as of 2026-10-14 (after WP2a). This file describes the system as built a
 
 A script-to-scene compiler for short narrated maths lessons. A language model plans a lesson and writes it as typed data. Deterministic code draws it, speaks it and times it. Code checks every number. The model never draws pixels, writes code, writes coordinates or writes maths text.
 
-**Serves:** students on cheap phones and slow connections (Class 6 to 12, English first), teachers who must be able to fix one sentence without regenerating a lesson, and authors who supply the approved content.
+**Serves:** students on cheap phones and slow connections (Class 6 to 12; English and algebra in the current phase), teachers who must be able to fix one sentence without regenerating a lesson, and authors who supply the approved content.
 
 **A finished lesson:** one skill, typically 2 to 5 minutes (a warning above 300 s, a hard limit of 420 s, at most 75 s per beat; the reference lesson is 138 s and is not padded) on a dark stage with a voice track. Terms keep one colour across scenes, graphs draw themselves from the equation, short pause-and-ask moments stop playback. Captions on by default. It plays offline after loading and is delivered to YourTutor as a static player bundle plus lesson JSON. YourTutor never imports engine code.
 
@@ -23,9 +23,11 @@ A script-to-scene compiler for short narrated maths lessons. A language model pl
 | Safe | No personal data in prompts; synthetic voices labelled | Enforced by checks |
 | Multilingual | Native-speaker review per language | English now; Hindi and Nepali gated |
 
-**Non-goals:** cinematic or photo-like video; avatars; free-form drawing by a model; breadth of languages; live generation of a lesson for a student; chemistry and other subjects until their verifiers and reviewers exist.
+**Non-goals for the current phase:** cinematic or photo-like video; avatars; free-form drawing by a model; languages other than English in the current phase; live generation of a lesson for a student; subjects other than algebra in the current phase until their verifiers and reviewers exist.
 
 **Hard constraints:** total budget about $1,000, nothing paid in Phase 1 (free-tier provider keys only); Phase 1 is English and algebra only; prompts may contain only content the owner wrote or that is openly licensed (free-tier providers may use prompts); the engine lives in its own repository.
+
+**Direction (proposed, owner to confirm).** Vision: every child understands what they are taught, first in the language they think in, then in the languages that open doors. Mission: the trusted, community-governed layer that turns verified knowledge into clear explanations in languages that large AI systems serve poorly. The first community, language and subject will be chosen after a field visit in December 2026; the likely first subject is early-grade numeracy, oral-first, with recorded human voices and usable offline. Until then the engine is built against English algebra as its correctness proof. Treat this as direction, not as decided scope (ADR 0058).
 
 ## 2. Core decision and principles
 
@@ -253,7 +255,7 @@ No subject is added until Phase 3 shows a reasoning gain. Geometry and trigonome
 
 ## 14. Interface with YourTutor
 
-**Hosts** (ADR 0055, proposed). The web app comes first (responsive, installable as a PWA). The phone application comes later as a Capacitor wrapper around the same web app, with the same engine package. Lessons are never rebuilt as native screens, because the player uses the DOM, SVG and Web Audio.
+**Hosts** (ADR 0055). The web app comes first (responsive, installable as a PWA). The phone application comes later as a Capacitor wrapper around the same web app, with the same engine package. Lessons are never rebuilt as native screens, because the player uses the DOM, SVG and Web Audio.
 
 
 The engine and YourTutor are independent repositories, each with its own window and session. Their only contact is a static engine package (player, lesson JSON, audio, captions, a manifest with hashes) and the contract in `docs/ENGINE_INTERFACE.md` (draft v0, built in work package INT). YourTutor imports no engine code. Fonts are YourTutor's files, hash-locked and listed in the manifest. The player must load lazily so it never counts toward YourTutor's home-page budget (255 KB JS and CSS; fonts 70 KB English, 125 KB Hindi); lazy loading there is unconfirmed until the integration exists. The existing lesson sheet cannot host an engine lesson as it is (its chrome is 272 to 298 px at 360 by 640), so INT needs a dedicated compact layout that meets the chrome budget in `docs/ENGINE_INTERFACE.md`.
@@ -261,6 +263,21 @@ The engine and YourTutor are independent repositories, each with its own window 
 ## 15. Not to be changed without an ADR and the owner's approval
 
 Resolver rules, player clock, hashing and canonical serialization, audio pipeline, verbaliser, layout solver, system prompt v1, planner.v2, fixture mechanism, privacy rules, dark stage and palette, the 12-component list, duration caps, template fallback, language gating, one scene per beat, the read-only reference recordings.
+
+## 17. Language-first direction: assumptions this challenges
+
+These are tensions between how the engine is built today and the direction proposed in section 1. They are recorded here so the design choices are visible, not as decisions: each will be resolved only after the December field visit confirms the first community, language and subject.
+
+| Built today | Challenged by the direction |
+| --- | --- |
+| Text rendered on screen; captions the primary accessibility path | Oral-first lessons where a student may not be able to read the script |
+| English and algebra as the first subject and language | Early numeracy in the student's home language as the likely first real subject |
+| Synthetic TTS voices (development voice; production voice decided by listening test) | Recorded human voices from community speakers, with per-sentence approval and a provenance record |
+| One language per lesson | A bilingual concept-bridge pattern that teaches in the home language with bridges to a second language |
+| Human review as a late gate after the engine produces a lesson | Community reviewers and terminology stewards as the first step of the authoring workflow |
+| Online delivery assumed (static bundle served over HTTP) | Offline sharing: a single-file lesson pack transferred by Bluetooth, file share or WhatsApp |
+| Reading-based multiple-choice practice questions | Tap-and-picture answers and oral probes for students who do not read well |
+| Individual consent (student and guardian) | Community consent for language data (voice, terminology, dialect) alongside individual consent |
 
 ## 16. Sources
 

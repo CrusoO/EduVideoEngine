@@ -42,9 +42,9 @@ Stops mean the agent stops and shows a report; nothing continues until the owner
 | H1 to H4 | Two Stryker configs, harden env, limiter and arcs, refactor secrets scan, Python mutation tool or recorded gap | Done (Cosmic Ray runs on the Python handlers: 79.75%, ADR 0047) | none | Main run at or above 90 per file; waiver files listed; expiry test |
 | A | Providers: Gemini limits verified, smoke, diagnosis of the 503 and 429, probes 1 to 8 on prompt v1, planner on the v2 request, request-size check, decision gate | Waiting on owner | none | A provider qualifies: fits its token limit, 7 of 8 probes, valid plan with at most one repair in 3 runs |
 | WP3 | Retrofit the reference lesson to problem_first with the derived claim graph and real roles; real audio, golden frames, sync re-measured; length reported against the caps | Built and committed (3d82c1e); stop report under review; ADR 0049 accepted, ADR 0050 proposed until the sentences are read | WP2b | Passes every gate, G2 as a failure |
-| WP2c | Part a: spec 2.1.0 (additive): claim kind `satisfied-by`, step role `check`, explicit recall `answerKind`, `exprRefs` on grounded claims; verifier handlers and maths corruptions M8 to M10; a deterministic number-word check in G5; the lesson's minimum stage height reported. Part b: a hook that poses the problem through a second recall practice question; the misconception beat bound to a claim; the reference lesson rebuilt with those and its sentence fixes | After WP3 (two stops, a then b) | WP3 | A linear chain passes the full verifier; every new rule has a rejecting corruption; the Python ratchet is raised |
-| WP2d | `balanceScale` component with its verify hook, height cost and golden frames, and a picture pattern for linear equations so the variety rule can hold | After WP2c | WP2c | A linear-equation lesson passes the variety rule |
-| WP2e | Responsive scenes: patterns declare a wide (two-column) arrangement with the existing solver rule; golden frames at 768 and 1920; the player specs pass on Chromium, Firefox and WebKit at phone, tablet and desktop sizes | After WP2d | WP2d | The reference lesson passes the layout checks and frames at phone, tablet and desktop widths |
+| WP2c | Part a: spec 2.1.0 (additive): claim kind `satisfied-by`, step role `check`, explicit recall `answerKind`, `exprRefs` on grounded claims; verifier handlers and maths corruptions M8 to M10; a deterministic number-word check in G5; the lesson's minimum stage height reported. Part b: a hook that poses the problem through a second recall practice question; the misconception beat bound to a claim; the reference lesson rebuilt with those and its sentence fixes | Part a done; part b paused pending December (see section 9) | WP3 | A linear chain passes the full verifier; every new rule has a rejecting corruption; the Python ratchet is raised |
+| WP2d | `balanceScale` component with its verify hook, height cost and golden frames, and a picture pattern for linear equations so the variety rule can hold | Paused pending December (see section 9) | WP2c | A linear-equation lesson passes the variety rule |
+| WP2e | Responsive scenes: patterns declare a wide (two-column) arrangement with the existing solver rule; golden frames at 768 and 1920; the player specs pass on Chromium, Firefox and WebKit at phone, tablet and desktop sizes | Paused pending December (see section 9) | WP2d | The reference lesson passes the layout checks and frames at phone, tablet and desktop widths |
 | WP4 | Pedagogy rules in the planner prompt (planner.v4): arc, slots, learning goals, claim order, prerequisites, variety rule; probes 9 to 13; re-run the size check; re-record only changed fixtures | After A and WP2b (stop) | A, WP2b | Probes pass on the chosen provider |
 | WP5 | Scriptwriter (claims-first, roles, link sentences), composer, end-to-end command | After WP4 (stop) | WP4 | A generated lesson passes every gate |
 | WP6 | Recall and reasoning question schema, per-claim analytics event schema, study design with thresholds written first | After WP3 | WP3 | Thresholds recorded before any study |
@@ -133,3 +133,27 @@ Author minutes per record kind and per finished lesson (log in `docs/AUTHORING.m
 8. Run the sync harness once on a real Android phone.
 9. Keep the two repositories independent: one Claude session per repository, each working in its own folder (both folders may be open together to look at changes). Remove stray engine files from YourTutor, and give YourTutor its own docs pass with the same method (`docs/ENGINE_WORKFLOW.md` section 10, `docs/ENGINE_INTERFACE.md`).
 10. Done on 2026-10-15: the six fonts in the engine's hash lock are byte-identical to YourTutor's (the first 8 and last 5 hex characters of each sha256 were compared). YourTutor also has two Geist Mono files that the engine does not use. Repeat the check if YourTutor's fonts change. Ongoing drift is checked at integration by the manifest hashes (`docs/ENGINE_INTERFACE.md`), not by reading YourTutor from engine tests.
+11. Paused: do not write linear-equation content records (a new conceptClaim, misconception, or practiceQuestion for linear equations) until the first community is chosen after December. The reference lesson and its existing seed records stay as the correctness proof.
+
+## 9. Direction and decisions pending the December field visit
+
+**Direction (proposed, owner to confirm).** Vision: every child understands what they are taught, first in the language they think in, then in the languages that open doors. Mission: the trusted, community-governed layer that turns verified knowledge into clear explanations in languages that large AI systems serve poorly. ADR 0058 records this as proposed direction.
+
+**Likely first subject.** Early-grade numeracy, oral-first, with recorded human voices, teacher-led and usable offline. The first community, language and subject are chosen after a field visit in December 2026. No algebra-specific work is started for the new subject before then.
+
+**Algebra reference lesson.** Keep it as the proof of correctness and the regression test. Do not extend algebra content: no new concept records, misconception records, or practice questions for algebra topics beyond the sum-of-roots lesson. The reference lesson is the benchmark against which all generic engine changes are tested.
+
+**Paused until the first community is known.**
+- WP2c part b (hook redesign, misconception bind, sentence fixes for the reference lesson)
+- WP2d (balanceScale component, picture pattern for linear equations)
+- WP2e (responsive scenes, two-column arrangements)
+- Owner task 11: do not write linear-equation content records
+
+Nothing is deleted; these work packages stay in section 3 with their gates and return when the first community's needs are known.
+
+**Generic work that continues regardless.**
+- APR (sentence-level approval records and the lesson state in the manifest): needed before any lesson is seen by a family
+- Claim checks and verifier handlers (the algebra set is the correctness proof; new handler kinds are added only with new content)
+- Minimum stage height and the layout budget (generic across subjects)
+- Per-locale number-word checks (G5 part d is English; the hook for other locales is in place)
+- Provider work package A and WP4 (planner prompt): the algebra lesson remains the test case
