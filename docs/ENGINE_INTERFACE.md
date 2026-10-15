@@ -21,7 +21,7 @@ A host built for contract vN accepts packages of contract vN only. The manifest 
 Built by one engine command (name decided at INT) into `dist/engine-package/`:
 
 ```
-manifest.json                   contract, spec and player API versions; every file with sha256 and size; the budgets it meets; the font files and their sha256
+manifest.json                   contract, spec and player API versions; every file with sha256 and size; the budgets it meets; the font files and their sha256; each lesson's minimum stage height (`minStagePx`)
 player/                         the lazy-loadable player: one script, one stylesheet
 lessons/<lessonId>/<locale>/    lesson JSON (timeline, scene specs, pre-rendered maths markup, captions, alt text, source ids) and the audio files
 ```
@@ -39,7 +39,7 @@ Rules:
 - A container element and a theme (light or dark) for the controls. The stage itself is always dark.
 - The font files at the URLs the lesson stylesheet names. The engine uses the same files as YourTutor, hash-locked; the manifest lists each file's sha256. A font change in YourTutor needs an engine ADR first.
 - A user gesture before audio starts (browsers block audio until then).
-- The stage height: the screen height or dvh, minus the sheet chrome (a parameter, default 184 px, still unmeasured on the real sheet).
+- A stage slot of at least the lesson's `minStagePx` (the tallest scene plus a 40 px margin, listed in the manifest), sized in dvh terms. The target is a dedicated compact layout whose chrome stays within 184 px at 360 by 640 (proposed split: header 48, captions 48, controls 56, padding 32). A host that cannot give the slot refuses the lesson; it never shrinks the scenes. YourTutor's existing lesson sheet measures 272 to 298 px of chrome and cannot host a lesson as it is.
 - Lazy loading: the player loads only when a lesson opens, so it never counts toward the home-page budget.
 
 ## 5. Player API (shape only; names come from `packages/player/src` at INT)
@@ -64,4 +64,4 @@ During development, a copy script in YourTutor reads `../EduVideoEngine/dist/eng
 
 ## 9. Open points, decided at INT
 
-The package command name; audio format and bitrate; the exact player API names; whether the question interface lives in the player or the host; the service worker plan; how lesson ids map to YourTutor skills; the measured sheet chrome height.
+The package command name; audio format and bitrate; the exact player API names; whether the question interface lives in the player or the host; the service worker plan; how lesson ids map to YourTutor skills; the real chrome height of the compact layout.

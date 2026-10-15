@@ -100,7 +100,7 @@ Task prompts are sent by the owner, one at a time, and are not stored in the rep
 
 | Stage | Branch | Agent does | Stops with |
 | --- | --- | --- | --- |
-| C0 and WP2b with H1 to H4 | `co-2` | Conformance report against CO-2 and the amendments, then synthetic fixture, gates G1 to G7, 27 corruptions, hardening | Conformance report, `verify:gate` and `--list` output, mutation tables, variety-rule result per arc |
+| C0 and WP2b with H1 to H4 | `co-2` | Conformance report against CO-2 and the amendments, then synthetic fixture, gates G1 to G7, 28 corruptions, hardening | Conformance report, `verify:gate` and `--list` output, mutation tables, variety-rule result per arc |
 | A providers | `providers` | Smoke, diagnosis, probes 1 to 8 on prompt v1, planner on the v2 request, size check, decision gate | Probe table, planner comparison, size check, the decision |
 | WP3 | `co-2` | Retrofit the reference lesson, real audio, frames, sync | Gate output including G2 as a failure, sync measurement |
 | WP2c | `co-2` | Linear-equation claim kind and step role, recall answer forms | Full-verifier result on a linear chain |
@@ -123,7 +123,7 @@ Branches: `main` holds accepted work; `co-2` and `providers` are merged into `ma
 | Content | `pnpm content:seal`, `pnpm content:validate`, `pnpm content:seed` |
 | Pattern report | `pnpm patterns:report` |
 | Provider smoke and usage | `pnpm llm:smoke`, `pnpm llm:usage`, `pnpm llm:sizes` |
-| Mutation testing | `pnpm mutate` (the main Stryker configuration, then `scripts/mutation-floor.ts` for the per-file floor; a waived file, only while a waiver ADR is open, has its own report-only configuration). Python step handlers: Cosmic Ray, ADR 0047 |
+| Mutation testing | `pnpm mutate` (Stryker on the main configuration, then `scripts/mutation-floor.ts` for the per-file floor). Python step handlers: the Cosmic Ray commands in ADR 0047 |
 | Docs check | `pnpm docs:check` |
 
 `pnpm docs:check` runs with the test suite and fails if: a path in the section 1 table is missing (rows marked planned are skipped); an ADR file has no Status line; a frozen prompt's sha256 differs from `prompts/VERSIONS.md`.
@@ -155,4 +155,4 @@ Follow the working rules in ENGINE_WORKFLOW.md section 5 and stop where the plan
 - The only contact is the engine package plus `docs/ENGINE_INTERFACE.md`. A change to the contract is an ADR here, a version bump, and a matching ADR in YourTutor.
 - Facts that must stay identical in both (the font files) are recorded in the contract as hashes. The engine keeps its own copies.
 - Engine docs, prompts, change orders and ADRs never live in YourTutor, and YourTutor's docs never live here.
-- A cross-repository reference in code, tests or scripts is a defect. `git grep -n "YourTutor" -- . ":(exclude)docs"` and `git grep -n "\.\./YourTutor"` must find nothing outside the docs.
+- Code, a test or a script that reads or builds a path into the other repository is a defect, including a path assembled from segments (for example `join("C", "Users", ...)`). The other project's name in a comment or in README prose is fine. Detect with `git grep -n -E "\.\./YourTutor|YourTutor[\\/]|\"YourTutor\"" -- . ":(exclude)docs"` and `git grep -n -E "\"Users\"" -- packages scripts`.
