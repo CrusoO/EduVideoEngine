@@ -1,18 +1,19 @@
 /**
  * The gate of the pedagogy layer and of the maths verifier.
- *   pnpm verify:gate           the clean lessons pass; every corrupted copy (21 pedagogy and 7 maths, 28 in all) is rejected, and each by the check it names
+ *   pnpm verify:gate           the clean lessons pass; every corrupted copy (21 pedagogy and 10 maths, 31 in all) is rejected, and each by the check it names
  *   pnpm verify:gate --list    prints every corruption and the check that must reject it, and runs nothing
  * Fails (exit 1) if a clean lesson is rejected, a corrupted copy is accepted, or a copy is rejected only by a check it does not name.
  */
 import { CORRUPTIONS, MATHS_CORRUPTIONS, buildCleanFixture, judgeAll, rejectionsOf } from "../packages/gates/src";
 import { referenceLesson, type LessonBundle } from "../packages/schema/src";
+import { buildLinearChain } from "../packages/gates/src/linear-chain";
 import { verifyBundle } from "../packages/verify/src";
 
 const MATHS_TARGET = "Verifier";
 if (process.argv.includes("--list")) {
   console.log("id    must be rejected by   what");
   for (const c of CORRUPTIONS) console.log(`${c.id.padEnd(5)} ${c.target.padEnd(21)} ${c.what}`);
-  for (const m of MATHS_CORRUPTIONS) console.log(`${m.id.padEnd(5)} ${MATHS_TARGET.padEnd(21)} ${m.what}   (from the ${m.base === "fixture" ? "clean fixture" : "reference lesson"})`);
+  for (const m of MATHS_CORRUPTIONS) console.log(`${m.id.padEnd(5)} ${MATHS_TARGET.padEnd(21)} ${m.what}   (from the ${m.base === "fixture" ? "clean fixture" : m.base === "linear" ? "linear chain fixture" : "reference lesson"})`);
   console.log(`\n${CORRUPTIONS.length + MATHS_CORRUPTIONS.length} corruptions`);
   process.exit(0);
 }
@@ -42,8 +43,12 @@ console.log("\n== maths corruptions (SymPy verifier)");
 const reference = await verifyBundle(referenceLesson);
 console.log(`   the reference lesson: ${reference.ok ? "VERIFIED" : "REJECTED"}`);
 if (!reference.ok) wrong++;
+const linear = buildLinearChain();
+const linearReport = await verifyBundle(linear.bundle);
+console.log(`   the linear chain fixture (spec 2.1.0): ${linearReport.ok ? "VERIFIED" : "REJECTED"}`);
+if (!linearReport.ok) wrong++;
 for (const m of MATHS_CORRUPTIONS) {
-  const base = structuredClone(m.base === "fixture" ? clean.ctx.bundle : referenceLesson) as LessonBundle;
+  const base = structuredClone(m.base === "fixture" ? clean.ctx.bundle : m.base === "linear" ? linear.bundle : referenceLesson) as LessonBundle;
   m.corrupt(base);
   const report = await verifyBundle(base);
   const ok = !report.ok;

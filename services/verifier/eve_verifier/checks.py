@@ -164,46 +164,96 @@ def _poly_roots(eq: Any) -> tuple[Symbol, dict[Any, int]] | str:
     return x, roots(p)
 
 
-def check_claims(bundle: Bundle, report: Report) -> None:
+Verdict = tuple[bool, str]
+
+
+def _claim_equivalent(bundle: Bundle, claim: dict[str, Any]) -> Verdict:
     ex = bundle["expressions"]
+    a, b = to_sympy(ex[claim["a"]]), to_sympy(ex[claim["b"]])
+    xa, xb = _unknown(a.lhs - a.rhs), _unknown(b.lhs - b.rhs)
+    if xa is None or xb is None or xa != xb:
+        return False, "equivalent: the two equations need one common unknown"
+    sa, sb = solveset(a.lhs - a.rhs, xa, S.Complexes), solveset(b.lhs - b.rhs, xb, S.Complexes)
+    ok = sa == sb
+    return ok, f"{_text(a)} has solutions {_text(sa)}; {_text(b)} has {_text(sb)}" + ("" if ok else ": they are not equivalent")
+
+
+def _claim_roots(bundle: Bundle, claim: dict[str, Any]) -> Verdict:
+    eq = to_sympy(bundle["expressions"][claim["equation"]])
+    got = _poly_roots(eq)
+    if isinstance(got, str):
+        return False, got
+    _, rs = got
+    stated = FiniteSet(*[to_sympy(v) for v in claim["values"]])
+    actual = FiniteSet(*rs.keys())
+    return stated == actual, f"{_text(eq)} has roots {_text(actual)}; the lesson says {_text(stated)}"
+
+
+def _claim_sum_of_roots(bundle: Bundle, claim: dict[str, Any]) -> Verdict:
+    ex = bundle["expressions"]
+    eq, target = to_sympy(ex[claim["equation"]]), to_sympy(ex[claim["equals"]])
+    got = _poly_roots(eq)
+    if isinstance(got, str):
+        return False, got
+    _, rs = got
+    total = sum(r * m for r, m in rs.items())  # a double root counts twice
+    return simplify(total - target.rhs) == 0, f"the roots of {_text(eq)} add up to {_text(simplify(total))}; the lesson says {_text(target.rhs)}"
+
+
+def _claim_product_of_roots(bundle: Bundle, claim: dict[str, Any]) -> Verdict:
+    ex = bundle["expressions"]
+    eq, target = to_sympy(ex[claim["equation"]]), to_sympy(ex[claim["equals"]])
+    got = _poly_roots(eq)
+    if isinstance(got, str):
+        return False, got
+    _, rs = got
+    product = S.One
+    for r, m in rs.items():
+        product *= r**m  # a double root counts twice
+    return simplify(product - target.rhs) == 0, f"the roots of {_text(eq)} multiply to {_text(simplify(product))}; the lesson says {_text(target.rhs)}"
+
+
+def _claim_satisfied_by(bundle: Bundle, claim: dict[str, Any]) -> Verdict:
+    """The instance is the equation with the unknown replaced by the value (both sides), and the instance is true (the check by substitution, ADR 0042)."""
+    ex = bundle["expressions"]
+    eq, inst, value = to_sympy(ex[claim["equation"]]), to_sympy(ex[claim["instance"]]), to_sympy(claim["value"])
+    x = _unknown(eq.lhs - eq.rhs)
+    if x is None:
+        return False, f"cannot check: {_text(eq)} has no single unknown (name it x)"
+    if inst.free_symbols or not value.is_number:
+        return False, "satisfied-by: the value and the instance must be numbers, with no unknown left"
+    left, right = eq.lhs.subs(x, value), eq.rhs.subs(x, value)
+    if simplify(left - inst.lhs) != 0 or simplify(right - inst.rhs) != 0:
+        return False, f"putting {_text(x)} = {_text(value)} into {_text(eq)} gives {_text(left)} = {_text(right)}, not {_text(inst)}"
+    if _bad(inst.lhs) or _bad(inst.rhs) or simplify(inst.lhs - inst.rhs) != 0:
+        return False, f"{_text(x)} = {_text(value)} does not satisfy {_text(eq)}: {_text(inst.lhs)} is not {_text(inst.rhs)}"
+    return True, f"{_text(x)} = {_text(value)} in {_text(eq)} gives {_text(inst)}, which is true"
+
+
+# One handler for every claim kind of the lesson spec (packages/schema/claim-kinds.json lists the kinds and a test compares them with this table).
+# `statement` is prose a person approves (AM-3): there is nothing for the verifier to prove, and the approval is checked at compile time.
+CLAIM_HANDLERS: dict[str, Any] = {
+    "equivalent": _claim_equivalent,
+    "roots": _claim_roots,
+    "sum-of-roots": _claim_sum_of_roots,
+    "product-of-roots": _claim_product_of_roots,
+    "satisfied-by": _claim_satisfied_by,
+    "statement": None,
+}
+
+
+def check_claims(bundle: Bundle, report: Report) -> None:
     for claim in bundle.get("claims", []):
         cid, kind = claim["id"], claim["kind"]
-        if kind == "statement":
-            continue  # prose a person approves (AM-3): there is nothing for the verifier to prove, and the approval is checked at compile time
+        if kind not in CLAIM_HANDLERS:
+            report.checks.append(Check(cid, "claim", False, f"unknown claim kind {kind!r}"))
+            continue
+        handler = CLAIM_HANDLERS[kind]
+        if handler is None:
+            continue
         try:
-            if kind == "equivalent":
-                a, b = to_sympy(ex[claim["a"]]), to_sympy(ex[claim["b"]])
-                xa, xb = _unknown(a.lhs - a.rhs), _unknown(b.lhs - b.rhs)
-                if xa is None or xb is None or xa != xb:
-                    report.checks.append(Check(cid, "claim", False, "equivalent: the two equations need one common unknown"))
-                    continue
-                sa, sb = solveset(a.lhs - a.rhs, xa, S.Complexes), solveset(b.lhs - b.rhs, xb, S.Complexes)
-                ok = sa == sb
-                report.checks.append(Check(cid, "claim", ok, f"{_text(a)} has solutions {_text(sa)}; {_text(b)} has {_text(sb)}" + ("" if ok else ": they are not equivalent")))
-            elif kind == "roots":
-                eq = to_sympy(ex[claim["equation"]])
-                got = _poly_roots(eq)
-                if isinstance(got, str):
-                    report.checks.append(Check(cid, "claim", False, got))
-                    continue
-                _, rs = got
-                stated = FiniteSet(*[to_sympy(v) for v in claim["values"]])
-                actual = FiniteSet(*rs.keys())
-                ok = stated == actual
-                report.checks.append(Check(cid, "claim", ok, f"{_text(eq)} has roots {_text(actual)}; the lesson says {_text(stated)}"))
-            elif kind == "sum-of-roots":
-                eq = to_sympy(ex[claim["equation"]])
-                target = to_sympy(ex[claim["equals"]])
-                got = _poly_roots(eq)
-                if isinstance(got, str):
-                    report.checks.append(Check(cid, "claim", False, got))
-                    continue
-                _, rs = got
-                total = sum(r * m for r, m in rs.items())  # a double root counts twice
-                ok = simplify(total - target.rhs) == 0
-                report.checks.append(Check(cid, "claim", ok, f"the roots of {_text(eq)} add up to {_text(simplify(total))}; the lesson says {_text(target.rhs)}"))
-            else:
-                report.checks.append(Check(cid, "claim", False, f"unknown claim kind {kind!r}"))
+            ok, detail = handler(bundle, claim)
+            report.checks.append(Check(cid, "claim", ok, detail))
         except UnknownNode as e:
             report.checks.append(Check(cid, "claim", False, str(e)))
         except KeyError as e:
@@ -215,14 +265,15 @@ def _result_of(bundle: Bundle, claim: dict[str, Any]) -> list[Any]:
     ex = bundle["expressions"]
     if claim["kind"] == "equivalent":
         return [to_sympy(ex[claim["b"]])]
-    if claim["kind"] == "sum-of-roots":
+    if claim["kind"] in ("sum-of-roots", "product-of-roots"):
         return [to_sympy(ex[claim["equals"]])]
+    if claim["kind"] == "satisfied-by":
+        return [to_sympy(ex[claim["instance"]])]
     eq = to_sympy(ex[claim["equation"]])
     x = _unknown(eq.lhs - eq.rhs)
     if x is None:
         raise KeyError(f"the equation of {claim['id']} has no single unknown")
     return [Eq(x, to_sympy(v), evaluate=False) for v in claim["values"]]
-
 
 def check_steps(bundle: Bundle, report: Report) -> None:
     """Claims that declare a step (usesStep with a stepKind): the step is a valid transformation of the claim it uses (ADR 0034).
@@ -243,7 +294,14 @@ def check_steps(bundle: Bundle, report: Report) -> None:
             if used is None:
                 report.checks.append(Check(cid, "step", False, f"uses unknown claim {claim['usesStep']}"))
                 continue
-            ok, detail = check_step(kind, _result_of(bundle, used), _result_of(bundle, claim), claim.get("identity"))
+            source = _result_of(bundle, used)
+            if claim["kind"] == "satisfied-by":
+                # a check puts a root back into the equation: the step starts from that equation, and the claim it uses must state the root it puts back
+                if used["kind"] != "roots" or not any(simplify(to_sympy(v) - to_sympy(claim["value"])) == 0 for v in used["values"]):
+                    report.checks.append(Check(cid, "step", False, f"{kind}: a check uses a roots claim that states the value it puts back"))
+                    continue
+                source = [to_sympy(bundle["expressions"][claim["equation"]])]
+            ok, detail = check_step(kind, source, _result_of(bundle, claim), claim.get("identity"))
             report.checks.append(Check(cid, "step", ok, f"{kind}: {detail}"))
         except (UnknownStepKind, UnknownNode) as e:
             report.checks.append(Check(cid, "step", False, str(e)))

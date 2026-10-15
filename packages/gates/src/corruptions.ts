@@ -266,11 +266,13 @@ export const CORRUPTIONS: readonly Corruption[] = [
 ];
 
 /**
- * The seven maths corruptions (the Phase 0 gate list): a wrong sum, a ringed non-root, a wrong factorisation, a lost minus sign, a wrong practice answer, an
- * expression nobody can verify, and a hop that lands on the wrong total. The SymPy verifier must reject each. Six derive from the clean fixture; the hop needs a
- * number line, which the text-only fixture does not have, so it derives from the reference lesson.
+ * The ten maths corruptions: the seven of the Phase 0 gate list (a wrong sum, a ringed non-root, a wrong factorisation, a lost minus sign, a wrong practice answer, an
+ * expression nobody can verify, and a hop that lands on the wrong total) and, from spec 2.1.0, a false check by substitution (M8), a wrong product of the roots
+ * (M9) and a wrong linear solution (M10). The SymPy verifier must reject each. Six derive from the clean fixture; the hop needs a number line, which the text-only
+ * fixture does not have, so it derives from the reference lesson; M8 to M10 derive from the linear chain fixture, which has the claim kinds they need.
  */
-export type MathsCorruption = { id: string; what: string; base: "fixture" | "reference"; corrupt: (bundle: LessonBundle) => void };
+/** `linear` is the in-memory linear chain of `linear-chain.ts` (a test fixture, spec 2.1.0); its bundle holds expressions and claims for the SymPy verifier only. */
+export type MathsCorruption = { id: string; what: string; base: "fixture" | "reference" | "linear"; corrupt: (bundle: LessonBundle) => void };
 const expr = (b: LessonBundle, _id: string) => b.expressions as Record<string, unknown>;
 
 export const MATHS_CORRUPTIONS: readonly MathsCorruption[] = [
@@ -304,4 +306,24 @@ export const MATHS_CORRUPTIONS: readonly MathsCorruption[] = [
   { id: "M5", what: "a wrong practice answer: the answer is S = 8", base: "fixture", corrupt: (b) => void ((b.expressions["quad.q.answer"] as { b: unknown }).b = { op: "num", n: 8 }) },
   { id: "M6", what: "an expression with a node type nobody can verify (sqrt)", base: "fixture", corrupt: (b) => void ((b.expressions as Record<string, unknown>)["quad.total"] = { op: "sqrt", a: { op: "num", n: 4 } }) },
   { id: "M7", what: "a hop that lands on the wrong total (the second hop ends at 6)", base: "reference", corrupt: (b) => void (b.expressions["scene.b4.stop.2"] = { op: "num", n: 6 }) },
+  {
+    id: "M8",
+    what: "a false check by substitution: 3 times 5 plus 4 equals 19 is true, but it is not 3x + 5 = 20 with 5 put in",
+    base: "linear",
+    corrupt: (b) => {
+      // a true closed equation, so the equality check accepts it: only the satisfied-by claim can say it is not the substitution
+      const num = (n: number) => ({ op: "num", n });
+      b.expressions["lin.check"] = { op: "eq", a: { op: "add", a: { op: "mul", a: num(3), b: num(5) }, b: num(4) }, b: num(19) } as never;
+    },
+  },
+  { id: "M9", what: "a wrong product of the roots: the answer is P = 7", base: "linear", corrupt: (b) => void ((b.expressions["lin.q.product.answer"] as { b: unknown }).b = { op: "num", n: 7 }) },
+  {
+    id: "M10",
+    what: "a wrong linear solution: the answer is x = 6",
+    base: "linear",
+    corrupt: (b) => {
+      (b.expressions["lin.q.solution.answer"] as { b: unknown }).b = { op: "num", n: 6 };
+      (b.claims!.find((c) => c.id === "lin.q.solution.answer") as { values: unknown[] }).values = [{ op: "num", n: 6 }]; // the claim is made from the answer, so it says 6 too
+    },
+  },
 ];

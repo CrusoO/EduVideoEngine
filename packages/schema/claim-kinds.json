@@ -1,0 +1,24 @@
+{
+  "kinds": [
+    "equivalent",
+    "roots",
+    "sum-of-roots",
+    "product-of-roots",
+    "satisfied-by",
+    "statement"
+  ],
+  "handlers": {
+    "equivalent": "_claim_equivalent",
+    "roots": "_claim_roots",
+    "sum-of-roots": "_claim_sum_of_roots",
+    "product-of-roots": "_claim_product_of_roots",
+    "satisfied-by": "_claim_satisfied_by",
+    "statement": "none"
+  },
+  "answerKinds": {
+    "sum-of-roots": "sum-of-roots",
+    "product-of-roots": "product-of-roots",
+    "roots": "roots",
+    "solution": "roots"
+  }
+}

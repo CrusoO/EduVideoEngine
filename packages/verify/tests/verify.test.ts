@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { EXPR_OPS, IDENTITIES, IDENTITY_HANDLERS, STEP_HANDLERS, STEP_KINDS, SYMPY_NODE, VERIFIER_HANDLERS, add, num, quadraticRootsV1, referenceLesson, type ExprOp, type LessonBundle } from "@eve/schema";
+import { ANSWER_KIND_CLAIM, CLAIM_HANDLERS, CLAIM_KINDS, EXPR_OPS, IDENTITIES, IDENTITY_HANDLERS, STEP_HANDLERS, STEP_KINDS, SYMPY_NODE, VERIFIER_HANDLERS, add, num, quadraticRootsV1, referenceLesson, type ExprOp, type LessonBundle } from "@eve/schema";
 import { VerifierUnavailable, verifyBundle } from "../src";
 
 const root = join(__dirname, "..", "..", "..");
@@ -14,6 +14,9 @@ describe("the files the Python verifier reads are generated from this source, an
   });
   it("step-kinds.json lists exactly the step kinds, identities and handlers of the schema", () => {
     expect(json("packages/schema/step-kinds.json")).toEqual({ kinds: [...STEP_KINDS], handlers: STEP_HANDLERS, identities: [...IDENTITIES], identityHandlers: IDENTITY_HANDLERS });
+  });
+  it("claim-kinds.json lists exactly the claim kinds, the handler of each and the claim each recall answer kind is proved by", () => {
+    expect(json("packages/schema/claim-kinds.json")).toEqual({ kinds: [...CLAIM_KINDS], handlers: CLAIM_HANDLERS, answerKinds: ANSWER_KIND_CLAIM });
   });
   it("the Python fixture is the reference lesson as it is now", () => {
     expect(json("services/verifier/tests/fixtures/reference-lesson.json")).toEqual(JSON.parse(JSON.stringify(referenceLesson)));
