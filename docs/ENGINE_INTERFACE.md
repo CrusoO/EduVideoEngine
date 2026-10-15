@@ -32,6 +32,7 @@ Rules:
 - The package contains no keys, no prompts, no personal data and no raw model replies.
 - The audio format is set by an ADR (development files are WAV).
 - A lesson's package hash changes only when its bundle hash changes.
+- Each lesson in the manifest carries a state, `draft` or `approved`, derived at build from the approval records: approved only when every grounded claim and every sentence is approved. Today every sentence is draft, so every lesson is draft.
 
 ## 4. What the host (YourTutor) provides
 
@@ -41,6 +42,11 @@ Rules:
 - A user gesture before audio starts (browsers block audio until then).
 - A stage slot of at least the lesson's `minStagePx` (the tallest scene plus a 40 px margin, listed in the manifest), sized in dvh terms. The target is a dedicated compact layout whose chrome stays within 184 px at 360 by 640 (proposed split: header 48, captions 48, controls 56, padding 32). A host that cannot give the slot refuses the lesson; it never shrinks the scenes. YourTutor's existing lesson sheet measures 272 to 298 px of chrome and cannot host a lesson as it is.
 - Lazy loading: the player loads only when a lesson opens, so it never counts toward the home-page budget.
+- Sizes the slot from its own container, not the window, and tells the player when the size or orientation changes. Provides the safe-area insets. Gives desktop keyboard and pointer input.
+- The lesson location may be an http(s) URL or an app-local URL. Lesson correctness must never depend on a service worker: offline caching is a host concern (a service worker on the web, the app's file storage in the wrapper, because iOS WebViews do not provide service workers except for a few app-bound domains).
+- The player treats an AudioContext state of `interrupted` (WebKit) like `suspended`.
+- Browser support floor (proposed, to be decided by ADR; the build targets it): Chrome and Android WebView 100, Safari 15.4 (dynamic viewport units), Firefox 100.
+- Serves a draft lesson only where it allows drafts (YourTutor: `ALLOW_DRAFT_CONTENT`), stores lesson events only within the consent scopes it holds, and never logs student free text.
 
 ## 5. Player API (shape only; names come from `packages/player/src` at INT)
 
@@ -56,12 +62,12 @@ The host must be able to: mount a lesson into a container with a lesson location
 ## 7. Contract tests (one set in each repository)
 
 Engine: the built package matches its manifest hashes and budgets; the manifest validates against the contract schema.
-YourTutor: a smoke test loads the fixture package, mounts a lesson, plays to the first question point, answers it and reaches the end; a budget test shows the home page meets its limits with the player not loaded; a test that a contract version mismatch is refused.
+YourTutor: a host test that a draft lesson is refused when drafts are off; a smoke test loads the fixture package, mounts a lesson, plays to the first question point, answers it and reaches the end; a budget test shows the home page meets its limits with the player not loaded; a test that a contract version mismatch is refused.
 
 ## 8. Getting the package into YourTutor
 
-During development, a copy script in YourTutor reads `../EduVideoEngine/dist/engine-package` (the two folders are siblings), copies it into YourTutor's static assets and verifies every manifest hash after copying. No symlinks and no imports. Publishing the package as a versioned archive instead is allowed later by ADR.
+During development, a copy script in YourTutor reads `../EduVideoEngine/dist/engine-package` (the two folders are siblings), copies it into YourTutor's static assets and verifies every manifest hash after copying. No symlinks and no imports. Copying from the sibling folder is for local development only. In CI the package is published as a versioned archive (a release asset) with its manifest; the host build downloads a pinned version and verifies every hash.
 
 ## 9. Open points, decided at INT
 
-The package command name; audio format and bitrate; the exact player API names; whether the question interface lives in the player or the host; the service worker plan; how lesson ids map to YourTutor skills; the real chrome height of the compact layout.
+The package command name; audio format and bitrate; the exact player API names; whether the question interface lives in the player or the host; the service worker plan; how lesson ids map to YourTutor skills; the real chrome height of the compact layout; how the wrapper downloads and stores lesson packages.

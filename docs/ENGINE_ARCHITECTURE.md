@@ -186,6 +186,17 @@ The browser is the single renderer: it shapes Devanagari correctly, plays offlin
 - **Static objects.** Text objects only, with a title or caption role, at most 2 per scene, no digits and no placeholders; they count toward the 5-object cap and the height budget.
 - **Budgets.** Fonts are YourTutor's exact hash-locked files. Lesson font ceilings 95 KB English and 170 KB Hindi. Maths is pre-rendered at build time (no KaTeX script in the player). Player script hard ceiling 60 KB gzip (last measured 32.1 KB for the core and 37.9 KB with every chunk); any raise needs an ADR. Components load on demand so a lesson loads only the components it uses (a decision; confirm the saving against the player build).
 
+### Targets: phone and desktop
+
+| Form factor | Viewport (CSS px) | Layout | Checked by |
+| --- | --- | --- | --- |
+| Phone, portrait (the floor) | 360 by 640 and up (390 by 844, 412 by 915) | One column; a row collapses under 480 px; stage = dvh minus the chrome budget | Height budget at 360 by 640; golden frames at 360 |
+| Phone, landscape | 640 by 360 | Not designed yet; measured in WP2e preparation | Browser and size matrix |
+| Tablet | 768 by 1024 | Not designed yet; measured in WP2e preparation | Browser and size matrix |
+| Desktop | 1280 by 720 and 1920 by 1080 | 16:9 stage, capped and centred on a dark surround; wide scenes may use two columns | Golden frames at 1280; layout checks at the reference viewports |
+
+The package is the same for every host; only the slot and the layout rules differ.
+
 ## 10. Resolver and player
 
 **Resolver.** `resolve(bundle, audioTracks)` is a pure function: no clock, no randomness, no environment, byte-identical output in any track order. Each sentence lasts exactly as long as its audio; 300 ms between sentences; 700 ms scene tail. Anchors resolve to start, end or word index plus an optional offset, kept inside the scene. Minimum holds per action; a hold that would outlast a scene grows the scene. It throws on a missing, unknown or duplicate track, a word index past the end, two scenes on one beat, or overlapping animations on one object. It emits pause points (hashed), stretched-scene diagnostics and scene-relative times, and records provenance. Dead air over 250 ms after speech fails reference lessons.
@@ -241,6 +252,9 @@ No subject is added until Phase 3 shows a reasoning gain. Geometry and trigonome
 **Cost.** These phases will likely exceed the current $1,000 (reviewers and licensed visuals per subject). Decide funding at the Phase 3 gate and set a go or no-go reviewer-minutes-per-lesson threshold before any grounded pilot.
 
 ## 14. Interface with YourTutor
+
+**Hosts** (ADR 0055, proposed). The web app comes first (responsive, installable as a PWA). The phone application comes later as a Capacitor wrapper around the same web app, with the same engine package. Lessons are never rebuilt as native screens, because the player uses the DOM, SVG and Web Audio.
+
 
 The engine and YourTutor are independent repositories, each with its own window and session. Their only contact is a static engine package (player, lesson JSON, audio, captions, a manifest with hashes) and the contract in `docs/ENGINE_INTERFACE.md` (draft v0, built in work package INT). YourTutor imports no engine code. Fonts are YourTutor's files, hash-locked and listed in the manifest. The player must load lazily so it never counts toward YourTutor's home-page budget (255 KB JS and CSS; fonts 70 KB English, 125 KB Hindi); lazy loading there is unconfirmed until the integration exists. The existing lesson sheet cannot host an engine lesson as it is (its chrome is 272 to 298 px at 360 by 640), so INT needs a dedicated compact layout that meets the chrome budget in `docs/ENGINE_INTERFACE.md`.
 
