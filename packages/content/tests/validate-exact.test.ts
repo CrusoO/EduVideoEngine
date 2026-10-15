@@ -166,7 +166,7 @@ describe("conceptClaim and practiceQuestion", () => {
     expect(probs(cc({ dependsOn: ["r.conceptClaim"] }))).toEqual(["r.conceptClaim | dependsOn | a claim cannot depend on itself"]);
     expect(probs(cc({ dependsOn: ["other"] }))).toEqual([]);
   });
-  const rec = (over: Draft = {}) => make("practiceQuestion", { expressions: { "q.p": quad, "q.a": root1 }, questionType: "recall", question: { problem: "q.p", answer: "q.a" }, humanApproved: true, ...over });
+  const rec = (over: Draft = {}) => make("practiceQuestion", { expressions: { "q.p": quad, "q.a": root1 }, questionType: "recall", answerKind: "solution", question: { problem: "q.p", answer: "q.a" }, humanApproved: true, ...over });
   const rea = (over: Draft = {}) => make("practiceQuestion", { questionType: "reasoning", options: ["One.", "Two."], correctOption: 1, rationaleClaimIds: ["c"], humanApproved: true, ...over });
   it("a recall question", () => {
     expect(probs(rec())).toEqual([]);

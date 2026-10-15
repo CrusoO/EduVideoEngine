@@ -59,11 +59,12 @@
     }
   },
   "questionType": "recall",
+  "answerKind": "sum-of-roots",
   "question": {
     "problem": "quad.q.eq",
     "answer": "quad.q.answer"
   },
   "humanApproved": false,
   "sourceNote": "Written for this project as a recall question of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "abb9ee99b9136feeb7cfd88b6a01e82883ad50c6093f97b3f818902a0c6fd8d2"
+  "hash": "e33cf39dd5d45b3259717dab21cb3fac41b03305fb6fb8112fe80d2dd9764e12"
 }

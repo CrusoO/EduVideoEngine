@@ -1,5 +1,5 @@
 import { WORD_BUDGET } from "@eve/components";
-import { deriveClaims, type ContentRecord, type Retrieval } from "@eve/content";
+import { deriveClaims, recallAnswerClaim, type ContentRecord, type Retrieval } from "@eve/content";
 import { evaluate, num, termIds, type Claim, type Cue, type Expr, type SceneSpec } from "@eve/schema";
 import { TITLE_MAX_CHARS, heightCostPx } from "./cost";
 import { PatternError, type FillResult, type Instance, type Pattern, type PatternArgs, type Slot } from "./types";
@@ -356,7 +356,7 @@ const recapCard: Pattern<RecapContent> = {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // 8. check question (CO-2, ADR 0033): a recall question from a practiceQuestion record; the lesson pauses and asks
-type CheckContent = { rec: ContentRecord; problem: string; answer: string };
+type CheckContent = { rec: ContentRecord; problem: string; answer: string; answerExpr: Expr };
 const checkQuestion: Pattern<CheckContent> = {
   id: "check-question",
   beatKinds: ["check"],
@@ -370,8 +370,11 @@ const checkQuestion: Pattern<CheckContent> = {
   minSentences: 2,
   heightCostPx: heightCostPx(["text (title, one line)", "equation", "equation"]),
   fill(r): FillResult<CheckContent> {
-    const rec = r.byKind.practiceQuestion.find((q) => q.questionType === "recall" && q.question);
-    return rec?.question ? { ok: true, content: { rec, problem: rec.question.problem, answer: rec.question.answer } } : { ok: false, missing: ["a practiceQuestion record of type recall"] };
+    // one answer equation on screen: the kinds with a list of answers (roots) wait for a pattern that shows a list
+    const rec = r.byKind.practiceQuestion.find((q) => q.questionType === "recall" && q.question?.answer !== undefined && q.answerKind !== "roots");
+    const answer = rec?.question?.answer;
+    const answerExpr = answer === undefined ? undefined : r.expressions[answer];
+    return rec?.question && answer !== undefined && answerExpr ? { ok: true, content: { rec, problem: rec.question.problem, answer, answerExpr } } : { ok: false, missing: ["a practiceQuestion record of type recall with one answer equation"] };
   },
   build(c, a) {
     const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 0, "problem", "reveal", 1500, "end"), cue(a, a.sentenceIds.length - 1, "answer", "reveal", 1500)];
@@ -387,7 +390,10 @@ const checkQuestion: Pattern<CheckContent> = {
       cues,
       ask(a, c.answer).map((q) => ({ ...q, afterSentenceId: a.sentenceIds[a.sentenceIds.length - 2]! })),
     );
-    const claim: Claim = { id: `${c.rec.id}.answer.${a.beatId}`, beatId: a.beatId, kind: "sum-of-roots", equation: c.problem, equals: c.answer, sourceIds: [c.rec.id], claimMode: "computed", importance: "core" };
+    // the claim the verifier proves depends on the answer kind of the record (the sum or the product of the roots, or the solution)
+    const made = recallAnswerClaim(c.rec, (id) => (id === c.answer ? c.answerExpr : undefined), `${c.rec.id}.answer.${a.beatId}`, a.beatId);
+    if (typeof made === "string") throw new PatternError(`pattern check-question: ${made}`);
+    const claim: Claim = { ...made, sourceIds: [c.rec.id], claimMode: "computed", importance: "core" };
     return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
   },
 };

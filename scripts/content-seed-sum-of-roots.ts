@@ -165,6 +165,7 @@ const records: Array<Omit<ContentRecord, "hash">> = [
     text: "What do the roots of {expr:quad.q.eq} add up to?",
     expressions: { "quad.q.eq": eq(add(sub(pow(x, num(2)), mul(num(7), x)), num(10)), num(0)), "quad.q.answer": eq(sym("S"), num(7)) },
     questionType: "recall",
+    answerKind: "sum-of-roots",
     question: { problem: "quad.q.eq", answer: "quad.q.answer" },
     humanApproved: false,
     sourceNote: note("a recall question"),

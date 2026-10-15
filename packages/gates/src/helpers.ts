@@ -38,7 +38,8 @@ export function claimExpressions(claim: Claim): string[] {
   if (claim.kind === "equivalent") return [claim.a, claim.b];
   if (claim.kind === "roots") return [claim.equation];
   if (claim.kind === "statement") return [];
-  return [claim.equation, claim.equals];
+  if (claim.kind === "satisfied-by") return [claim.equation, claim.instance];
+  return [claim.equation, claim.equals]; // sum-of-roots, product-of-roots
 }
 
 /** The claims a sentence speaks for: a claim sentence its claim, a link sentence either of its two, any other role none (AM-6). */

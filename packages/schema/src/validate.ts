@@ -1,4 +1,5 @@
-import { LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION } from "./bundle";
+import { CLAIM_KINDS_FROM_2_1, LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1 } from "./bundle";
+import type { Claim } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { termIds } from "./expr";
 import { computeHashes } from "./hash";
@@ -61,11 +62,14 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     for (const c of b.claims ?? []) v2.push([`claims.${c.id}`, c.sourceIds !== undefined || c.claimMode !== undefined || c.dependsOn !== undefined || c.importance !== undefined || c.usesStep !== undefined || c.stepKind !== undefined || c.identity !== undefined]);
     for (const c of b.claims ?? []) if (c.kind === "statement") v2.push([`claims.${c.id}`, true]);
     for (const [path, present] of v2) if (present) bad(path, `a ${LEGACY_SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION}`);
+    for (const c of b.claims ?? []) if ((CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) bad(`claims.${c.id}`, `a ${LEGACY_SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION_2_1}`);
     return;
   }
+  // Spec 2.1.0 is additive: its two claim kinds are the only field a 2.0.0 bundle may not carry (ADR 0053).
+  if (b.specVersion === SPEC_VERSION) for (const c of b.claims ?? []) if ((CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) bad(`claims.${c.id}`, `a ${SPEC_VERSION} bundle may not carry fields of ${SPEC_VERSION_2_1}`);
 
   const need = (path: string, present: boolean, what: string) => {
-    if (!present) bad(path, `a ${SPEC_VERSION} bundle must set ${what}`);
+    if (!present) bad(path, `a ${b.specVersion} bundle must set ${what}`);
   };
   need("subjectId", b.subjectId !== undefined, "subjectId");
   need("plan.arcId", b.plan.arcId !== undefined, "arcId");
@@ -84,7 +88,7 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     const at = `script.${s.id}`;
     if (s.status === "reviewed") bad(`${at}.status`, 'the word "reviewed" is not used from 2.0.0; use "approved" (ADR 0031)');
     if (s.role === undefined) {
-      bad(at, `a ${SPEC_VERSION} sentence must set role`);
+      bad(at, `a ${b.specVersion} sentence must set role`);
       continue;
     }
     if (s.role === "claim") {
@@ -133,6 +137,22 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     }
   }
 }
+
+/** The expression ids a claim names (the value of a `satisfied-by` claim is an inline number, not an id). */
+const claimRefs = (claim: Claim): string[] => {
+  switch (claim.kind) {
+    case "equivalent":
+      return [claim.a, claim.b];
+    case "roots":
+      return [claim.equation];
+    case "statement":
+      return [];
+    case "satisfied-by":
+      return [claim.equation, claim.instance];
+    default:
+      return [claim.equation, claim.equals]; // sum-of-roots, product-of-roots
+  }
+};
 
 /**
  * Schema first, then the cross-references no schema can express: ids resolve, cues point at real objects and real
@@ -239,7 +259,7 @@ export function validateBundle(input: unknown): Validation {
     const at = `claims.${claim.id}`;
     if (claimIds.has(claim.id)) bad(at, "claim ids must be unique");
     claimIds.add(claim.id);
-    const refs = claim.kind === "equivalent" ? [claim.a, claim.b] : claim.kind === "roots" ? [claim.equation] : claim.kind === "statement" ? [] : [claim.equation, claim.equals];
+    const refs = claimRefs(claim);
     if (!b.plan.beats.some((beat) => beat.id === claim.beatId)) bad(at, `claim names unknown beat ${claim.beatId}`);
     for (const r of refs) {
       const e = b.expressions[r];

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CLAIM_MODES, COLOR_NAMES, ExprSchema, IDENTITIES, IMPORTANCES, STEP_KINDS, hashOf, type Claim, type Expr } from "@eve/schema";
+import { ANSWER_KINDS, CLAIM_MODES, COLOR_NAMES, ExprSchema, IDENTITIES, IMPORTANCES, STEP_KINDS, hashOf, type Claim, type Expr } from "@eve/schema";
 import config from "../../../config/content.json";
 import licences from "../../../config/licences.json";
 
@@ -21,13 +21,14 @@ export const APPROVAL_STATUSES = ["draft", "reviewed", "approved"] as const;
  *  - transform: an equivalent form of the equation before it (a factorisation)  -> claim "equivalent"
  *  - root: an answer of the form x = value                                       -> collected into claim "roots"
  *  - sum: an equation stating the sum of the roots (2 + 3 = 5)                   -> claim "sum-of-roots"
+ *  - check: the problem with a root put back, an equation of numbers (3 * 5 + 5 = 20); `uses` names the root step  -> claim "satisfied-by" (spec 2.1.0)
  *  - note: shown or said, claims nothing
  * The claims of a worked beat are DERIVED from these roles by a fixed rule (derive.ts); a model never writes a claim.
  */
 export const SolutionStep = z
   .object({
     id,
-    role: z.enum(["transform", "root", "sum", "note"]),
+    role: z.enum(["transform", "root", "sum", "check", "note"]),
     expr: id,
     note: z.string().min(1).optional(),
     /** How this step follows from the step it uses (ADR 0034). Absent on the first step. Omitted, never empty. */
@@ -86,14 +87,19 @@ export const ContentRecord = z
     // conceptClaim (ADR 0028): one claim of a concept beat. Computed claims carry the statement the verifier proves (no beatId: the beat that uses it supplies it);
     // grounded claims (definitions, misconceptions) carry prose only and need an approval record outside the bundle (ADR 0031).
     claimMode: z.enum(CLAIM_MODES).optional(),
+    /** A grounded conceptClaim: the expression ids the prose is about (spec 2.1.0, ADR 0053). The approval covers the prose and these together, through the record hash. */
+    exprRefs: z.array(id).min(1).optional(),
     importance: z.enum(IMPORTANCES).optional(),
     dependsOn: z.array(id).min(1).optional(),
     claim: ConceptStatement.optional(),
 
     // practiceQuestion (ADR 0033)
     questionType: z.enum(QUESTION_TYPES).optional(),
+    /** recall: what the answer is, so which claim the verifier proves (ADR 0042, 0053). Written explicitly on every recall question; never defaulted. */
+    answerKind: z.enum(ANSWER_KINDS).optional(),
     /** recall: the equation, and the equation that states its answer (S = number); the verifier proves the answer. */
-    question: z.object({ problem: id, answer: id }).strict().optional(),
+    /** `answer` for sum-of-roots, product-of-roots and solution (one equation); `answers` for roots (one equation x = value for each root). */
+    question: z.object({ problem: id, answer: id.optional(), answers: z.array(id).min(1).optional() }).strict().optional(),
     /** reasoning: a multiple-choice question with the claims that explain the right option. */
     options: z.array(z.string().min(1)).min(2).optional(),
     correctOption: z.number().int().min(0).optional(),

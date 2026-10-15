@@ -10,7 +10,7 @@ const msgs = (r: ContentRecord, known?: ReadonlySet<string>) => validateRecord(r
 
 const quad = eq(add(sub(pow(x, num(2)), mul(num(5), x)), num(6)), num(0));
 const claimOk = (over: Draft = {}) => make("conceptClaim", { expressions: { "q.eq": quad, "q.sum": eq(sym("S"), num(5)) }, claimMode: "computed", importance: "core", claim: { kind: "sum-of-roots", equation: "q.eq", equals: "q.sum" }, ...over });
-const recall = (over: Draft = {}) => make("practiceQuestion", { expressions: { "q.eq": quad, "q.ans": eq(sym("S"), num(5)) }, questionType: "recall", question: { problem: "q.eq", answer: "q.ans" }, humanApproved: false, ...over });
+const recall = (over: Draft = {}) => make("practiceQuestion", { expressions: { "q.eq": quad, "q.ans": eq(sym("S"), num(5)) }, questionType: "recall", answerKind: "sum-of-roots", question: { problem: "q.eq", answer: "q.ans" }, humanApproved: false, ...over });
 const reasoning = (over: Draft = {}) => make("practiceQuestion", { questionType: "reasoning", options: ["First answer.", "Second answer."], correctOption: 1, rationaleClaimIds: ["r.conceptClaim"], humanApproved: false, ...over });
 
 describe("the new record kinds are valid when complete", () => {

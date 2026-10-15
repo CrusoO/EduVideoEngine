@@ -1,6 +1,7 @@
 import { containsLiteralMath, evaluate, symbols, termIds, type Claim, type Expr } from "@eve/schema";
 import { findPersonalData, findSecrets } from "@eve/safety";
 import { verifyBundle } from "@eve/verify";
+import { recallAnswerClaim } from "./answer";
 import { deriveClaimGraph } from "./derive";
 import { ALLOWED_LICENCES, CONTENT_CONFIG, recordHash, type ContentRecord } from "./record";
 
@@ -58,6 +59,8 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
         if (e.op !== "eq") return bad(at, `step ${s.id} must be an equation`);
         if (s.role === "root" && !(e.a.op === "sym" && isNumber(e.b))) bad(at, `a root step must read: a symbol equals a number (step ${s.id})`);
         if (s.role === "sum" && !(isNumber(e.a) && isNumber(e.b))) bad(at, `a sum step must be an equation of numbers only (step ${s.id})`);
+        if (s.role === "check" && !(isNumber(e.a) && isNumber(e.b))) bad(at, `a check step must be an equation of numbers only (step ${s.id})`);
+        if (s.role === "check" && r.steps!.find((o) => o.id === s.uses)?.role !== "root") bad(at, `a check step uses the root step it puts back (step ${s.id})`);
         if (s.stepKind === "apply_identity" && !s.identity) bad(at, `step ${s.id}: apply_identity names its identity from the closed list`);
         if (s.identity && s.stepKind !== "apply_identity") bad(at, `step ${s.id}: identity belongs to apply_identity steps only`);
         for (const ref of [...(s.uses ? [s.uses] : []), ...(s.needs ?? [])]) {
@@ -82,8 +85,8 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
     for (const [name, value] of fields) if (value !== undefined && r.kind !== kind) bad(name, `only a ${kind} record has ${name} (this is ${r.kind})`);
   };
   owned([["prerequisiteSkillIds", r.prerequisiteSkillIds], ["assumableAtLevels", r.assumableAtLevels]], "skill");
-  owned([["claimMode", r.claimMode], ["importance", r.importance], ["dependsOn", r.dependsOn], ["claim", r.claim]], "conceptClaim");
-  owned([["questionType", r.questionType], ["question", r.question], ["options", r.options], ["correctOption", r.correctOption], ["rationaleClaimIds", r.rationaleClaimIds], ["humanApproved", r.humanApproved]], "practiceQuestion");
+  owned([["claimMode", r.claimMode], ["importance", r.importance], ["dependsOn", r.dependsOn], ["claim", r.claim], ["exprRefs", r.exprRefs]], "conceptClaim");
+  owned([["questionType", r.questionType], ["answerKind", r.answerKind], ["question", r.question], ["options", r.options], ["correctOption", r.correctOption], ["rationaleClaimIds", r.rationaleClaimIds], ["humanApproved", r.humanApproved]], "practiceQuestion");
   if (r.kind === "conceptClaim") {
     if (!r.claimMode || !r.importance) bad("claimMode", "a conceptClaim record sets claimMode and importance");
     if (r.claimMode === "computed") {
@@ -95,13 +98,34 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
     }
     if (r.claimMode === "grounded" && r.claim) bad("claim", "a grounded claim is prose: it has no statement for the verifier (it needs an approval record instead)");
     if (r.dependsOn?.includes(r.id)) bad("dependsOn", "a claim cannot depend on itself");
+    if (r.exprRefs !== undefined) {
+      if (r.claimMode !== "grounded") bad("exprRefs", "only a grounded claim declares exprRefs: a computed claim names its expressions in its statement");
+      r.exprRefs.forEach((ref, i) => {
+        if (!has(ref)) bad(`exprRefs.${i}`, `${ref} is not an expression in the store`);
+      });
+    }
   }
   if (r.kind === "practiceQuestion") {
     if (!r.questionType) bad("questionType", "a practiceQuestion sets questionType: recall or reasoning");
     if (r.humanApproved === undefined) bad("humanApproved", "a practiceQuestion sets humanApproved explicitly (true or false)");
     if (r.questionType === "recall") {
+      if (!r.answerKind) bad("answerKind", "a recall question sets answerKind: sum-of-roots, product-of-roots, roots or solution");
       if (!r.question) bad("question", "a recall question has a problem and an answer, both equations the verifier can prove");
-      else for (const k of ["problem", "answer"] as const) if (!has(r.question[k])) bad(`question.${k}`, `${r.question[k]} is not an expression in the store`);
+      else {
+        const q = r.question;
+        const before = out.length;
+        if (!has(q.problem)) bad("question.problem", `${q.problem} is not an expression in the store`);
+        if (q.answer !== undefined && !has(q.answer)) bad("question.answer", `${q.answer} is not an expression in the store`);
+        (q.answers ?? []).forEach((a, i) => {
+          if (!has(a)) bad(`question.answers.${i}`, `${a} is not an expression in the store`);
+        });
+        if (r.answerKind === "roots" ? q.answer !== undefined : q.answers !== undefined) bad("question", r.answerKind === "roots" ? "a roots question gives its answers as a list (answers), not a single answer" : `a ${r.answerKind ?? "recall"} question gives one answer equation (answer), not a list`);
+        // with every expression in place, the answer must have the shape its kind needs (an equation x = value for a solution or the roots)
+        if (r.answerKind !== undefined && out.length === before) {
+          const claim = recallAnswerClaim(r, (id) => r.expressions[id] ?? table[id], `${r.id}.answer`, "validate");
+          if (typeof claim === "string") bad("question", claim);
+        }
+      }
       if (r.options || r.correctOption !== undefined || r.rationaleClaimIds) bad("options", "options, correctOption and rationaleClaimIds belong to reasoning questions");
     }
     if (r.questionType === "reasoning") {
@@ -109,6 +133,7 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
       else if (r.correctOption >= r.options.length) bad("correctOption", `correctOption ${r.correctOption} is not one of the ${r.options.length} options`);
       if (!r.rationaleClaimIds) bad("rationaleClaimIds", "a reasoning question names at least one claim that explains the right option");
       if (r.question) bad("question", "a computed problem and answer belong to recall questions");
+      if (r.answerKind) bad("answerKind", "answerKind belongs to recall questions");
     }
   }
 
@@ -186,8 +211,10 @@ export async function verifyRecord(r: ContentRecord, table: Readonly<Record<stri
   const claims: Claim[] = deriveClaimGraph(r, "verify");
   if (r.kind === "conceptClaim" && r.claim) claims.push({ ...r.claim, id: r.id, beatId: "verify" } as Claim);
   if (r.kind === "practiceQuestion" && r.questionType === "recall" && r.question) {
-    // the first computable recall form: the answer states the sum of the roots of the problem. More forms need their own ADR.
-    claims.push({ id: `${r.id}.answer`, beatId: "verify", kind: "sum-of-roots", equation: r.question.problem, equals: r.question.answer });
+    // the claim depends on the answer kind: the sum or the product of the roots, the roots, or the solution of a linear problem (ADR 0042, 0053)
+    const claim = recallAnswerClaim(r, (id) => r.expressions[id] ?? table[id], `${r.id}.answer`, "verify");
+    if (typeof claim === "string") return [{ recordId: r.id, path: "question", message: claim }];
+    claims.push(claim);
   }
   if (Object.keys(r.expressions).length === 0 && claims.length === 0) return []; // nothing to prove (prose, a grounded claim, a reasoning question)
   // A solution refers to the problem and the steps by id, wherever in the store they are written: the verifier sees the whole table.

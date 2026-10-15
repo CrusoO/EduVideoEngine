@@ -7,7 +7,8 @@ import type { ContentRecord } from "./record";
  *
  *  - every `transform` step is claimed equivalent to the step before it (the first transform to the problem);
  *  - all `root` steps (x = value) together are claimed to be exactly the roots of the problem;
- *  - every `sum` step is claimed to be the sum of the roots of the problem.
+ *  - every `sum` step is claimed to be the sum of the roots of the problem;
+ *  - every `check` step is claimed to be the problem with the root it uses put back, and true (spec 2.1.0).
  * The SymPy verifier then proves each claim. A record whose solution is wrong therefore cannot enter a lesson.
  */
 export function deriveClaims(record: ContentRecord, beatId: string): Claim[] {
@@ -27,6 +28,14 @@ export function deriveClaims(record: ContentRecord, beatId: string): Claim[] {
     return e.b;
   });
   if (roots.length > 0) claims.push({ id: `c.${record.id}.roots`, beatId, kind: "roots", equation: record.problem, values: roots });
+  let checks = 0;
+  for (const step of record.steps) {
+    if (step.role !== "check") continue;
+    const root = record.steps.find((s) => s.id === step.uses && s.role === "root");
+    const e = root ? record.expressions[root.expr] : undefined;
+    if (!e || e.op !== "eq") throw new Error(`step ${step.id}: a check step uses the root step it puts back (x = value)`);
+    claims.push({ id: `c.${record.id}.check.${++checks}`, beatId, kind: "satisfied-by", equation: record.problem, value: e.b, instance: step.expr });
+  }
   let k = 0;
   for (const step of record.steps) if (step.role === "sum") claims.push({ id: `c.${record.id}.sum.${++k}`, beatId, kind: "sum-of-roots", equation: record.problem, equals: step.expr });
   return claims;
@@ -48,11 +57,13 @@ export function deriveClaimGraph(record: ContentRecord, beatId: string): Claim[]
   const claimOfStep = new Map<string, string>();
   let transforms = 0;
   let sums = 0;
+  let checkClaims = 0;
   const rootsClaim = base.find((c) => c.kind === "roots")?.id;
   for (const step of record.steps) {
     if (step.role === "transform") claimOfStep.set(step.id, base.filter((c) => c.kind === "equivalent")[transforms++]!.id);
     else if (step.role === "root" && rootsClaim) claimOfStep.set(step.id, rootsClaim);
     else if (step.role === "sum") claimOfStep.set(step.id, base.filter((c) => c.kind === "sum-of-roots")[sums++]!.id);
+    else if (step.role === "check") claimOfStep.set(step.id, base.filter((c) => c.kind === "satisfied-by")[checkClaims++]!.id);
   }
   const claimOf = (stepId: string, why: string): string => {
     const c = claimOfStep.get(stepId);
