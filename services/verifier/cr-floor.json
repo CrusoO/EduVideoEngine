@@ -1,0 +1,12 @@
+{
+  "eve_verifier/steps.py": {
+    "floor": 79.75,
+    "killed": 508,
+    "mutants": 637
+  },
+  "eve_verifier/checks.py": {
+    "floor": 88.61,
+    "killed": 801,
+    "mutants": 904
+  }
+}

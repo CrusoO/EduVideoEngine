@@ -1,0 +1,8 @@
+[cosmic-ray]
+module-path = "eve_verifier/checks.py"
+timeout = 60.0
+excluded-modules = []
+test-command = "python -m pytest -x -q tests/test_claims.py tests/test_handlers.py tests/test_verify.py tests/test_checks_boundaries.py -p no:cacheprovider --basetemp=C:/Users/thakur/AppData/Local/Temp/pt-cr"
+
+[cosmic-ray.distributor]
+name = "local"
