@@ -1,12 +1,12 @@
 # ADR 0059: Community data governance for voice and terminology data
 
-Status: proposed (owner decision pending; written with the vision alignment task, 2026-10-16).
+Status: accepted (owner accepted 2026-10-16). The 30-day withdrawal period (see Ownership and licence) is provisional pending community adviser review. The no-children-voices rule and consent-before-recording requirement are binding now.
 
 ## Context
 The direction in ADR 0058 requires recording adult community speakers saying terms and sentences in local languages, and building a terminology commons for those communities. This data has provenance, ownership and consent implications that differ from the engine's current data model (developer-authored content, synthetic voices).
 
 ## Decision
-Record the following as the proposed governance model for voice and terminology data. The owner confirms or amends this before any recording takes place.
+The following governance model applies to voice and terminology data collected for the engine. The no-children-voices rule and consent-before-recording requirement are binding immediately. The 30-day withdrawal timeline is provisional pending community adviser review; all other provisions are accepted.
 
 **Consent**
 - A consent screen is shown before the first recording of any session. It states: the language being recorded, the permitted uses (lessons for children in this community; the community terminology list), the right to withdraw, and a contact line for withdrawal requests.

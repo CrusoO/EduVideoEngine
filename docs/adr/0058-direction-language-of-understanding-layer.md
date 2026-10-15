@@ -1,6 +1,6 @@
 # ADR 0058: Direction: language-of-understanding layer; first community chosen after December
 
-Status: proposed (owner decision pending; written with the vision alignment task, 2026-10-16).
+Status: accepted (owner accepted 2026-10-16).
 
 ## Context
 The owner wrote a strategy document outlining a direction for the engine. Its key points for the engine are:
