@@ -151,3 +151,27 @@ describe("G5(d) in a lesson", () => {
     expect(g5Role(ctx).map((f) => f.code)).toContain("unknown-claim");
   });
 });
+
+describe("numberwords edges found by mutation testing", () => {
+  it("a placeholder is a space: words on either side of it do not run together", () => {
+    expect(w("three{expr:a}four")).toEqual([["three", 3], ["four", 4]]);
+    expect(w("twenty{expr:a}one")).toEqual([["twenty one", 21]]); // a space, so the words are read as spoken
+  });
+  it("a sign at the very end, or before a word that is no number, belongs to nothing", () => {
+    expect(w("minus")).toEqual([]);
+    expect(w("minus cat five")).toEqual([["five", 5]]);
+    expect(w("negative one two")).toEqual([["two", 2]]);
+  });
+  it("a tens word takes a unit above zero only", () => {
+    expect(w("twenty five")).toEqual([["twenty five", 25]]);
+    expect(w("twenty zero")).toEqual([["twenty", 20], ["zero", 0]]);
+    expect(w("twenty")).toEqual([["twenty", 20]]);
+    expect(w("zero hundred")).toEqual([["zero", 0], ["hundred", 100]]);
+  });
+  it("the numbers of a claim come from every node: a negation, a fraction, both sides, a symbol", () => {
+    const e: Record<string, Expr> = { a: { op: "eq", a: { op: "neg", a: num(7) }, b: { op: "sub", a: sym("x"), b: num(2, 5) } } };
+    expect([...claimNumbers({ id: "c", beatId: "b", kind: "equivalent", a: "a", b: "a" } as Claim, e)].sort((x, y) => x - y)).toEqual([2, 5, 7]);
+    expect([...claimNumbers({ id: "c", beatId: "b", kind: "roots", equation: "a", values: [{ op: "neg", a: num(4) }] } as Claim, e)].sort((x, y) => x - y)).toEqual([2, 4, 5, 7]);
+    expect([...claimNumbers({ id: "c", beatId: "b", kind: "statement" } as Claim, e)]).toEqual([]);
+  });
+});

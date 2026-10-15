@@ -19,11 +19,11 @@ export type SpokenNumber = { words: string; value: number };
 
 /** The value and length (in words) of the number that starts at `i`, below one hundred; undefined if none starts there. `one` alone is not a number here. */
 function below100(words: string[], i: number): { value: number; length: number } | undefined {
-  const w = words[i] ?? "";
+  const w = words[i]!;
   const tens = TENS[w];
   if (tens !== undefined) {
-    const unit = UNITS[words[i + 1] ?? ""];
-    return unit !== undefined && unit > 0 ? { value: tens + unit, length: 2 } : { value: tens, length: 1 };
+    const unit = UNITS[words[i + 1]!] ?? 0;
+    return unit > 0 ? { value: tens + unit, length: 2 } : { value: tens, length: 1 };
   }
   const teen = TEENS[w];
   if (teen !== undefined) return { value: teen, length: 1 };
@@ -31,11 +31,11 @@ function below100(words: string[], i: number): { value: number; length: number }
   return unit !== undefined ? { value: unit, length: 1 } : undefined;
 }
 
-/** The number that starts at `i`: a compound with hundred, a number below one hundred, or `hundred` alone. `ignore` is a lone "one". */
-function numberAt(words: string[], i: number): { value: number; length: number } | "ignore" | undefined {
+/** The number that starts at `i`: a compound with hundred, a number below one hundred, or `hundred` alone. A lone "one" is found with a value of null: it is skipped, not reported. */
+function numberAt(words: string[], i: number): { value: number | null; length: number } | undefined {
   const w = words[i]!;
-  const unit = UNITS[w];
-  if (words[i + 1] === "hundred" && unit !== undefined && unit > 0) {
+  const unit = UNITS[w] ?? 0;
+  if (words[i + 1] === "hundred" && unit > 0) {
     let value = unit * 100;
     let length = 2;
     const joined = words[i + 2] === "and" ? 3 : 2;
@@ -47,24 +47,23 @@ function numberAt(words: string[], i: number): { value: number; length: number }
     return { value, length };
   }
   if (w === "hundred") return { value: 100, length: 1 };
-  if (w === "one") return "ignore";
+  if (w === "one") return { value: null, length: 1 };
   return below100(words, i);
 }
 
 /** Every number written as words in the text, in order. Expression placeholders are not text. */
 export function spokenNumbers(text: string): SpokenNumber[] {
-  const words = text.replace(PLACEHOLDER, " ").toLowerCase().match(/[a-z]+/g) ?? [];
+  const words = Array.from(text.replace(PLACEHOLDER, " ").toLowerCase().matchAll(/[a-z]+/g), (m) => m[0]);
   const out: SpokenNumber[] = [];
   let i = 0;
   while (i < words.length) {
-    const signed = SIGNS.has(words[i]!) && i + 1 < words.length;
-    const at = signed ? i + 1 : i;
+    const at = SIGNS.has(words[i]!) ? i + 1 : i;
     const found = numberAt(words, at);
-    if (found === undefined || found === "ignore") {
-      i = found === "ignore" ? at + 1 : i + 1;
+    if (found === undefined) {
+      i += 1;
       continue;
     }
-    out.push({ words: words.slice(i, at + found.length).join(" "), value: found.value });
+    if (found.value !== null) out.push({ words: words.slice(i, at + found.length).join(" "), value: found.value });
     i = at + found.length;
   }
   return out;
@@ -78,14 +77,14 @@ export function claimNumbers(claim: Claim, expressions: Readonly<Record<string, 
     if (e.op === "num") {
       out.add(Math.abs(e.n));
       if (e.d !== undefined) out.add(e.d);
-    } else if (e.op === "neg") walk(e.a);
-    else if (e.op !== "sym") {
-      walk(e.a);
-      walk(e.b);
+      return;
     }
+    const kids = e as { a?: Expr; b?: Expr }; // a symbol has none, a negation has a, every other node has a and b
+    walk(kids.a);
+    walk(kids.b);
   };
   for (const id of claimExpressions(claim)) walk(expressions[id]);
-  if (claim.kind === "roots") claim.values.forEach(walk);
-  if (claim.kind === "satisfied-by") walk(claim.value);
+  const own = claim.kind === "roots" ? claim.values : claim.kind === "satisfied-by" ? [claim.value] : [];
+  own.forEach(walk);
   return out;
 }
