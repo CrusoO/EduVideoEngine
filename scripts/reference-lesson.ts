@@ -6,8 +6,9 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildReferenceLesson } from "../packages/gates/src";
+import { lessonMinStagePx } from "../packages/layout/src";
 
 const out = join(__dirname, "..", "packages", "schema", "src", "fixtures", "reference-lesson.en-IN.json");
 const bundle = buildReferenceLesson().ctx.bundle;
 writeFileSync(out, `${JSON.stringify(bundle, null, 2)}\n`);
-console.log(`wrote ${out}\n${bundle.plan.beats.length} beats, ${bundle.script.length} sentences, ${bundle.scenes.length} scenes, ${bundle.claims?.length ?? 0} claims; bundle hash ${bundle.hashes.bundle}`);
+console.log(`wrote ${out}\n${bundle.plan.beats.length} beats, ${bundle.script.length} sentences, ${bundle.scenes.length} scenes, ${bundle.claims?.length ?? 0} claims; bundle hash ${bundle.hashes.bundle}\nminimum stage height ${lessonMinStagePx(bundle)} px (the tallest scene at 360 px wide plus 40 px; ADR 0051)`);

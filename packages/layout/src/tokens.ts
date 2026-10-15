@@ -27,8 +27,8 @@ export const DESIGN_SCREEN = { width: 360, height: 640 } as const;
 
 /**
  * Height taken by the lesson sheet around the stage (the sheet header, and the caption and voice credit under the stage). It is a
- * PARAMETER of the solver and the budget, never a constant inside them. **184 px (56 + 128) is an estimate, not a measurement**: the
- * owner is measuring the real sheet, and the value is replaced there. Everything downstream takes `chromePx`.
+ * PARAMETER of the solver and the budget, never a constant inside them. **184 px (56 + 128) is a budget for a dedicated compact layout, not a measurement**
+ * (ADR 0051): the existing lesson sheet of the host measures 272 to 298 px and cannot host a lesson as it is. Everything downstream takes `chromePx`.
  */
 export const DEFAULT_CHROME_PX = 56 + 128;
 

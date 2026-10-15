@@ -8,6 +8,7 @@ import { CORRUPTIONS, MATHS_CORRUPTIONS, buildCleanFixture, judgeAll, rejections
 import { referenceLesson, type LessonBundle } from "../packages/schema/src";
 import { buildLinearChain } from "../packages/gates/src/linear-chain";
 import { verifyBundle } from "../packages/verify/src";
+import { lessonMinStagePx } from "../packages/layout/src";
 
 const MATHS_TARGET = "Verifier";
 if (process.argv.includes("--list")) {
@@ -41,7 +42,7 @@ for (const r of judgeAll(clean)) {
 
 console.log("\n== maths corruptions (SymPy verifier)");
 const reference = await verifyBundle(referenceLesson);
-console.log(`   the reference lesson: ${reference.ok ? "VERIFIED" : "REJECTED"}`);
+console.log(`   the reference lesson: ${reference.ok ? "VERIFIED" : "REJECTED"}; minimum stage height ${lessonMinStagePx(referenceLesson)} px (ADR 0051)`);
 if (!reference.ok) wrong++;
 const linear = buildLinearChain();
 const linearReport = await verifyBundle(linear.bundle);

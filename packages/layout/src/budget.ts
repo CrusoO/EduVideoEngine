@@ -1,6 +1,6 @@
 import { OVERLAY, measure, type LayoutObject, type MeasureCtx } from "./measure";
 import { solve, type SceneInput } from "./solve";
-import { GAP, PAD, type Viewport } from "./tokens";
+import { DESIGN_SCREEN, GAP, PAD, type Viewport } from "./tokens";
 
 /**
  * The height budget (ADR 0017 section 7). Every component has a pixel height cost, from the same size model the solver uses at
@@ -34,6 +34,23 @@ export function sceneCost(scene: SceneInput, viewport: Viewport, ctx: MeasureCtx
     perObject,
     overhead: Math.max(0, layout.contentHeight - objects),
   };
+}
+
+/** The room kept beyond the tallest scene: a stage slot a little shorter than the chrome budget assumed must still hold the lesson (ADR 0051). */
+export const MIN_STAGE_MARGIN_PX = 40;
+
+/** What `lessonMinStagePx` needs of a lesson: its expressions, its language and, for each scene, its objects and layout rules. A LessonBundle has all of it. */
+export type LessonForBudget = { expressions: Record<string, import("@eve/schema").Expr>; locale: string; scenes: ReadonlyArray<SceneInput> };
+
+/**
+ * The least stage height a host must give a lesson (ADR 0051): the cost of its tallest scene at the design width (360 px) plus a margin of 40 px. It is reported
+ * when a lesson is built and goes into the package manifest at INT; a host that cannot give a slot of this height refuses the lesson and never shrinks the scenes.
+ */
+export function lessonMinStagePx(lesson: LessonForBudget): number {
+  const ctx = { expressions: lesson.expressions, locale: lesson.locale };
+  const viewport = { width: DESIGN_SCREEN.width, height: DESIGN_SCREEN.height };
+  const tallest = Math.max(0, ...lesson.scenes.map((s) => sceneCost({ objects: s.objects, layout: s.layout }, viewport, ctx).cost));
+  return tallest + MIN_STAGE_MARGIN_PX;
 }
 
 /**
