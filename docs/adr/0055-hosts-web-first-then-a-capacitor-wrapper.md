@@ -1,6 +1,6 @@
 # ADR 0055: Hosts: web first, then a Capacitor wrapper
 
-Status: proposed (owner decision pending; written with the phone and desktop targets task, 2026-10-15). Docs only; no code changes with it.
+Status: accepted (owner accepted 2026-10-16). Docs only; no code changes with it.
 
 ## Context
 YourTutor ships as a web app (phone and desktop browsers) and is meant to ship as a phone application. An engine lesson is played by the player with the DOM, SVG and Web Audio. The engine package is static files and is the same for every host (`docs/ENGINE_INTERFACE.md`).

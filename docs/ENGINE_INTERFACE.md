@@ -45,7 +45,7 @@ Rules:
 - Sizes the slot from its own container, not the window, and tells the player when the size or orientation changes. Provides the safe-area insets. Gives desktop keyboard and pointer input.
 - The lesson location may be an http(s) URL or an app-local URL. Lesson correctness must never depend on a service worker: offline caching is a host concern (a service worker on the web, the app's file storage in the wrapper, because iOS WebViews do not provide service workers except for a few app-bound domains).
 - The player treats an AudioContext state of `interrupted` (WebKit) like `suspended`.
-- Browser support floor (proposed, to be decided by ADR; the build targets it): Chrome and Android WebView 100, Safari 15.4 (dynamic viewport units), Firefox 100.
+- Browser support floor (ADR 0057; the build targets it): Chrome and Android WebView 100, Safari 15.4 (dynamic viewport units), Firefox 100.
 - Serves a draft lesson only where it allows drafts (YourTutor: `ALLOW_DRAFT_CONTENT`), stores lesson events only within the consent scopes it holds, and never logs student free text.
 
 ## 5. Player API (shape only; names come from `packages/player/src` at INT)
