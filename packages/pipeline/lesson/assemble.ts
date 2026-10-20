@@ -41,6 +41,9 @@ export type AssembleResult = {
 
 const slug = (s: string): string => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
+/** The id of the lesson generated for a skill in a language: fixed by the two, so a folder for its voice can be made before the lesson exists. */
+export const bundleIdFor = (skillId: string, locale: string): string => `bundle.generated.${slug(skillId)}.${locale}`;
+
 /** A rough length of the whole lesson in seconds from its words at the configured speaking rate, with the gaps and tails the resolver adds. */
 export function estimateLengthS(sentences: readonly NarrationSentence[], scenes: number): number {
   const ms = sentences.reduce((n, s) => n + syntheticDurationMs(s.text) + SENTENCE_GAP_MS, 0) + scenes * SCENE_TAIL_MS;
@@ -95,7 +98,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
   const specVersion = claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
   const bundle = seal({
-    bundleId: `bundle.generated.${slug(ctx.skillId)}.${ctx.locale}`,
+    bundleId: bundleIdFor(ctx.skillId, ctx.locale),
     specVersion,
     skillId: ctx.skillId,
     locale: ctx.locale,
