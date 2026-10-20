@@ -1,0 +1,17 @@
+{
+  "key": "681b666f97f316afc0368b89cb4d406a3c93d187cd1f8b2261d384fa94bf27ea",
+  "step": "probe-13",
+  "promptVersion": "probe.13.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T12:51:30.797Z",
+  "response": {
+    "text": "{\"goal\":\"How can you determine the sum of the roots of a quadratic equation from its coefficients?\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1447,
+      "outputTokens": 21,
+      "thinkingTokens": 133
+    }
+  }
+}

@@ -1,15 +1,17 @@
 import type { JsonSchema, LlmClient } from "@eve/adapters";
 import { repairInput } from "@eve/adapters";
+import { spokenNumbers } from "@eve/gates";
+import { goalProblems } from "@eve/schema";
 import { allowedValues, buildEnvelope, type EnvelopeParts, type ErrorObject } from "./envelope";
 import { loadPrompt } from "./planner/prompt";
 
 /**
- * The behaviour suite: eight small requests that check the system prompt (prompts/system.v1.md) does what it says, through the same envelope every pass uses.
+ * The behaviour suite: eight small requests (PROBES, 1 to 8) that check the system prompt (prompts/system.v1.md) does what it says, through the same envelope every pass uses.
  * Each is recorded once against the real model and replayed in CI. A probe that fails is a finding about the system prompt, never silently fixed in v1:
  * a changed prompt is a new version (the fixtures are keyed to the text).
  */
 export type Verdict = { pass: boolean; why: string };
-export type Probe = { id: number; name: string; expect: string; parts: EnvelopeParts; repair?: { errors: string[]; previous: string }; judge(text: string, json: unknown): Verdict };
+export type Probe = { id: number; name: string; expect: string; /** The most the model may write, reasoning included. Default 1024. */ maxOutputTokens?: number; parts: EnvelopeParts; repair?: { errors: string[]; previous: string }; judge(text: string, json: unknown): Verdict };
 
 const obj = (properties: Record<string, unknown>, required: string[]): JsonSchema => ({ type: "object", properties, required, additionalProperties: false });
 const str = { type: "string" };
@@ -169,6 +171,104 @@ export const PROBES: Probe[] = [
   },
 ];
 
+/**
+ * Probes 9 to 13 (WP4): the behaviours the arc planner and the scriptwriter depend on, each a small request through the same system prompt and envelope. They are
+ * kept apart from PROBES because the eight above were recorded on the reference model; these are recorded on the model the lessons are generated with, and are
+ * replayed against it. A probe that fails is a finding about a pass prompt (or about the model), never silently fixed: a changed prompt is a new version.
+ */
+export const CO2_PROBES: Probe[] = [
+  {
+    id: 9,
+    name: "claim sentence",
+    expect: "one sentence with the claim's placeholder, no digit and no notation",
+    maxOutputTokens: 8192,
+    parts: base(
+      "Return sentence, one spoken English sentence of at most 20 words that states the claim in INPUT. (Pass: probe. Prompt version: probe.claim-sentence.v1.)",
+      ["Put the formula where it belongs with its {expr:id} placeholder, using only an id from the claim's placeholders.", "Never write a digit or mathematical notation."],
+      { locale: "en", claim: { id: "c.1", says: "the roots of {expr:q.eq} are two and three", placeholders: { "q.eq": "x squared minus five x plus six equals zero" }, numbers: ["two", "three"] } },
+      obj({ sentence: str }, ["sentence"]),
+      { input: { locale: "en", claim: { id: "c.0", says: "a line is {expr:l.eq}", placeholders: { "l.eq": "y equals two x" }, numbers: ["two"] } }, output: { sentence: "Here is a line: {expr:l.eq}." } },
+      { expressions: ["q.eq"] },
+    ),
+    judge: (_t, j) => {
+      if (!isObj(j) || typeof j.sentence !== "string") return no("not the expected JSON");
+      if (!j.sentence.includes("{expr:q.eq}")) return no("no {expr:q.eq} placeholder");
+      if ([...j.sentence.matchAll(/\{expr:([^}]+)\}/g)].some((m) => m[1] !== "q.eq")) return no("a placeholder that is not the claim's");
+      const rest = j.sentence.replaceAll("{expr:q.eq}", "");
+      return /\d|[=^\\$+*/]/.test(rest) ? no(`a digit or notation outside the placeholder: ${rest}`) : ok();
+    },
+  },
+  {
+    id: 10,
+    name: "number discipline",
+    expect: "no number word the claim does not hold",
+    maxOutputTokens: 8192,
+    parts: base(
+      "Return sentence, one spoken English sentence of at most 25 words that explains the claim in INPUT to a student. (Pass: probe. Prompt version: probe.numbers.v1.)",
+      ["A number may be spoken as a word only if it is in the claim's numbers. Do not say any other number.", "Put a formula only as its {expr:id} placeholder."],
+      { locale: "en", claim: { id: "c.1", says: "the roots of {expr:q.eq} are two and three", placeholders: { "q.eq": "x squared minus five x plus six equals zero" }, numbers: ["two", "three"] } },
+      obj({ sentence: str }, ["sentence"]),
+      { input: { locale: "en", claim: { id: "c.0", says: "the roots of {expr:l.eq} are four", placeholders: { "l.eq": "x minus four equals zero" }, numbers: ["four"] } }, output: { sentence: "The only root of {expr:l.eq} is four." } },
+      { expressions: ["q.eq"] },
+    ),
+    judge: (_t, j) => {
+      if (!isObj(j) || typeof j.sentence !== "string") return no("not the expected JSON");
+      const stray = spokenNumbers(j.sentence).filter((n) => ![2, 3].includes(n.value));
+      return stray.length > 0 ? no(`says "${stray.map((n) => n.words).join('", "')}", which is not a number of the claim`) : /\d/.test(j.sentence) ? no("a digit") : ok();
+    },
+  },
+  {
+    id: 11,
+    name: "closed list",
+    expect: "a pattern from the list, the picture one",
+    maxOutputTokens: 8192,
+    parts: base(
+      "Return pattern, the id of the pattern for the slot in INPUT. (Pass: probe. Prompt version: probe.closed-list.v1.)",
+      ["Choose only a pattern listed under the slot. A pattern with textHeavy false shows a picture: choose it when the slot offers one."],
+      { locale: "en", slot: "concept", options: [{ pattern: "p.words", textHeavy: true, showsEquations: false }, { pattern: "p.picture", textHeavy: false, showsEquations: true }] },
+      obj({ pattern: str }, ["pattern"]),
+      { input: { locale: "en", slot: "check", options: [{ pattern: "p.ask", textHeavy: true, showsEquations: true }] }, output: { pattern: "p.ask" } },
+      { records: ["p.words", "p.picture"] },
+    ),
+    judge: (_t, j) => (isObj(j) && j.pattern === "p.picture" ? ok() : no(isObj(j) ? `chose ${String(j.pattern)}` : "not the expected JSON")),
+  },
+  {
+    id: 12,
+    name: "dependency order",
+    expect: "claim ids in an order where each comes after the claims it depends on",
+    maxOutputTokens: 8192,
+    parts: base(
+      "Return order, the claim ids of INPUT in the order they must be said. (Pass: probe. Prompt version: probe.order.v1.)",
+      ["A claim is said after every claim in its dependsOn. Use each id once."],
+      { locale: "en", claims: [{ id: "c.c", dependsOn: ["c.b"] }, { id: "c.a", dependsOn: [] }, { id: "c.b", dependsOn: ["c.a"] }] },
+      obj({ order: { type: "array", items: str } }, ["order"]),
+      { input: { locale: "en", claims: [{ id: "c.y", dependsOn: ["c.x"] }, { id: "c.x", dependsOn: [] }] }, output: { order: ["c.x", "c.y"] } },
+      { claims: ["c.a", "c.b", "c.c"] },
+    ),
+    judge: (_t, j) => (isObj(j) && Array.isArray(j.order) && j.order.join() === "c.a,c.b,c.c" ? ok() : no(isObj(j) && Array.isArray(j.order) ? `order ${j.order.join(", ")}` : "not the expected JSON")),
+  },
+  {
+    id: 13,
+    name: "speakable goal",
+    expect: "one question, within the word limit, with no digit or notation",
+    maxOutputTokens: 8192,
+    parts: base(
+      "Return goal, one question the student can answer after the record in INPUT, for a learning goal. (Pass: probe. Prompt version: probe.goal.v1.)",
+      ["The goal has at most 18 words, no digits, no symbols and no mathematical notation, and ends with a question mark.", "Do not copy the record's text."],
+      { locale: "en", record: record("r.1", "conceptClaim", "The sum of the roots of a quadratic a x squared plus b x plus c equals zero is minus b over a.") },
+      obj({ goal: str }, ["goal"]),
+      { input: { locale: "en", record: record("r.0", "conceptClaim", "A root of an equation is a value that makes it true.") }, output: { goal: "What does it mean for a value to be a root?" } },
+      { records: ["r.1"] },
+    ),
+    judge: (_t, j) => {
+      if (!isObj(j) || typeof j.goal !== "string") return no("not the expected JSON");
+      const problems = goalProblems(j.goal);
+      if (problems.length > 0) return no(problems.join("; "));
+      return j.goal.trim().endsWith("?") ? ok() : no("not a question");
+    },
+  },
+];
+
 /** What a probe sends: the envelope, plus the repair block for the repair probe. */
 export function probeRequest(p: Probe): string {
   const message = buildEnvelope(p.parts);
@@ -181,7 +281,7 @@ export type ProbeResult = { id: number; name: string; expect: string; pass: bool
 export async function runProbe(client: LlmClient, p: Probe): Promise<ProbeResult> {
   const base = { id: p.id, name: p.name, expect: p.expect };
   try {
-    const res = await client.generate({ step: `probe-${p.id}`, promptVersion: `probe.${p.id}.v1`, system: loadPrompt("system.v1").text, input: probeRequest(p), jsonSchema: p.parts.schema, json: true, maxOutputTokens: 1024 });
+    const res = await client.generate({ step: `probe-${p.id}`, promptVersion: `probe.${p.id}.v1`, system: loadPrompt("system.v1").text, input: probeRequest(p), jsonSchema: p.parts.schema, json: true, maxOutputTokens: p.maxOutputTokens ?? 1024 });
     let json: unknown;
     try {
       json = JSON.parse(res.text.trim());

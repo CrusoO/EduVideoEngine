@@ -9,4 +9,4 @@ export * from "./build";
 export { referencePlan } from "./planner/reference";
 export { loadPassPrompt, loadPrompt } from "./planner/prompt";
 export * from "./envelope";
-export { PROBES, runProbe, probeRequest } from "./probes";
+export { CO2_PROBES, PROBES, runProbe, probeRequest } from "./probes";

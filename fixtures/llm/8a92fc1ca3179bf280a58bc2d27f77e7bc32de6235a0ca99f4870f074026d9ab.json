@@ -1,0 +1,17 @@
+{
+  "key": "8a92fc1ca3179bf280a58bc2d27f77e7bc32de6235a0ca99f4870f074026d9ab",
+  "step": "probe-11",
+  "promptVersion": "probe.11.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T12:51:23.433Z",
+  "response": {
+    "text": "{\"pattern\":\"p.picture\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1442,
+      "outputTokens": 8,
+      "thinkingTokens": 0
+    }
+  }
+}

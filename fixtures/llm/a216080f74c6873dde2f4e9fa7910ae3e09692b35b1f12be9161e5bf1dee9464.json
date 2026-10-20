@@ -1,0 +1,17 @@
+{
+  "key": "a216080f74c6873dde2f4e9fa7910ae3e09692b35b1f12be9161e5bf1dee9464",
+  "step": "probe-12",
+  "promptVersion": "probe.12.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T12:51:26.846Z",
+  "response": {
+    "text": "{\"order\":[\"c.a\",\"c.b\",\"c.c\"]}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1459,
+      "outputTokens": 13,
+      "thinkingTokens": 27
+    }
+  }
+}

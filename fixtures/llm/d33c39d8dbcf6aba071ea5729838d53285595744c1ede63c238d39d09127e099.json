@@ -1,0 +1,17 @@
+{
+  "key": "d33c39d8dbcf6aba071ea5729838d53285595744c1ede63c238d39d09127e099",
+  "step": "probe-10",
+  "promptVersion": "probe.10.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T12:51:22.190Z",
+  "response": {
+    "text": "{\"sentence\":\"The roots of {expr:q.eq} are two and three.\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1482,
+      "outputTokens": 18,
+      "thinkingTokens": 84
+    }
+  }
+}
