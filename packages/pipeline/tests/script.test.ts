@@ -63,7 +63,7 @@ describe("what the model is given", () => {
     expect(b3.claims[2]!.placeholders).toEqual({ "quad.general": "a x squared plus b x plus c equals zero", "quad.rule": "S equals minus b over a" });
     const b4 = data.beats.find((b) => b.beatId === "b4")!;
     const sum = b4.claims.find((c) => c.id === "c.quad.sum.steps.sum.1")!;
-    expect(sum.says).toBe("the roots of {expr:quad.eq} add up to the number on the right of {expr:quad.total}");
+    expect(sum.says).toBe("the roots of {expr:quad.eq} add up to {expr:quad.total}");
     expect(sum.importance).toBe("core");
     expect(sum.numbers).toEqual(expect.arrayContaining(["two", "three", "five"]));
     expect(b4.claims.find((c) => c.id === "c.quad.sum.steps.roots")!.says).toBe("the roots of {expr:quad.eq} are two and three");

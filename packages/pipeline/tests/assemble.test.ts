@@ -87,6 +87,28 @@ describe("the reference lesson, assembled from its plan and its sentences", () =
   });
 });
 
+describe("a beat with no claims can be made longer with transitions from the list", () => {
+  it("adds them after the first one, keeps the pause after the goal question, and moves only the answer to the last sentence", () => {
+    const padded = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { extraTransitions: { b1: 2 } });
+    const b1 = padded.bundle.script.filter((s) => s.beatId === "b1");
+    expect(b1.map((s) => [s.id, s.role, s.text])).toEqual([
+      ["s1.1", "goal", "Can you guess what the two roots of this equation add up to?"],
+      ["s1.2", "transition", "Let us see why."],
+      ["s1.3", "transition", "Here is the next step."],
+      ["s1.4", "transition", "Now let us look at the next idea."],
+    ]);
+    const scene = padded.bundle.scenes.find((s) => s.beatId === "b1")!;
+    expect(scene.interactions).toEqual([expect.objectContaining({ afterSentenceId: "s1.1" })]);
+    expect(scene.cues.find((c) => c.targetObject === "answer")!.anchor.sentenceId).toBe("s1.4");
+    expect(failures(runGates(gateContext(ctx, padded.bundle))).map((f) => f.message)).toEqual([]);
+  });
+  it("adds at most the transitions the list offers, and none to a beat that makes claims", () => {
+    expect(assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { extraTransitions: { b1: 9 } }).bundle.script.filter((s) => s.beatId === "b1")).toHaveLength(4);
+    const b4 = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { extraTransitions: { b4: 2 } }).bundle.script.filter((s) => s.beatId === "b4");
+    expect(b4.filter((s) => s.role === "transition")).toEqual([]);
+  });
+});
+
 describe("a plan that cannot be built is refused with the reasons", () => {
   const withBeat = (id: string, edit: Partial<(typeof REFERENCE_PLAN.beats)[number]>) => ({ ...REFERENCE_PLAN, beats: REFERENCE_PLAN.beats.map((b) => (b.id === id ? { ...b, ...edit } : b)) });
   const errorsOf = (plan: typeof REFERENCE_PLAN) => {

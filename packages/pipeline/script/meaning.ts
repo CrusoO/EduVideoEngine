@@ -33,9 +33,9 @@ export function claimMeaning(claim: Claim, record: ContentRecord | undefined, ex
     case "roots":
       return `the roots of {expr:${claim.equation}} are ${list(claim.values.map((v) => spokenLabel(v, locale)))}`;
     case "sum-of-roots":
-      return `the roots of {expr:${claim.equation}} add up to the number on the right of {expr:${claim.equals}}`;
+      return `the roots of {expr:${claim.equation}} add up to {expr:${claim.equals}}`;
     case "product-of-roots":
-      return `the roots of {expr:${claim.equation}} multiply to the number on the right of {expr:${claim.equals}}`;
+      return `the roots of {expr:${claim.equation}} multiply to {expr:${claim.equals}}`;
     case "satisfied-by":
       return `putting ${spokenLabel(claim.value, locale)} in for the unknown of {expr:${claim.equation}} gives {expr:${claim.instance}}, which is true`;
     case "statement":

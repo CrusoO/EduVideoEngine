@@ -8,8 +8,8 @@ Fixtures are keyed to the exact prompt text, so a file here is never edited afte
 | `envelope.md` | `d655cf8f255871c2eda4e23e6d70e6df1dd30289bb29ec9c30d536aae7f79240` | the request template the envelope builder follows |
 | `planner.v2.md` | `af4323f169b4765bfb8303e3e0919602abdbfec6f52408ca240f62551813e97c` | frozen. Recorded (Sonnet reference replay). Kept byte-identical so free providers are compared on the same request. |
 | `planner.v3.md` | `c9c6d2da96bbb06b8ba21e61da0cc8ca03ef3f1f67541a1480507e5976d7bfd8` | superseded: written, **not recorded**. Its text-heavy rule folds into the next planner version. |
-| `planner.v4.md` | `af0a49a9e5efdf27fb7eb4fef0505b357872addc6014720d92394e2274ed6e40` | current, not yet recorded (may still change). The arc planner of WP4 (ADR 0061): arc, slots, patterns, records, learning goals, prerequisites. Its request lists the nine patterns of the library |
-| `scriptwriter.v1.md` | `4610a32c2cc069bc6d2f96b1c98a68396fe604fa7cadc7e0a81c6432c29c0b8c` | current, not yet recorded (may still change). The scriptwriter of WP5 (ADR 0061): claim and link sentences and two short writer texts per beat |
+| `planner.v4.md` | `53f7414d5a755f81cc9d74ded225c318eecc61fe4cb195f7d2e6f00733538124` | frozen. Recorded 2026-10-20 on `minimax/minimax-m3.1-flash:free` (one plan, repaired once). The arc planner of WP4 (ADR 0061): arc, slots, patterns, records, learning goals, prerequisites. Its request lists the nine patterns of the library. A change is a new version file |
+| `scriptwriter.v1.md` | `feaae3ef0bddcfe3ed8cb2c390bf9f6adfce22d84118ae5a2beec9a81192da84` | frozen. Recorded 2026-10-20 on `minimax/minimax-m3.1-flash:free` (one script, repaired once). The scriptwriter of WP5 (ADR 0061): claim and link sentences and two short writer texts per beat. A change is a new version file |
 | `composer.v1.md` | not written, and not planned | The composer is code, not a prompt (ADR 0061): it fills a pattern from records and checks the scene with the existing validators. A composer prompt needs a new ADR |
 
 Notes

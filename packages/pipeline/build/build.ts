@@ -5,6 +5,7 @@ import { resolve } from "@eve/resolver";
 import type { AudioTrack, LessonBundle } from "@eve/schema";
 import { ARC_PLANNER_VERSION, planArc } from "../arcplan";
 import { assembleLesson, type AssembleResult } from "../lesson/assemble";
+import { PADDING_TRANSITIONS } from "../lesson/sentences";
 import { lessonContext, type LessonContext } from "../lesson/context";
 import type { ArcPlan, LessonScript } from "../lesson/types";
 import { SYSTEM_PROMPT_VERSION } from "../planner";
@@ -73,26 +74,40 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
   }
 
   log("assembling the lesson");
+  const padded: Record<string, number> = {};
   let assembled = assembleLesson(ctx, planned.plan, scripted.script);
   let tracks: AudioTrack[];
   let voice: VoiceOutput | undefined;
-  if (input.voice === "synthetic") tracks = syntheticTracks(assembled.bundle);
-  else {
-    log("voicing the sentences");
-    voice = await synthesizeLesson(assembled.bundle, input.voice.dir, input.voice.synth);
-    tracks = voice.tracks;
-    log(`  ${voice.synthesized} voiced, ${voice.reused} kept`);
-  }
-  // the plan records the measured length; only the length differs, so the sentences and their audio stay valid
-  try {
-    const lengthS = Math.max(1, Math.ceil(resolve(assembled.bundle, tracks).totalMs / 1000));
-    if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, planned.plan, scripted.script, { targetLengthS: lengthS });
-  } catch {
-    // a lesson that cannot be resolved is reported by the assurance below
-  }
+  let assurance: Assurance;
+  const assure = (verify: boolean) => assureLesson({ ctx, bundle: assembled.bundle, tracks, ...(input.approvals ? { approvals: input.approvals } : {}), fallbackBeats: assembled.fallbacks.map((f) => f.beatId), verify });
 
-  log("checking the lesson");
-  const assurance = await assureLesson({ ctx, bundle: assembled.bundle, tracks, ...(input.approvals ? { approvals: input.approvals } : {}), fallbackBeats: assembled.fallbacks.map((f) => f.beatId), ...(input.verify === undefined ? {} : { verify: input.verify }) });
+  // Voice, measure, judge; and, while a scene is too short to be read, give the beat one more transition (a beat that makes no claim has only its goal and one
+  // transition, so its length is code's to adjust) and voice again: only the new sentence is voiced. Bounded by the transitions the language lists.
+  for (let round = 0; ; round++) {
+    if (input.voice === "synthetic") tracks = syntheticTracks(assembled.bundle);
+    else {
+      log(round === 0 ? "voicing the sentences" : "voicing the sentences that changed");
+      voice = await synthesizeLesson(assembled.bundle, input.voice.dir, input.voice.synth);
+      tracks = voice.tracks;
+      log(`  ${voice.synthesized} voiced, ${voice.reused} kept`);
+    }
+    // the plan records the measured length; only the length differs, so the sentences and their audio stay valid
+    try {
+      const lengthS = Math.max(1, Math.ceil(resolve(assembled.bundle, tracks).totalMs / 1000));
+      if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, planned.plan, scripted.script, { targetLengthS: lengthS, extraTransitions: padded });
+    } catch {
+      // a lesson that cannot be resolved is reported by the assurance below
+    }
+    log(round === 0 ? "checking the lesson" : "checking it again");
+    assurance = await assure(false);
+    const tooShort = [...new Set(assurance.findings.filter((f) => f.code === "reading-time" && f.sceneId).map((f) => assembled.bundle.scenes.find((s) => s.id === f.sceneId)?.beatId))]
+      .filter((id): id is string => id !== undefined && assembled.builds.find((b) => b.beat.id === id)?.claims.length === 0 && (padded[id] ?? 0) < PADDING_TRANSITIONS.length);
+    if (tooShort.length === 0) break;
+    for (const id of tooShort) padded[id] = (padded[id] ?? 0) + 1;
+    log(`  the scene of ${tooShort.join(", ")} is too short to read: one more transition`);
+    assembled = assembleLesson(ctx, planned.plan, scripted.script, { extraTransitions: padded });
+  }
+  if (input.verify !== false) assurance = await assure(true);
   const u = used();
   return {
     ok: true,

@@ -87,7 +87,7 @@ export function buildBeats(ctx: LessonContext, plan: ArcPlan): BuiltBeats {
     const retrieval = narrow(base, beat.sourceIds);
     const concept = retrieval.byKind.conceptClaim;
     if (concept.length > 0 && !CONCEPT_BEAT_KINDS.includes(beatKind)) {
-      errors.push(`${at}: a ${beatKind} beat cannot state concept claims (${concept.map((c) => c.id).join(", ")}); they belong in a prerequisite, concept or mistake beat`);
+      errors.push(`${at}: a ${beatKind} beat cannot state concept claims (${concept.map((c) => c.id).join(", ")}); move them to a beat of the concept, prerequisite or mistake slot (a scene that shows an equation needs a claim that names it in the same beat, so do not just delete them)`);
     }
 
     const sentenceIds = Array.from({ length: Math.max(2, pattern.minSentences) }, (_x, k) => sentenceIdOf(index, k + 1));

@@ -60,6 +60,20 @@ describe("what the model is given", () => {
     expect(data.slots.check!.map((o) => o.pattern)).toEqual(["predict-then-reveal", "check-question"]);
     expect(data.slots.prerequisite_activation!.every((o) => o.skillId === FACTORISE)).toBe(true);
   });
+  it("says which patterns draw an equation, so a grounded claim can be given one that does not", () => {
+    const shows = Object.fromEntries(Object.values(data.slots).flat().map((o) => [o.pattern, o.showsEquations]));
+    expect(shows).toEqual({
+      "predict-then-reveal": true,
+      "check-question": true,
+      "hops-on-number-line": true,
+      "step-by-step-worked-example": true,
+      "colour-bound-terms": true,
+      "plot-and-mark-roots": true,
+      "recap-card": true,
+      "common-mistake-contrast": true,
+      "statement-card": false,
+    });
+  });
   it("lists the records of the skill without its skill record, and each prerequisite with the statuses it may take", () => {
     expect(data.records.map((r) => r.id)).not.toContain("quad.sum.skill");
     expect(data.records.find((r) => r.id === "quad.sum.claim.vieta")).toMatchObject({ kind: "conceptClaim", claimMode: "computed", importance: "core", dependsOn: ["quad.sum.claim.root"] });
@@ -94,6 +108,7 @@ describe("the plan rules", () => {
     ["a learning goal with notation", beatEdit("b1", { learningGoal: "What is x = 2 here?" }), /the learning goal: a learning goal has no (digits|notation or placeholders)/],
     ["a title with a digit", beatEdit("b1", { title: "Guess the 2 roots" }), /beat b1: the title has a digit/],
     ["a core concept claim no beat states", beatEdit("b3", { sourceIds: ["quad.sum.graph", "quad.sum.steps", "quad.sum.claim.root", "quad.sum.claim.roots"] }), /core concept claim quad.sum.claim.vieta is not stated by any beat/],
+    ["a core claim taught after the worked example (the rule in the mistake beat)", edit((p) => ({ ...p, beats: p.beats.map((b) => (b.id === "b3" ? { ...b, sourceIds: ["quad.sum.graph", "quad.sum.steps", "quad.sum.claim.roots"] } : b.id === "b5" ? { ...b, sourceIds: ["quad.sum.claim.mistake", "quad.sum.claim.root", "quad.sum.claim.vieta"] } : b)) })), /core concept claim quad.sum.claim.vieta is stated in beat b5, after the worked example b4; state a core claim in a beat before the first worked example \(the concept beat\)/],
     ["a concept claim stated twice", beatEdit("b5", { sourceIds: ["quad.sum.claim.mistake", "quad.sum.claim.root"] }), /concept claim quad.sum.claim.root is already stated by beat b3/],
     ["a concept claim in a worked beat", beatEdit("b4", { sourceIds: ["quad.sum.steps", "quad.sum.claim.roots"] }), /a worked beat cannot state concept claims \(quad.sum.claim.roots\)/],
     ["a prerequisite that is not one", edit((p) => ({ ...p, prerequisites: [...p.prerequisites, { skillId: "MATH.ALG.OTHER", status: "linked" }] })), /prerequisites: MATH.ALG.OTHER is not a direct prerequisite of MATH.ALG.QUAD.SUM_OF_ROOTS \(MATH.ALG.QUAD.FACTORISE\)/],
@@ -121,6 +136,12 @@ describe("the plan rules", () => {
       const plan = edit((p) => ({ ...p, beats: p.beats.map((b) => (b.id === "b3" ? { ...b, pattern: "statement-card", sourceIds: ["quad.sum.claim.mistake"] } : b)) }));
       expect(checkArcPlan(ctx, plan).join("\n")).toMatch(/the variety rule: 1 picture beat\(s\), at least 2 needed/);
     });
+    it("says where a picture pattern is offered, and to change only those beats", () => {
+      const plan = edit((p) => ({ ...p, beats: p.beats.map((b) => (b.id === "b3" ? { ...b, pattern: "colour-bound-terms", sourceIds: ["quad.sum.problem", "quad.sum.claim.root", "quad.sum.claim.roots", "quad.sum.claim.vieta"] } : b)) }));
+      const out = checkArcPlan(ctx, plan).join("\n");
+      expect(out).toMatch(/the variety rule: 1 picture beat\(s\), at least 2 needed; use a picture pattern where a slot offers one: b3 \(slot concept\) could use plot-and-mark-roots. Change only the beats you need to/);
+      expect(out).not.toMatch(/b4 \(slot/); // b4 already has a picture pattern
+    });
   });
 
   describe("what no wording can fix is named by the real gates, before any sentence exists", () => {
@@ -129,6 +150,15 @@ describe("the plan rules", () => {
       const out = checkArcPlan(ctx, plan).join("\n");
       expect(out).toMatch(/gate G3 \(cue-on-unrelated-claim\)/);
       expect(out).toMatch(/scene\.b5/);
+      // and the message says what would fix it: a pattern for the slot that draws no equation
+      expect(out).toMatch(/\(no claim of beat b5 names the equation that common-mistake-contrast shows: give it a pattern for slot common_mistake_contrast with showsEquations false, such as statement-card\. Change only this beat\)/);
+    });
+    it("a picture of an equation whose claim was left out: G3 names the concept claim that would tie it", () => {
+      // the plot shows the equation and its curve; only the roots claim names the equation, and this concept beat does not state it
+      const plan = beatEdit("b3", { sourceIds: ["quad.sum.graph", "quad.sum.steps", "quad.sum.claim.root", "quad.sum.claim.vieta"] });
+      const out = checkArcPlan(ctx, plan).join("\n");
+      expect(out).toMatch(/gate G3 \(uncued-object\)[^\n]*scene\.b3\/eq/);
+      expect(out).toMatch(/no claim of beat b3 names the equation that plot-and-mark-roots shows: add a concept claim that names what the scene shows \(quad\.sum\.claim\.roots\) to the sourceIds of beat b3; or give it a pattern for slot concept with showsEquations false, such as statement-card\. Change only this beat/);
     });
     it("a claim stated before the claim it rests on: G1", () => {
       // the rule (vieta) is stated in b3; move the definition it depends on (root) to the mistake beat, which comes later

@@ -1,13 +1,13 @@
 import { LlmClient, type JsonSchema } from "@eve/adapters";
 import type { ContentRecord, Retrieval } from "@eve/content";
-import { failures, runGates } from "@eve/gates";
+import { claimExpressions, failures, isSideOf, runGates } from "@eve/gates";
 import { ARCS, ARC_IDS, LIBRARY, SLOT_BEAT_KIND, isTextHeavy, patternSources, slotSequences, usable, varietyCheck, type ArcId, type SlotId } from "@eve/patterns";
-import { GOAL_MAX_WORDS, LIMITS, PEDAGOGY_BEAT_KINDS, PREREQUISITE_STATUSES, goalProblems, validateBundle } from "@eve/schema";
+import { GOAL_MAX_WORDS, LIMITS, PEDAGOGY_BEAT_KINDS, PREREQUISITE_STATUSES, goalProblems, validateBundle, type LessonBundle } from "@eve/schema";
 import { z } from "zod";
 import arcsConfig from "../../../config/arcs.json";
 import { allowedValues, buildEnvelope } from "../envelope";
 import { AssembleError, assembleLesson } from "../lesson/assemble";
-import { buildBeats } from "../lesson/beats";
+import { buildBeats, conceptClaimOf } from "../lesson/beats";
 import type { LessonContext } from "../lesson/context";
 import { gateContext } from "../lesson/gates";
 import { ArcPlan, type LessonScript } from "../lesson/types";
@@ -36,7 +36,11 @@ export type ArcPlanResult =
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // what the model is given
 
-export type SlotOption = { pattern: string; textHeavy: boolean; pause: string; needs: string[]; skillId?: string };
+export type SlotOption = { pattern: string; textHeavy: boolean; showsEquations: boolean; pause: string; needs: string[]; skillId?: string };
+
+/** The components that draw an expression of the lesson. A scene that draws one needs a claim that names it, or G3 rejects the cue (ADR 0049, 0062). */
+const EXPRESSION_COMPONENTS: readonly string[] = ["equation", "functionGraph", "stepList"];
+const showsEquations = (p: { components: readonly string[] }): boolean => p.components.some((c) => EXPRESSION_COMPONENTS.includes(c));
 
 /** The patterns that can fill each slot from the records: the pattern suits the slot's beat kind, and its content slots can be filled. A recap slot is offered once per prerequisite skill. */
 export function slotOptions(ctx: LessonContext): Record<SlotId, SlotOption[]> {
@@ -48,6 +52,7 @@ export function slotOptions(ctx: LessonContext): Record<SlotId, SlotOption[]> {
       LIBRARY.filter((p) => (p.beatKinds as readonly string[]).includes(kind) && usable(p.id, retrieval).ok).map((p) => ({
         pattern: p.id,
         textHeavy: isTextHeavy(p),
+        showsEquations: showsEquations(p),
         pause: p.pause,
         needs: patternSources(p.id, retrieval) ?? [],
         ...(skillId ? { skillId } : {}),
@@ -169,6 +174,26 @@ function skeletonScript(builds: ReadonlyArray<{ beat: { id: string }; claims: Re
 }
 
 /**
+ * What would fix a gate failure that a choice of pattern causes. G3 rejects a picture of an equation in a beat whose claims name none (a grounded claim is prose),
+ * so the way out is a pattern for that slot that shows no equation. The message says which, so the repair changes that beat and leaves the rest alone.
+ */
+function gateHint(f: { gate: string; code: string; ids: string[] }, beats: ArcPlan["beats"], options: Record<SlotId, SlotOption[]>, ctx: LessonContext, bundle: LessonBundle): string {
+  if (f.gate !== "G3" || !["cue-on-unrelated-claim", "cue-not-on-claim", "uncued-object"].includes(f.code)) return "";
+  const beat = beats.find((b) => f.ids[0]?.endsWith(`.${b.id}`));
+  if (!beat) return "";
+  // the object that cannot be tied to a claim, and the concept claims of the lesson (not yet stated by any beat) that name what it shows
+  const shown = bundle.scenes.find((s) => s.id === f.ids[0])?.objects.find((o) => o.id === f.ids[1])?.exprRef;
+  const stated = new Set(beats.flatMap((b) => b.sourceIds));
+  const naming = shown === undefined ? [] : ctx.lesson.byKind.conceptClaim.filter((rec) => !stated.has(rec.id) && claimExpressions(conceptClaimOf(rec, beat.id)).some((id) => id === shown || isSideOf({ bundle }, shown, id))).map((r) => r.id);
+  const patterns = options[beat.slotId].filter((o) => !o.showsEquations).map((o) => o.pattern);
+  const ways = [
+    ...(naming.length > 0 ? [`add a concept claim that names what the scene shows (${naming.join(", ")}) to the sourceIds of beat ${beat.id}`] : []),
+    ...(patterns.length > 0 ? [`${naming.length > 0 ? "or " : ""}give it a pattern for slot ${beat.slotId} with showsEquations false, such as ${patterns.join(" or ")}`] : []),
+  ];
+  return ` (no claim of beat ${beat.id} names the equation that ${beat.pattern} shows${ways.length > 0 ? `: ${ways.join("; ")}` : ""}. Change only this beat)`;
+}
+
+/**
  * Every rule about a plan that code can check, as messages a model can be asked to repair (ADR 0061). First the rules of the plan itself: the arc, the slots in
  * order, the pattern for each slot, the records each beat names, the concept claims, the goals, the prerequisites, the variety rule. Then, when those hold, the
  * plan is assembled with stand-in sentences and judged by the real gates and validators, so a combination that no wording could save (a pattern whose
@@ -213,6 +238,15 @@ export function checkArcPlan(ctx: LessonContext, plan: ArcPlan): string[] {
   const stated = new Set(beats.flatMap((b) => b.sourceIds));
   for (const rec of ctx.lesson.byKind.conceptClaim) if (rec.importance === "core" && !stated.has(rec.id)) bad(`core concept claim ${rec.id} is not stated by any beat; list it in the sourceIds of a concept or mistake beat`);
 
+  // a core claim is taught before the first worked example, which applies it (a claim that corrects a mistake may come after)
+  const firstWorked = beats.findIndex((b) => SLOT_BEAT_KIND[b.slotId] === "worked");
+  if (firstWorked >= 0) {
+    for (const rec of ctx.lesson.byKind.conceptClaim.filter((r) => r.importance === "core")) {
+      const at = beats.findIndex((b) => b.sourceIds.includes(rec.id));
+      if (at > firstWorked) bad(`core concept claim ${rec.id} is stated in beat ${beats[at]!.id}, after the worked example ${beats[firstWorked]!.id}; state a core claim in a beat before the first worked example (the concept beat)`);
+    }
+  }
+
   // the prerequisites
   const direct = new Map(ctx.prerequisites.map((p) => [p.skillId, p] as const));
   const seen = new Set<string>();
@@ -239,7 +273,13 @@ export function checkArcPlan(ctx: LessonContext, plan: ArcPlan): string[] {
     const pattern = LIBRARY.find((p) => p.id === b.pattern);
     return pattern ? isTextHeavy(pattern) : true;
   });
-  for (const problem of varietyCheck(flags).problems) bad(`the variety rule: ${problem}; choose a pattern that shows a picture for more beats`);
+  const pictures = beats.flatMap((b, i) => {
+    const offered = flags[i] ? options[b.slotId].find((o) => !o.textHeavy) : undefined;
+    return offered ? [`${b.id} (slot ${b.slotId}) could use ${offered.pattern}`] : [];
+  });
+  for (const problem of varietyCheck(flags).problems) {
+    bad(`the variety rule: ${problem}; use a picture pattern where a slot offers one${pictures.length > 0 ? `: ${pictures.join("; ")}` : ""}. Change only the beats you need to`);
+  }
 
   // what the records, the claims and the cues allow: only when the plan is otherwise sound
   const built = buildBeats(ctx, plan);
@@ -251,7 +291,7 @@ export function checkArcPlan(ctx: LessonContext, plan: ArcPlan): string[] {
   try {
     const dry = assembleLesson(ctx, plan, skeletonScript(built.beats));
     for (const f of dry.fallbacks) bad(`beat ${f.beatId}: the ${dry.builds.find((b) => b.beat.id === f.beatId)!.beat.pattern} scene cannot be built from these records: ${f.attempts.at(-1)!.slice(0, 2).join("; ")}`);
-    for (const f of failures(runGates(gateContext(ctx, dry.bundle)))) bad(`gate ${f.gate} (${f.code}): ${f.message}`);
+    for (const f of failures(runGates(gateContext(ctx, dry.bundle)))) bad(`gate ${f.gate} (${f.code}): ${f.message}${gateHint(f, beats, options, ctx, dry.bundle)}`);
     const valid = validateBundle(dry.bundle);
     if (!valid.ok) for (const i of valid.issues) bad(`the lesson does not validate: ${i.path}: ${i.message}`);
   } catch (e) {

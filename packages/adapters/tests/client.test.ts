@@ -56,6 +56,21 @@ describe("record and replay", () => {
     expect(ledger.entries()).toHaveLength(1);
   });
 
+  it("an answer that was cut off is returned but never recorded, so the next run asks again instead of replaying it", async () => {
+    const fake = new FakeAdapter([{ text: "", status: "incomplete", usage: { inputTokens: 10, outputTokens: 0, thinkingTokens: 8192 } }, "{\"ok\":true}"]);
+    const logs: string[] = [];
+    const { client, fixtures, ledger } = setup({ mode: "record" }, fake);
+    const again = new LlmClient({ ...(client as unknown as { o: ConstructorParameters<typeof LlmClient>[0] }).o, log: (m) => logs.push(m) });
+    expect((await again.generate(spec)).status).toBe("incomplete");
+    expect(existsSync(fixtures.dir) ? readdirSync(fixtures.dir) : []).toEqual([]);
+    expect(ledger.entries().map((e) => e.status)).toEqual(["incomplete"]);
+    expect(logs.join("\n")).toMatch(/was cut off after 0 output and 8192 reasoning tokens; it is not recorded/);
+    // the next call reaches the model again, and a complete answer is recorded as usual
+    expect((await again.generate(spec)).text).toBe("{\"ok\":true}");
+    expect(fake.requests).toHaveLength(2);
+    expect(readdirSync(fixtures.dir)).toHaveLength(1);
+  });
+
   it("live calls every time and saves nothing", async () => {
     const fake = new FakeAdapter(["{}"]);
     const { client, fixtures } = setup({ mode: "live" }, fake);

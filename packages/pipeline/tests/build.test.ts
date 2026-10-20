@@ -88,6 +88,18 @@ describe("the whole build, with the model's answers scripted", () => {
     ]);
   }, 120_000);
 
+  it("a hook scene too short to read is given another transition, and the lesson then passes", async () => {
+    // a long title and two equations are about fifteen words to read; a short goal question and one transition do not last long enough for that
+    const wordy = { ...REFERENCE_PLAN, beats: REFERENCE_PLAN.beats.map((b) => (b.id === "b1" ? { ...b, title: "Guess the sum of the roots now", learningGoal: "What do the roots add up to?" } : b)) };
+    const lines: string[] = [];
+    const out = await buildLesson({ client: client([wordy, scriptAnswer]).c, store: STORE, skillId: SKILL, voice: "synthetic", approvals, log: (l) => lines.push(l) });
+    if (!out.ok) throw new Error("build failed");
+    expect(lines.some((l) => /the scene of b1 is too short to read: one more transition/.test(l))).toBe(true);
+    expect(out.bundle.script.filter((s) => s.beatId === "b1").map((s) => s.role)).toEqual(["goal", "transition", "transition"]);
+    expect(out.assurance).toMatchObject({ passes: true, publishable: true, verified: true });
+    expect(out.assurance.findings.filter((f) => f.code === "reading-time")).toEqual([]);
+  }, 120_000);
+
   it("a plan that fails its rules after the repair stops the build at the plan, with the reasons and the requests spent", async () => {
     const bad = { ...REFERENCE_PLAN, beats: REFERENCE_PLAN.beats.map((b) => (b.id === "b4" ? { ...b, pattern: "colour-bound-terms" } : b)) };
     const { c } = client([bad, bad]);

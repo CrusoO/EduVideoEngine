@@ -1,0 +1,17 @@
+{
+  "key": "4d0e83785b98e8f2f86d3e4ccf7fe2e8446040a50f134ada0706b1a9d94fe0a8",
+  "step": "planner",
+  "promptVersion": "planner.v4",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T12:38:52.103Z",
+  "response": {
+    "text": "{\"arcId\":\"problem_first\",\"prerequisites\":[{\"skillId\":\"MATH.ALG.QUAD.FACTORISE\",\"status\":\"recapped\"}],\"beats\":[{\"id\":\"b1\",\"slotId\":\"hook\",\"pattern\":\"predict-then-reveal\",\"title\":\"Predict the Root Total\",\"learningGoal\":\"Can you predict the total of both root values?\",\"sourceIds\":[\"quad.sum.steps\",\"quad.sum.claim.roots\"]},{\"id\":\"b2\",\"slotId\":\"prerequisite_activation\",\"pattern\":\"recap-card\",\"title\":\"Recap Factorising\",\"learningGoal\":\"Can you factorise a quadratic expression into its two factors?\",\"sourceIds\":[\"quad.factorise.claim\"]},{\"id\":\"b3\",\"slotId\":\"concept\",\"pattern\":\"plot-and-mark-roots\",\"title\":\"The Root Total Rule\",\"learningGoal\":\"What rule gives the sum of the roots from a quadratic equation?\",\"sourceIds\":[\"quad.sum.graph\",\"quad.sum.steps\",\"quad.sum.claim.root\",\"quad.sum.claim.vieta\"]},{\"id\":\"b4\",\"slotId\":\"worked_example\",\"pattern\":\"hops-on-number-line\",\"title\":\"From Equation to Root Total\",\"learningGoal\":\"What sequence leads from the quadratic to its root total?\",\"sourceIds\":[\"quad.sum.steps\"]},{\"id\":\"b5\",\"slotId\":\"common_mistake_contrast\",\"pattern\":\"statement-card\",\"title\":\"The Wrong Addition\",\"learningGoal\":\"Why does using the written numbers give the wrong total?\",\"sourceIds\":[\"quad.sum.claim.mistake\"]},{\"id\":\"b6\",\"slotId\":\"check\",\"pattern\":\"check-question\",\"title\":\"Check the Root Total\",\"learningGoal\":\"Can you find the total of the roots in the check question?\",\"sourceIds\":[\"quad.sum.q.recall\"]}]}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 5321,
+      "outputTokens": 365,
+      "thinkingTokens": 15837
+    }
+  }
+}

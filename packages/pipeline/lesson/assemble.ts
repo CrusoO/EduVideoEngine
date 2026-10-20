@@ -30,6 +30,8 @@ const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "exampl
 export type AssembleOptions = {
   /** The length to record in the plan, in seconds (the measured length once there is audio). Estimated from the words otherwise. */
   targetLengthS?: number;
+  /** How many transitions to add after the first in a beat that has no claims, by beat id: a beat that must last longer for its scene to be read (the build asks for it). */
+  extraTransitions?: Readonly<Record<string, number>>;
 };
 
 export type AssembleResult = {
@@ -74,7 +76,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   const scenes: SceneSpec[] = [];
   const fallbacks: AssembleResult["fallbacks"] = [];
   for (const b of built.beats) {
-    const mine = sentencesOf(b, script[b.beat.id], transitions);
+    const mine = sentencesOf(b, script[b.beat.id], transitions, options.extraTransitions?.[b.beat.id] ?? 0);
     sentences.push(...mine.sentences);
     const text = {
       title: b.beat.title,

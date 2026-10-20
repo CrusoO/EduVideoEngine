@@ -130,15 +130,15 @@
       "minimax/minimax-m3.1-flash:free": {
         "jsonMode": true,
         "reasoning": true,
-        "maxOutputTokens": 8192,
+        "maxOutputTokens": 32768,
         "limits": {
           "rpm": 20,
           "tpm": 200000,
           "rpd": 50
         },
         "verified": true,
-        "note": "Free model (zero price on https://openrouter.ai/api/v1/models, 2026-10-20; 1,000,000 token context; supports response_format). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM, 50 RPD without credits. OpenRouter publishes no token limit: tpm is a local safety cap. It is a reasoning model: the 9 requests of 2026-10-20 used about 560 reasoning tokens each (ledger), so expectedReasoningTokens leaves room for longer answers.",
-        "expectedReasoningTokens": 1200
+        "note": "Free model (zero price on https://openrouter.ai/api/v1/models, 2026-10-20; 1,000,000 token context; supports response_format). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM, 50 RPD without credits. OpenRouter publishes no token limit: tpm is a local safety cap. It is a reasoning model: the 9 requests of 2026-10-20 used about 560 reasoning tokens each (ledger), so expectedReasoningTokens leaves room for longer answers. maxOutputTokens is the shared budget for reasoning and answer (OpenRouter: reasoning tokens count against max_tokens); with 8192 two planner calls spent all of it reasoning and returned nothing (ledger 2026-10-20: 8192 reasoning, 0 output), so it is 32768 (the model allows 524288). Reasoning per call has been 2300 to 8200+ tokens.",
+        "expectedReasoningTokens": 5000
       }
     }
   },

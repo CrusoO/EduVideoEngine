@@ -137,7 +137,9 @@ export class LlmClient {
         this.stats.estimatedTokens += estimate;
         limiter.settle(response.usage.inputTokens + response.usage.outputTokens + response.usage.thinkingTokens);
         this.record(spec, spec.kind ?? "call", response.usage, response.status);
-        if (config.mode === "record") fixtures.write({ key, step: spec.step, promptVersion: spec.promptVersion, model, recordedAt: new Date(this.clock.now()).toISOString(), response: { ...response, limitHeaders: undefined } });
+        // An answer that was cut off (the budget ran out, often spent on reasoning) is not a recording: saved, it would be replayed for ever instead of asked for again.
+        if (response.status === "incomplete") this.log(`the answer for ${spec.step} (prompt ${spec.promptVersion}) was cut off after ${response.usage.outputTokens} output and ${response.usage.thinkingTokens} reasoning tokens; it is not recorded. Raise maxOutputTokens for ${config.provider}/${model} in model-profiles.json if this repeats.`);
+        else if (config.mode === "record") fixtures.write({ key, step: spec.step, promptVersion: spec.promptVersion, model, recordedAt: new Date(this.clock.now()).toISOString(), response: { ...response, limitHeaders: undefined } });
         if (response.limitHeaders && Object.keys(response.limitHeaders).length > 0) this.log(`rate-limit headers seen: ${JSON.stringify(response.limitHeaders)}`);
         return response;
       } catch (e) {

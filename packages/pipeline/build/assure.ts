@@ -7,7 +7,7 @@ import type { LessonContext } from "../lesson/context";
 import { gateContext } from "../lesson/gates";
 
 export type AssuranceSource = "validator" | "gate" | "approval" | "timeline" | "layout" | "verifier" | "review";
-export type AssuranceFinding = { source: AssuranceSource; level: "fail" | "warn"; code: string; message: string };
+export type AssuranceFinding = { source: AssuranceSource; level: "fail" | "warn"; code: string; message: string; /** The scene a timeline or layout finding is about. */ sceneId?: string };
 
 export type Assurance = {
   /** The validator, the seven gates, the timeline, the layout checks and the SymPy verifier all accept the lesson. This is "passes every gate". */
@@ -46,7 +46,7 @@ export type AssureInput = {
 export async function assureLesson(input: AssureInput): Promise<Assurance> {
   const { ctx, bundle, tracks } = input;
   const findings: AssuranceFinding[] = [];
-  const add = (source: AssuranceSource, level: "fail" | "warn", code: string, message: string) => findings.push({ source, level, code, message });
+  const add = (source: AssuranceSource, level: "fail" | "warn", code: string, message: string, sceneId?: string) => findings.push({ source, level, code, message, ...(sceneId ? { sceneId } : {}) });
 
   const valid = validateBundle(bundle);
   for (const i of valid.issues) add("validator", "fail", i.path, i.message);
@@ -58,8 +58,8 @@ export async function assureLesson(input: AssureInput): Promise<Assurance> {
   let timeline: Timeline | undefined;
   try {
     timeline = resolve(bundle, tracks);
-    for (const f of assureTimeline(timeline, { kind: "standard" })) add("timeline", f.level, f.code, f.message);
-    for (const f of assureLayout(bundle, timeline)) add("layout", f.level, f.code, `${f.message}`);
+    for (const f of assureTimeline(timeline, { kind: "standard" })) add("timeline", f.level, f.code, f.message, f.sceneId);
+    for (const f of assureLayout(bundle, timeline)) add("layout", f.level, f.code, f.message, f.sceneId);
   } catch (e) {
     add("timeline", "fail", "cannot-resolve", `the lesson cannot be resolved against its audio: ${(e as Error).message}`);
   }
