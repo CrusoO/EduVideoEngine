@@ -3,7 +3,7 @@ import { instantiate, type PedagogyBeatKind } from "@eve/patterns";
 import { SCENE_TAIL_MS, SENTENCE_GAP_MS } from "@eve/resolver";
 import { CLAIM_KINDS_FROM_2_1, LOCALES, seal, type Claim, type ColorName, type Expr, type LessonBundle, type NarrationSentence, type SceneSpec } from "@eve/schema";
 import { fallbackContent } from "../fallback";
-import { composeScene } from "../scene/compose";
+import { composeSceneSync } from "../scene/compose";
 import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
 import { finishScene } from "./scene";
@@ -56,7 +56,7 @@ export function estimateLengthS(sentences: readonly NarrationSentence[], scenes:
  *  - the bundle is sealed (hashes), and judged by the gates and the validators afterwards, as any other lesson is.
  * Throws `AssembleError` when the plan cannot be built at all (a source that is not a record, a pattern that cannot be filled, a title that is too long).
  */
-export async function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: LessonScript, options: AssembleOptions = {}): Promise<AssembleResult> {
+export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: LessonScript, options: AssembleOptions = {}): AssembleResult {
   const built = buildBeats(ctx, plan);
   if (!built.ok) throw new AssembleError(built.errors);
   const transitions = LOCALES[ctx.locale]?.transitions ?? [];
@@ -82,7 +82,7 @@ export async function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: 
     };
     const sceneCtx = { sceneId: b.sceneId, beatId: b.beat.id, sourceIds: b.beat.sourceIds, sentences: mine.sentences.map((s) => ({ id: s.id, text: s.text })), expressions, locale: ctx.locale };
     const problem = Object.entries(b.retrieval.expressions).find(([, e]) => e.op === "eq")?.[0] ?? Object.keys(expressions)[0]!;
-    const outcome = await composeScene(
+    const outcome = composeSceneSync(
       sceneCtx,
       () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),

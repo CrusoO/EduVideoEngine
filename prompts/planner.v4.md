@@ -1,0 +1,26 @@
+# planner.v4
+
+## TASK
+Plan one short maths lesson on the skill in INPUT as a lesson arc: choose the arc, give each slot of the arc one beat with one scene pattern, one title and one learning goal, name the records each beat draws on, and say how each prerequisite skill is handled. (Pass: planner. Prompt version: planner.v4.)
+
+## RULES
+1. Choose one arc from INPUT.arcs. Every arc listed can be filled from these records. Give exactly one beat to each slot of the arc, in the order the arc lists them. Leave out a slot only if its required is false.
+2. Number the beats b1, b2, and so on, in order. The number of beats must be between INPUT.limits.beats.min and INPUT.limits.beats.max.
+3. Give each beat the slotId of its slot and one pattern from INPUT.slots for that slot. Choose the pattern by its needs and by what the beat has to show. Use only patterns that appear under that slot.
+4. A beat's sourceIds must list every record in the needs of its pattern. A beat may also list the concept claims it states (rule 6) and nothing else. Every id must be an id in INPUT.
+5. A beat of the prerequisite slot draws only on the records of one prerequisite skill, the skill named in the options of its pattern. Every other beat draws only on the records of the lesson's skill, in INPUT.records.
+6. Records of kind conceptClaim are the claims of the lesson. A beat of the concept, prerequisite or mistake slot states the concept claims you list in its sourceIds. State every concept claim whose importance is core exactly once. State a concept claim in no more than one beat. A concept claim that another lists in dependsOn must be stated in the same beat or in an earlier one. A claim that names a common mistake and why it is wrong belongs in the mistake slot.
+7. A student learns from pictures and motion as well as words. A pattern with textHeavy false shows a picture. Choose a picture pattern whenever a slot offers one. In a lesson with INPUT.variety.fromBeats beats or more, use at least INPUT.variety.minPictureBeats picture beats, and no more than INPUT.variety.maxTextHeavyRun beats with textHeavy true in a row.
+8. The learningGoal of a beat is one question the student should be able to answer after the beat, in plain words. It has at most INPUT.goalRules.maxWords words, no digits, no symbols and no mathematical notation, and it asks about what the beat's own records say. It is spoken aloud as the first sentence of the beat. Do not copy the text of a record into it.
+9. The title of a beat is a short heading in plain words, at most 60 characters, with no digits.
+10. For each prerequisite in INPUT.prerequisites write one entry in prerequisites with the status recapped, linked or assumed, chosen from its statusOptions. Choose recapped when the arc has a prerequisite slot, and give that slot a beat that draws on that prerequisite's records. If the skill has several prerequisites, recap the one that matters most and choose linked for the others. Choose assumed only when it is in statusOptions.
+11. Order and aim: a beat prepares the next one. Do not add a beat that adds nothing, and do not repeat the same idea in two beats.
+
+## ERROR OBJECTS
+- when a record, a pattern or a skill the task needs is not in INPUT (an id that is not in ALLOWED VALUES): {"error":"unknown_id","id":"<the id or description that was needed>"}
+- when INPUT.arcs is empty, or the records cannot support the lesson: {"error":"insufficient_content","missing":["<what is missing, in plain words>"]}
+- when INPUT.locale is not en: {"error":"unsupported_locale"}
+
+## EXAMPLE
+input: {"skillId":"S.EX","locale":"en","level":"class-10","limits":{"beats":{"min":2,"max":3}},"variety":{"fromBeats":5,"minPictureBeats":2,"maxTextHeavyRun":2},"goalRules":{"maxWords":18,"digits":false,"notation":false},"arcs":[{"id":"arc.one","slots":[{"slotId":"slot.show","beatKind":"concept","required":true},{"slotId":"slot.work","beatKind":"worked","required":true}]}],"slots":{"slot.show":[{"pattern":"p.card","textHeavy":true,"pause":"none","needs":["r.claim"]}],"slot.work":[{"pattern":"p.steps","textHeavy":false,"pause":"optional","needs":["r.solution"]}]},"records":[{"id":"r.claim","kind":"conceptClaim","text":"A fact.","claimMode":"grounded","importance":"core"},{"id":"r.solution","kind":"solutionSteps","text":"Solve it."}],"prerequisites":[]}
+output: {"arcId":"arc.one","prerequisites":[],"beats":[{"id":"b1","slotId":"slot.show","pattern":"p.card","title":"The idea","learningGoal":"What is the idea we use here?","sourceIds":["r.claim"]},{"id":"b2","slotId":"slot.work","pattern":"p.steps","title":"Work an example","learningGoal":"How does the idea help us solve it?","sourceIds":["r.solution"]}]}

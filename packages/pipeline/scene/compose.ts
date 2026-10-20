@@ -47,6 +47,36 @@ export async function composeScene(
     errors.push(problems);
     previous = candidate;
   }
+  return templateOutcome(ctx, fallback, errors);
+}
+
+/**
+ * `composeScene` for a composer that is plain code (no model, no await): the same two attempts, the same validator and the same template fall-back, so the
+ * lesson assembler can run to completion in one synchronous call, which is what the planner's repair check needs. A second attempt of a deterministic
+ * composer is the same call again; it is kept so that the two functions answer alike and a composer that changes its answer by attempt still works.
+ */
+export function composeSceneSync(ctx: SceneContext, compose: (a: Attempt) => unknown, fallback: FallbackContent): SceneOutcome {
+  const errors: string[][] = [];
+  let previous: unknown;
+  for (const attempt of [1, 2] as const) {
+    let candidate: unknown;
+    let problems: string[];
+    try {
+      candidate = compose({ attempt, errors: errors.at(-1) ?? [], previous });
+      problems = validateScene(candidate, ctx);
+    } catch (e) {
+      if ((e as { fatal?: boolean }).fatal === true) throw e;
+      problems = [`the composer failed: ${(e as Error).message ?? String(e)}`];
+    }
+    if (problems.length === 0) return { scene: candidate as SceneSpec, usedFallback: false, attempts: attempt, errors };
+    errors.push(problems);
+    previous = candidate;
+  }
+  return templateOutcome(ctx, fallback, errors);
+}
+
+/** The template scene for a beat that two attempts could not compose, checked by the same validator (a template that fails it is a bug in this package). */
+function templateOutcome(ctx: SceneContext, fallback: FallbackContent, errors: string[][]): SceneOutcome {
   const scene = templateScene(ctx, { ...fallback, reason: `${fallback.reason} (${errors.at(-1)!.slice(0, 3).join("; ")})` });
   const own = validateScene(scene, ctx);
   if (own.length > 0) throw new Error(`the template scene itself is invalid, which is a bug: ${own.join("; ")}`);

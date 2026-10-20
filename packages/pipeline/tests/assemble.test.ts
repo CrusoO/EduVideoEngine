@@ -9,8 +9,8 @@ import { REFERENCE_PLAN, REFERENCE_SCRIPT, context } from "./fixtures";
 
 const ctx = context();
 let result: AssembleResult;
-beforeAll(async () => {
-  result = await assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT);
+beforeAll(() => {
+  result = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT);
 });
 
 describe("the reference lesson, assembled from its plan and its sentences", () => {
@@ -116,7 +116,8 @@ describe("a plan that cannot be built is refused with the reasons", () => {
     const plan = withBeat("b3", { sourceIds: ["quad.sum.graph", "quad.sum.steps", "quad.sum.claim.vieta"] });
     expect(errorsOf(plan)).toEqual([expect.stringMatching(/concept claim quad.sum.claim.vieta depends on quad.sum.claim.root, which no beat of the plan states/)]);
   });
-  it("assemble throws the same reasons", async () => {
-    await expect(assembleLesson(ctx, withBeat("b3", { pattern: "freestyle" }), REFERENCE_SCRIPT)).rejects.toBeInstanceOf(AssembleError);
+  it("assemble throws the same reasons", () => {
+    expect(() => assembleLesson(ctx, withBeat("b3", { pattern: "freestyle" }), REFERENCE_SCRIPT)).toThrow(AssembleError);
+    expect(() => assembleLesson(ctx, withBeat("b3", { pattern: "freestyle" }), REFERENCE_SCRIPT)).toThrow(/beat b3: pattern freestyle does not exist/);
   });
 });

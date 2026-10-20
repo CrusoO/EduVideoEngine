@@ -3,6 +3,8 @@ export * from "./scene/compose";
 export * from "./fallback";
 export * from "./planner";
 export * from "./lesson";
+export * from "./arcplan";
+export * from "./script";
 export { referencePlan } from "./planner/reference";
 export { loadPassPrompt, loadPrompt } from "./planner/prompt";
 export * from "./envelope";

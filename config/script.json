@@ -1,0 +1,6 @@
+{
+  "_comment": "Style limits of the scriptwriter pass (ADR 0061). Starting values, tuned with the listening checks of Phase 3. Change them here; code never writes these numbers.",
+  "sentenceMaxWords": 24,
+  "promptMaxChars": 120,
+  "coreWordsMargin": 1.25
+}

@@ -3,7 +3,7 @@ import { resolve as resolvePath } from "node:path";
 import { loadStore, retrieve } from "@eve/content";
 import { instantiate } from "@eve/patterns";
 import { type SceneSpec } from "@eve/schema";
-import { PipelineFatal, composeScene, fallbackContent, templateScene, validateScene, type Attempt, type SceneContext } from "../index";
+import { PipelineFatal, composeScene, composeSceneSync, fallbackContent, templateScene, validateScene, type Attempt, type SceneContext } from "../index";
 
 const { records } = loadStore(resolvePath(__dirname, "..", "..", "..", "content"));
 const r = retrieve(records, "MATH.ALG.QUAD.SUM_OF_ROOTS", "en-IN");
@@ -98,5 +98,38 @@ describe("one scene: ask, repair once, then the template", () => {
     let calls = 0;
     await composeScene(ctx, () => (calls++, good()), fb);
     expect(calls).toBe(1);
+  });
+});
+
+describe("the same, for a composer that is plain code (composeSceneSync)", () => {
+  it("a good first answer is used as it is, and the composer is called once", () => {
+    let calls = 0;
+    const out = composeSceneSync(ctx, () => (calls++, good()), fb);
+    expect(out).toMatchObject({ usedFallback: false, attempts: 1, errors: [] });
+    expect(calls).toBe(1);
+  });
+
+  it("a bad first answer is repaired once, with the validator's messages", () => {
+    const seen: Attempt[] = [];
+    const out = composeSceneSync(ctx, (a) => (seen.push(a), a.attempt === 1 ? { ...good(), beatId: "wrong" } : good()), fb);
+    expect(out).toMatchObject({ usedFallback: false, attempts: 2 });
+    expect(seen[1]!.errors.join()).toContain("beatId: must be b1");
+    expect(seen[1]!.previous).toBeDefined();
+  });
+
+  it("an answer that is broken twice, or a composer that throws, gives the marked template scene", () => {
+    for (const compose of [() => null as unknown, () => { throw new Error("boom"); }]) {
+      const out = composeSceneSync(ctx, compose, fb);
+      expect(out.usedFallback).toBe(true);
+      expect(out.attempts).toBe(2);
+      expect(out.errors).toHaveLength(2);
+      expect(out.scene.review?.status).toBe("needs-human-review");
+      expect(validateScene(out.scene, ctx)).toEqual([]);
+    }
+    expect(composeSceneSync(ctx, () => { throw new Error("boom"); }, fb).errors[0]![0]).toContain("the composer failed: boom");
+  });
+
+  it("an error that says it is fatal is not swallowed", () => {
+    expect(() => composeSceneSync(ctx, () => { throw new PipelineFatal("daily cap reached"); }, fb)).toThrow("daily cap reached");
   });
 });

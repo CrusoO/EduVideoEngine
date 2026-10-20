@@ -32,8 +32,12 @@ export type EnvelopeParts = {
  * ALLOWED VALUES, generated from the real registries so it cannot drift from the code: the components that are built, the pattern ids, the colour names,
  * the cue actions and the beat kinds, plus the ids of this request's data (records, expressions, sentences, claims) when given.
  */
-export function allowedValues(ids: { records?: readonly string[]; expressions?: readonly string[]; sentences?: readonly string[]; claims?: readonly string[] } = {}): Record<string, string[]> {
-  return {
+export function allowedValues(
+  ids: { records?: readonly string[]; expressions?: readonly string[]; sentences?: readonly string[]; claims?: readonly string[] } = {},
+  /** Lists a newer pass adds or replaces (planner.v4 gives the nine patterns, the arcs and the slots). Empty for the passes whose recorded requests must not change. */
+  extra: Readonly<Record<string, readonly string[]>> = {},
+): Record<string, string[]> {
+  const out: Record<string, string[]> = {
     components: [...IMPLEMENTED],
     patterns: [...PATTERN_IDS],
     colours: [...COLOR_NAMES],
@@ -44,6 +48,8 @@ export function allowedValues(ids: { records?: readonly string[]; expressions?: 
     ...(ids.sentences ? { sentenceIds: [...ids.sentences] } : {}),
     ...(ids.claims ? { claimIds: [...ids.claims] } : {}),
   };
+  for (const [name, values] of Object.entries(extra)) out[name] = [...values];
+  return out;
 }
 
 const json = (v: unknown) => JSON.stringify(v, null, 2);

@@ -1,0 +1,4 @@
+{
+  "held": ["misconception_first"],
+  "note": "Arcs the planner is not offered. misconception_first waits until a picture pattern exists for the mistake and hook beats (docs/ENGINE_PLAN.md section 4, open question 3). Remove an id to offer the arc."
+}
