@@ -129,7 +129,7 @@
       },
       "minimax/minimax-m3.1-flash:free": {
         "jsonMode": true,
-        "reasoning": false,
+        "reasoning": true,
         "maxOutputTokens": 8192,
         "limits": {
           "rpm": 20,
@@ -137,7 +137,8 @@
           "rpd": 50
         },
         "verified": true,
-        "note": "Free model (zero price on https://openrouter.ai/api/v1/models, 2026-10-20; 1,000,000 token context; supports response_format). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM, 50 RPD without credits. OpenRouter publishes no token limit: tpm is a local safety cap."
+        "note": "Free model (zero price on https://openrouter.ai/api/v1/models, 2026-10-20; 1,000,000 token context; supports response_format). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM, 50 RPD without credits. OpenRouter publishes no token limit: tpm is a local safety cap. It is a reasoning model: the 9 requests of 2026-10-20 used about 560 reasoning tokens each (ledger), so expectedReasoningTokens leaves room for longer answers.",
+        "expectedReasoningTokens": 1200
       }
     }
   },

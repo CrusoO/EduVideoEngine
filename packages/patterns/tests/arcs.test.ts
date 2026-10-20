@@ -73,13 +73,13 @@ describe("the arcs", () => {
   });
 });
 
-describe("the library of eight patterns", () => {
-  it("has the six the planner knows, in their old order, plus recap card and check question", () => {
-    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question"]);
-    expect(LIBRARY).toHaveLength(8);
-    expect(usablePatterns(r)).toEqual(PATTERN_IDS); // the list the planner chooses from does not grow
+describe("the library of nine patterns", () => {
+  it("has the six the planner knows, in their old order, plus recap card, check question and statement card", () => {
+    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question", "statement-card"]);
+    expect(LIBRARY).toHaveLength(9);
+    expect(usablePatterns(r)).toEqual(PATTERN_IDS); // the list planner.v2 and v3 choose from does not grow
   });
-  it("gives all eight a text-heavy flag, derived from the components", () => {
+  it("gives all nine a text-heavy flag, derived from the components", () => {
     const flags = Object.fromEntries(libraryCatalogue().map((c) => [c.id, c.textHeavy]));
     expect(flags).toEqual({
       "colour-bound-terms": true,
@@ -90,6 +90,7 @@ describe("the library of eight patterns", () => {
       "common-mistake-contrast": true,
       "recap-card": true,
       "check-question": true,
+      "statement-card": true,
     });
     for (const p of LIBRARY) expect(p.beatKinds.length, p.id).toBeGreaterThan(0);
     expect(LIBRARY.filter((p) => !isTextHeavy(p)).map((p) => p.id)).toEqual(["hops-on-number-line", "plot-and-mark-roots"]);
@@ -129,6 +130,32 @@ describe("check question", () => {
     const none = retrieve(records.filter((x) => x.kind !== "practiceQuestion"), SKILL, "en-IN");
     expect(() => instantiate("check-question", none, args)).toThrow(PatternError);
     expect(() => instantiate("check-question", r, { ...args, text: { title: "t", altText: "a" } })).toThrow(/prompt is empty/);
+  });
+});
+
+describe("statement card (ADR 0062)", () => {
+  const args = { sceneId: "s", beatId: "b5", sentenceIds: ["b5.1", "b5.2"], text: { title: "A common mistake", note: "Add the roots, not the numbers", altText: "A common mistake, and the right way in a short line." } };
+  it("says a grounded fact in words: a title and a note, no equation, and it adds no claim of its own", () => {
+    const inst = instantiate("statement-card", r, args);
+    expect(inst.recordIds).toEqual(["quad.sum.claim.mistake"]);
+    expect(inst.scene.objects.map((o) => [o.id, o.component, o.exprRef])).toEqual([["title", "text", undefined], ["note", "text", undefined]]);
+    expect(inst.scene.cues.map((c) => [c.targetObject, c.anchor.sentenceId])).toEqual([["title", "b5.1"], ["note", "b5.2"]]);
+    expect(inst.claims).toEqual([]);
+    expect(isTextHeavy(LIBRARY.find((p) => p.id === "statement-card")!)).toBe(true);
+  });
+  it("fills the mistake, prerequisite and concept slots, and nothing else", () => {
+    const kinds = LIBRARY.find((p) => p.id === "statement-card")!.beatKinds;
+    expect([...kinds]).toEqual(["prerequisite", "concept", "mistake"]);
+    expect(patternsForSlot("common_mistake_contrast").all).toEqual(["common-mistake-contrast", "statement-card"]);
+  });
+  it("cannot be built without a grounded claim, a note, a title or two sentences", () => {
+    const none = retrieve(records.filter((x) => x.claimMode !== "grounded"), SKILL, "en-IN");
+    expect(() => instantiate("statement-card", none, args)).toThrow(/missing a conceptClaim record with a grounded claim/);
+    expect(() => instantiate("statement-card", r, { ...args, text: { ...args.text, note: "" } })).toThrow(/note is empty/);
+    expect(() => instantiate("statement-card", r, { ...args, text: { ...args.text, note: "x".repeat(71) } })).toThrow(/note is 71 characters/);
+    expect(() => instantiate("statement-card", r, { ...args, text: { ...args.text, note: "one two three four five six seven eight nine ten eleven" } })).toThrow(/note has 11 words/);
+    expect(() => instantiate("statement-card", r, { ...args, text: { note: "a", altText: "a" } })).toThrow(/title is empty/);
+    expect(() => instantiate("statement-card", r, { ...args, sentenceIds: ["only"] })).toThrow(/at least 2 sentence/);
   });
 });
 

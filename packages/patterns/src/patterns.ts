@@ -398,6 +398,43 @@ const checkQuestion: Pattern<CheckContent> = {
   },
 };
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 9. statement card (ADR 0062): one grounded fact said in words on a card, with no equation for a gate to tie to a claim
+type StatementContent = { rec: ContentRecord };
+const NOTE: Slot = { name: "note", source: "writer", what: "the fact in a few words, shown on the card (no digits, no maths)", maxChars: 70, maxWords: WORD_BUDGET.label };
+const statementCard: Pattern<StatementContent> = {
+  id: "statement-card",
+  beatKinds: ["prerequisite", "concept", "mistake"],
+  kinds: ["explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => [c.rec.id],
+  useWhen: "Say one stated fact in words on a card: a title and a short line, with no equation. For a definition, or for a common mistake and why it fails, where the claim is prose that a person approves.",
+  components: ["text"],
+  slots: [{ name: "claim", source: "content", what: "a conceptClaim record whose claim is grounded prose" }, TITLE, NOTE, ALT],
+  minSentences: 2,
+  // the note may take two lines of the label size
+  heightCostPx: heightCostPx(["text (title, one line)", "text (label, one line)", "text (label, one line)"]),
+  fill(r): FillResult<StatementContent> {
+    const rec = r.byKind.conceptClaim.find((c) => c.claimMode === "grounded");
+    return rec ? { ok: true, content: { rec } } : { ok: false, missing: ["a conceptClaim record with a grounded claim"] };
+  },
+  build(c, a) {
+    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 1, "note", "reveal", 1500)];
+    const s = scene(
+      a,
+      [c.rec.id],
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "note", component: "text", props: { text: a.text.note!, role: "label" } },
+      ],
+      [...column(["title", "note"]), { rule: "center", item: "title" }, { rule: "center", item: "note" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: [c.rec.id] };
+  },
+};
+
 /**
  * The six patterns planner.v2 and planner.v3 know. Their requests and the recorded reference replies are keyed to exactly this list (ADR 0039), so it does not
  * grow: the two CO-2 patterns join the planner with the next planner version, through LIBRARY.
@@ -406,8 +443,8 @@ export const PATTERNS = [colourBoundTerms, predictThenReveal, hopsOnNumberLine, 
 export type PatternId = (typeof PATTERNS)[number]["id"];
 export const PATTERN_IDS: readonly PatternId[] = PATTERNS.map((p) => p.id);
 
-/** The whole library: the six above and the two CO-2 patterns (recap card, check question). Eight, every one with a text-heavy flag (ADR 0038). */
-export const LIBRARY = [...PATTERNS, recapCard, checkQuestion] as const;
+/** The whole library: the six above, the two CO-2 patterns (recap card, check question; ADR 0038) and the statement card (ADR 0062). Nine, every one with a text-heavy flag. */
+export const LIBRARY = [...PATTERNS, recapCard, checkQuestion, statementCard] as const;
 export type LibraryPatternId = (typeof LIBRARY)[number]["id"];
 export const LIBRARY_IDS: readonly LibraryPatternId[] = LIBRARY.map((p) => p.id);
 

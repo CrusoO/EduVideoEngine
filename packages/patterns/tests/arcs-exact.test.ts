@@ -20,10 +20,12 @@ describe("patterns for each slot", () => {
         "common_mistake_contrast": {
           "all": [
             "common-mistake-contrast",
+            "statement-card",
           ],
           "picture": [],
           "textHeavy": [
             "common-mistake-contrast",
+            "statement-card",
           ],
         },
         "concept": {
@@ -31,6 +33,7 @@ describe("patterns for each slot", () => {
             "colour-bound-terms",
             "plot-and-mark-roots",
             "recap-card",
+            "statement-card",
           ],
           "picture": [
             "plot-and-mark-roots",
@@ -38,6 +41,7 @@ describe("patterns for each slot", () => {
           "textHeavy": [
             "colour-bound-terms",
             "recap-card",
+            "statement-card",
           ],
         },
         "hook": {
@@ -55,11 +59,13 @@ describe("patterns for each slot", () => {
           "all": [
             "colour-bound-terms",
             "recap-card",
+            "statement-card",
           ],
           "picture": [],
           "textHeavy": [
             "colour-bound-terms",
             "recap-card",
+            "statement-card",
           ],
         },
         "second_worked_example": {
@@ -77,10 +83,12 @@ describe("patterns for each slot", () => {
         "why_it_fails": {
           "all": [
             "common-mistake-contrast",
+            "statement-card",
           ],
           "picture": [],
           "textHeavy": [
             "common-mistake-contrast",
+            "statement-card",
           ],
         },
         "worked_example": {
