@@ -8,10 +8,14 @@
     "@eve/adapters": "workspace:*",
     "@eve/components": "workspace:*",
     "@eve/content": "workspace:*",
+    "@eve/gates": "workspace:*",
     "@eve/layout": "workspace:*",
     "@eve/patterns": "workspace:*",
+    "@eve/resolver": "workspace:*",
     "@eve/safety": "workspace:*",
     "@eve/schema": "workspace:*",
+    "@eve/verify": "workspace:*",
+    "@eve/voice": "workspace:*",
     "zod": "^3.24.1"
   }
 }

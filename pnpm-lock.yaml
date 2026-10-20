@@ -323,18 +323,30 @@ importers:
       '@eve/content':
         specifier: workspace:*
         version: link:../content
+      '@eve/gates':
+        specifier: workspace:*
+        version: link:../gates
       '@eve/layout':
         specifier: workspace:*
         version: link:../layout
       '@eve/patterns':
         specifier: workspace:*
         version: link:../patterns
+      '@eve/resolver':
+        specifier: workspace:*
+        version: link:../resolver
       '@eve/safety':
         specifier: workspace:*
         version: link:../safety
       '@eve/schema':
         specifier: workspace:*
         version: link:../schema
+      '@eve/verify':
+        specifier: workspace:*
+        version: link:../verify
+      '@eve/voice':
+        specifier: workspace:*
+        version: link:../voice
       zod:
         specifier: ^3.24.1
         version: 3.25.76
