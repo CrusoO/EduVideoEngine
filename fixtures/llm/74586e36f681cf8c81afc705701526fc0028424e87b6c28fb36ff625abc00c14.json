@@ -1,0 +1,17 @@
+{
+  "key": "74586e36f681cf8c81afc705701526fc0028424e87b6c28fb36ff625abc00c14",
+  "step": "probe-3",
+  "promptVersion": "probe.3.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:28:51.027Z",
+  "response": {
+    "text": "{\"expr_id\": \"e.quad\"}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1317,
+      "outputTokens": 12,
+      "thinkingTokens": 526
+    }
+  }
+}

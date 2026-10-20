@@ -1,0 +1,17 @@
+{
+  "key": "6da1a497496f99de35be6e34b5b2d9ecd1d9ad3439d16ee2ef9df177efc3e492",
+  "step": "probe-8",
+  "promptVersion": "probe.8.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:33:54.609Z",
+  "response": {
+    "text": "{\"sentence\":\"Consider the quadratic equation {expr:quad.eq}.\"}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1312,
+      "outputTokens": 16,
+      "thinkingTokens": 0
+    }
+  }
+}

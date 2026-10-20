@@ -1,0 +1,17 @@
+{
+  "key": "7e02f64e525cdae1355226869b9a2a3cc7a8b4374c6ce4ece1b1f3b39383b275",
+  "step": "probe-5",
+  "promptVersion": "probe.5.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:30:30.052Z",
+  "response": {
+    "text": "{\"id\":\"r.7\",\"label\":\"Sum of roots\",\"count\":4}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1414,
+      "outputTokens": 17,
+      "thinkingTokens": 0
+    }
+  }
+}

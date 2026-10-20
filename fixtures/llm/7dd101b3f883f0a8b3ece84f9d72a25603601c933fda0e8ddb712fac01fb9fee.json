@@ -1,0 +1,17 @@
+{
+  "key": "7dd101b3f883f0a8b3ece84f9d72a25603601c933fda0e8ddb712fac01fb9fee",
+  "step": "probe-2",
+  "promptVersion": "probe.2.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:26:28.738Z",
+  "response": {
+    "text": "{\"record_id\":\"p.1\",\"sentence\":\"The sum of the roots of a quadratic is minus b over a.\"}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1373,
+      "outputTokens": 26,
+      "thinkingTokens": 0
+    }
+  }
+}

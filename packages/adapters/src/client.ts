@@ -4,6 +4,7 @@ import type { LlmConfig } from "./env";
 import { FixtureStore, fixtureKey, type Fixture } from "./fixtures";
 import { GeminiAdapter } from "./gemini";
 import { GroqAdapter } from "./groq";
+import { OpenRouterAdapter } from "./openrouter";
 import { Ledger, dayIn, type LedgerEntry } from "./ledger";
 import { RateLimiter, estimateRequest, realClock, type Clock } from "./limiter";
 import { resetTimeZone } from "./profiles";
@@ -186,7 +187,8 @@ export class LlmClient {
     const { provider } = this.o.config;
     if (provider === "gemini") return new GeminiAdapter(this.o.config);
     if (provider === "groq") return new GroqAdapter(this.o.config);
-    throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Built: gemini, groq; a further provider is a new adapter file (ADR 0023).`);
+    if (provider === "openrouter") return new OpenRouterAdapter(this.o.config);
+    throw new LlmRefused(`LLM_PROVIDER ${provider} has no adapter. Built: gemini, groq, openrouter; a further provider is a new adapter file (ADR 0023).`);
   }
 
   private today(): string {

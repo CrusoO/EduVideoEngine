@@ -1,0 +1,17 @@
+{
+  "key": "7f4d873751d6d8b6201ba59618f5971e90f2f8c89c0ae7e1852acd64e00aa6a6",
+  "step": "planner",
+  "promptVersion": "planner.v3",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:42:41.581Z",
+  "response": {
+    "text": "{\n  \"template\": \"problem-first\"\n}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 3648,
+      "outputTokens": 13,
+      "thinkingTokens": 0
+    }
+  }
+}

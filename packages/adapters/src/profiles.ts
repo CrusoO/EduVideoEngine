@@ -25,13 +25,13 @@ export const ModelProfile = z
 export type ModelProfile = z.infer<typeof ModelProfile>;
 
 const ProviderEntry = z.object({ _note: z.string().optional(), defaultModel: z.string().min(1), resetTimeZone: z.string().min(1), models: z.record(ModelProfile) }).strict();
-export const ProfileFile = z.object({ _note: z.string().optional(), gemini: ProviderEntry, groq: ProviderEntry, reference: ProviderEntry }).strict();
+export const ProfileFile = z.object({ _note: z.string().optional(), gemini: ProviderEntry, groq: ProviderEntry, openrouter: ProviderEntry, reference: ProviderEntry }).strict();
 export type ProfileFile = z.infer<typeof ProfileFile>;
 
 export const PROFILES: ProfileFile = ProfileFile.parse(raw);
 
 /** The providers that can be selected with LLM_PROVIDER. `reference` is read-only recordings and cannot be selected. */
-export const PROVIDERS = ["gemini", "groq"] as const;
+export const PROVIDERS = ["gemini", "groq", "openrouter"] as const;
 export type ProviderName = (typeof PROVIDERS)[number];
 
 export const profileFor = (provider: string, model: string, file: ProfileFile = PROFILES): ModelProfile | undefined => (file as unknown as Record<string, { models: Record<string, ModelProfile> }>)[provider]?.models[model];

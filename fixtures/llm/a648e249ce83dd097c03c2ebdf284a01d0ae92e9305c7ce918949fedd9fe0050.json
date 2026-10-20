@@ -1,0 +1,17 @@
+{
+  "key": "a648e249ce83dd097c03c2ebdf284a01d0ae92e9305c7ce918949fedd9fe0050",
+  "step": "probe-6",
+  "promptVersion": "probe.6.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:31:28.253Z",
+  "response": {
+    "text": "{\"id\":\"r.2\",\"label\":\"Roots\"}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1314,
+      "outputTokens": 11,
+      "thinkingTokens": 0
+    }
+  }
+}

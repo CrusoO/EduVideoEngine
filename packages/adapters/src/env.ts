@@ -37,10 +37,11 @@ const EnvSchema = z.object({
   LLM_TEMPERATURE: z.preprocess(blankToUndefined, z.coerce.number().min(0).max(1).default(0.2)),
   GEMINI_API_KEY: optionalText,
   GROQ_API_KEY: optionalText,
+  OPENROUTER_API_KEY: optionalText,
   CI: optionalText,
 });
 
-const KEY_VAR = { gemini: "GEMINI_API_KEY", groq: "GROQ_API_KEY" } as const;
+const KEY_VAR = { gemini: "GEMINI_API_KEY", groq: "GROQ_API_KEY", openrouter: "OPENROUTER_API_KEY" } as const;
 
 export interface LlmConfig {
   provider: string;

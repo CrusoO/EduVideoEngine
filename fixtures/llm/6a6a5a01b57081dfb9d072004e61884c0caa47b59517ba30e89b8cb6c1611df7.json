@@ -1,0 +1,17 @@
+{
+  "key": "6a6a5a01b57081dfb9d072004e61884c0caa47b59517ba30e89b8cb6c1611df7",
+  "step": "probe-4",
+  "promptVersion": "probe.4.v1",
+  "model": "gemini-3.8-flash",
+  "recordedAt": "2026-10-20T08:30:09.014Z",
+  "response": {
+    "text": "{\n  \"record_id\": \"p.1\"\n}",
+    "model": "gemini-3.8-flash",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1283,
+      "outputTokens": 15,
+      "thinkingTokens": 65
+    }
+  }
+}

@@ -36,11 +36,12 @@
         "thinkingBudget": null,
         "expectedReasoningTokens": 1500,
         "limits": {
-          "rpm": null,
-          "tpm": null,
-          "rpd": null
+          "rpm": 10,
+          "tpm": 250000,
+          "rpd": 500
         },
-        "verified": false
+        "verified": false,
+        "note": "Limits estimated from Google AI Studio free tier; verify from the rate-limits page for the plan in use."
       }
     }
   },
@@ -93,6 +94,47 @@
           "tpd": 200000
         },
         "verified": false
+      }
+    }
+  },
+  "openrouter": {
+    "defaultModel": "anthropic/claude-3.5-haiku",
+    "resetTimeZone": "UTC",
+    "models": {
+      "anthropic/claude-3.5-haiku": {
+        "jsonMode": true,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": 20,
+          "tpm": 200000,
+          "rpd": 200
+        },
+        "verified": false,
+        "note": "OpenRouter free-tier estimate: 20 RPM, 200 RPD. Verify from https://openrouter.ai/settings/limits after first call. claude-3.5-haiku chosen for strict system-prompt compliance."
+      },
+      "anthropic/claude-3-haiku": {
+        "jsonMode": true,
+        "reasoning": false,
+        "maxOutputTokens": 4096,
+        "limits": {
+          "rpm": 20,
+          "tpm": 200000,
+          "rpd": 200
+        },
+        "verified": false
+      },
+      "meta-llama/llama-3.3-70b-instruct": {
+        "jsonMode": true,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": 20,
+          "tpm": 200000,
+          "rpd": 200
+        },
+        "verified": false,
+        "note": "Free on OpenRouter (:free variant). Fallback if Haiku costs are a concern."
       }
     }
   },
