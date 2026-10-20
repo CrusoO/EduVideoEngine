@@ -1,0 +1,17 @@
+{
+  "key": "a936355af50daed8143950aece26e4cb0daa9ce2881555a29cacb6178313f86a",
+  "step": "probe-1",
+  "promptVersion": "probe.1.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:25.730Z",
+  "response": {
+    "text": "{\"error\":\"insufficient_content\",\"missing\":[\"a record of kind solutionSteps\"]}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1418,
+      "outputTokens": 17,
+      "thinkingTokens": 87
+    }
+  }
+}

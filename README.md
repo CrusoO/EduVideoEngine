@@ -34,7 +34,7 @@ Copy `.env.example` to `.env` (git ignores it) and fill in what you use. Six var
 
 | Variable | Meaning |
 |---|---|
-| `LLM_PROVIDER` | `gemini` (main) or `groq` (backup) |
+| `LLM_PROVIDER` | `gemini` (main), `groq` (backup) or `openrouter` (free models; the default model is `minimax/minimax-m3.1-flash:free`) |
 | `LLM_MODEL` | blank means the provider's default in `packages/adapters/model-profiles.json` |
 | `LLM_MODE` | `replay` (default: recorded answers only, no key, no network), `record` (call once and save) or `live` |
 | `LLM_TEMPERATURE` | 0 to 1, default 0.2 |

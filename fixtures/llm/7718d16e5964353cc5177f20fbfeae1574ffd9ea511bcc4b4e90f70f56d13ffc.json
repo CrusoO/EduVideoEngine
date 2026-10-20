@@ -1,0 +1,17 @@
+{
+  "key": "7718d16e5964353cc5177f20fbfeae1574ffd9ea511bcc4b4e90f70f56d13ffc",
+  "step": "planner",
+  "promptVersion": "planner.v3",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:10:41.061Z",
+  "response": {
+    "text": "{\"template\":\"problem-first\",\"beats\":[{\"id\":\"b1\",\"kind\":\"predict\",\"title\":\"Predict the sum of the roots\",\"pattern\":\"predict-then-reveal\",\"durationS\":60,\"pause\":true,\"animate\":true,\"sourceIds\":[\"quad.sum.problem\",\"quad.sum.steps\"]},{\"id\":\"b2\",\"kind\":\"explain\",\"title\":\"Show the roots on the curve\",\"pattern\":\"plot-and-mark-roots\",\"durationS\":75,\"pause\":false,\"animate\":true,\"sourceIds\":[\"quad.sum.graph\",\"quad.sum.steps\"]},{\"id\":\"b3\",\"kind\":\"worked\",\"title\":\"Add the roots with hops\",\"pattern\":\"hops-on-number-line\",\"durationS\":75,\"pause\":true,\"animate\":true,\"sourceIds\":[\"quad.sum.steps\"]},{\"id\":\"b4\",\"kind\":\"check\",\"title\":\"Check the common mistake\",\"pattern\":\"common-mistake-contrast\",\"durationS\":60,\"pause\":false,\"animate\":true,\"sourceIds\":[\"quad.sum.steps\",\"quad.sum.misconception\"]}]}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 3453,
+      "outputTokens": 216,
+      "thinkingTokens": 4054
+    }
+  }
+}

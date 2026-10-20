@@ -98,7 +98,7 @@
     }
   },
   "openrouter": {
-    "defaultModel": "google/gemma-4-31b-it:free",
+    "defaultModel": "minimax/minimax-m3.1-flash:free",
     "resetTimeZone": "UTC",
     "models": {
       "google/gemma-4-31b-it:free": {
@@ -126,9 +126,22 @@
         },
         "verified": true,
         "note": "Fallback if Gemma fails the probes. Same free-model limits and the same local tpm cap as above."
+      },
+      "minimax/minimax-m3.1-flash:free": {
+        "jsonMode": true,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": 20,
+          "tpm": 200000,
+          "rpd": 50
+        },
+        "verified": true,
+        "note": "Free model (zero price on https://openrouter.ai/api/v1/models, 2026-10-20; 1,000,000 token context; supports response_format). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM, 50 RPD without credits. OpenRouter publishes no token limit: tpm is a local safety cap."
       }
     }
-  },  "reference": {
+  },
+  "reference": {
     "_note": "Read-only. The recordings made on Amazon Bedrock (Claude Sonnet 4.6) while a paid exception was allowed, kept as the reference the free models are compared with. There is no adapter for it and no way to select it; tests replay its fixtures with no AWS packages installed.",
     "defaultModel": "eu.anthropic.claude-sonnet-4-6",
     "resetTimeZone": "UTC",

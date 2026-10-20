@@ -1,0 +1,17 @@
+{
+  "key": "03a35776fa96bc7762a62d08a25767df0c17264e575c26e0b8a48fa73530a3de",
+  "step": "probe-3",
+  "promptVersion": "probe.3.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:34.908Z",
+  "response": {
+    "text": "{\"error\":\"unknown_id\",\"id\":\"a cubic equation\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1410,
+      "outputTokens": 12,
+      "thinkingTokens": 294
+    }
+  }
+}

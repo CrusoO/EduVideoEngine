@@ -1,0 +1,17 @@
+{
+  "key": "4f25b548f6b06fa350c329286b05de556663fd8898d9e786ada7778daa8efa49",
+  "step": "probe-4",
+  "promptVersion": "probe.4.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:35.894Z",
+  "response": {
+    "text": "{\"error\":\"unsupported_locale\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1381,
+      "outputTokens": 9,
+      "thinkingTokens": 0
+    }
+  }
+}

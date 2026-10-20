@@ -1,0 +1,17 @@
+{
+  "key": "02207d1440817639d401d259724c21f83d017f694e34b216079fcf1824f24e2b",
+  "step": "probe-5",
+  "promptVersion": "probe.5.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:41.371Z",
+  "response": {
+    "text": "{\"id\":\"r.7\",\"label\":\"Sum of Roots\",\"count\":4}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1497,
+      "outputTokens": 17,
+      "thinkingTokens": 88
+    }
+  }
+}

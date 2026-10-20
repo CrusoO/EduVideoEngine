@@ -1,0 +1,17 @@
+{
+  "key": "5de1441b356e62d3d568808e70a0d1089ee8eaf1f2b70c963d72a52ce81c6451",
+  "step": "probe-2",
+  "promptVersion": "probe.2.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:31.804Z",
+  "response": {
+    "text": "{\"record_id\":\"p.1\",\"sentence\":\"For a quadratic, the roots add up to negative b divided by a.\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1470,
+      "outputTokens": 26,
+      "thinkingTokens": 404
+    }
+  }
+}

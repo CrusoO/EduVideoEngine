@@ -1,0 +1,17 @@
+{
+  "key": "84d9d8ef624d6cab2bb6eb4f135d162be1aa074c0f82ef17c740828c4abd327c",
+  "step": "probe-6",
+  "promptVersion": "probe.6.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-20T11:09:42.216Z",
+  "response": {
+    "text": "{\"id\":\"r.2\",\"label\":\"Roots\"}",
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1409,
+      "outputTokens": 13,
+      "thinkingTokens": 0
+    }
+  }
+}
