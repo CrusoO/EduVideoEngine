@@ -32,7 +32,13 @@
     "packages/patterns/src/arcs.ts",
     "packages/safety/src/secrets-scan.ts",
     "packages/adapters/src/env.ts",
-    "packages/adapters/src/limiter.ts"
+    "packages/adapters/src/limiter.ts",
+    "packages/pipeline/lesson/context.ts",
+    "packages/pipeline/lesson/gates.ts",
+    "packages/pipeline/lesson/scene.ts",
+    "packages/pipeline/lesson/sentences.ts",
+    "packages/pipeline/script/meaning.ts",
+    "packages/pipeline/scene/compose.ts"
   ],
   "vitest": {
     "configFile": "vitest.stryker.config.ts"

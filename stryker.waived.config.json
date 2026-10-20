@@ -1,0 +1,35 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "_comment": "Report-only run for the compile-pipeline files that ADR 0064 waives: the four below were measured and miss the floor. packages/pipeline/build (assure, build, package, voice) is waived too and not measured: only the tests that start the SymPy verifier cover it. Not part of pnpm mutate. Static mutants (module-level constants and patterns, about 42 percent of the mutants) are skipped, because each one needs the whole test suite. The waiver lapses on _expires; packages/gates/tests/waiver.test.ts fails after that date.",
+  "_expires": "2026-11-30",
+  "testRunner": "vitest",
+  "plugins": [
+    "@stryker-mutator/vitest-runner"
+  ],
+  "mutate": [
+    "packages/pipeline/lesson/beats.ts",
+    "packages/pipeline/lesson/assemble.ts",
+    "packages/pipeline/arcplan/index.ts",
+    "packages/pipeline/script/index.ts"
+  ],
+  "vitest": {
+    "configFile": "vitest.stryker.config.ts"
+  },
+  "reporters": [
+    "clear-text",
+    "json"
+  ],
+  "jsonReporter": {
+    "fileName": "reports/mutation-waived.json"
+  },
+  "ignoreStatic": true,
+  "thresholds": {
+    "high": 95,
+    "low": 90,
+    "break": 0
+  },
+  "coverageAnalysis": "perTest",
+  "concurrency": 4,
+  "timeoutMS": 60000,
+  "dryRunTimeoutMinutes": 20
+}

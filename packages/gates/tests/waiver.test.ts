@@ -18,6 +18,12 @@ describe("the mutation floor and the waiver mechanism (ADR 0045, 0048)", () => {
     expect(main.mutate).toContain("packages/patterns/src/arcs.ts");
     expect(main.mutate).toContain("packages/safety/src/secrets-scan.ts");
   });
+  it("the compile-pipeline files that meet the floor are in the main run, and the four ADR 0064 waives are only in the waived config", () => {
+    for (const f of ["lesson/context", "lesson/gates", "lesson/scene", "lesson/sentences", "script/meaning", "scene/compose"]) expect(main.mutate, f).toContain(`packages/pipeline/${f}.ts`);
+    const waivedPipeline = ["lesson/beats", "lesson/assemble", "arcplan/index", "script/index"].map((f) => `packages/pipeline/${f}.ts`);
+    for (const f of waivedPipeline) expect(main.mutate, f).not.toContain(f);
+    if (existsSync(join(root, WAIVED))) expect(read(WAIVED).mutate).toEqual(waivedPipeline);
+  });
   it("a waiver exists only as its own report-only config with an expiry, and a lapsed one fails this test", () => {
     if (!existsSync(join(root, WAIVED))) return; // nothing is waived: the normal state since ADR 0048
     const waived = read(WAIVED);
