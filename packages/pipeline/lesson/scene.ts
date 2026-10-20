@@ -52,7 +52,6 @@ export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentence
   const claimOf = new Map(claims.map((c) => [c.id, c] as const));
   const position = new Map(sentences.map((s, i) => [s.id, i] as const));
   const sentenceOf = new Map(sentences.map((s) => [s.id, s] as const));
-  const bearing = sentences.filter((s) => claimsSpokenBy(s).length > 0);
   const bundleLike = { bundle: { expressions } as unknown as LessonBundle };
 
   for (const o of objects.filter((x) => x.role !== "static")) {
@@ -74,10 +73,10 @@ export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentence
     };
     if (done()) continue;
 
-    const pool = claims.length === 0 ? sentences : bearing.filter((s) => spoken(s.id).some(uses));
+    // a sentence the object is already cued on cannot be in the pool: the object would then be done
+    const pool = claims.length === 0 ? sentences : sentences.filter((s) => spoken(s.id).some(uses));
     const last = Math.max(-1, ...mine().map((c) => position.get(c.anchor.sentenceId) ?? -1));
-    const fresh = pool.filter((s) => !mine().some((c) => c.anchor.sentenceId === s.id));
-    const chosen = fresh.find((s) => position.get(s.id)! > last) ?? fresh[0] ?? pool[0];
+    const chosen = pool.find((s) => position.get(s.id)! > last) ?? pool[0];
     if (!chosen) continue; // nothing can carry it: G3 reports the object
     const had = mine().length > 0;
     cues.push({ targetObject: o.id, action: had ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: had ? 800 : 1500 });

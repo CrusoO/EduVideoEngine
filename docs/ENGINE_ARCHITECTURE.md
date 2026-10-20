@@ -107,7 +107,7 @@ A reviewed store with validators. If a statement is not in an approved record, n
 
 ## 6. The lesson bundle (spec 2.1.0)
 
-One document read or written by every part. One spec bump carries every CO-2 field. The legacy five-scene fixture is pinned to 1.0.0 (bundle hash `3f9d7bfcâ€¦41ec`) and still validates under its old rules; a 1.0.0 bundle may not carry any 2.0.0 field. Spec 2.1.0 (ADR 0053) is additive: it adds two claim kinds, `satisfied-by` (the check by substitution) and `product-of-roots`, and nothing else to the bundle; 2.0.0 and 1.0.0 bundles keep their hashes and may not carry them. The content plane gains the step role `check`, an explicit `answerKind` on recall questions and `exprRefs` on a grounded conceptClaim. The reference lesson stays at 2.0.0 until WP2c part b rebuilds it.
+One document read or written by every part. One spec bump carries every CO-2 field. The legacy five-scene fixture is pinned to 1.0.0 (bundle hash `3f9d7bfc…41ec`) and still validates under its old rules; a 1.0.0 bundle may not carry any 2.0.0 field. Spec 2.1.0 (ADR 0053) is additive: it adds two claim kinds, `satisfied-by` (the check by substitution) and `product-of-roots`, and nothing else to the bundle; 2.0.0 and 1.0.0 bundles keep their hashes and may not carry them. The content plane gains the step role `check`, an explicit `answerKind` on recall questions and `exprRefs` on a grounded conceptClaim. The reference lesson stays at 2.0.0 until WP2c part b rebuilds it.
 
 | Field | Lives in | Hash scope |
 | --- | --- | --- |
@@ -283,4 +283,4 @@ These are tensions between how the engine is built today and the direction propo
 
 ## 16. Sources
 
-Ids as cited in the research report of 2026-10-12 (abstracts read, not full texts; not re-opened): T2VTextBench arXiv 2505.04946; EduVQA arXiv 2603.03066; Math-Vision Diagrams arXiv 2608.08964; Code2Video arXiv 2510.01174; TheoremExplainAgent arXiv 2502.19400; VisualEDU (EMNLP Findings 2025); HÃ¶ffler and Leutner 2007; Berney and BÃ©trancourt; Alpizar et al. 2020; Cambridge Handbook of Multimedia Learning (redundancy and coherence). Provider terms and limits must be re-read from the providers' own pages before use.
+Ids as cited in the research report of 2026-10-12 (abstracts read, not full texts; not re-opened): T2VTextBench arXiv 2505.04946; EduVQA arXiv 2603.03066; Math-Vision Diagrams arXiv 2608.08964; Code2Video arXiv 2510.01174; TheoremExplainAgent arXiv 2502.19400; VisualEDU (EMNLP Findings 2025); Höffler and Leutner 2007; Berney and Bétrancourt; Alpizar et al. 2020; Cambridge Handbook of Multimedia Learning (redundancy and coherence). Provider terms and limits must be re-read from the providers' own pages before use.

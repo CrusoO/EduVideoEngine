@@ -133,3 +133,41 @@ describe("the same, for a composer that is plain code (composeSceneSync)", () =>
     expect(() => composeSceneSync(ctx, () => { throw new PipelineFatal("daily cap reached"); }, fb)).toThrow("daily cap reached");
   });
 });
+
+describe("the composer's own messages and checks, async and sync alike", () => {
+  const both = [
+    ["composeScene", (c: (a: Attempt) => unknown, f = fb) => composeScene(ctx, c, f)],
+    ["composeSceneSync", async (c: (a: Attempt) => unknown, f = fb) => composeSceneSync(ctx, c, f)],
+  ] as const;
+  for (const [name, run] of both) {
+    describe(name, () => {
+      it("asks the first time with no messages and nothing before it, and the second time with the first try's", async () => {
+        const seen: Attempt[] = [];
+        await run((a) => (seen.push(a), { ...good(), beatId: "wrong" }));
+        expect(seen.map((a) => a.attempt)).toEqual([1, 2]);
+        expect(seen[0]).toEqual({ attempt: 1, errors: [], previous: undefined });
+        expect(seen[0]!.errors).toHaveLength(0);
+        expect(seen[1]!.errors).toEqual(["beatId: must be b1, not wrong"]);
+        expect(seen[1]!.previous).toMatchObject({ beatId: "wrong" });
+      });
+      it("says what the fall-back is for: the reason, then the first three messages of the last try", async () => {
+        const one = await run(() => ({ ...good(), beatId: "wrong" }));
+        expect(one.scene.review?.reason).toBe("the composer failed twice (beatId: must be b1, not wrong)");
+        const many = await run(() => ({ ...good(), id: "x", beatId: "y", sourceIds: ["nope"], cues: [{ targetObject: "eq", action: "reveal", anchor: { sentenceId: "zzz", at: "start" }, minHoldMs: 0 }] }));
+        const reason = many.scene.review!.reason;
+        expect(reason.startsWith("the composer failed twice (id: must be scene.b1, not x; beatId: must be b1, not y; sourceIds: nope is not a source of this beat")).toBe(true);
+        expect(reason).not.toContain("zzz");
+        expect(many.errors.at(-1)).toHaveLength(4);
+      });
+      it("says why a composer failed, whatever it threw", async () => {
+        const text = await run(() => { throw "a plain string"; });
+        expect(text.errors[0]).toEqual(["the composer failed: a plain string"]);
+        const err = await run(() => { throw new Error("boom"); });
+        expect(err.errors[0]).toEqual(["the composer failed: boom"]);
+      });
+      it("refuses to hand back a template scene that does not validate: that is a bug here, not a composer's", async () => {
+        await expect(run(() => null, { ...fb, equation: "no.such.expression" })).rejects.toThrow(/^the template scene itself is invalid, which is a bug: .+/);
+      });
+    });
+  }
+});
