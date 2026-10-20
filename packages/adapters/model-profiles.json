@@ -98,47 +98,37 @@
     }
   },
   "openrouter": {
-    "defaultModel": "anthropic/claude-3.5-haiku",
+    "defaultModel": "google/gemma-4-31b-it:free",
     "resetTimeZone": "UTC",
     "models": {
-      "anthropic/claude-3.5-haiku": {
+      "google/gemma-4-31b-it:free": {
         "jsonMode": true,
         "reasoning": false,
         "maxOutputTokens": 8192,
         "limits": {
           "rpm": 20,
           "tpm": 200000,
-          "rpd": 200
+          "rpd": 50
         },
-        "verified": false,
-        "note": "OpenRouter free-tier estimate: 20 RPM, 200 RPD. Verify from https://openrouter.ai/settings/limits after first call. claude-3.5-haiku chosen for strict system-prompt compliance."
+        "verified": true,
+        "note": "Free model (listed with zero price on https://openrouter.ai/api/v1/models, 2026-10-20). Limits from https://openrouter.ai/docs/api-reference/limits: free models 20 RPM; 50 RPD on an account without credits (1000 RPD with at least 10 credits). OpenRouter publishes no token limit: tpm is a local safety cap, not a provider limit."
       },
-      "anthropic/claude-3-haiku": {
+      "nvidia/nemotron-3-super-120b-a12b:free": {
         "jsonMode": true,
-        "reasoning": false,
-        "maxOutputTokens": 4096,
-        "limits": {
-          "rpm": 20,
-          "tpm": 200000,
-          "rpd": 200
-        },
-        "verified": false
-      },
-      "meta-llama/llama-3.3-70b-instruct": {
-        "jsonMode": true,
-        "reasoning": false,
+        "reasoning": true,
         "maxOutputTokens": 8192,
+        "thinkingBudget": null,
+        "expectedReasoningTokens": 1500,
         "limits": {
           "rpm": 20,
           "tpm": 200000,
-          "rpd": 200
+          "rpd": 50
         },
-        "verified": false,
-        "note": "Free on OpenRouter (:free variant). Fallback if Haiku costs are a concern."
+        "verified": true,
+        "note": "Fallback if Gemma fails the probes. Same free-model limits and the same local tpm cap as above."
       }
     }
-  },
-  "reference": {
+  },  "reference": {
     "_note": "Read-only. The recordings made on Amazon Bedrock (Claude Sonnet 4.6) while a paid exception was allowed, kept as the reference the free models are compared with. There is no adapter for it and no way to select it; tests replay its fixtures with no AWS packages installed.",
     "defaultModel": "eu.anthropic.claude-sonnet-4-6",
     "resetTimeZone": "UTC",
