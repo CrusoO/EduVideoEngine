@@ -31,3 +31,12 @@ One planner call and one scriptwriter call per beat that has claims (about six r
 - Sentence ids are `s<beat number>.<n>`, scene ids `scene.b<n>`, as in the reference lesson, so the player harness and the voice generator treat generated lessons the same way.
 - `planner.v3` stays superseded and `planner.v2` frozen; `planner.v4` is new and its sha256 goes into `prompts/VERSIONS.md` in the same commit.
 - Probes 9 to 13 (`packages/pipeline/probes.ts`) test the behaviours the new passes depend on.
+
+## As built (2026-10-20)
+Built as decided, with these additions, each found by running the passes against a real model (`minimax/minimax-m3.1-flash:free`, ADR 0060) and each covered by tests:
+- Where the plan check can name a fix, it does: a pattern offered for a slot carries `showsEquations`, and a G3 failure names the concept claim that would tie the picture or a pattern that shows no equation; a concept claim in a beat that cannot state it is to be moved, not deleted; the variety message names the slots that offer a picture. The planner prompt gained two rules (a core claim is taught before the first worked beat; the hook's goal is a question to guess at) and the check enforces the first.
+- A beat with no claim (the hook) gets its sentences from code. If its scene is too short to be read (a layout finding), the build gives it up to two more transitions from the closed list and voices only the new sentence; the pause stays after the goal question.
+- `composeSceneSync` is the synchronous twin of `composeScene`, sharing its fall-back, so the assembler can run in the client's synchronous `check` callback.
+- The statement card (ADR 0062) and the handling of cut-off answers (ADR 0063) came out of the same runs.
+- The first live runs failed in instructive ways that are recorded in the ledger and in the commit messages: the planner put the rule in the mistake beat (after the worked example), left out the claim a plot needs, and once spent its whole token budget on reasoning.
+Recorded and frozen: `planner.v4` and `scriptwriter.v1` (`prompts/VERSIONS.md`); four fixtures; probes 9 to 13 (5 of 5). The lesson built from the recordings passes the validator, G1 to G7, the resolver, the layout checks and the SymPy verifier (`packages/pipeline/tests/recorded.test.ts`).
