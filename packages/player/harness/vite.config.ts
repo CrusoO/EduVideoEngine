@@ -18,14 +18,18 @@ const serve = (prefix: string, dir: string, type: (file: string) => string): Plu
   },
 });
 
+const media = (f: string) => (f.endsWith(".json") ? "application/json" : "audio/wav");
+
 /**
  * /fonts: the bundled fonts at the same URLs the host application uses (so a shared origin shares one cached copy).
  * /voice: the pinned development voice files of the reference lesson.
+ * /generated: a generated lesson package (lesson.json and voice/), when EVE_LESSON_DIR names its folder (`pnpm lesson:play`); played with ?lesson=generated.
  */
 export default defineConfig({
   publicDir: false,
   plugins: [
     serve("/fonts", join(here, "..", "..", "components", "fonts"), () => "font/woff2"),
-    serve("/voice", join(here, "..", "..", "voice", "fixtures", "reference.en-IN"), (f) => (f.endsWith(".json") ? "application/json" : "audio/wav")),
+    serve("/voice", join(here, "..", "..", "voice", "fixtures", "reference.en-IN"), media),
+    ...(process.env.EVE_LESSON_DIR ? [serve("/generated", process.env.EVE_LESSON_DIR, media)] : []),
   ],
 });

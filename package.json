@@ -22,6 +22,8 @@
     "content:seal": "vite-node scripts/content-seal.ts",
     "llm:usage": "vite-node scripts/llm-usage.ts",
     "plan:lesson": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/plan-lesson.ts",
+    "lesson:build": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/build-lesson.ts",
+    "lesson:play": "vite-node scripts/lesson-play.ts",
     "patterns:report": "vite-node scripts/pattern-report.ts",
     "player:size": "vite-node scripts/player-size.ts",
     "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",

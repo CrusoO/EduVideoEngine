@@ -20,7 +20,10 @@ const params = new URLSearchParams(location.search);
 const voice = params.get("voice") ?? "piper";
 const msPerWord = Number(params.get("mpw") ?? 300);
 const lessons = { v1: quadraticRootsV1, hindi: hindiPreview, stress: layoutStress } as Record<string, LessonBundle>;
-const bundle = (lessons[params.get("lesson") ?? ""] ?? referenceLesson) as LessonBundle;
+/** ?lesson=generated plays a generated lesson package served at /generated (lesson.json and voice/); every other name is a bundled lesson, as before. */
+const generated = params.get("lesson") === "generated";
+const bundle = (generated ? await (await fetch("/generated/lesson.json")).json() : (lessons[params.get("lesson") ?? ""] ?? referenceLesson)) as LessonBundle;
+const voiceBase = generated ? "/generated/voice" : "/voice";
 document.getElementById("root")!.style.width = `${params.get("w") ?? 360}px`;
 const ctx = new AudioContext();
 
@@ -43,8 +46,8 @@ async function voiceTracks(): Promise<{ tracks: AudioTrack[]; buffers: Map<strin
     }
     return { tracks, buffers, credit: "" };
   }
-  const manifest = await (await fetch("/voice/manifest.json")).json();
-  const adapter = new FileVoiceAdapter(manifest, async (f) => new Uint8Array(await (await fetch(`/voice/${f}`)).arrayBuffer()), "/voice/");
+  const manifest = await (await fetch(`${voiceBase}/manifest.json`)).json();
+  const adapter = new FileVoiceAdapter(manifest, async (f) => new Uint8Array(await (await fetch(`${voiceBase}/${f}`)).arrayBuffer()), `${voiceBase}/`);
   const tracks = await adapter.tracksFor(bundle);
   return { tracks, buffers: await loadBuffers(ctx, tracks), credit: adapter.credit };
 }
