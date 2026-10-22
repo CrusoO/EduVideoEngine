@@ -8,6 +8,7 @@ import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
 import { applyCarry, type CarryBeat } from "./carry";
 import { finishScene } from "./scene";
+import { writeOn } from "./style";
 import { sentencesOf } from "./sentences";
 import type { ArcPlan, LessonScript } from "./types";
 
@@ -28,8 +29,8 @@ export const LEGACY_KIND: Record<PedagogyBeatKind, LessonBundle["plan"]["beats"]
 };
 const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first" } as const;
 
-/** What ADR 0066 and 0067 added to a lesson, each on by default. Both off builds the lesson as it was before them. */
-export type Features = { signalling?: boolean; carry?: boolean };
+/** What ADRs 0066 to 0071 added to a lesson, each on by default. All off builds the lesson as it was before them. */
+export type Features = { signalling?: boolean; carry?: boolean; sweep?: boolean; writeOn?: boolean };
 
 export type AssembleOptions = {
   /** The length to record in the plan, in seconds (the measured length once there is audio). Estimated from the words otherwise. */
@@ -96,7 +97,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
     const problem = Object.entries(b.retrieval.expressions).find(([, e]) => e.op === "eq")?.[0] ?? Object.keys(expressions)[0]!;
     const outcome = composeSceneSync(
       sceneCtx,
-      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
+      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text, sweep: options.features?.sweep !== false }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),
     );
     composed.push(outcome.scene);
@@ -105,11 +106,12 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   }
   // objects that stay from one scene to the next, and equations that turn into an equivalent one (ADR 0067, 0068); a scene that used the plain template is left alone
   const reviewed = new Set(fallbacks.map((f) => f.beatId));
-  const scenes = options.features?.carry === false ? composed : applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
+  const carried = options.features?.carry === false ? composed : applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
+  const scenes = options.features?.writeOn === false ? carried : carried.map(writeOn);
 
   const claims: Claim[] = built.beats.flatMap((b) => b.claims);
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
-  const carries = scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined));
+  const carries = scenes.some((s) => s.cues.some((c) => c.action === "morph") || s.objects.some((o) => o.carryFrom !== undefined));
   const specVersion = carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
   const bundle = seal({
     bundleId: bundleIdFor(ctx.skillId, ctx.locale),

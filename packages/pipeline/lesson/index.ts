@@ -4,6 +4,7 @@ export * from "./beats";
 export * from "./sentences";
 export * from "./scene";
 export * from "./carry";
+export * from "./style";
 export * from "./assemble";
 export * from "./gates";
 export * from "./reference";

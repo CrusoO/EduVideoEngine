@@ -1,4 +1,4 @@
-import { WORD_BUDGET } from "@eve/components";
+import { WORD_BUDGET, quadraticOf, quadraticRoots } from "@eve/components";
 import { deriveClaims, recallAnswerClaim, type ContentRecord, type Retrieval } from "@eve/content";
 import { evaluate, num, termIds, type Claim, type Cue, type Expr, type SceneSpec } from "@eve/schema";
 import { TITLE_MAX_CHARS, heightCostPx } from "./cost";
@@ -197,7 +197,24 @@ const hopsOnNumberLine: Pattern<HopsContent> = {
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // 4. plot and mark the roots
-type PlotContent = { problem: string; fn: string; window: { xMin: number; xMax: number; yMin: number; yMax: number }; roots: number; recordIds: string[] };
+type Window = { xMin: number; xMax: number; yMin: number; yMax: number };
+type PlotContent = { problem: string; fn: string; window: Window; roots: number; recordIds: string[]; sweep: { window: Window; factor: { from: number; to: number; min: number; max: number } } | null };
+
+/** How long the sweep of a plotted quadratic runs (ADR 0070). */
+const SWEEP_HOLD_MS = 3500;
+const SWEEP_TO = 1.4;
+const SWEEP_MIN = 0.6;
+/**
+ * A plotted quadratic with two positive roots can be swept: its x-coefficient is multiplied by a factor that goes from 1 up to 1.4 and back, and the student may
+ * drag it between 0.6 and 1.4 while the lesson is paused. The window is widened so both roots stay on it at every factor. Null for any other function.
+ */
+function sweepOf(f: Expr | undefined, w: Window): PlotContent["sweep"] {
+  const q = f ? quadraticOf(f) : null;
+  if (!q || q.a <= 0 || q.b >= 0 || q.c <= 0 || quadraticRoots(q).length !== 2) return null;
+  const far = quadraticRoots({ ...q, b: q.b * SWEEP_TO });
+  const deepest = q.c - (q.b * SWEEP_TO) ** 2 / (4 * q.a);
+  return { window: { xMin: Math.min(w.xMin, 0), xMax: Math.max(w.xMax, Math.ceil(far[1]!) + 1), yMin: Math.min(w.yMin, Math.floor(deepest) - 1), yMax: w.yMax }, factor: { from: 1, to: SWEEP_TO, min: SWEEP_MIN, max: SWEEP_TO } };
+}
 const plotAndMarkRoots: Pattern<PlotContent> = {
   id: "plot-and-mark-roots",
   beatKinds: ["concept"],
@@ -225,16 +242,19 @@ const plotAndMarkRoots: Pattern<PlotContent> = {
     if (rec && roots === 0) missing.push("root steps");
     if (missing.length > 0) return { ok: false, missing };
     const { expr, ...window } = passage!.plot!;
-    return { ok: true, content: { problem: rec!.problem!, fn: expr, window, roots, recordIds: [passage!.id, rec!.id] } };
+    return { ok: true, content: { problem: rec!.problem!, fn: expr, window, roots, recordIds: [passage!.id, rec!.id], sweep: sweepOf(r.expressions[expr], window) } };
   },
   build(c, a) {
     const cues: Cue[] = [cue(a, 0, "graph#curve", "draw", 800), ...Array.from({ length: c.roots }, (_x, i) => cue(a, i + 1, `graph#root${i}`, "pop", 300))];
+    // the sweep starts on the sentence after the last root appears, so the viewer has seen the curve and its roots before they move
+    const sweep = a.sweep === true ? c.sweep : null;
+    if (sweep) cues.push(cue(a, c.roots + 1, "graph", "morph", SWEEP_HOLD_MS));
     const s = scene(
       a,
       c.recordIds,
       [
         { id: "eq", component: "equation", props: { size: "m" }, exprRef: c.problem },
-        { id: "graph", component: "functionGraph", props: { ...c.window, roots: true }, exprRef: c.fn },
+        { id: "graph", component: "functionGraph", props: sweep ? { ...sweep.window, roots: true, sweep: { ...sweep.factor, readout: true, roundTrip: true } } : { ...c.window, roots: true }, exprRef: c.fn },
       ],
       [...column(["eq", "graph"]), { rule: "center", item: "graph" }],
       cues,

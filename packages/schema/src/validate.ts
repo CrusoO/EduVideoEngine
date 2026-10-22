@@ -48,8 +48,16 @@ type Bad = (path: string, message: string) => void;
  * Optional fields are omitted when absent, never empty.
  */
 function checkSpecVersion(b: Bundle, bad: Bad): void {
-  // Spec 2.2.0 is additive: `carryFrom` is the only field an earlier bundle may not carry (ADR 0067).
-  if (b.specVersion !== SPEC_VERSION_2_2) for (const sc of b.scenes) for (const o of sc.objects) if (o.carryFrom !== undefined) bad(`scenes.${sc.id}.objects.${o.id}`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_2}`);
+  // Spec 2.2.0 is additive: `carryFrom`, a morph cue and the props that go with it (an equation's `from`, a graph's `sweep`) are what an earlier bundle may not carry (ADR 0067, 0068, 0070).
+  if (b.specVersion !== SPEC_VERSION_2_2) {
+    for (const sc of b.scenes) {
+      for (const o of sc.objects) {
+        const props = o.props as { from?: unknown; sweep?: unknown };
+        if (o.carryFrom !== undefined || props.from !== undefined || props.sweep !== undefined) bad(`scenes.${sc.id}.objects.${o.id}`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_2}`);
+      }
+      for (const c of sc.cues) if (c.action === "morph") bad(`scenes.${sc.id}.cues`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_2}: the morph cue`);
+    }
+  }
   if (b.specVersion === LEGACY_SPEC_VERSION) {
     const v2: Array<[string, boolean]> = [
       ["subjectId", b.subjectId !== undefined],
@@ -264,7 +272,10 @@ export function validateBundle(input: unknown): Validation {
         else if (from === o.exprRef) bad(here, "props.from is the expression the object already shows: there is nothing to morph");
         if (morphs.length === 0) bad(here, "an equation with props.from needs a morph cue on the whole object");
       }
-      if (morphs.length > 0 && (o.component !== "equation" || from === undefined)) bad(here, "a morph cue belongs to an equation with props.from");
+      const sweep = (o.props as { sweep?: unknown }).sweep;
+      const morphable = (o.component === "equation" && from !== undefined) || (o.component === "functionGraph" && sweep !== undefined);
+      if (morphs.length > 0 && !morphable) bad(here, "a morph cue belongs to an equation with props.from or a graph with props.sweep");
+      if (o.component === "functionGraph" && sweep !== undefined && morphs.length === 0) bad(here, "a graph with props.sweep needs a morph cue on the whole object");
       if (morphs.length > 1) bad(here, "an object morphs once per scene");
     }
     for (const c of scene.cues) if (c.action === "morph" && c.targetObject.includes("#")) bad(`${at}.cues`, `morph acts on a whole object, not on ${c.targetObject}`);

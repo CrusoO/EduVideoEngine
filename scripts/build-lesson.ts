@@ -52,7 +52,7 @@ const result = await buildLesson({
   level,
   voice: flag("no-voice") ? "synthetic" : { dir: join(dir, "voice"), synth: piperSynthesizer(tools) },
   verify: !flag("no-verify"),
-  ...(baseline ? { features: { signalling: false, carry: false } } : {}),
+  ...(baseline ? { features: { signalling: false, carry: false, sweep: false, writeOn: false } } : {}),
   log: (l) => console.log(l),
 }).catch((e: unknown) => {
   if ((e as { fatal?: boolean }).fatal === true) {

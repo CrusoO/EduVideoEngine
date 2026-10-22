@@ -88,6 +88,32 @@ describe("the lesson quality report", () => {
     expect(analyseLesson(b).findings.filter((x) => x.code === "redrawn-expression" && x.beatId === "b4")).toHaveLength(0);
   });
 
+  it("plain-beat: a beat of text and equations only is flagged, a picture or a carried object or a morph clears it", () => {
+    const b = fresh();
+    const plain = () => analyseLesson(b).findings.filter((f) => f.code === "plain-beat").map((f) => f.beatId);
+    expect(plain()).toEqual(["b1", "b2", "b5", "b6"]);
+    expect(analyseLesson(b).metrics.plainBeats).toBe(4);
+    b.scenes.find((s) => s.beatId === "b5")!.objects.push({ id: "pic", component: "shape", props: {} });
+    expect(plain()).toEqual(["b1", "b2", "b6"]);
+    b.specVersion = "2.2.0";
+    b.scenes.find((s) => s.beatId === "b6")!.objects.find((o) => o.id === "problem")!.carryFrom = "x";
+    expect(plain()).toEqual(["b1", "b2"]);
+    b.scenes.find((s) => s.beatId === "b2")!.cues.push({ targetObject: "fact", action: "morph", anchor: { sentenceId: "s2.3", at: "start" }, minHoldMs: 700 });
+    expect(plain()).toEqual(["b1"]);
+  });
+
+  it("a static title does not make a beat a picture, and the graphs of the concept and worked beats do", () => {
+    const b = fresh();
+    expect(analyseLesson(b).findings.some((f) => f.code === "plain-beat" && (f.beatId === "b3" || f.beatId === "b4"))).toBe(false);
+  });
+
+  it("counts the graphs the student can drag", () => {
+    const b = fresh();
+    expect(analyseLesson(b).metrics.interactive).toBe(0);
+    b.scenes[2]!.objects.find((o) => o.id === "graph")!.props = { ...b.scenes[2]!.objects.find((o) => o.id === "graph")!.props, sweep: { from: 1, to: 1.4 } };
+    expect(analyseLesson(b).metrics.interactive).toBe(1);
+  });
+
   it("repeated-sentence: the same claim wording in two beats is flagged once, at the later beat; different wording is not", () => {
     const b = fresh();
     const claims = b.script.filter((s) => s.role === "claim");

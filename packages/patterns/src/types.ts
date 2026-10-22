@@ -18,6 +18,8 @@ export type PatternArgs = {
   sentenceIds: readonly string[];
   /** The writer slots, by name. */
   text: Readonly<Record<string, string>>;
+  /** Let a pattern that can sweep a graph do so (ADR 0070). Off unless asked: a bundle that was built before sweeps, such as the reference lesson, must not change. */
+  sweep?: boolean;
 };
 
 /** A scene made from a pattern, with what it adds to the bundle: expressions (such as the points of a number line), claims (derived) and records used. */

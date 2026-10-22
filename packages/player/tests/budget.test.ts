@@ -22,8 +22,8 @@ const HINDI_KB = 170;
 // with everything in one file. ADR 0024 found the cause of the growth (module-level code of unused fixtures and the hashing library was being bundled) and removed it, and split the
 // two heavy components into chunks a lesson fetches only if it uses them. Ceilings below are measured plus a little headroom. Raising one needs an ADR with the measured cause;
 // 60 KB is the hard ceiling for any lesson (everything loaded) and is never raised.
-const PLAYER_CORE_GZIP_KB = 34; // 33 until ADR 0067 (carried objects, the morph rules of the validator: 33.5 measured); measured 31.4 before: the player, layout, resolver, schema and the six small components, with zod
-const PLAYER_ALL_GZIP_KB = 40; // measured 37.0: a lesson that uses every component
+const PLAYER_CORE_GZIP_KB = 35; // 33 until ADR 0067 (carried objects, the morph rules of the validator: 33.5 measured), 34 until ADR 0070 (drag to explore: 34.03 measured); measured 31.4 before: the player, layout, resolver, schema and the six small components, with zod
+const PLAYER_ALL_GZIP_KB = 42; // 40 until ADR 0070 (the sweep of the graph chunk: 41.0 measured); measured 37.0 before: a lesson that uses every component
 const PLAYER_HARD_CEILING_KB = 60;
 
 describe("budgets", () => {

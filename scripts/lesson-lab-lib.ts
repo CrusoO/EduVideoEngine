@@ -62,7 +62,7 @@ export type LabLesson = {
   claims: Array<{ id: string; beatId: string; kind: string; mode: string | undefined; importance: string | undefined }>;
   scenes: LabScene[];
   quality: QualityReport;
-  counts: { cues: number; byAction: Record<string, number>; carried: number; morphs: number; objects: number; pictureBeats: number };
+  counts: { cues: number; byAction: Record<string, number>; carried: number; morphs: number; objects: number; pictureBeats: number; plainBeats: number; interactive: number; writtenOn: number };
 };
 
 const summaryOf = (r: ContentRecord): string => {
@@ -142,7 +142,7 @@ export function inspectLesson(entry: LabEntry, store: readonly ContentRecord[]):
     claims: (bundle.claims ?? []).map((c) => ({ id: c.id, beatId: c.beatId, kind: c.kind, mode: c.claimMode, importance: c.importance })),
     scenes,
     quality,
-    counts: { cues: scenes.reduce((n, s) => n + s.cues.length, 0), byAction, carried: bundle.scenes.reduce((n, s) => n + s.objects.filter((o) => o.carryFrom !== undefined).length, 0), morphs: byAction.morph ?? 0, objects: bundle.scenes.reduce((n, s) => n + s.objects.length, 0), pictureBeats: quality.metrics.pictureBeats },
+    counts: { cues: scenes.reduce((n, s) => n + s.cues.length, 0), byAction, carried: bundle.scenes.reduce((n, s) => n + s.objects.filter((o) => o.carryFrom !== undefined).length, 0), morphs: byAction.morph ?? 0, objects: bundle.scenes.reduce((n, s) => n + s.objects.length, 0), pictureBeats: quality.metrics.pictureBeats, plainBeats: quality.metrics.plainBeats, interactive: quality.metrics.interactive, writtenOn: bundle.scenes.reduce((n, s) => n + s.cues.filter((c) => c.action === "draw" && s.objects.some((o) => o.id === c.targetObject && o.component === "equation")).length, 0) },
   };
 }
 
@@ -154,7 +154,10 @@ export const COMPARE_ROWS: Array<{ key: string; label: string; lowerIsBetter: bo
   { key: "filler", label: "Filler sentences (%)", lowerIsBetter: true, get: (l) => Math.round(l.quality.metrics.fillerShare * 100) },
   { key: "highlights", label: "Highlight cues (attention)", lowerIsBetter: false, get: (l) => l.counts.byAction.highlight ?? 0 },
   { key: "carried", label: "Objects carried between scenes", lowerIsBetter: false, get: (l) => l.counts.carried },
-  { key: "morphs", label: "Morphs", lowerIsBetter: false, get: (l) => l.counts.morphs },
+  { key: "morphs", label: "Morphs (a graph or an equation changing)", lowerIsBetter: false, get: (l) => l.counts.morphs },
+  { key: "interactive", label: "Graphs the student can drag", lowerIsBetter: false, get: (l) => l.counts.interactive },
+  { key: "writtenOn", label: "Equations written on", lowerIsBetter: false, get: (l) => l.counts.writtenOn },
+  { key: "plain", label: "Plain beats (text and equations only)", lowerIsBetter: true, get: (l) => l.counts.plainBeats },
   { key: "cues", label: "Cues in all", lowerIsBetter: null, get: (l) => l.counts.cues },
   { key: "objects", label: "Objects in all", lowerIsBetter: null, get: (l) => l.counts.objects },
   { key: "pictures", label: "Picture beats", lowerIsBetter: false, get: (l) => l.counts.pictureBeats },

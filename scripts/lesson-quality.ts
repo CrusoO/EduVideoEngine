@@ -25,5 +25,6 @@ const m = report.metrics;
 console.log(`lesson quality report: ${bundle.bundleId}`);
 console.log(`  ${m.beats} beats, ${m.sentences} sentences, ${m.speechMs === null ? "no timing" : `${(m.speechMs / 1000).toFixed(1)} s of speech`}, ${m.pictureBeats} picture beats`);
 console.log(`  filler sentences ${Math.round(m.fillerShare * 100)}%, explanation-worded sentences ${m.explanationSentences}, reveal-only cues ${Math.round(m.revealShare * 100)}%, longest unchanged stretch ${m.longestStaticMs === null ? "n/a" : `${(m.longestStaticMs / 1000).toFixed(1)} s`}`);
+console.log(`  plain beats (text and equations only) ${m.plainBeats}, graphs the student can drag ${m.interactive}`);
 console.log(`  ${report.findings.length} finding(s)`);
 for (const f of report.findings) console.log(`  - ${f.code}${f.beatId ? ` [${f.beatId}]` : ""}: ${f.message}`);

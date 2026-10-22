@@ -17,11 +17,15 @@ export type QualityReport = {
     explanationSentences: number;
     revealShare: number;
     longestStaticMs: number | null;
+    plainBeats: number;
+    interactive: number;
   };
   findings: QualityFinding[];
 };
 
 const SHOWS = new Set(["reveal", "draw", "pop"]);
+/** Components that are a picture, not words or a formula. */
+const PICTURES = new Set(["functionGraph", "numberLine", "stepList", "shape", "arrowCallout"]);
 /** Pause after each spoken sentence; the resolver's value (packages/resolver/src/resolve.ts), kept here because the report only estimates times. */
 const SENTENCE_GAP_MS = 300;
 export const STATIC_LIMIT_MS = 12_000;
@@ -53,6 +57,7 @@ function placeSentences(sentenceIds: readonly string[], durationsMs: Readonly<Re
 
 export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Record<string, number>>): QualityReport {
   const findings: QualityFinding[] = [];
+  let plain = 0;
   const add = (code: string, message: string, beatId?: string): void => void findings.push({ code, message, ...(beatId !== undefined ? { beatId } : {}) });
   const sentenceById = new Map(bundle.script.map((s) => [s.id, s] as const));
   const beatKind = new Map(bundle.plan.beats.map((b) => [b.id, b.beatKind] as const));
@@ -80,6 +85,14 @@ export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Recor
 
     // 3. a beat whose only sentences are the goal and filler
     if (mine.length > 0 && mine.every((s) => s.role === "goal" || s.role === "transition")) add("filler-only-beat", `beat ${scene.beatId} says only its goal question and filler`, scene.beatId);
+
+    // 3b. a beat that shows only text and equations, and where nothing is drawn, moved or changed beyond appearing: the plain layer
+    const pictures = scene.objects.filter((o) => PICTURES.has(o.component) && o.role !== "static");
+    const moves = scene.cues.some((c) => c.action === "morph") || scene.objects.some((o) => o.carryFrom !== undefined);
+    if (pictures.length === 0 && !moves) {
+      plain++;
+      add("plain-beat", `beat ${scene.beatId} shows only text and equations: nothing is drawn, moved or changed beyond appearing`, scene.beatId);
+    }
 
     // 4. a mistake beat that shows no mistake
     if (beatKind.get(scene.beatId) === "mistake" && !scene.objects.some((o) => o.exprRef !== undefined)) add("mistake-not-shown", `mistake beat ${scene.beatId} shows no expression, so the wrong working is never on screen`, scene.beatId);
@@ -145,7 +158,7 @@ export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Recor
   }
 
   return {
-    metrics: { beats: bundle.plan.beats.length, sentences: bundle.script.length, speechMs, fillerShare, pictureBeats, explanationSentences, revealShare, longestStaticMs },
+    metrics: { beats: bundle.plan.beats.length, sentences: bundle.script.length, speechMs, fillerShare, pictureBeats, explanationSentences, revealShare, longestStaticMs, plainBeats: plain, interactive: bundle.scenes.reduce((n, s) => n + s.objects.filter((o) => (o.props as { sweep?: unknown }).sweep !== undefined).length, 0) },
     findings,
   };
 }

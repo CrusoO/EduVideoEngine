@@ -247,3 +247,19 @@
 .eve-shape-circle.eve-shape-size-s { width: 48px; }
 .eve-shape-circle.eve-shape-size-m { width: 96px; }
 .eve-shape-circle.eve-shape-size-l { width: 144px; }
+
+/* A swept graph (ADR 0070): the readout of b and of the sum of the roots, and the hint that the student may drag. */
+.eve-readout {
+  fill: var(--eve-ink);
+  font-size: 15px;
+  font-family: Inter, sans-serif;
+}
+.eve-hint {
+  fill: var(--eve-muted);
+  font-size: 14px;
+  font-family: Inter, sans-serif;
+}
+/* An equation written on from left to right by a draw cue (ADR 0071); a margin so the wipe never cuts a glyph that overhangs its box. */
+.eve-equation {
+  clip-path: inset(-12px calc((1 - var(--eve-draw, 1)) * 100% - 12px) -12px -12px);
+}

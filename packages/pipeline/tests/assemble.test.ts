@@ -28,8 +28,8 @@ describe("persistent objects in the assembled lesson (ADR 0067)", () => {
   });
 });
 
-describe("building without what ADR 0066 and 0067 added (the baseline of the inspection tool)", () => {
-  const off = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false, carry: false } }).bundle;
+describe("building without what ADRs 0066 to 0071 added (the baseline of the inspection tool)", () => {
+  const off = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false, carry: false, sweep: false, writeOn: false } }).bundle;
   it("has no carried object, so it is not a 2.2.0 bundle, and it validates", () => {
     expect(off.scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined))).toBe(false);
     expect(off.specVersion).not.toBe("2.2.0");

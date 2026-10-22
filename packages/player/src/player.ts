@@ -1,4 +1,4 @@
-import { componentsUsedBy, formulaLatex, loadComponents, loadedComponent, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
+import { Sweep, componentsUsedBy, formulaLatex, loadComponents, loadedComponent, spokenLabel, sweepValueAt, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import { DEFAULT_CHROME_PX, PAD, solve, stageFrame } from "@eve/layout";
@@ -75,6 +75,8 @@ export class Player {
   /** Objects of the mounted scene that were kept from the scene before: this scene's object id to that scene's object id (ADR 0067). */
   private carried = new Map<string, string>();
   private carriedFrom: SceneSpec | null = null;
+  /** What the student dragged a swept graph to, by object id, while the lesson is paused (ADR 0070). Cleared by play and by seek, so the timeline always wins. */
+  private dragged = new Map<string, number>();
   private boxes: Record<string, Box> = {};
   private fromBoxes: Record<string, Box> = {};
   private sceneStartMs = 0;
@@ -125,6 +127,7 @@ export class Player {
   }
 
   async play(): Promise<void> {
+    this.dragged.clear();
     if (this.o.clock.nowMs() >= this.o.timeline.totalMs) this.seek(0); // replay from the start
     await this.o.clock.play();
     if (!this.running) {
@@ -141,6 +144,7 @@ export class Player {
   }
 
   seek(ms: number): void {
+    this.dragged.clear();
     this.o.clock.seek(ms);
     const t = this.o.clock.nowMs();
     // Pause points ahead of the new position can be asked again; those behind it count as answered.
@@ -226,6 +230,8 @@ export class Player {
           colors: this.colors,
           reduceMotion,
           rectOf,
+          sweepOverride: this.dragged.get(obj.id),
+          interactive: !this.o.clock.isPlaying() && !this.asking,
         };
         loadedComponent(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
       }
@@ -318,6 +324,30 @@ export class Player {
     }
   }
 
+  /**
+   * While the lesson is paused, dragging across a swept graph sets its factor (ADR 0070): the left edge is the smallest factor, the right edge the largest. The
+   * drawing is redrawn from that value and nothing else; playing or seeking drops it, so the timeline is always what plays.
+   */
+  private makeDraggable(el: HTMLElement, id: string, sweep: ReturnType<typeof Sweep.parse>): void {
+    let on = false;
+    const set = (e: MouseEvent): void => {
+      const r = el.getBoundingClientRect();
+      if (r.width <= 0) return;
+      this.dragged.set(id, sweepValueAt(sweep, (e.clientX - r.left) / r.width));
+      this.draw(this.o.clock.nowMs());
+    };
+    el.addEventListener("pointerdown", (e) => {
+      if (this.o.clock.isPlaying() || this.asking) return;
+      on = true;
+      (el as { setPointerCapture?: (id: number) => void }).setPointerCapture?.((e as PointerEvent).pointerId);
+      set(e);
+    });
+    el.addEventListener("pointermove", (e) => {
+      if (on) set(e);
+    });
+    for (const end of ["pointerup", "pointercancel"]) el.addEventListener(end, () => (on = false));
+  }
+
   private mount(sceneId: string): void {
     const spec = this.sceneById.get(sceneId)!;
     // the scene just before in the order of the lesson; its elements are kept only if it is the one on the stage now (ADR 0067)
@@ -343,6 +373,8 @@ export class Player {
       }
       const el = (mounted && obj.carryFrom !== undefined ? kept.get(obj.carryFrom) : undefined) ?? document.createElement("div");
       el.dataset.objectId = obj.id;
+      const sweep = obj.component === "functionGraph" ? Sweep.safeParse((obj.props as { sweep?: unknown }).sweep) : null;
+      if (sweep?.success) this.makeDraggable(el, obj.id, sweep.data);
       this.els.set(obj.id, el);
       this.events.set(obj.id, eventsFor(this.o.timeline, sceneId, obj.id));
       this.stage.append(el);
