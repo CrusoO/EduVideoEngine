@@ -4,7 +4,7 @@ import { syntheticDurationMs, type Approval } from "@eve/gates";
 import { resolve } from "@eve/resolver";
 import type { AudioTrack, LessonBundle } from "@eve/schema";
 import { ARC_PLANNER_VERSION, planArc } from "../arcplan";
-import { assembleLesson, type AssembleResult } from "../lesson/assemble";
+import { assembleLesson, type AssembleResult, type Features } from "../lesson/assemble";
 import { PADDING_TRANSITIONS } from "../lesson/sentences";
 import { lessonContext, type LessonContext } from "../lesson/context";
 import type { ArcPlan, LessonScript } from "../lesson/types";
@@ -24,6 +24,8 @@ export type BuildInput = {
   /** Run the SymPy verifier (default true). A lesson is `publishable` only when it ran. */
   verify?: boolean;
   approvals?: readonly Approval[];
+  /** Build without signalling highlights or carried objects, to compare with a lesson built with them (ADR 0066, 0067). */
+  features?: Features;
   log?: (line: string) => void;
 };
 
@@ -75,7 +77,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
 
   log("assembling the lesson");
   const padded: Record<string, number> = {};
-  let assembled = assembleLesson(ctx, planned.plan, scripted.script);
+  let assembled = assembleLesson(ctx, planned.plan, scripted.script, { features: input.features });
   let tracks: AudioTrack[];
   let voice: VoiceOutput | undefined;
   let assurance: Assurance;
@@ -94,7 +96,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     // the plan records the measured length; only the length differs, so the sentences and their audio stay valid
     try {
       const lengthS = Math.max(1, Math.ceil(resolve(assembled.bundle, tracks).totalMs / 1000));
-      if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, planned.plan, scripted.script, { targetLengthS: lengthS, extraTransitions: padded });
+      if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, planned.plan, scripted.script, { targetLengthS: lengthS, extraTransitions: padded, features: input.features });
     } catch {
       // a lesson that cannot be resolved is reported by the assurance below
     }
@@ -105,7 +107,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     if (tooShort.length === 0) break;
     for (const id of tooShort) padded[id] = (padded[id] ?? 0) + 1;
     log(`  the scene of ${tooShort.join(", ")} is too short to read: one more transition`);
-    assembled = assembleLesson(ctx, planned.plan, scripted.script, { extraTransitions: padded });
+    assembled = assembleLesson(ctx, planned.plan, scripted.script, { extraTransitions: padded, features: input.features });
   }
   if (input.verify !== false) assurance = await assure(true);
   const u = used();

@@ -43,7 +43,7 @@ export function altTextFor(scene: SceneSpec, expressions: Readonly<Record<string
  *  3. the alt text is described from the scene.
  * `claims` are the claims of the lesson that this scene's beat makes.
  */
-export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentences: readonly NarrationSentence[], expressions: Readonly<Record<string, Expr>>, locale: string): SceneSpec {
+export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentences: readonly NarrationSentence[], expressions: Readonly<Record<string, Expr>>, locale: string, signalling = true): SceneSpec {
   const objects = scene.objects.map((o) => {
     const isTitle = o.component === "text" && (o.props as { role?: string }).role === "title" && canBeStatic((o.props as { text?: string }).text ?? "");
     return isTitle ? { ...o, role: "static" as const, textRole: "title" as const } : o;
@@ -83,7 +83,7 @@ export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentence
     const point = had || o.carryFrom !== undefined;
     cues.push({ targetObject: o.id, action: point ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: point ? 800 : 1500 });
   }
-  cues.push(...signallingCues(objects, cues, sentences, position));
+  if (signalling) cues.push(...signallingCues(objects, cues, sentences, position));
   return { ...scene, objects, cues, a11y: { altText: altTextFor({ ...scene, objects }, expressions, locale) } };
 }
 

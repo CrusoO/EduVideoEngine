@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson Lab</title>
+<style>
+:root{--bg:#0b0d14;--panel:#121624;--panel2:#171b2a;--line:#262b40;--text:#e6e8f0;--muted:#8a90a6;--blue:#58c4dd;--yellow:#f5d547;--green:#83c167;--red:#fc6255;--purple:#9a72ac;--orange:#f0a060;--good:#6fcf8f;--bad:#fc6255}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,Segoe UI,Inter,sans-serif}
+header{position:sticky;top:0;z-index:20;background:#0b0d14ee;backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+h1{font-size:16px;margin:0 12px 0 0;letter-spacing:.3px}
+select,button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit}
+button{cursor:pointer}button:hover{border-color:var(--blue)}button:disabled{opacity:.5;cursor:default}
+label{color:var(--muted);font-size:12px;display:flex;gap:6px;align-items:center}
+nav{display:flex;gap:4px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:53px;z-index:19;flex-wrap:wrap}
+nav button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:10px 14px;color:var(--muted)}
+nav button.on{color:var(--text);border-bottom-color:var(--blue)}
+main{padding:20px;max-width:1500px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:15px}.card .sub{color:var(--muted);font-size:12px;margin-bottom:10px}
+table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:500;font-size:12px}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font-size:11px;border:1px solid var(--line);color:var(--muted)}
+.pill.ok{color:var(--good);border-color:#2f6b45}.pill.bad{color:var(--bad);border-color:#7a2f2a}.pill.warn{color:var(--yellow);border-color:#6b5d1f}
+.good{color:var(--good)}.bad{color:var(--bad)}.muted{color:var(--muted)}
+.role{display:inline-block;min-width:68px;text-align:center;border-radius:4px;padding:0 6px;font-size:11px;color:#0b0d14}
+.r-goal{background:var(--blue)}.r-claim{background:var(--green)}.r-link{background:var(--purple)}.r-transition{background:#8a90a6}.r-question{background:var(--yellow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:1000px){.grid2{grid-template-columns:1fr}}
+details{border:1px solid var(--line);border-radius:8px;margin:8px 0;background:var(--panel2)}summary{cursor:pointer;padding:8px 12px;color:var(--text)}details>div{padding:4px 12px 12px}
+pre{background:#0b0d14;border:1px solid var(--line);border-radius:6px;padding:10px;overflow:auto;max-height:320px;font-size:12px;margin:6px 0}
+code{font-family:ui-monospace,Consolas,monospace;font-size:12px}
+.stage{display:flex;gap:14px}.stage .n{flex:none;width:34px;height:34px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--blue);font-weight:600}
+.stage .body{flex:1;min-width:0}.stage h2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kpis{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0}.kpi{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:110px}.kpi b{display:block;font-size:18px}.kpi span{color:var(--muted);font-size:11px}
+/* timeline */
+.tl{position:relative;border:1px solid var(--line);border-radius:8px;background:#0e111b;overflow-x:auto;padding:8px 0}
+.tl .inner{position:relative;margin-left:150px;margin-right:16px}
+.tl .row{position:relative;height:26px;margin:3px 0}.tl .lab{position:absolute;left:-146px;width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--muted);line-height:26px;text-align:right}
+.tl .blk{position:absolute;top:2px;height:22px;border-radius:4px;font-size:10px;line-height:22px;padding:0 4px;overflow:hidden;white-space:nowrap;color:#0b0d14;cursor:default}
+.tl .blk.sent{cursor:pointer}.tl .blk.scene{background:#2a3150;color:var(--text);border:1px solid #3a4470}
+.tl .bar{position:absolute;top:9px;height:8px;border-radius:4px;background:#2a3150}
+.tl .bar.carried{background:#3c5a3c}
+.tl .cue{position:absolute;top:4px;width:10px;height:18px;margin-left:-5px;border-radius:3px;border:1px solid #0b0d14}
+.tl .hold{position:absolute;top:11px;height:4px;border-radius:2px;opacity:.55}
+.tl .gap{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#fc625522 0 6px,#fc625511 6px 12px);border-left:1px dashed #fc625588;border-right:1px dashed #fc625588}
+.tl .pause{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--yellow)}
+.tl .axis{position:relative;height:18px;margin-bottom:4px}.tl .tick{position:absolute;top:0;font-size:10px;color:var(--muted);border-left:1px solid var(--line);padding-left:3px;height:18px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.a-reveal{background:var(--blue)}.a-highlight{background:var(--yellow)}.a-dim{background:#8a90a6}.a-draw{background:var(--green)}.a-pop{background:var(--purple)}.a-morph{background:var(--orange)}.a-move{background:#4ecdc4}
+.delta.good{color:var(--good)}.delta.bad{color:var(--bad)}
+.frame{width:100%;height:760px;border:1px solid var(--line);border-radius:10px;background:#000}
+.toast{position:fixed;right:16px;bottom:16px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 14px;max-width:520px;white-space:pre-wrap;font-size:12px;display:none;z-index:50}
+.scenecard h3{margin:0 0 6px;font-size:14px}.chip{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:1px 8px;margin:2px 4px 2px 0;font-size:12px}.chip.carry{border-color:#3c5a3c;color:var(--good)}.chip.morph{border-color:#7a5a2f;color:var(--orange)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Lesson Lab</h1>
+  <label>Lesson <select id="selA"></select></label>
+  <label>Compare with <select id="selB"></select></label>
+  <button id="rebuild">Rebuild both (replay)</button>
+  <span class="muted" id="status"></span>
+</header>
+<nav id="tabs"></nav>
+<main id="main"></main>
+<div class="toast" id="toast"></div>
+<script>
+const TABS=[["compare","Compare"],["pipeline","Pipeline"],["timeline","Timeline"],["scenes","Scenes & cues"],["script","Script & claims"],["player","Player"]];
+const ACTIONS=["reveal","highlight","dim","draw","pop","morph","move"];
+const S={lessons:[],A:null,B:null,tab:location.hash.slice(1)||"compare",data:{},player:{}};
+const $=(s,r=document)=>r.querySelector(s);
+const esc=t=>String(t??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sec=ms=>(ms/1000).toFixed(1)+" s";
+const toast=(t,keep)=>{const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(toast.t);if(!keep)toast.t=setTimeout(()=>e.style.display="none",6000)};
+const get=async u=>{const r=await fetch(u);if(!r.ok)throw new Error(await r.text());return r.json()};
+const load=async id=>S.data[id]||(S.data[id]=await get("/api/lesson?id="+encodeURIComponent(id)));
+const label=l=>(l.group==="current"?"Improved":"Baseline")+" · "+l.folder.replace("bundle.generated.","");
+
+async function init(){
+  S.lessons=await get("/api/lessons");
+  const cur=S.lessons.filter(l=>l.group==="current"),base=S.lessons.filter(l=>l.group==="baseline");
+  S.A=(cur[0]||S.lessons[0])?.id;S.B=(base[0]||S.lessons[1]||S.lessons[0])?.id;
+  const opts=S.lessons.map(l=>`<option value="${esc(l.id)}">${esc(label(l))}</option>`).join("");
+  $("#selA").innerHTML=opts;$("#selB").innerHTML=opts;$("#selA").value=S.A;$("#selB").value=S.B;
+  $("#selA").onchange=e=>{S.A=e.target.value;render()};$("#selB").onchange=e=>{S.B=e.target.value;render()};
+  $("#tabs").innerHTML=TABS.map(([k,n])=>`<button data-k="${k}">${n}</button>`).join("");
+  $("#tabs").onclick=e=>{const k=e.target.dataset.k;if(k){S.tab=k;location.hash=k;render()}};
+  $("#rebuild").onclick=rebuild;
+  render();
+}
+async function rebuild(){
+  const b=$("#rebuild");b.disabled=true;toast("Rebuilding the improved and the baseline lesson from the recorded model answers (no model call)…",true);
+  try{const r=await fetch("/api/rebuild",{method:"POST"});const j=await r.json();S.data={};S.lessons=await get("/api/lessons");toast(j.ok?"Rebuilt.\n"+j.log.slice(-600):"Build failed:\n"+j.log.slice(-900),!j.ok);render()}
+  catch(e){toast(String(e),true)}finally{b.disabled=false}
+}
+async function render(){
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.k===S.tab));
+  const main=$("#main");$("#status").textContent="";
+  if(!S.A){main.innerHTML='<div class="card">No built lesson found. Run <code>pnpm lesson:build MATH.ALG.QUAD.SUM_OF_ROOTS</code> (and with <code>--baseline</code>), or press Rebuild.</div>';return}
+  try{
+    const A=await load(S.A),B=S.B&&S.B!==S.A?await load(S.B):null;
+    main.innerHTML="";const v=VIEWS[S.tab]||VIEWS.compare;await v(main,A,B);
+  }catch(e){main.innerHTML='<div class="card bad">'+esc(e.message||e)+"</div>"}
+}
+
+/* ---------- shared pieces ---------- */
+function kpis(items){return '<div class="kpis">'+items.map(([n,l])=>`<div class="kpi"><b>${n}</b><span>${l}</span></div>`).join("")+"</div>"}
+function legend(){return '<div class="legend">'+ACTIONS.map(a=>`<span><i class="a-${a}"></i>${a}</span>`).join("")+'<span><i style="background:repeating-linear-gradient(45deg,#fc6255 0 3px,#0e111b 3px 6px)"></i>nothing changes for over 12 s</span><span><i style="background:var(--yellow)"></i>pause-and-ask</span><span><i style="background:#3c5a3c"></i>carried object</span></div>'}
+function timeline(l,{clickAudio=true}={}){
+  const T=l.totalMs,W=Math.max(1100,Math.round(T/1000*14)),pos=ms=>(ms/T*100).toFixed(3)+"%";
+  const root=document.createElement("div");root.className="tl";
+  let h=`<div class="inner" style="width:${W}px"><div class="axis">`;
+  for(let s=0;s<=T/1000;s+=10)h+=`<div class="tick" style="left:${pos(s*1000)}">${s}s</div>`;
+  h+="</div>";
+  h+=`<div class="row"><div class="lab">scenes</div>`+l.scenes.map(s=>{const b=l.beats.find(x=>x.id===s.beatId)||{};return`<div class="blk scene" title="${esc(s.id+" · "+(b.beatKind||"")+" · "+(b.pattern||""))}" style="left:${pos(s.startMs)};width:calc(${pos(s.endMs-s.startMs)} - 2px)">${esc(s.beatId)} ${esc(b.beatKind||"")} · ${esc(b.pattern||"")}</div>`}).join("")+"</div>";
+  h+=`<div class="row"><div class="lab">narration</div>`+l.sentences.map(s=>`<div class="blk sent r-${s.role}" data-file="${esc(s.file||"")}" title="${esc(s.id+" ["+s.role+"] "+s.text)}" style="left:${pos(s.startMs)};width:calc(${pos(s.endMs-s.startMs)} - 1px)">${esc(s.id)}</div>`).join("")+"</div>";
+  const prev={};
+  for(const sc of l.scenes)for(const o of sc.objects){
+    if(o.static)continue;
+    const cues=sc.cues.filter(c=>c.target===o.id);
+    const carried=o.carryFrom&&prev[o.carryFrom];
+    let row=`<div class="row"><div class="lab" title="${esc(sc.id+"/"+o.id)}">${esc(sc.beatId)}/${esc(o.id)} <span style="opacity:.6">${esc(o.component)}</span></div>`;
+    row+=`<div class="bar${o.carryFrom?" carried":""}" style="left:${pos(sc.startMs)};width:${pos(sc.endMs-sc.startMs)}"></div>`;
+    if(carried)row+=`<div class="blk" style="left:calc(${pos(sc.startMs)} - 56px);width:54px;background:none;color:var(--good);font-size:10px" title="carried from ${esc(o.carryFrom)} of the scene before">⇠ carried</div>`;
+    for(const c of cues){row+=`<div class="hold a-${c.action}" style="left:${pos(c.atMs)};width:${pos(Math.max(0,c.holdUntilMs-c.atMs))}"></div><div class="cue a-${c.action}" title="${esc(c.action+(c.part?" #"+c.part:"")+" · "+c.sentenceId+" "+c.at+" · "+sec(c.atMs))}" style="left:${pos(c.atMs)}"></div>`}
+    for(const g of sc.staticGaps)row+=`<div class="gap" style="left:${pos(g.fromMs)};width:${pos(g.toMs-g.fromMs)}"></div>`;
+    for(const p of sc.pauses)row+=`<div class="pause" style="left:${pos(p.atMs)}" title="pause-and-ask: ${esc(p.prompt)}"></div>`;
+    row+="</div>";h+=row;
+  }
+  for(const sc of l.scenes)for(const o of sc.objects)prev[o.id]=1;
+  h+="</div>";root.innerHTML=h;
+  if(clickAudio)root.querySelectorAll(".sent").forEach(e=>e.onclick=()=>{if(!e.dataset.file)return;const a=new Audio(`/audio/${l.id}/${e.dataset.file}`);a.play()});
+  return root;
+}
+function qualityList(l){
+  const f=l.quality.findings;if(!f.length)return '<p class="good">No findings.</p>';
+  return"<table><tr><th>Finding</th><th>Beat</th><th>What</th></tr>"+f.map(x=>`<tr><td><span class="pill warn">${esc(x.code)}</span></td><td>${esc(x.beatId||"")}</td><td>${esc(x.message)}</td></tr>`).join("")+"</table>";
+}
+
+/* ---------- views ---------- */
+const VIEWS={};
+VIEWS.compare=async(main,A,B)=>{
+  const rows=await get("/api/compare-rows");
+  let h=`<div class="card"><h2>Are things better? ${esc(label(A))}${B?" vs "+esc(label(B)):""}</h2><div class="sub">Deterministic checks on the built lesson. Green means the number moved the right way. These measure structure and attention cues, not whether a student learns more.</div>`;
+  h+="<table><tr><th>Measure</th><th class=num>"+esc(A.group)+"</th>"+(B?"<th class=num>"+esc(B.group)+"</th><th class=num>Change</th>":"")+"</tr>";
+  for(const r of rows){
+    const a=r.a[A.id],b=B?r.a[B.id]:null;let d="";
+    if(B){const diff=Math.round((a-b)*10)/10;const cls=diff===0||r.lowerIsBetter===null?"":((r.lowerIsBetter?diff<0:diff>0)?"good":"bad");d=`<td class="num delta ${cls}">${diff>0?"+":""}${diff}</td>`}
+    h+=`<tr><td>${esc(r.label)}</td><td class=num>${a}</td>${B?`<td class=num>${b}</td>${d}`:""}</tr>`;
+  }
+  h+="</table></div>";
+  h+=`<div class="card"><h2>Both timelines, same scale</h2><div class="sub">Where the screen changes while the narrator talks. Hatched: more than 12 s with nothing changing. Yellow lines: pauses for the student.</div>${legend()}<div id="tlA"></div>${B?'<div style="height:14px"></div><div id="tlB"></div>':""}</div>`;
+  h+=`<div class="${B?"grid2":""}"><div class="card"><h2>Findings: ${esc(label(A))}</h2>${qualityList(A)}</div>${B?`<div class="card"><h2>Findings: ${esc(label(B))}</h2>${qualityList(B)}</div>`:""}</div>`;
+  if(B){
+    const key=f=>f.code+"|"+(f.beatId||"")+"|"+f.message;const ka=new Set(A.quality.findings.map(key)),kb=new Set(B.quality.findings.map(key));
+    const fixed=B.quality.findings.filter(f=>!ka.has(key(f))),added=A.quality.findings.filter(f=>!kb.has(key(f)));
+    h+=`<div class="card"><h2>What changed</h2><p class="good">Gone from the improved lesson (${fixed.length}):</p><ul>${fixed.map(f=>`<li>${esc(f.code)} ${esc(f.beatId||"")}: ${esc(f.message)}</li>`).join("")||"<li class=muted>none</li>"}</ul><p class="bad">New in it (${added.length}):</p><ul>${added.map(f=>`<li>${esc(f.code)} ${esc(f.beatId||"")}: ${esc(f.message)}</li>`).join("")||"<li class=muted>none</li>"}</ul></div>`;
+  }
+  main.innerHTML=h;$("#tlA").append(Object.assign(document.createElement("div"),{innerHTML:`<div class="muted" style="margin:4px 0">${esc(label(A))}</div>`}),timeline(A));
+  if(B){$("#tlB").append(Object.assign(document.createElement("div"),{innerHTML:`<div class="muted" style="margin:4px 0">${esc(label(B))}</div>`}),timeline(B))}
+};
+
+VIEWS.pipeline=async(main,A)=>{
+  const rep=A.report||{},as=rep.assurance||{};
+  const byRole={};A.sentences.forEach(s=>byRole[s.role]=(byRole[s.role]||0)+1);
+  const stages=[
+   ["Content records","What the lesson is allowed to say and show",`${A.records.length} approved records`,"ok",
+     "<table><tr><th>Id</th><th>Kind</th><th>Content</th></tr>"+A.records.map(r=>`<tr><td><code>${esc(r.id)}</code></td><td>${esc(r.kind)}</td><td class=muted>${esc(r.summary)}</td></tr>`).join("")+"</table>"],
+   ["Arc planner (model, pass 1)","Chooses the arc and one pattern per slot",`${esc(A.arc)} · ${A.beats.length} beats${rep.model?.plannerRepaired?" · repaired once":""}`,"ok",
+     "<table><tr><th>Beat</th><th>Kind</th><th>Pattern</th><th>Title</th><th>Learning goal</th></tr>"+A.beats.map(b=>`<tr><td>${esc(b.id)}</td><td>${esc(b.beatKind)}</td><td><code>${esc(b.pattern)}</code></td><td>${esc(b.title)}</td><td>${esc(b.goal)}</td></tr>`).join("")+"</table><details><summary>plan.json</summary><pre>"+esc(JSON.stringify(A.plan,null,2))+"</pre></details>"],
+   ["Scriptwriter (model, pass 2)","Rewords each approved claim into sentences",`${A.sentences.length} sentences${rep.model?.scriptRepaired?" · repaired once":""}`,"ok",
+     kpis(Object.entries(byRole).map(([r,n])=>[n,r]))+'<details><summary>script.json (what the model wrote, before code added goals and fillers)</summary><pre>'+esc(JSON.stringify(A.script,null,2))+"</pre></details>"],
+   ["Assembler (code)","Builds objects, cues, claims and ids; carries and signals",`spec ${esc(A.specVersion)} · ${A.claims.length} claims · ${A.counts.objects} objects`,"ok",
+     kpis([[A.counts.cues,"cues"],[A.counts.carried,"carried objects"],[A.counts.morphs,"morphs"],[A.counts.byAction.highlight||0,"highlights"]])+"<table><tr><th>Claim</th><th>Beat</th><th>Kind</th><th>Mode</th><th>Importance</th></tr>"+A.claims.map(c=>`<tr><td><code>${esc(c.id)}</code></td><td>${esc(c.beatId)}</td><td>${esc(c.kind)}</td><td>${esc(c.mode)}</td><td>${esc(c.importance)}</td></tr>`).join("")+"</table>"],
+   ["Voice","One audio file per sentence; its length sets all timing",A.voice?`${esc(A.voice.id||"voice")} · ${Object.keys(A.voice.files).length} files`:"no audio (timed from words)",A.voice&&A.voice.status==="development-only"?"warn":"ok",
+     `<p class="muted">Status: ${esc(A.voice?.status||"none")}. Speech ${sec(A.speechMs)}.</p><div>`+A.sentences.map(s=>s.file?`<button data-play="/audio/${esc(A.id)}/${esc(s.file)}" title="${esc(s.text)}">▶ ${esc(s.id)} ${(s.durationMs/1000).toFixed(1)}s</button> `:"").join("")+"</div>"],
+   ["Timeline (resolver)","Turns sentence anchors into milliseconds",`${sec(A.totalMs)} total · ${A.scenes.reduce((n,s)=>n+s.pauses.length,0)} pauses`,"ok","LEGEND"],
+   ["Checks (gates, validator, SymPy)","Does it pass the rules, and is the maths true",as.passes?"passes every gate":"FAILS",as.passes?"ok":"bad",
+     `<div class="kpis"><div class="kpi"><b>${as.verified?"yes":"no"}</b><span>verified by SymPy</span></div><div class="kpi"><b class="${as.publishable?"good":"bad"}">${as.publishable?"yes":"no"}</b><span>publishable</span></div></div>`+((as.findings||[]).length?"<table><tr><th>Level</th><th>Source</th><th>Code</th><th>Message</th></tr>"+as.findings.map(f=>`<tr><td><span class="pill ${f.level==="fail"?"bad":"warn"}">${esc(f.level)}</span></td><td>${esc(f.source)}</td><td>${esc(f.code)}</td><td>${esc(f.message)}</td></tr>`).join("")+"</table>":'<p class="good">No findings.</p>')+`<details><summary>verifier counts</summary><pre>${esc(JSON.stringify(as.verifierCounts,null,2))}</pre></details>`],
+   ["Quality report","The faults the gates do not judge (ADR 0065)",`${A.quality.findings.length} findings`,A.quality.findings.length?"warn":"ok",
+     kpis([[Math.round(A.quality.metrics.fillerShare*100)+"%","filler sentences"],[Math.round(A.quality.metrics.revealShare*100)+"%","reveal-only cues"],[sec(A.quality.metrics.longestStaticMs||0),"longest unchanged"],[A.quality.metrics.explanationSentences,"sentences that explain"]])+qualityList(A)],
+   ["Player","The result a student sees","open the Player tab","ok",'<p>Use the <b>Player</b> tab to play this lesson with its voice.</p>'],
+  ];
+  main.innerHTML=stages.map((s,i)=>`<div class="card stage"><div class="n">${i+1}</div><div class="body"><h2>${esc(s[0])} <span class="pill ${s[3]}">${s[2]}</span></h2><div class="sub">${esc(s[1])}</div><div class="det">${s[4]==="LEGEND"?"":s[4]}</div></div></div>`).join("");
+  const tlCard=main.querySelectorAll(".stage")[5].querySelector(".det");tlCard.innerHTML=legend();tlCard.append(timeline(A));
+  main.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>new Audio(b.dataset.play).play());
+};
+
+VIEWS.timeline=async(main,A,B)=>{
+  main.innerHTML=`<div class="card"><h2>${esc(label(A))}</h2><div class="sub">Each object has a row. Coloured markers are the moments its cues fire; click a narration block to hear that sentence. Wide bars show how long a cue holds.</div>${legend()}<div id="t1"></div></div>`+(B?`<div class="card"><h2>${esc(label(B))}</h2><div id="t2"></div></div>`:"");
+  $("#t1").append(timeline(A));if(B)$("#t2").append(timeline(B));
+};
+
+VIEWS.scenes=async(main,A)=>{
+  main.innerHTML=A.scenes.map(sc=>{
+    const b=A.beats.find(x=>x.id===sc.beatId)||{};
+    const chips=sc.objects.map(o=>`<span class="chip ${o.carryFrom?"carry":""} ${o.from?"morph":""}"><b>${esc(o.id)}</b> ${esc(o.component)}${o.exprRef?" · "+esc(o.exprRef):""}${o.carryFrom?` · ⇠ carried from <b>${esc(o.carryFrom)}</b>`:""}${o.from?` · morphs from ${esc(o.from)}`:""}${o.static?" · static":""}</span>`).join("");
+    const rows=sc.cues.slice().sort((a,b)=>a.atMs-b.atMs).map(c=>{const s=A.sentences.find(x=>x.id===c.sentenceId);return`<tr><td class=num>${sec(c.atMs)}</td><td><span class="pill" style="color:#0b0d14" ><i class="a-${c.action}" style="display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px"></i><span style="color:var(--text)">${esc(c.action)}</span></span></td><td><code>${esc(c.target)}${c.part?"#"+esc(c.part):""}</code></td><td>${esc(c.sentenceId)} <span class="muted">${esc(c.at)}</span></td><td class="muted">${esc(s?s.text.replace(/\{expr:([^}]+)\}/g,"⟦$1⟧"):"")}</td></tr>`}).join("");
+    return`<div class="card scenecard"><h3>${esc(sc.id)} · ${esc(b.beatKind||"")} · <code>${esc(b.pattern||"")}</code> <span class="muted">${sec(sc.startMs)} – ${sec(sc.endMs)}</span></h3><div class="sub">${esc(b.goal||"")}</div><div>${chips}</div>${sc.pauses.map(p=>`<div class="pill warn" style="margin:4px 4px 0 0">pause at ${sec(p.atMs)}: ${esc(p.prompt)}</div>`).join("")}<table style="margin-top:8px"><tr><th class=num>When</th><th>Action</th><th>Target</th><th>Sentence</th><th>Spoken then</th></tr>${rows}</table></div>`}).join("");
+};
+
+VIEWS.script=async(main,A)=>{
+  let h=`<div class="card"><h2>Narration in order</h2><div class="sub">Every sentence, with the role that code gave it. Goal and transition sentences come from code; claim and link sentences are the model's rewording of approved claims.</div><table><tr><th>Id</th><th>Role</th><th>Text (⟦…⟧ is spoken maths)</th><th>Claim</th><th class=num>Words</th><th class=num>Length</th><th></th></tr>`;
+  let beat="";
+  for(const s of A.sentences){if(s.beatId!==beat){beat=s.beatId;const b=A.beats.find(x=>x.id===beat)||{};h+=`<tr><td colspan=7 style="background:var(--panel2);color:var(--blue)">${esc(beat)} · ${esc(b.beatKind||"")} · ${esc(b.title||"")}</td></tr>`}
+    h+=`<tr><td><code>${esc(s.id)}</code></td><td><span class="role r-${s.role}">${esc(s.role)}</span></td><td>${esc(s.text.replace(/\{expr:([^}]+)\}/g,"⟦$1⟧"))}</td><td class=muted>${esc(s.claimId||"")}</td><td class=num>${s.words}</td><td class=num>${(s.durationMs/1000).toFixed(1)} s</td><td>${s.file?`<button data-play="/audio/${esc(A.id)}/${esc(s.file)}">▶</button>`:""}</td></tr>`}
+  h+="</table></div>";main.innerHTML=h;main.querySelectorAll("[data-play]").forEach(b=>b.onclick=()=>new Audio(b.dataset.play).play());
+};
+
+VIEWS.player=async(main,A,B)=>{
+  const ids=[A,...(B?[B]:[])];
+  main.innerHTML=`<div class="card"><h2>Play it</h2><div class="sub">Starts the real player on the lesson folder, with its voice. Scrub to a scene change to see carried objects move.</div>${ids.map(l=>`<button data-id="${esc(l.id)}">Start player: ${esc(label(l))}</button> `).join("")}<div id="pf" style="margin-top:12px"></div></div>`;
+  main.querySelectorAll("button[data-id]").forEach(b=>b.onclick=async()=>{b.disabled=true;toast("Starting the player…");try{const j=await (await fetch("/api/play?id="+encodeURIComponent(b.dataset.id),{method:"POST"})).json();if(!j.ok)throw new Error(j.error);for(let i=0;i<40;i++){try{await fetch(j.url,{mode:"no-cors"});break}catch{await new Promise(r=>setTimeout(r,400))}}$("#pf").innerHTML=`<div class="muted" style="margin-bottom:6px">${esc(b.textContent.replace("Start player: ",""))} · <a style="color:var(--blue)" href="${esc(j.url)}" target="_blank">open in its own tab</a></div><iframe class="frame" src="${esc(j.url)}"></iframe>`;$("#toast").style.display="none"}catch(e){toast(String(e),true)}b.disabled=false});
+};
+init();
+</script>
+</body>
+</html>

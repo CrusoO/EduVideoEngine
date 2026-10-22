@@ -1,5 +1,6 @@
 /**
- * pnpm lesson:build <skillId> [--level class-10] [--locale en-IN] [--out dist/lessons] [--no-voice] [--no-verify]
+ * pnpm lesson:build <skillId> [--level class-10] [--locale en-IN] [--out dist/lessons] [--no-voice] [--no-verify] [--baseline]
+ * --baseline builds without signalling highlights and carried objects (ADR 0066, 0067) into dist/lab-baseline, to compare in the lab (pnpm lesson:lab).
  *
  * The whole compile for one skill (ADR 0061): plan the arc, write the script, assemble the bundle, voice every sentence with the development voice, and judge the
  * lesson with the validator, gates G1 to G7, the resolver, the layout checks and the SymPy verifier. Writes the package to <out>/<bundle id>/ (lesson.json, plan.json,
@@ -25,7 +26,8 @@ if (!skillId) {
 }
 const locale = option("locale", "en-IN");
 const level = option("level", "class-10");
-const out = resolve(REPO_ROOT, option("out", join("dist", "lessons")));
+const baseline = flag("baseline");
+const out = resolve(REPO_ROOT, option("out", join("dist", baseline ? "lab-baseline" : "lessons")));
 
 const { records, problems } = loadStore(resolve(REPO_ROOT, "content"));
 if (problems.length > 0) {
@@ -50,6 +52,7 @@ const result = await buildLesson({
   level,
   voice: flag("no-voice") ? "synthetic" : { dir: join(dir, "voice"), synth: piperSynthesizer(tools) },
   verify: !flag("no-verify"),
+  ...(baseline ? { features: { signalling: false, carry: false } } : {}),
   log: (l) => console.log(l),
 }).catch((e: unknown) => {
   if ((e as { fatal?: boolean }).fatal === true) {

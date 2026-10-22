@@ -28,11 +28,16 @@ export const LEGACY_KIND: Record<PedagogyBeatKind, LessonBundle["plan"]["beats"]
 };
 const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first" } as const;
 
+/** What ADR 0066 and 0067 added to a lesson, each on by default. Both off builds the lesson as it was before them. */
+export type Features = { signalling?: boolean; carry?: boolean };
+
 export type AssembleOptions = {
   /** The length to record in the plan, in seconds (the measured length once there is audio). Estimated from the words otherwise. */
   targetLengthS?: number;
   /** How many transitions to add after the first in a beat that has no claims, by beat id: a beat that must last longer for its scene to be read (the build asks for it). */
   extraTransitions?: Readonly<Record<string, number>>;
+  /** Switch off what ADR 0066 and 0067 added, to build the lesson as it was before them and compare (the inspection tool, `pnpm lesson:build --baseline`). Both default to on. */
+  features?: Features;
 };
 
 export type AssembleResult = {
@@ -91,7 +96,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
     const problem = Object.entries(b.retrieval.expressions).find(([, e]) => e.op === "eq")?.[0] ?? Object.keys(expressions)[0]!;
     const outcome = composeSceneSync(
       sceneCtx,
-      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale),
+      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),
     );
     composed.push(outcome.scene);
@@ -100,7 +105,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   }
   // objects that stay from one scene to the next, and equations that turn into an equivalent one (ADR 0067, 0068); a scene that used the plain template is left alone
   const reviewed = new Set(fallbacks.map((f) => f.beatId));
-  const scenes = applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
+  const scenes = options.features?.carry === false ? composed : applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
 
   const claims: Claim[] = built.beats.flatMap((b) => b.claims);
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];

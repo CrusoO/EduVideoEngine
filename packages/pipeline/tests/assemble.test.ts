@@ -28,6 +28,21 @@ describe("persistent objects in the assembled lesson (ADR 0067)", () => {
   });
 });
 
+describe("building without what ADR 0066 and 0067 added (the baseline of the inspection tool)", () => {
+  const off = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false, carry: false } }).bundle;
+  it("has no carried object, so it is not a 2.2.0 bundle, and it validates", () => {
+    expect(off.scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined))).toBe(false);
+    expect(off.specVersion).not.toBe("2.2.0");
+    expect(validateBundle(off).ok).toBe(true);
+  });
+  it("each switch works on its own", () => {
+    const noCarry = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { carry: false } }).bundle;
+    expect(noCarry.scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined))).toBe(false);
+    const noSignal = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false } }).bundle;
+    expect(noSignal.scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined))).toBe(true);
+  });
+});
+
 describe("the reference lesson, assembled from its plan and its sentences", () => {
   it("is a native lesson on the problem_first arc, one beat and one scene per slot", () => {
     const { bundle } = result;

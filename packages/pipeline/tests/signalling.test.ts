@@ -22,6 +22,12 @@ describe("signalling: an equation is highlighted when a later sentence speaks it
     expect(SIGNAL_HOLD_MS).toBe(800);
   });
 
+  it("adds nothing when signalling is switched off (the baseline build)", () => {
+    const off = finishScene(scene([obj("eq", "equation", "quad.eq")], [reveal("eq", "s1.2")]), [sum], sentences, E, "en-IN", false);
+    expect(signals(off)).toEqual([]);
+    expect(signals(finish([obj("eq", "equation", "quad.eq")], [reveal("eq", "s1.2")]))).toHaveLength(1);
+  });
+
   it("keeps the pattern's own cues, in front of the new ones", () => {
     const own = [reveal("eq", "s1.2")];
     expect(finish([obj("eq", "equation", "quad.eq")], own).cues.slice(0, 1)).toEqual(own);
