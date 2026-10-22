@@ -29,7 +29,7 @@ describe("persistent objects in the assembled lesson (ADR 0067)", () => {
 });
 
 describe("building without what ADRs 0066 to 0071 added (the baseline of the inspection tool)", () => {
-  const off = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false, carry: false, sweep: false, writeOn: false } }).bundle;
+  const off = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT, { features: { signalling: false, carry: false, motion: false, writeOn: false } }).bundle;
   it("has no carried object, so it is not a 2.2.0 bundle, and it validates", () => {
     expect(off.scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined))).toBe(false);
     expect(off.specVersion).not.toBe("2.2.0");
@@ -74,7 +74,7 @@ describe("the reference lesson, assembled from its plan and its sentences", () =
     expect(bundle.script.find((s) => s.role === "question")).toMatchObject({ id: "s6.2", beatId: "b6", questionId: "quad.sum.q.recall", text: "What do the roots of {expr:quad.q.eq} add up to?" });
   });
 
-  it("makes the claims the records stand for: derived for the worked beat, stated for the concept beats, the answer for the check", () => {
+  it("makes the claims the records stand for: derived for the worked beat, stated for the concept beats, the answer for the check and the roots it draws", () => {
     const claims = result.bundle.claims!;
     expect(claims.map((c) => [c.id, c.beatId, c.kind, c.claimMode, c.importance])).toEqual([
       ["quad.factorise.claim.b2", "b2", "equivalent", "computed", "support"],
@@ -86,6 +86,7 @@ describe("the reference lesson, assembled from its plan and its sentences", () =
       ["c.quad.sum.steps.sum.1", "b4", "sum-of-roots", "computed", "core"],
       ["quad.sum.claim.mistake", "b5", "statement", "grounded", "support"],
       ["quad.sum.q.recall.answer.b6", "b6", "sum-of-roots", "computed", "core"],
+      ["quad.sum.q.recall.roots.b6", "b6", "roots", "computed", "support"], // the roots the check draws, found by code and proved (ADR 0073)
     ]);
     expect(claims.find((c) => c.id === "quad.sum.claim.vieta")!.dependsOn).toEqual(["quad.sum.claim.root"]);
   });
@@ -112,7 +113,7 @@ describe("the reference lesson, assembled from its plan and its sentences", () =
 
   it("describes every scene in words made from the scene", () => {
     const alts = result.bundle.scenes.map((s) => s.a11y.altText);
-    expect(alts[0]).toBe("The title Guess the sum. An equation: x squared minus five x plus six equals zero. An equation: two plus three equals five.");
+    expect(alts[0]).toBe("The title Guess the sum. An equation: x squared minus five x plus six equals zero. An equation: two plus three equals five. A number line with 2 hops.");
     expect(alts[4]).toBe("The title A common mistake. Add the roots, not the numbers.");
   });
 });

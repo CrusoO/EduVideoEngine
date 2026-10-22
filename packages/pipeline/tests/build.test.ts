@@ -95,7 +95,8 @@ describe("the whole build, with the model's answers scripted", () => {
     const out = await buildLesson({ client: client([wordy, scriptAnswer]).c, store: STORE, skillId: SKILL, voice: "synthetic", approvals, log: (l) => lines.push(l) });
     if (!out.ok) throw new Error("build failed");
     expect(lines.some((l) => /the scene of b1 is too short to read: one more transition/.test(l))).toBe(true);
-    expect(out.bundle.script.filter((s) => s.beatId === "b1").map((s) => s.role)).toEqual(["goal", "transition", "transition"]);
+    // the hook also draws the hops of its answer (ADR 0072), which takes longer to read: a scene needs a third transition
+    expect(out.bundle.script.filter((s) => s.beatId === "b1").map((s) => s.role)).toEqual(["goal", "transition", "transition", "transition"]);
     expect(out.assurance).toMatchObject({ passes: true, publishable: true, verified: true });
     expect(out.assurance.findings.filter((f) => f.code === "reading-time")).toEqual([]);
   }, 120_000);

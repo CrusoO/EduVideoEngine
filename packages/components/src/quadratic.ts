@@ -1,4 +1,4 @@
-import { evaluate, rational, type Expr, type Rat } from "@eve/schema";
+import { evaluate, rational, sub, type Expr, type Rat } from "@eve/schema";
 
 /** The coefficients of a quadratic in x: a x^2 + b x + c. */
 export type Quadratic = { a: number; b: number; c: number };
@@ -36,3 +36,24 @@ export const showNumber = (v: number): string => {
   const r = Math.round(v * 100) / 100;
   return (Object.is(r, -0) ? 0 : r).toString().replace("-", "−");
 };
+
+/**
+ * The roots of an equation in x that has one or two whole-number roots, found from the equation by code and each checked by exact substitution (the left side
+ * minus the right side is exactly zero there), smaller first; null when it is not a quadratic or a linear equation in x, or a root is not a whole number. These
+ * are the numbers a picture may show before the verifier has seen them: the claim that goes with them is proved by SymPy (ADR 0073).
+ */
+export function wholeRootsOfEquation(equation: Expr): number[] | null {
+  if (equation.op !== "eq") return null;
+  const f = sub(equation.a, equation.b);
+  const q = quadraticOf(f);
+  if (!q) return null;
+  const roots = quadraticRoots(q);
+  if (roots.length === 0 || roots.length > 2) return null;
+  const whole = roots.map((r) => Math.round(r));
+  if (whole.some((w, i) => Math.abs(w - roots[i]!) > 1e-9)) return null;
+  for (const w of whole) {
+    const v = evaluate(f, { x: rational(w) });
+    if (v === null || v.n !== 0n) return null;
+  }
+  return whole;
+}

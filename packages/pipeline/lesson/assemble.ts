@@ -7,6 +7,7 @@ import { composeSceneSync } from "../scene/compose";
 import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
 import { applyCarry, type CarryBeat } from "./carry";
+import { previewCheckHops, previewHops } from "./preview";
 import { finishScene } from "./scene";
 import { writeOn } from "./style";
 import { sentencesOf } from "./sentences";
@@ -29,8 +30,8 @@ export const LEGACY_KIND: Record<PedagogyBeatKind, LessonBundle["plan"]["beats"]
 };
 const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first" } as const;
 
-/** What ADRs 0066 to 0071 added to a lesson, each on by default. All off builds the lesson as it was before them. */
-export type Features = { signalling?: boolean; carry?: boolean; sweep?: boolean; writeOn?: boolean };
+/** What ADRs 0066 to 0072 added to a lesson, each on by default. All off builds the lesson as it was before them. */
+export type Features = { signalling?: boolean; carry?: boolean; motion?: boolean; writeOn?: boolean };
 
 export type AssembleOptions = {
   /** The length to record in the plan, in seconds (the measured length once there is audio). Estimated from the words otherwise. */
@@ -97,7 +98,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
     const problem = Object.entries(b.retrieval.expressions).find(([, e]) => e.op === "eq")?.[0] ?? Object.keys(expressions)[0]!;
     const outcome = composeSceneSync(
       sceneCtx,
-      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text, sweep: options.features?.sweep !== false }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
+      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text, motion: options.features?.motion !== false }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),
     );
     composed.push(outcome.scene);
@@ -106,10 +107,21 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   }
   // objects that stay from one scene to the next, and equations that turn into an equivalent one (ADR 0067, 0068); a scene that used the plain template is left alone
   const reviewed = new Set(fallbacks.map((f) => f.beatId));
-  const carried = options.features?.carry === false ? composed : applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
+  // a hook shows its answer as the hops of the worked example (ADR 0072)
+  // and a check shows why its answer is right, with the claim that proves the roots it walks out (ADR 0073)
+  const provedHere: Claim[] = [];
+  const previewed = options.features?.motion === false ? composed : composed.map((s, i) => {
+    if (reviewed.has(s.beatId)) return s;
+    const [b, c] = [built.beats[i]!, carryBeats[i]!];
+    const hooked = previewHops(s, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    const checked = previewCheckHops(hooked, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    provedHere.push(...checked.claims);
+    return checked.scene;
+  });
+  const carried = options.features?.carry === false ? previewed : applyCarry(previewed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
   const scenes = options.features?.writeOn === false ? carried : carried.map(writeOn);
 
-  const claims: Claim[] = built.beats.flatMap((b) => b.claims);
+  const claims: Claim[] = [...built.beats.flatMap((b) => b.claims), ...provedHere];
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
   const carries = scenes.some((s) => s.cues.some((c) => c.action === "morph") || s.objects.some((o) => o.carryFrom !== undefined));
   const specVersion = carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";

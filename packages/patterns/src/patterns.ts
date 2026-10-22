@@ -1,4 +1,4 @@
-import { WORD_BUDGET, quadraticOf, quadraticRoots } from "@eve/components";
+import { WORD_BUDGET, quadraticOf, quadraticRoots, wholeRootsOfEquation } from "@eve/components";
 import { deriveClaims, recallAnswerClaim, type ContentRecord, type Retrieval } from "@eve/content";
 import { evaluate, num, termIds, type Claim, type Cue, type Expr, type SceneSpec } from "@eve/schema";
 import { TITLE_MAX_CHARS, heightCostPx } from "./cost";
@@ -195,6 +195,44 @@ const hopsOnNumberLine: Pattern<HopsContent> = {
   },
 };
 
+/**
+ * The number line of the hops of a stored solution, as an object of a scene, with the expressions of its stops: for a beat that shows the hops without being the
+ * worked example (the hook shows them with its answer, ADR 0072). Null when the solution cannot be hopped (no whole-number roots, no sum step).
+ */
+export type HopLine = { object: SceneSpec["objects"][number]; expressions: Record<string, Expr>; hops: number };
+
+/** The number line of hops through `stops` (the first is 0), with the total bracketed and labelled by the expression `total`. */
+function hopLine(sceneId: string, stops: readonly number[], total: string): HopLine {
+  const stopId = (i: number) => `${sceneId}.stop.${i}`;
+  const expressions: Record<string, Expr> = Object.fromEntries(stops.map((v, i) => [stopId(i), num(v)]));
+  const hops = stops.slice(1).map((_v, i) => ({ from: stopId(i), to: stopId(i + 1), ...(i > 0 ? { color: "green" as const } : {}) }));
+  const lo = Math.floor(Math.min(...stops)) - (Math.min(...stops) < 0 ? 1 : 0);
+  const hi = Math.ceil(Math.max(...stops)) + 1;
+  return { object: { id: "line", component: "numberLine", props: { min: Math.min(0, lo), max: hi, hops, brackets: [{ span: "hops", label: total }] } }, expressions, hops: hops.length };
+}
+
+export function hopsPreview(r: Retrieval, sceneId: string): HopLine | null {
+  const filled = hopsOnNumberLine.fill(r);
+  return filled.ok ? hopLine(sceneId, filled.content.stops, filled.content.total) : null;
+}
+
+/**
+ * The hops of a recall question whose answer is the sum of the roots (ADR 0073): the roots are found from the question's equation by code (`wholeRootsOfEquation`,
+ * each checked by exact substitution), and come with the `roots` claim that SymPy proves, so what the line shows is proved before it is shown. The bracket is
+ * labelled with the question's own answer equation, which the number line checks against the length it spans. Null for any other kind of question.
+ */
+export function checkHops(r: Retrieval, sceneId: string, beatId: string): (HopLine & { claim: Claim }) | null {
+  const filled = checkQuestion.fill(r);
+  if (!filled.ok) return null;
+  const { rec, problem, answer } = filled.content;
+  const equation = r.expressions[problem];
+  const roots = equation ? wholeRootsOfEquation(equation) : null;
+  if (rec.answerKind !== "sum-of-roots" || !roots) return null;
+  const stops = roots.reduce<number[]>((acc, v) => [...acc, acc.at(-1)! + v], [0]);
+  const claim: Claim = { id: `${rec.id}.roots.${beatId}`, beatId, kind: "roots", equation: problem, values: roots.map((v) => num(v)), sourceIds: [rec.id], claimMode: "computed", importance: "support" };
+  return { ...hopLine(sceneId, stops, answer), claim };
+}
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // 4. plot and mark the roots
 type Window = { xMin: number; xMax: number; yMin: number; yMax: number };
@@ -247,7 +285,7 @@ const plotAndMarkRoots: Pattern<PlotContent> = {
   build(c, a) {
     const cues: Cue[] = [cue(a, 0, "graph#curve", "draw", 800), ...Array.from({ length: c.roots }, (_x, i) => cue(a, i + 1, `graph#root${i}`, "pop", 300))];
     // the sweep starts on the sentence after the last root appears, so the viewer has seen the curve and its roots before they move
-    const sweep = a.sweep === true ? c.sweep : null;
+    const sweep = a.motion === true ? c.sweep : null;
     if (sweep) cues.push(cue(a, c.roots + 1, "graph", "morph", SWEEP_HOLD_MS));
     const s = scene(
       a,
@@ -367,8 +405,12 @@ const recapCard: Pattern<RecapContent> = {
     return rec?.claim ? { ok: true, content: { rec, shown: claimExpression(rec.claim) } } : { ok: false, missing: ["a conceptClaim record with a computed claim that states an equation"] };
   },
   build(c, a) {
-    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 1, "fact", "reveal", 1500)];
-    const s = scene(a, [c.rec.id], [{ id: "title", component: "text", props: { text: a.text.title!, role: "title" } }, { id: "fact", component: "equation", props: { size: "l" }, exprRef: c.shown }], [...column(["title", "fact"]), { rule: "center", item: "title" }], cues);
+    // With motion, a fact that states an equivalence is shown as the first equation turning into the second, on the sentence that says it (ADR 0072)
+    const stated = c.rec.claim!;
+    const turns = a.motion === true && stated.kind === "equivalent" && stated.a !== stated.b;
+    const cues = turns ? [cue(a, 0, "title", "reveal", 800), cue(a, 0, "fact", "reveal", 1500), cue(a, 0, "fact", "morph", 700, "end")] : [cue(a, 0, "title", "reveal", 800), cue(a, 1, "fact", "reveal", 1500)];
+    const props = turns && stated.kind === "equivalent" ? { size: "l", from: stated.a } : { size: "l" };
+    const s = scene(a, [c.rec.id], [{ id: "title", component: "text", props: { text: a.text.title!, role: "title" } }, { id: "fact", component: "equation", props, exprRef: c.shown }], [...column(["title", "fact"]), { rule: "center", item: "title" }], cues);
     const claim = { ...c.rec.claim!, id: `${c.rec.id}.${a.beatId}`, beatId: a.beatId, sourceIds: [c.rec.id], claimMode: c.rec.claimMode!, importance: c.rec.importance! } as Claim;
     return { scene: s, expressions: {}, claims: [claim], recordIds: [c.rec.id] };
   },

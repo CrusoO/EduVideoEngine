@@ -10,7 +10,7 @@ export { text, TextProps, WORD_BUDGET, applyState } from "./text";
 export { equation, EquationProps, dimmedTerms, MAX_TERMS_PER_EQUATION } from "./equation";
 export { morphProgress } from "./morph";
 export { Sweep, sweepValueAt, type SweepProps } from "./sweep";
-export { quadraticOf, quadraticRoots, showNumber, type Quadratic } from "./quadratic";
+export { quadraticOf, quadraticRoots, showNumber, wholeRootsOfEquation, type Quadratic } from "./quadratic";
 export { functionGraph, GraphProps } from "./functionGraph";
 export { stepList, StepListProps } from "./stepList";
 export { highlight, HighlightProps } from "./highlight";
