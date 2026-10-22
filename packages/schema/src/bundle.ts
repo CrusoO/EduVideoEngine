@@ -35,7 +35,9 @@ export const BEAT_KINDS = ["predict", "explore", "explain", "worked", "check"] a
 export const LEGACY_SPEC_VERSION = "1.0.0";
 export const SPEC_VERSION = "2.0.0";
 export const SPEC_VERSION_2_1 = "2.1.0";
-export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1] as const;
+/** Spec 2.2.0 is additive (ADR 0067): `carryFrom` on a component instance, an object that stays on screen from the previous scene. */
+export const SPEC_VERSION_2_2 = "2.2.0";
+export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2] as const;
 /** The claim kinds that exist from spec 2.1.0. A bundle of an earlier version may not carry them. */
 export const CLAIM_KINDS_FROM_2_1 = ["satisfied-by", "product-of-roots"] as const;
 /** What a recall practice question asks for, and so which claim the verifier proves (ADR 0042, 0053). */
@@ -116,6 +118,8 @@ export const ComponentInstance = z
     /** Spec 2.0.0 only (ADR 0032): a static object is a text title or caption, with no digits and no placeholders. */
     role: z.literal("static").optional(),
     textRole: z.enum(TEXT_ROLES).optional(),
+    /** Spec 2.2.0 only (ADR 0067): this is the object `carryFrom` of the scene just before, kept on screen. */
+    carryFrom: id.optional(),
   })
   .strict();
 
@@ -132,7 +136,7 @@ const AnchorAt = z.union([z.literal("start"), z.literal("end"), z.object({ wordI
 
 /** A cue target: an object id, or `object#part` for a named part of it (the curve of a graph, one hop of a number line). */
 export const CueTarget = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*(#[A-Za-z0-9][A-Za-z0-9_.:-]*)?$/, "a cue target is an object id, or object#part");
-/** What a cue can do. Every action must show a change or direct attention (ADR 0020); morph is not built (ADR 0021). */
+/** What a cue can do. Every action must show a change or direct attention (ADR 0020). Only an equation draws `morph`, as a cross-fade (ADR 0068); `move` is not built. */
 export const CUE_ACTIONS = ["reveal", "highlight", "move", "morph", "dim", "draw", "pop"] as const;
 
 export const Cue = z

@@ -79,6 +79,15 @@ describe("the lesson quality report", () => {
     expect(f.every((x) => x.beatId !== "b1")).toBe(true);
   });
 
+  it("redrawn-expression: an equation carried from the scene before is the same object, so it is not flagged", () => {
+    const b = fresh();
+    const before = analyseLesson(b).findings.filter((x) => x.code === "redrawn-expression" && x.beatId === "b4");
+    expect(before).toHaveLength(1);
+    b.specVersion = "2.2.0";
+    b.scenes.find((s) => s.beatId === "b4")!.objects.find((o) => o.exprRef === "quad.eq")!.carryFrom = "eq";
+    expect(analyseLesson(b).findings.filter((x) => x.code === "redrawn-expression" && x.beatId === "b4")).toHaveLength(0);
+  });
+
   it("repeated-sentence: the same claim wording in two beats is flagged once, at the later beat; different wording is not", () => {
     const b = fresh();
     const claims = b.script.filter((s) => s.role === "claim");

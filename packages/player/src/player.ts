@@ -40,6 +40,11 @@ export type PlayerOptions = {
 
 const OVERLAY = new Set(["highlight"]);
 
+/** How long a carried object takes to move from its place in the scene before to its place in this one, from the start of the scene (ADR 0067). */
+export const CARRY_MOVE_MS = 600;
+type Box = { x: number; y: number; width: number; height: number };
+const lerp = (a: number, b: number, q: number): number => Math.round((a + (b - a) * q) * 100) / 100;
+
 /**
  * Fetches the components a lesson uses (and only those): call it, and wait, before `new Player`. Each component is its own chunk, so a lesson of text and
  * equations does not download the graph or the number line (ADR 0024).
@@ -67,6 +72,12 @@ export class Player {
   private readonly sentenceText: Map<string, string>;
   private captionId: string | null = null;
   private laidKey = "";
+  /** Objects of the mounted scene that were kept from the scene before: this scene's object id to that scene's object id (ADR 0067). */
+  private carried = new Map<string, string>();
+  private carriedFrom: SceneSpec | null = null;
+  private boxes: Record<string, Box> = {};
+  private fromBoxes: Record<string, Box> = {};
+  private sceneStartMs = 0;
   private readonly colors: ReturnType<typeof colorTheme>;
   private resizeObserver: ResizeObserver | null = null;
   private readonly raf: (cb: () => void) => number;
@@ -190,8 +201,10 @@ export class Player {
     const tl = this.o.timeline;
     const scene = [...tl.scenes].reverse().find((s) => s.startMs <= t) ?? tl.scenes[0]!;
     if (scene.sceneId !== this.sceneId) this.mount(scene.sceneId);
+    this.sceneStartMs = scene.startMs;
     const spec = this.sceneById.get(scene.sceneId)!;
     this.relayout(spec);
+    this.moveCarried(t, this.o.reduceMotion ?? (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches));
     const rectOf = (id: string): Rect | null => {
       const el = this.els.get(id);
       if (!el) return null;
@@ -269,6 +282,12 @@ export class Player {
     this.stage.classList.add("eve-laid");
     this.stage.dataset.frame = frame.mode;
     this.stage.style.height = `${frame.height}px`;
+    this.boxes = layout.boxes;
+    this.fromBoxes = {};
+    if (this.carriedFrom) {
+      // where the carried objects were: the scene before, solved in the same frame (pure, so the same width always gives the same boxes)
+      this.fromBoxes = solve({ objects: this.carriedFrom.objects, layout: this.carriedFrom.layout }, { width, height: frame.height }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale }, { spread: true }).boxes;
+    }
     for (const [id, box] of Object.entries(layout.boxes)) {
       const el = this.els.get(id)!;
       el.style.position = "absolute";
@@ -281,17 +300,48 @@ export class Player {
     if (layout.contentHeight > frame.height) this.o.onOverflow?.({ sceneId: spec.id, excessPx: layout.contentHeight - frame.height });
   }
 
+  /**
+   * A carried object moves from its box in the scene before to its box in this one over CARRY_MOVE_MS from the start of the scene: a function of the lesson time
+   * alone, so seek, pause and replay agree (ADR 0009, 0067). With reduced motion it is in its place at once. Nothing happens when the stage has no layout.
+   */
+  private moveCarried(t: number, reduceMotion: boolean): void {
+    for (const [id, was] of this.carried) {
+      const from = this.fromBoxes[was];
+      const to = this.boxes[id];
+      const el = this.els.get(id);
+      if (!from || !to || !el) continue;
+      const q = reduceMotion ? 1 : Math.min(1, Math.max(0, (t - this.sceneStartMs) / CARRY_MOVE_MS));
+      el.style.left = `${lerp(from.x, to.x, q)}px`;
+      el.style.top = `${lerp(from.y, to.y, q)}px`;
+      el.style.width = `${lerp(from.width, to.width, q)}px`;
+      el.style.height = `${lerp(from.height, to.height, q)}px`;
+    }
+  }
+
   private mount(sceneId: string): void {
+    const spec = this.sceneById.get(sceneId)!;
+    // the scene just before in the order of the lesson; its elements are kept only if it is the one on the stage now (ADR 0067)
+    const order = this.o.bundle.scenes;
+    const index = order.findIndex((s) => s.id === sceneId);
+    const before = index > 0 ? order[index - 1] : undefined;
+    const mounted = before !== undefined && this.sceneId === before.id;
+    const kept = new Map(this.els);
     this.sceneId = sceneId;
     this.laidKey = "";
     this.els.clear();
     this.events.clear();
-    const spec = this.sceneById.get(sceneId)!;
+    this.carried = new Map();
+    this.carriedFrom = null;
     this.stage.replaceChildren();
     this.stage.setAttribute("aria-label", spec.a11y.altText);
     this.stage.setAttribute("role", "img");
     for (const obj of spec.objects) {
-      const el = document.createElement("div");
+      // where it starts from is the scene before in the lesson, whether or not that scene was on the stage (a seek), so the time alone decides where it is
+      if (before && obj.carryFrom !== undefined) {
+        this.carried.set(obj.id, obj.carryFrom);
+        this.carriedFrom = before;
+      }
+      const el = (mounted && obj.carryFrom !== undefined ? kept.get(obj.carryFrom) : undefined) ?? document.createElement("div");
       el.dataset.objectId = obj.id;
       this.els.set(obj.id, el);
       this.events.set(obj.id, eventsFor(this.o.timeline, sceneId, obj.id));

@@ -99,7 +99,7 @@ export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Recor
   const seen = new Map<string, string>();
   for (const scene of bundle.scenes) {
     for (const o of scene.objects) {
-      if (o.exprRef === undefined || o.component !== "equation") continue;
+      if (o.exprRef === undefined || o.component !== "equation" || o.carryFrom !== undefined) continue; // a carried object is the same object, not drawn again (ADR 0067)
       const first = seen.get(o.exprRef);
       if (first !== undefined && first !== scene.beatId) add("redrawn-expression", `${o.exprRef} is shown again in ${scene.beatId} after ${first}: scenes do not carry objects over`, scene.beatId);
       else if (first === undefined) seen.set(o.exprRef, scene.beatId);

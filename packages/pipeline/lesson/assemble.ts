@@ -6,6 +6,7 @@ import { fallbackContent } from "../fallback";
 import { composeSceneSync } from "../scene/compose";
 import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
+import { applyCarry, type CarryBeat } from "./carry";
 import { finishScene } from "./scene";
 import { sentencesOf } from "./sentences";
 import type { ArcPlan, LessonScript } from "./types";
@@ -73,7 +74,8 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   const termColors: Record<string, ColorName> = Object.assign({}, ...retrievals.map((r) => r.termColors));
 
   const sentences: NarrationSentence[] = [];
-  const scenes: SceneSpec[] = [];
+  const composed: SceneSpec[] = [];
+  const carryBeats: CarryBeat[] = [];
   const fallbacks: AssembleResult["fallbacks"] = [];
   for (const b of built.beats) {
     const mine = sentencesOf(b, script[b.beat.id], transitions, options.extraTransitions?.[b.beat.id] ?? 0);
@@ -92,13 +94,18 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
       () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),
     );
-    scenes.push(outcome.scene);
+    composed.push(outcome.scene);
+    carryBeats.push({ ctx: sceneCtx, sentences: mine.sentences, claims: b.claims });
     if (outcome.usedFallback) fallbacks.push({ beatId: b.beat.id, attempts: outcome.errors });
   }
+  // objects that stay from one scene to the next, and equations that turn into an equivalent one (ADR 0067, 0068); a scene that used the plain template is left alone
+  const reviewed = new Set(fallbacks.map((f) => f.beatId));
+  const scenes = applyCarry(composed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
 
   const claims: Claim[] = built.beats.flatMap((b) => b.claims);
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
-  const specVersion = claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
+  const carries = scenes.some((s) => s.objects.some((o) => o.carryFrom !== undefined));
+  const specVersion = carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
   const bundle = seal({
     bundleId: bundleIdFor(ctx.skillId, ctx.locale),
     specVersion,

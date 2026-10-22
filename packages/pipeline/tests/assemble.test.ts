@@ -13,10 +13,25 @@ beforeAll(() => {
   result = assembleLesson(ctx, REFERENCE_PLAN, REFERENCE_SCRIPT);
 });
 
-describe("the reference lesson, assembled from its plan and its sentences", () => {
-  it("is a native spec 2.0.0 lesson on the problem_first arc, one beat and one scene per slot", () => {
+describe("persistent objects in the assembled lesson (ADR 0067)", () => {
+  it("carries the equation of the concept beat into the worked beat, without a reveal of its own, and the bundle validates", () => {
     const { bundle } = result;
-    expect(bundle.specVersion).toBe("2.0.0"); // 2.1.0 only when a claim of a 2.1.0 kind (satisfied-by, product-of-roots) is made
+    const worked = bundle.scenes.find((s) => s.beatId === "b4")!;
+    const eq = worked.objects.find((o) => o.exprRef === "quad.eq")!;
+    expect(eq.carryFrom).toBe(bundle.scenes.find((s) => s.beatId === "b3")!.objects.find((o) => o.exprRef === "quad.eq")!.id);
+    expect(worked.cues.some((c) => c.targetObject === eq.id && ["reveal", "draw", "pop"].includes(c.action))).toBe(false);
+    expect(validateBundle(bundle).ok).toBe(true);
+  });
+  it("carries nothing between scenes that share no equation", () => {
+    const { bundle } = result;
+    for (const id of ["b1", "b2", "b3", "b5", "b6"]) expect(bundle.scenes.find((s) => s.beatId === id)!.objects.some((o) => o.carryFrom !== undefined)).toBe(false);
+  });
+});
+
+describe("the reference lesson, assembled from its plan and its sentences", () => {
+  it("is a native lesson on the problem_first arc, one beat and one scene per slot", () => {
+    const { bundle } = result;
+    expect(bundle.specVersion).toBe("2.2.0"); // 2.2.0 when a scene carries an object (ADR 0067); else 2.1.0 when a claim of a 2.1.0 kind (satisfied-by, product-of-roots) is made; else 2.0.0
     expect(bundle.plan.arcId).toBe("problem_first");
     expect(bundle.plan.template).toBe("problem-first");
     expect(bundle.plan.beats.map((b) => [b.id, b.beatKind, b.slotId, b.kind])).toEqual([

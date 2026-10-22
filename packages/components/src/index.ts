@@ -7,7 +7,7 @@ export * from "./lazy";
 export * from "./constants";
 export * from "./math-cache";
 export { text, TextProps, WORD_BUDGET, applyState } from "./text";
-export { equation, EquationProps, dimmedTerms, MAX_TERMS_PER_EQUATION } from "./equation";
+export { equation, EquationProps, dimmedTerms, morphProgress, MAX_TERMS_PER_EQUATION } from "./equation";
 export { functionGraph, GraphProps } from "./functionGraph";
 export { stepList, StepListProps } from "./stepList";
 export { highlight, HighlightProps } from "./highlight";

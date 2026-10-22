@@ -79,7 +79,9 @@ export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentence
     const chosen = pool.find((s) => position.get(s.id)! > last) ?? pool[0];
     if (!chosen) continue; // nothing can carry it: G3 reports the object
     const had = mine().length > 0;
-    cues.push({ targetObject: o.id, action: had ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: had ? 800 : 1500 });
+    // a carried object is on screen from the first moment (ADR 0067): it is pointed at, never revealed
+    const point = had || o.carryFrom !== undefined;
+    cues.push({ targetObject: o.id, action: point ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: point ? 800 : 1500 });
   }
   cues.push(...signallingCues(objects, cues, sentences, position));
   return { ...scene, objects, cues, a11y: { altText: altTextFor({ ...scene, objects }, expressions, locale) } };

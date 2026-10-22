@@ -64,6 +64,8 @@ export type VerifyContext = {
   cueParts?: string[];
   /** Every cue that addresses a part of this object: the part and the action. Lets a component refuse an action it cannot show on a part. */
   cueActions?: Array<{ part: string; action: string }>;
+  /** The actions of every cue that addresses the whole object (no part). Lets a component require or refuse one (the equation's morph, ADR 0068). */
+  wholeActions?: string[];
 };
 
 /**
