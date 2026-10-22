@@ -122,6 +122,8 @@ const records: Array<Omit<ContentRecord, "hash">> = [
     text: "Adding the numbers written in the equation does not give the sum of the roots.",
     expressions: {},
     claimMode: "grounded",
+    // the wrong working the prose is about (spec 2.3.0, ADR 0074): the mistake beat shows it
+    exprRefs: ["quad.wrong"],
     importance: "support",
     sourceNote: note("the common mistake, as a claim"),
   },

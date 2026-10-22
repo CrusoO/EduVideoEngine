@@ -1,4 +1,4 @@
-import { CLAIM_KINDS_FROM_2_1, LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2 } from "./bundle";
+import { CLAIM_KINDS_FROM_2_1, LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2, SPEC_VERSION_2_3 } from "./bundle";
 import type { Claim } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { termIds } from "./expr";
@@ -49,7 +49,11 @@ type Bad = (path: string, message: string) => void;
  */
 function checkSpecVersion(b: Bundle, bad: Bad): void {
   // Spec 2.2.0 is additive: `carryFrom`, a morph cue and the props that go with it (an equation's `from`, a graph's `sweep`) are what an earlier bundle may not carry (ADR 0067, 0068, 0070).
-  if (b.specVersion !== SPEC_VERSION_2_2) {
+  // Spec 2.3.0 is additive too: a statement claim's `exprRefs` is what an earlier bundle may not carry (ADR 0074). A 2.3.0 bundle may carry the fields of 2.2.0.
+  if (b.specVersion !== SPEC_VERSION_2_3) {
+    for (const c of b.claims ?? []) if (c.kind === "statement" && c.exprRefs !== undefined) bad(`claims.${c.id}`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_3}: exprRefs on a statement claim`);
+  }
+  if (b.specVersion !== SPEC_VERSION_2_2 && b.specVersion !== SPEC_VERSION_2_3) {
     for (const sc of b.scenes) {
       for (const o of sc.objects) {
         const props = o.props as { from?: unknown; sweep?: unknown };
@@ -117,6 +121,7 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     need(at, c.claimMode !== undefined && c.importance !== undefined, "claimMode and importance");
     need(at, c.sourceIds !== undefined, "sourceIds");
     if (c.kind === "statement" && c.claimMode !== "grounded") bad(at, "a statement claim is prose: its claimMode is grounded");
+    if (c.kind === "statement") for (const ref of c.exprRefs ?? []) if (!(ref in b.expressions)) bad(`${at}.exprRefs`, `names unknown expression ${ref}`);
     if (c.claimMode === "grounded" && c.kind !== "statement") bad(at, "a grounded claim is a statement claim: the verifier proves the other kinds, so they are computed");
     for (const src of c.sourceIds ?? []) if (!b.sourceIds.includes(src)) bad(`${at}.sourceIds`, `unknown source ${src}`);
     for (const d of c.dependsOn ?? []) if (!claimIds.has(d)) bad(`${at}.dependsOn`, `depends on unknown claim ${d}`);

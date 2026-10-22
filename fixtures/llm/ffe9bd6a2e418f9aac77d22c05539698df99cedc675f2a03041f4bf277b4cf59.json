@@ -1,0 +1,18 @@
+{
+  "key": "ffe9bd6a2e418f9aac77d22c05539698df99cedc675f2a03041f4bf277b4cf59",
+  "step": "scriptwriter",
+  "promptVersion": "scriptwriter.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-22T17:57:10.294Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"beats\":[{\"beatId\":\"b2\",\"sentences\":[{\"claimId\":\"quad.factorise.claim.b2\",\"text\":\"The factored form of {expr:quad.fac.start} is {expr:quad.fac.done}.\"},{\"claimId\":\"quad.factorise.claim.b2\",\"text\":\"This means the original quadratic is written as a product of two factors.\"}]},{\"beatId\":\"b3\",\"sentences\":[{\"claimId\":\"quad.sum.claim.root\",\"text\":\"If a value of the unknown makes the equation true, we call that value a root.\"},{\"claimId\":\"quad.sum.claim.roots\",\"text\":\"The equation {expr:quad.eq} has roots whose values are two and three.\"},{\"claimId\":\"quad.sum.claim.vieta\",\"text\":\"Take any quadratic in the form {expr:quad.general}.\"},{\"claimId\":\"quad.sum.claim.vieta\",\"text\":\"Its roots have the sum {expr:quad.rule}.\"},{\"claimId\":\"quad.sum.claim.vieta\",\"text\":\"Using this rule, we can find the root total straight from the coefficients in the equation.\"}]},{\"beatId\":\"b4\",\"sentences\":[{\"claimId\":\"c.quad.sum.steps.equivalent.1\",\"text\":\"The equations {expr:quad.eq} and {expr:quad.factored} show the same equation in two forms.\"},{\"claimId\":\"c.quad.sum.steps.roots\",\"text\":\"The equation {expr:quad.eq} has roots whose values are two and three.\"},{\"claimId\":\"c.quad.sum.steps.sum.1\",\"text\":\"Adding the two root values in {expr:quad.eq} gives the total {expr:quad.total}.\"},{\"claimId\":\"c.quad.sum.steps.sum.1\",\"text\":\"That total is the combined sum of the root values for the equation, so it gives the whole root total.\"}],\"prompt\":\"What steps take you from the quadratic to its root total?\"},{\"beatId\":\"b5\",\"sentences\":[{\"claimId\":\"quad.sum.claim.mistake\",\"text\":\"Adding the numbers written in the equation gives {expr:quad.wrong}.\"},{\"claimId\":\"quad.sum.claim.mistake\",\"text\":\"But that total is not the sum of the roots.\"}],\"note\":\"Written numbers do not give the root sum.\"},{\"beatId\":\"b6\",\"sentences\":[{\"claimId\":\"quad.sum.q.recall.answer.b6\",\"text\":\"For this equation, the root total is {expr:quad.q.answer}.\"},{\"claimId\":\"quad.sum.q.recall.answer.b6\",\"text\":\"The root values add together to give that same total.\"},{\"claimId\":\"quad.sum.q.recall.answer.b6\",\"text\":\"The sum rule gives this total directly from the equation.\"}],\"prompt\":\"Can you use the root sum rule to check the equation?\"}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

@@ -1,6 +1,6 @@
 import { sha256 } from "@noble/hashes/sha256";
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils";
-import { SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2, type LessonBundle, type SceneSpec } from "./bundle";
+import { LEGACY_SPEC_VERSION, type LessonBundle, type SceneSpec } from "./bundle";
 import { termIds } from "./expr";
 
 /**
@@ -49,7 +49,7 @@ export function sceneHash(
   const parts: Record<string, unknown> = { scene, sentences, expressions };
   if (Object.keys(colors).length > 0) parts.termColors = colors;
   // Spec 2.0.0 (ADR 0030): the beat's own fields (beatKind, slotId, learningGoal) belong to its scene. Legacy bundles hash exactly as before.
-  if (bundle.specVersion === SPEC_VERSION || bundle.specVersion === SPEC_VERSION_2_1 || bundle.specVersion === SPEC_VERSION_2_2) {
+  if (bundle.specVersion !== LEGACY_SPEC_VERSION) {
     const { beatKind, slotId, learningGoal } = bundle.plan?.beats.find((b) => b.id === scene.beatId) ?? {};
     parts.beat = { beatKind, slotId, learningGoal }; // undefined members are dropped by canonicalJson
   }

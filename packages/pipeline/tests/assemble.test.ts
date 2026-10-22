@@ -46,7 +46,7 @@ describe("building without what ADRs 0066 to 0071 added (the baseline of the ins
 describe("the reference lesson, assembled from its plan and its sentences", () => {
   it("is a native lesson on the problem_first arc, one beat and one scene per slot", () => {
     const { bundle } = result;
-    expect(bundle.specVersion).toBe("2.2.0"); // 2.2.0 when a scene carries an object (ADR 0067); else 2.1.0 when a claim of a 2.1.0 kind (satisfied-by, product-of-roots) is made; else 2.0.0
+    expect(bundle.specVersion).toBe("2.3.0"); // 2.3.0 when a statement claim names expressions (ADR 0074: the mistake record does); else 2.2.0 when a scene carries an object (ADR 0067); else 2.1.0 when a claim of a 2.1.0 kind is made; else 2.0.0
     expect(bundle.plan.arcId).toBe("problem_first");
     expect(bundle.plan.template).toBe("problem-first");
     expect(bundle.plan.beats.map((b) => [b.id, b.beatKind, b.slotId, b.kind])).toEqual([
@@ -114,7 +114,7 @@ describe("the reference lesson, assembled from its plan and its sentences", () =
   it("describes every scene in words made from the scene", () => {
     const alts = result.bundle.scenes.map((s) => s.a11y.altText);
     expect(alts[0]).toBe("The title Guess the sum. An equation: x squared minus five x plus six equals zero. An equation: two plus three equals five. A number line with 2 hops.");
-    expect(alts[4]).toBe("The title A common mistake. Add the roots, not the numbers.");
+    expect(alts[4]).toBe("The title A common mistake. Add the roots, not the numbers. An equation: five plus six equals eleven.");
   });
 });
 

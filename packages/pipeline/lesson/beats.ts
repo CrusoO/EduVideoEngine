@@ -35,7 +35,8 @@ const CONCEPT_BEAT_KINDS: readonly PedagogyBeatKind[] = ["prerequisite", "concep
 export function conceptClaimOf(rec: ContentRecord, beatId: string): Claim {
   const base = { id: rec.id, beatId, sourceIds: [rec.id], importance: rec.importance ?? ("support" as const) };
   if (rec.claimMode === "computed" && rec.claim) return { ...base, ...rec.claim, claimMode: "computed" as const };
-  return { ...base, kind: "statement" as const, claimMode: "grounded" as const };
+  // a grounded claim carries the expressions its record says the prose is about (spec 2.3.0, ADR 0074); a record that declares none gives the claim as before
+  return { ...base, kind: "statement" as const, claimMode: "grounded" as const, ...(rec.exprRefs ? { exprRefs: [...rec.exprRefs] } : {}) };
 }
 
 /** Claims in telling order: each after the claims of the same beat it depends on; the planner's order otherwise. A cycle cannot happen (G1 rejects it); it is left in place. */

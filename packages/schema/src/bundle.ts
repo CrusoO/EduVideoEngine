@@ -37,7 +37,9 @@ export const SPEC_VERSION = "2.0.0";
 export const SPEC_VERSION_2_1 = "2.1.0";
 /** Spec 2.2.0 is additive (ADR 0067): `carryFrom` on a component instance, an object that stays on screen from the previous scene. */
 export const SPEC_VERSION_2_2 = "2.2.0";
-export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2] as const;
+/** Spec 2.3.0 is additive (ADR 0074): a `statement` claim may name the expressions its prose is about (`exprRefs`). */
+export const SPEC_VERSION_2_3 = "2.3.0";
+export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2, SPEC_VERSION_2_3] as const;
 /** The claim kinds that exist from spec 2.1.0. A bundle of an earlier version may not carry them. */
 export const CLAIM_KINDS_FROM_2_1 = ["satisfied-by", "product-of-roots"] as const;
 /** What a recall practice question asks for, and so which claim the verifier proves (ADR 0042, 0053). */
@@ -196,7 +198,8 @@ export const Claim = z.discriminatedUnion("kind", [
   /** Putting `value` (an exact number) in for the unknown of `equation` gives exactly the closed equation `instance`, and that equation is true: the check by substitution (spec 2.1.0, ADR 0053). */
   z.object({ id, beatId: id, kind: z.literal("satisfied-by"), equation: id, value: ExprSchema, instance: id, ...ClaimExtras }).strict(),
   /** A claim in prose with nothing for the verifier to prove (a definition, a misconception). Spec 2.0.0 only, and always `grounded`: a person approves it (AM-3, ADR 0031). */
-  z.object({ id, beatId: id, kind: z.literal("statement"), ...ClaimExtras }).strict(),
+  /** Prose a person approves. From spec 2.3.0 it may name the expressions the prose is about (`exprRefs`, ADR 0074), so a scene can show them and a sentence can use them. */
+  z.object({ id, beatId: id, kind: z.literal("statement"), exprRefs: z.array(id).min(1).optional(), ...ClaimExtras }).strict(),
 ]);
 export type Claim = z.infer<typeof Claim>;
 

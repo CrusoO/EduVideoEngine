@@ -18,7 +18,7 @@ const has = (b: LessonBundle, text: string): boolean => verdict(b).some((m) => m
 
 describe("spec 2.2.0: objects that persist (ADR 0067)", () => {
   it("is the fourth version, and the carried reference lesson validates", () => {
-    expect(SPEC_VERSIONS.at(-1)).toBe("2.2.0");
+    expect(SPEC_VERSIONS[3]).toBe("2.2.0");
     expect(verdict(carried())).toEqual([]);
   });
 

@@ -71,7 +71,7 @@ describe("the recap turns the prerequisite's equation into its factored form", (
     const fact = recap.objects.find((o) => o.id === "fact")!;
     expect((fact.props as { from?: string }).from).toBeTypeOf("string");
     expect(recap.cues.some((c) => c.targetObject === "fact" && c.action === "morph")).toBe(true);
-    expect(on.bundle.specVersion).toBe("2.2.0");
+    expect(on.bundle.specVersion).toBe("2.3.0"); // the mistake record names an expression (ADR 0074)
   });
 });
 

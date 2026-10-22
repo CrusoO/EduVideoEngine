@@ -7,7 +7,7 @@ import { composeSceneSync } from "../scene/compose";
 import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
 import { applyCarry, type CarryBeat } from "./carry";
-import { previewCheckHops, previewHops } from "./preview";
+import { previewCheckHops, previewHops, showWrongWorking } from "./preview";
 import { finishScene } from "./scene";
 import { writeOn } from "./style";
 import { sentencesOf } from "./sentences";
@@ -115,8 +115,9 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
     const [b, c] = [built.beats[i]!, carryBeats[i]!];
     const hooked = previewHops(s, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
     const checked = previewCheckHops(hooked, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    const shown = showWrongWorking(checked.scene, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
     provedHere.push(...checked.claims);
-    return checked.scene;
+    return shown;
   });
   const carried = options.features?.carry === false ? previewed : applyCarry(previewed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
   const scenes = options.features?.writeOn === false ? carried : carried.map(writeOn);
@@ -124,7 +125,7 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   const claims: Claim[] = [...built.beats.flatMap((b) => b.claims), ...provedHere];
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
   const carries = scenes.some((s) => s.cues.some((c) => c.action === "morph") || s.objects.some((o) => o.carryFrom !== undefined));
-  const specVersion = carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
+  const specVersion = claims.some((c) => c.kind === "statement" && c.exprRefs !== undefined) ? "2.3.0" : carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
   const bundle = seal({
     bundleId: bundleIdFor(ctx.skillId, ctx.locale),
     specVersion,

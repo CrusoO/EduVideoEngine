@@ -28,6 +28,7 @@
     "lesson:inspector": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/lesson-inspector.ts",
     "patterns:report": "vite-node scripts/pattern-report.ts",
     "lesson:quality": "vite-node scripts/lesson-quality.ts",
+    "llm:standin-script": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-standin-script.ts",
     "lesson:lab": "vite-node scripts/lesson-lab.ts",
     "player:size": "vite-node scripts/player-size.ts",
     "llm:smoke": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-smoke.ts",

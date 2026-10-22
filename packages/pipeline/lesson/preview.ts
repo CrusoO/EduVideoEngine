@@ -52,3 +52,30 @@ export function previewCheckHops(scene: SceneSpec, build: BeatBuild, ctx: SceneC
   const made = line && withHops(scene, line, ctx, sentences, claims, expressions, locale);
   return made && line ? { scene: made, claims: [line.claim] } : { scene, claims: [] };
 }
+
+/** The equations a mistake card may show, at most (a card is a title, a line and what the line is about). */
+const MAX_SHOWN = 2;
+
+/**
+ * The mistake beat shows the wrong working (ADR 0074, 0075): when the beat's grounded claim names expressions (`exprRefs`, spec 2.3.0), the equations among them
+ * are written on the statement card as the sentence that says the claim begins, and set aside (dimmed) when it ends, so the viewer sees what is meant and that
+ * it is not the way. Only for a `statement-card`, and only for what the claim names: no expression is added that a person has not approved with the claim. The scene
+ * is validated again and kept as it was if it fails; a card that names nothing is not changed.
+ */
+export function showWrongWorking(scene: SceneSpec, build: BeatBuild, ctx: SceneContext, sentences: readonly NarrationSentence[], claims: readonly Claim[], expressions: Readonly<Record<string, Expr>>, locale: string): SceneSpec {
+  if (build.beatKind !== "mistake" || build.beat.pattern !== "statement-card") return scene;
+  const claim = claims.find((c) => c.kind === "statement" && c.exprRefs !== undefined && c.exprRefs.length > 0);
+  const said = claim && sentences.find((s) => s.role === "claim" && s.claimId === claim.id);
+  if (!claim || claim.kind !== "statement" || !said) return scene;
+  const shown = (claim.exprRefs ?? []).filter((id) => expressions[id]?.op === "eq" && !scene.objects.some((o) => o.exprRef === id)).slice(0, MAX_SHOWN);
+  if (shown.length === 0) return scene;
+
+  const objects = shown.map((exprRef, i): SceneSpec["objects"][number] => ({ id: i === 0 ? "wrong" : `wrong${i + 1}`, component: "equation", props: { size: "m" }, exprRef }));
+  const cues = objects.flatMap((o): Cue[] => [
+    { targetObject: o.id, action: "draw", anchor: { sentenceId: said.id, at: "start" }, minHoldMs: 1500 },
+    { targetObject: o.id, action: "dim", anchor: { sentenceId: said.id, at: "end" }, minHoldMs: 0 },
+  ]);
+  const layout = scene.layout.map((rule) => (rule.rule === "column" ? { ...rule, items: [...rule.items, ...objects.map((o) => o.id)] } : rule));
+  const candidate = finishScene({ ...scene, objects: [...scene.objects, ...objects], layout: [...layout, ...objects.map((o) => ({ rule: "center" as const, item: o.id }))], cues: [...scene.cues, ...cues] }, claims, sentences, expressions, locale);
+  return validateScene(candidate, ctx).length === 0 ? candidate : scene;
+}
