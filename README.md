@@ -18,6 +18,7 @@ Run everything from the repository root.
     pnpm verify:gate                          # the clean lessons must pass; every corrupted copy must be rejected
     pnpm verify:gate --list                   # each of the 28 corruptions (7 maths, 21 pedagogy) and the gate that must reject it
     pnpm patterns:report                      # the variety rule per arc and lesson length
+    pnpm lesson:quality --reference           # quality report of a built lesson (ADR 0065); or a lesson folder
     pnpm docs:check                           # the doc set is complete and the frozen prompts are unchanged
     pnpm mutate                               # Stryker on the main configuration, then the 90-per-file floor
     pnpm lesson:build <skillId>               # plan, script, assemble, voice, check: a lesson package in dist/lessons/<bundle id>/ (replay by default; LLM_MODE=record calls the model)

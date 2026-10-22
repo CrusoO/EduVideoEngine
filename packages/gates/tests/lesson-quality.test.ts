@@ -1,0 +1,114 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import { referenceLesson, type LessonBundle } from "@eve/schema";
+import { STATIC_LIMIT_MS, analyseLesson } from "../../../scripts/lesson-quality-lib";
+
+const manifest = JSON.parse(readFileSync(join(__dirname, "..", "..", "voice", "fixtures", "reference.en-IN", "manifest.json"), "utf8")) as { tracks: Array<{ sentenceId: string; durationMs: number }> };
+const durations = Object.fromEntries(manifest.tracks.map((t) => [t.sentenceId, t.durationMs]));
+const fresh = (): LessonBundle => structuredClone(referenceLesson) as LessonBundle;
+const codes = (b: LessonBundle, d?: Record<string, number>): string[] => analyseLesson(b, d).findings.map((f) => f.code);
+const sentencesOf = (b: LessonBundle, beatId: string) => b.script.filter((s) => s.beatId === beatId);
+
+describe("the lesson quality report", () => {
+  it("finds the known faults of the reference lesson (a filler hook, a mistake beat with nothing on screen, nothing carried between scenes)", () => {
+    const c = codes(fresh(), durations);
+    for (const code of ["shown-on-filler", "filler-only-beat", "mistake-not-shown", "redrawn-expression", "long-static-stretch"]) expect(c).toContain(code);
+  });
+
+  it("reports metrics, and no timing when there are no durations", () => {
+    const withTiming = analyseLesson(fresh(), durations).metrics;
+    expect(withTiming.beats).toBe(6);
+    expect(withTiming.sentences).toBe(referenceLesson.script.length);
+    expect(withTiming.speechMs).toBeGreaterThan(100_000);
+    expect(withTiming.longestStaticMs).toBeGreaterThan(STATIC_LIMIT_MS);
+    const without = analyseLesson(fresh());
+    expect(without.metrics.speechMs).toBeNull();
+    expect(without.metrics.longestStaticMs).toBeNull();
+    expect(without.findings.map((f) => f.code)).not.toContain("long-static-stretch");
+  });
+
+  it("shown-on-filler: moving the cue onto a goal sentence clears it, and the finding names the sentence", () => {
+    const b = fresh();
+    const first = analyseLesson(b).findings.find((f) => f.code === "shown-on-filler")!;
+    expect(first.beatId).toBe("b1");
+    expect(first.message).toContain("Let us see why.");
+    const scene = b.scenes.find((s) => s.beatId === "b1")!;
+    const goal = sentencesOf(b, "b1").find((s) => s.role === "goal")!;
+    for (const cue of scene.cues) cue.anchor = { sentenceId: goal.id, at: "start" };
+    expect(codes(b)).not.toContain("shown-on-filler");
+  });
+
+  it("filler-only-beat: one claim sentence in the beat clears it", () => {
+    const b = fresh();
+    expect(codes(b)).toContain("filler-only-beat");
+    const filler = sentencesOf(b, "b1").find((s) => s.role === "transition")!;
+    filler.role = "claim";
+    expect(codes(b)).not.toContain("filler-only-beat");
+  });
+
+  it("shown-not-said: an equation no sentence of the beat lists is flagged, and listing it clears the finding", () => {
+    const b = fresh();
+    const scene = b.scenes.find((s) => s.beatId === "b1")!;
+    const eq = scene.objects.find((o) => o.component === "equation" && o.exprRef !== undefined)!;
+    const flagged = analyseLesson(b).findings.filter((f) => f.code === "shown-not-said" && f.message.includes(`/${eq.id} `));
+    expect(flagged).toHaveLength(1);
+    sentencesOf(b, "b1")[0]!.exprRefs = [eq.exprRef!];
+    expect(analyseLesson(b).findings.filter((f) => f.code === "shown-not-said" && f.message.includes(`/${eq.id} `))).toHaveLength(0);
+  });
+
+  it("mistake-not-shown: an expression on screen in the mistake beat clears it", () => {
+    const b = fresh();
+    expect(codes(b)).toContain("mistake-not-shown");
+    const scene = b.scenes.find((s) => s.beatId === "b5")!;
+    scene.objects.push({ id: "wrong", component: "equation", props: { size: "m" }, exprRef: "quad.eq" } as (typeof scene.objects)[number]);
+    expect(codes(b)).not.toContain("mistake-not-shown");
+  });
+
+  it("redrawn-expression: reports the beat that draws it again, not the first", () => {
+    const f = analyseLesson(fresh()).findings.filter((x) => x.code === "redrawn-expression");
+    expect(f.length).toBeGreaterThan(0);
+    expect(f.every((x) => x.beatId !== "b1")).toBe(true);
+  });
+
+  it("repeated-sentence: the same claim wording in two beats is flagged once, at the later beat; different wording is not", () => {
+    const b = fresh();
+    const claims = b.script.filter((s) => s.role === "claim");
+    const a = claims[0]!;
+    const other = claims.find((s) => s.beatId !== a.beatId)!;
+    other.text = a.text;
+    const hits = analyseLesson(b).findings.filter((f) => f.code === "repeated-sentence");
+    expect(hits.length).toBeGreaterThan(0);
+    expect(hits.some((h) => h.message.includes(a.id) && h.message.includes(other.id))).toBe(true);
+    other.text = "Completely different words appear here instead of that wording.";
+    expect(analyseLesson(b).findings.some((f) => f.code === "repeated-sentence" && f.message.includes(other.id))).toBe(false);
+  });
+
+  it("long-static-stretch: short sentences clear it, and it is judged against the limit", () => {
+    const b = fresh();
+    const tiny = Object.fromEntries(b.script.map((s) => [s.id, 500]));
+    expect(codes(b, tiny)).not.toContain("long-static-stretch");
+    const huge = Object.fromEntries(b.script.map((s) => [s.id, STATIC_LIMIT_MS]));
+    expect(codes(b, huge)).toContain("long-static-stretch");
+  });
+
+  it("reveal-only-motion, no-explanation-wording and filler-share fire on a lesson built to have them, and not on one without", () => {
+    const b = fresh();
+    for (const s of b.scenes) for (const c of s.cues) c.action = "reveal";
+    for (const s of b.script) s.text = "Plain words only.";
+    const bad = codes(b);
+    expect(bad).toContain("reveal-only-motion");
+    expect(bad).toContain("no-explanation-wording");
+    for (const s of b.script) s.role = "transition";
+    expect(codes(b)).toContain("filler-share");
+
+    const good = fresh();
+    good.script[0]!.text = "This is why the sum matters because it is fixed.";
+    for (const s of good.script) if (s.role === "transition") s.role = "claim";
+    for (const s of good.scenes.flatMap((x) => x.cues).slice(0, 8)) s.action = "highlight";
+    const g = codes(good);
+    expect(g).not.toContain("reveal-only-motion");
+    expect(g).not.toContain("no-explanation-wording");
+    expect(g).not.toContain("filler-share");
+  });
+});
