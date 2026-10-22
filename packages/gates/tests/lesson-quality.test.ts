@@ -13,7 +13,14 @@ const sentencesOf = (b: LessonBundle, beatId: string) => b.script.filter((s) => 
 describe("the lesson quality report", () => {
   it("finds the known faults of the reference lesson (a filler hook, a mistake beat with nothing on screen, nothing carried between scenes)", () => {
     const c = codes(fresh(), durations);
-    for (const code of ["shown-on-filler", "filler-only-beat", "mistake-not-shown", "redrawn-expression", "long-static-stretch"]) expect(c).toContain(code);
+    for (const code of ["filler-only-beat", "mistake-not-shown", "redrawn-expression", "long-static-stretch"]) expect(c).toContain(code);
+  });
+
+  it("shown-on-filler: an answer revealed on a filler sentence after a pause-and-ask is meant, so it is not flagged", () => {
+    const b = fresh();
+    const scene = b.scenes.find((s) => s.beatId === "b1")!;
+    expect(scene.interactions?.length).toBeGreaterThan(0);
+    expect(codes(b)).not.toContain("shown-on-filler");
   });
 
   it("reports metrics, and no timing when there are no durations", () => {
@@ -28,8 +35,9 @@ describe("the lesson quality report", () => {
     expect(without.findings.map((f) => f.code)).not.toContain("long-static-stretch");
   });
 
-  it("shown-on-filler: moving the cue onto a goal sentence clears it, and the finding names the sentence", () => {
+  it("shown-on-filler: without a pause, moving the cue onto a goal sentence clears it, and the finding names the sentence", () => {
     const b = fresh();
+    for (const s of b.scenes) delete s.interactions;
     const first = analyseLesson(b).findings.find((f) => f.code === "shown-on-filler")!;
     expect(first.beatId).toBe("b1");
     expect(first.message).toContain("Let us see why.");

@@ -61,11 +61,14 @@ export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Recor
     const mine = bundle.script.filter((s) => s.beatId === scene.beatId);
     const said = new Set(mine.flatMap((s) => s.exprRefs));
 
-    // 1. content that appears on a filler sentence, so nothing is said about it
+    // 1. content that appears on a filler sentence, so nothing is said about it (after a pause-and-ask it is the answer to the question, which is meant)
+    const order = new Map(mine.map((s, i) => [s.id, i] as const));
+    const pausedAfter = (scene.interactions ?? []).map((q) => order.get(q.afterSentenceId) ?? Infinity);
     for (const cue of scene.cues) {
       const target = scene.objects.find((o) => o.id === cue.targetObject.split("#")[0]);
       const at = sentenceById.get(cue.anchor.sentenceId);
-      if (target && target.role !== "static" && SHOWS.has(cue.action) && at?.role === "transition") {
+      const afterPause = pausedAfter.some((p) => p < (order.get(cue.anchor.sentenceId) ?? -1));
+      if (target && target.role !== "static" && SHOWS.has(cue.action) && at?.role === "transition" && !afterPause) {
         add("shown-on-filler", `${scene.id}/${target.id} is shown on the filler sentence "${at.text}"`, scene.beatId);
       }
     }
