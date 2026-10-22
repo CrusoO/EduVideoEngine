@@ -343,6 +343,17 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
 .err-list li{font-size:11px;color:var(--error);font-family:var(--mono);padding:2px 0}
 .info{font-size:11px;color:var(--muted)}
 @media(max-width:700px){body{flex-direction:column}.sidebar{width:100%;height:auto;position:static}.gate-grid{grid-template-columns:repeat(4,1fr)}}
+.xbtn{background:none;border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:11px;padding:2px 7px;border-radius:3px;font-family:var(--mono);flex-shrink:0;line-height:1.4;width:auto}
+.xbtn:hover{color:var(--text);border-color:var(--accent)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;display:none;align-items:flex-start;justify-content:center;padding:24px 20px;overflow-y:auto}
+.ov.vis{display:flex}
+.ovbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:1280px;display:flex;flex-direction:column;min-height:0}
+.ovhdr{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+.ovtitle{font-size:14px;font-weight:600;flex:1}
+.ovsub{font-size:11px;color:var(--muted)}
+.ovclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0 4px;line-height:1;width:auto}
+.ovclose:hover{color:var(--text)}
+.ovbody{padding:20px;display:flex;flex-direction:column;gap:12px}
 </style>
 </head>
 <body>
@@ -382,6 +393,15 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
   </div>
 </aside>
 <main class="main" id="main"></main>
+<div class="ov" id="ov" onclick="if(event.target===this)closeOv()">
+  <div class="ovbox">
+    <div class="ovhdr">
+      <div style="flex:1"><div class="ovtitle" id="ov-title"></div><div class="ovsub" id="ov-sub"></div></div>
+      <button class="ovclose" onclick="closeOv()" title="Close (Esc)">✕</button>
+    </div>
+    <div class="ovbody" id="ov-body"></div>
+  </div>
+</div>
 <script>
 const PANELS=[
   {id:"content",     num:"01",title:"Content Plane",  sub:"Approved records loaded for the skill"},
@@ -403,11 +423,27 @@ for(const p of PANELS){
     <span class="pnum">\${p.num}</span>
     <div style="flex:1"><span class="ptitle">\${p.title}</span><span class="psub"> — \${p.sub}</span></div>
     <span class="pbadge s-pending" id="b-\${p.id}">◷ pending</span>
+    <button class="xbtn" onclick="expandPanel(event,'\${p.id}','\${p.title}','\${p.sub}')" title="Open full screen">⤢</button>
   </div><div class="pb" id="bd-\${p.id}"></div>\`;
   main.appendChild(d);
 }
 
 function toggle(el){el.classList.toggle("open")}
+function expandPanel(e,id,title,sub){
+  e.stopPropagation();
+  const bd=document.getElementById("bd-"+id);
+  if(!bd||!bd.innerHTML.trim())return;
+  document.getElementById("ov-title").textContent=title;
+  document.getElementById("ov-sub").textContent=sub||"";
+  document.getElementById("ov-body").innerHTML=bd.innerHTML;
+  document.getElementById("ov").classList.add("vis");
+  document.addEventListener("keydown",_escClose);
+}
+function closeOv(){
+  document.getElementById("ov").classList.remove("vis");
+  document.removeEventListener("keydown",_escClose);
+}
+function _escClose(e){if(e.key==="Escape")closeOv()}
 function open(id){const el=document.getElementById("p-"+id);if(el&&!el.classList.contains("open"))el.classList.add("open")}
 function status(id,cls,txt){const b=document.getElementById("b-"+id);if(b){b.className="pbadge "+cls;b.textContent=txt}}
 function body(id,html){const b=document.getElementById("bd-"+id);if(b)b.innerHTML=html}
