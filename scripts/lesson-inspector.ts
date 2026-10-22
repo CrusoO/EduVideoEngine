@@ -15,9 +15,12 @@
  * Port 4323. Ctrl+C to stop.
  */
 import { createServer } from "node:http";
-import { resolve } from "node:path";
+import { resolve, join } from "node:path";
 import { randomBytes } from "node:crypto";
-import { REPO_ROOT, clientFromEnv } from "../packages/adapters/src";
+import { mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { spawn, type ChildProcess } from "node:child_process";
+import { REPO_ROOT, clientFromEnv, childEnv } from "../packages/adapters/src";
+import { harnessPort } from "./harness-port";
 import { loadStore } from "../packages/content/src";
 import {
   planArc,
@@ -47,8 +50,17 @@ type InspectState = {
   events: StageEvent[];
   status: "running" | "done" | "failed";
   subs: Set<(s: string) => void>;
+  _data?: {
+    ctx: ReturnType<typeof lessonContext>;
+    bundle: ReturnType<typeof assembleLesson>["bundle"];
+    plan: unknown;
+    script: unknown;
+    fallbackBeats: string[];
+  };
 };
 const inspections = new Map<string, InspectState>();
+const PLAYER_PORT = harnessPort("lesson-inspector-player", REPO_ROOT);
+let playerProcess: ChildProcess | null = null;
 
 function emit(st: InspectState, ev: StageEvent): void {
   st.events.push(ev);
@@ -192,6 +204,7 @@ async function runInspection(st: InspectState): Promise<void> {
       assembled.builds.map((b) => [b.beat.id, (b as Record<string, unknown>).beatKind ?? "unknown"]),
     ),
   });
+  st._data = { ctx, bundle: assembled.bundle, plan: planned.plan, script: scripted.script, fallbackBeats: assembled.fallbacks.map((f) => f.beatId) };
 
   // ── 05 Gates ─────────────────────────────────────────────────────────────────
   emit(st, { stage: "gates", status: "running" });
@@ -354,6 +367,12 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
 .ovclose{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:0 4px;line-height:1;width:auto}
 .ovclose:hover{color:var(--text)}
 .ovbody{padding:20px;display:flex;flex-direction:column;gap:12px}
+.abtn{background:color-mix(in srgb,var(--success) 18%,transparent);color:var(--success);border:1px solid color-mix(in srgb,var(--success) 45%,transparent);border-radius:var(--radius);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;width:auto}
+.abtn:hover{background:color-mix(in srgb,var(--success) 28%,transparent)}
+.abtn:disabled{opacity:.45;cursor:not-allowed}
+.pbtn2{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:var(--radius);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;width:auto}
+.pbtn2:hover{background:color-mix(in srgb,var(--accent) 28%,transparent)}
+.pbtn2:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -554,9 +573,13 @@ function R_assurance(d){
   const pubf=\`<span class="flag \${d.publishable?"fp":"fw"}">\${d.publishable?"✓ publishable":"○ not publishable yet"}</span>\`;
   const len=d.lengthMs?\`<div class="info" style="margin-top:8px">Estimated lesson length: \${(d.lengthMs/1000).toFixed(1)} s</div>\`:"";
   const findings=(d.findings||[]).map(f=>\`<div class="finding \${f.level}">\${esc(f.source)} \${esc(f.code)}: \${esc(f.message)}</div>\`).join("");
+  const hasApprovalFindings=(d.findings||[]).some(f=>f.source==="approval");
+  const approveBtn=d.passes&&hasApprovalFindings?\`<div style="margin-top:12px"><button class="abtn" onclick="approveAll()" title="Developer-grant approval for all grounded claims and recheck">✓ Approve all grounded claims</button></div>\`:"";
+  const playBtn=d.passes?\`<div style="margin-top:8px"><button class="pbtn2" onclick="playLesson()">▶ Play Lesson</button><span class="info" id="play-status" style="margin-left:10px"></span></div>\`:"";
   return\`<div class="flags">\${pf}\${pubf}</div>
 \${len}
 \${findings?\`<div style="margin-top:10px">\${findings}</div>\`:""}
+\${approveBtn}\${playBtn}
 <div class="info" style="margin-top:10px;line-height:1.8">
 <em>passes</em> = gates G1–G7 pass with real durations + resolver + layout checks.<br>
 <em>publishable</em> = passes + SymPy verified + every grounded claim approved + no fallback scenes.
@@ -570,9 +593,45 @@ const RENDERERS={content:R_content,planner:R_planner,scriptwriter:R_scriptwriter
 const runBtn=document.getElementById("run");
 const skillSel=document.getElementById("sk");
 let es=null;
+let currentId=null;
+
+async function approveAll(){
+  if(!currentId)return;
+  const btn=document.querySelector(".abtn");
+  if(btn){btn.disabled=true;btn.textContent="Approving…";}
+  try{
+    const r=await fetch("/approve",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({inspectId:currentId})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"server error");
+    body("assurance",R_assurance(d));
+    status("assurance",d.passes?"s-done":"s-failed",d.passes?"✓ done":"✗ failed");
+  }catch(e){
+    if(btn){btn.disabled=false;btn.textContent="✓ Approve all grounded claims";}
+    alert("Approve failed: "+e.message);
+  }
+}
+async function playLesson(){
+  if(!currentId)return;
+  const btn=document.querySelector(".pbtn2");
+  const st=document.getElementById("play-status");
+  if(btn)btn.disabled=true;
+  if(st)st.textContent="Launching player (one moment)…";
+  try{
+    const r=await fetch("/play",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({inspectId:currentId})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||"server error");
+    if(st)st.innerHTML=\`<a href="\${esc(d.playerUrl)}" target="_blank" style="color:var(--accent)">\${esc(d.playerUrl)}</a>\`;
+    if(btn)btn.disabled=false;
+    window.open(d.playerUrl,"_blank");
+  }catch(e){
+    if(btn)btn.disabled=false;
+    if(st)st.textContent="Failed: "+e.message;
+  }
+}
 
 runBtn.addEventListener("click",async()=>{
   if(es){es.close();es=null}
+  currentId=null;
   for(const p of PANELS){status(p.id,"s-pending","◷ pending");body(p.id,"");document.getElementById("p-"+p.id)?.classList.remove("open")}
   runBtn.disabled=true;
 
@@ -581,6 +640,7 @@ runBtn.addEventListener("click",async()=>{
     const r=await fetch("/inspect",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({skillId:skillSel.value})});
     if(!r.ok)throw new Error("HTTP "+r.status);
     ({inspectId}=await r.json());
+    currentId=inspectId;
   }catch(e){runBtn.disabled=false;alert("Error: "+e.message);return}
 
   es=new EventSource("/events?id="+inspectId);
@@ -674,6 +734,91 @@ const server = createServer((req, res) => {
     };
     st.subs.add(send);
     req.on("close", () => st.subs.delete(send));
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/approve") {
+    let raw = "";
+    req.on("data", (c: string) => (raw += c));
+    req.on("end", () => {
+      void (async () => {
+        let inspectId: string;
+        try {
+          ({ inspectId } = JSON.parse(raw) as { inspectId: string });
+        } catch (e) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: String(e) }));
+          return;
+        }
+        const st = inspections.get(inspectId);
+        if (!st?._data) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "inspection not ready" }));
+          return;
+        }
+        const { ctx, bundle, fallbackBeats } = st._data;
+        const approvals = (bundle.claims ?? [])
+          .filter((c) => c.claimMode === "grounded")
+          .flatMap((c) => (c.sourceIds ?? []).map((srcId: string) => ({ recordId: srcId, recordHash: ctx.hashes[srcId] ?? "" })))
+          .filter((a) => a.recordHash !== "");
+        const tracks = syntheticTracks(bundle);
+        const result = await assureLesson({ ctx, bundle, tracks, approvals, fallbackBeats, verify: false });
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({
+          passes: result.passes,
+          publishable: result.publishable,
+          lengthMs: result.lengthMs,
+          findings: result.findings.map((x) => ({ source: x.source, level: x.level, code: x.code, message: x.message })),
+        }));
+      })();
+    });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/play") {
+    let raw = "";
+    req.on("data", (c: string) => (raw += c));
+    req.on("end", () => {
+      let inspectId: string;
+      try {
+        ({ inspectId } = JSON.parse(raw) as { inspectId: string });
+      } catch (e) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: String(e) }));
+        return;
+      }
+      const st = inspections.get(inspectId);
+      if (!st?._data) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "inspection not ready" }));
+        return;
+      }
+      const { bundle, plan, script } = st._data;
+      const bundleId = (bundle as { bundleId: string }).bundleId;
+      const lessonDir = resolve(REPO_ROOT, "dist", "lessons", "inspector", bundleId.replace(/[^A-Za-z0-9._-]/g, "-"));
+      mkdirSync(lessonDir, { recursive: true });
+      writeFileSync(join(lessonDir, "lesson.json"), JSON.stringify(bundle, null, 2) + "\n");
+      writeFileSync(join(lessonDir, "plan.json"), JSON.stringify(plan, null, 2) + "\n");
+      writeFileSync(join(lessonDir, "script.json"), JSON.stringify(script, null, 2) + "\n");
+      if (playerProcess) { playerProcess.kill(); playerProcess = null; }
+      const playerPkg = join(REPO_ROOT, "packages", "player");
+      const viteRoot = join(REPO_ROOT, "node_modules", "vite", "bin", "vite.js");
+      const viteLocal = join(playerPkg, "node_modules", "vite", "bin", "vite.js");
+      const viteBin = existsSync(viteRoot) ? viteRoot : viteLocal;
+      playerProcess = spawn(process.execPath, [viteBin, "harness", "--port", String(PLAYER_PORT), "--host", "127.0.0.1"], {
+        cwd: playerPkg,
+        stdio: "pipe",
+        env: childEnv({ EVE_LESSON_DIR: lessonDir }),
+      });
+      playerProcess.on("error", (e: Error) => console.error(`player error: ${e.message}`));
+      playerProcess.stderr?.on("data", () => {});
+      playerProcess.stdout?.on("data", () => {});
+      const playerUrl = `http://127.0.0.1:${PLAYER_PORT}/?lesson=generated&manual=1&voice=tone&mpw=300`;
+      setTimeout(() => {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ playerUrl }));
+      }, 2500);
+    });
     return;
   }
 
