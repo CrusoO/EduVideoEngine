@@ -20,7 +20,7 @@ export type BuildInput = {
   locale?: string;
   level?: string;
   /** Where the voice is made and with what; "synthetic" times each sentence from its words and makes no audio (tests, and a quick look at the gates). */
-  voice: { dir: string; synth: Synthesizer } | "synthetic";
+  voice: { dir: string; synth: Synthesizer; jobs?: number } | "synthetic";
   /** Run the SymPy verifier (default true). A lesson is `publishable` only when it ran. */
   verify?: boolean;
   approvals?: readonly Approval[];
@@ -89,7 +89,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     if (input.voice === "synthetic") tracks = syntheticTracks(assembled.bundle);
     else {
       log(round === 0 ? "voicing the sentences" : "voicing the sentences that changed");
-      voice = await synthesizeLesson(assembled.bundle, input.voice.dir, input.voice.synth);
+      voice = await synthesizeLesson(assembled.bundle, input.voice.dir, input.voice.synth, { jobs: input.voice.jobs });
       tracks = voice.tracks;
       log(`  ${voice.synthesized} voiced, ${voice.reused} kept`);
     }
