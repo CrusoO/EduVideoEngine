@@ -25,7 +25,7 @@ export type QualityReport = {
 
 const SHOWS = new Set(["reveal", "draw", "pop"]);
 /** Components that are a picture, not words or a formula. */
-const PICTURES = new Set(["functionGraph", "numberLine", "stepList", "shape", "arrowCallout"]);
+const PICTURES = new Set(["functionGraph", "numberLine", "stepList", "shape", "arrowCallout", "table"]);
 /** Pause after each spoken sentence; the resolver's value (packages/resolver/src/resolve.ts), kept here because the report only estimates times. */
 const SENTENCE_GAP_MS = 300;
 export const STATIC_LIMIT_MS = 12_000;
@@ -125,7 +125,7 @@ export function analyseLesson(bundle: LessonBundle, durationsMs?: Readonly<Recor
   if (revealShare >= 0.7) add("reveal-only-motion", `${Math.round(revealShare * 100)}% of the cues only make something appear`);
 
   // 8. pictures and explanations
-  const pictureBeats = bundle.scenes.filter((s) => s.objects.some((o) => o.component === "functionGraph" || o.component === "numberLine")).length;
+  const pictureBeats = bundle.scenes.filter((s) => s.objects.some((o) => o.component === "functionGraph" || o.component === "numberLine" || o.component === "table")).length;
   const explanationSentences = bundle.script.filter((s) => EXPLAINS.test(s.text)).length;
   if (explanationSentences === 0) add("no-explanation-wording", "no sentence gives a reason or points at what to notice (a wording heuristic)");
 

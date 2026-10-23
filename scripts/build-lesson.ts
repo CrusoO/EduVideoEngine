@@ -1,5 +1,5 @@
 /**
- * pnpm lesson:build <skillId> [--level class-10] [--locale en-IN] [--out dist/lessons] [--no-voice] [--no-verify] [--baseline]
+ * pnpm lesson:build <skillId> [--level class-10] [--locale en-IN] [--out dist/lessons] [--no-voice] [--no-verify] [--baseline] [--voice piper|kokoro] [--kokoro-voice bf_emma]
  * --baseline builds without signalling highlights and carried objects (ADR 0066, 0067) into dist/lab-baseline, to compare in the lab (pnpm lesson:lab).
  *
  * The whole compile for one skill (ADR 0061): plan the arc, write the script, assemble the bundle, voice every sentence with the development voice, and judge the
@@ -10,8 +10,8 @@
  */
 import { join, resolve } from "node:path";
 import { REPO_ROOT, clientFromEnv } from "../packages/adapters/src";
-import { loadStore } from "../packages/content/src";
-import { buildLesson, bundleIdFor, lessonFolderName, piperMissing, piperSynthesizer, piperTools, reportOf, writeLessonPackage } from "../packages/pipeline";
+import { loadStores } from "../packages/content/src";
+import { buildLesson, bundleIdFor, kokoroMissing, kokoroSynthesizer, kokoroTools, lessonFolderName, piperMissing, piperSynthesizer, piperTools, reportOf, writeLessonPackage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(`--${name}`);
@@ -29,14 +29,26 @@ const level = option("level", "class-10");
 const baseline = flag("baseline");
 const out = resolve(REPO_ROOT, option("out", join("dist", baseline ? "lab-baseline" : "lessons")));
 
-const { records, problems } = loadStore(resolve(REPO_ROOT, "content"));
+const { records, problems } = loadStores(resolve(REPO_ROOT, "content"), resolve(REPO_ROOT, "content-generated"));
 if (problems.length > 0) {
   console.error(`the content store has ${problems.length} problem(s); run pnpm content:validate`);
   process.exit(1);
 }
 
+// --voice kokoro uses the Kokoro voice (ADR 0084), --kokoro-voice names which of its voices (default bf_emma); the default stays the Piper development voice
+const voiceName = option("voice", "piper");
+if (voiceName !== "piper" && voiceName !== "kokoro") {
+  console.error("--voice must be piper or kokoro");
+  process.exit(2);
+}
+const kTools = kokoroTools(REPO_ROOT);
+if (!flag("no-voice") && voiceName === "kokoro" && kokoroMissing(kTools).length > 0) {
+  console.error(`the Kokoro voice is not installed: ${kokoroMissing(kTools).join(", ")}
+See docs/adr/0084-kokoro-voice.md.`);
+  process.exit(2);
+}
 const tools = piperTools(REPO_ROOT);
-if (!flag("no-voice") && piperMissing(tools).length > 0) {
+if (!flag("no-voice") && voiceName === "piper" && piperMissing(tools).length > 0) {
   console.error(`the development voice is not installed: ${piperMissing(tools).join(", ")}\nInstall it (docs/adr/0013-voice-piper.md) or run with --no-voice.`);
   process.exit(2);
 }
@@ -44,13 +56,14 @@ const dir = join(out, lessonFolderName(bundleIdFor(skillId, locale)));
 const client = clientFromEnv();
 console.log(`${client.model}: mode ${client.mode}`);
 
+const synth = flag("no-voice") ? undefined : voiceName === "kokoro" ? kokoroSynthesizer(kTools, { voice: option("kokoro-voice", "bf_emma") }) : piperSynthesizer(tools);
 const result = await buildLesson({
   client,
   store: records,
   skillId,
   locale,
   level,
-  voice: flag("no-voice") ? "synthetic" : { dir: join(dir, "voice"), synth: piperSynthesizer(tools) },
+  voice: flag("no-voice") ? "synthetic" : { dir: join(dir, "voice"), synth },
   verify: !flag("no-verify"),
   ...(baseline ? { features: { signalling: false, carry: false, motion: false, writeOn: false } } : {}),
   log: (l) => console.log(l),
@@ -67,6 +80,7 @@ if (!result.ok) {
   process.exit(1);
 }
 
+synth?.dispose?.();
 const where = writeLessonPackage(result, out);
 const report = reportOf(result);
 const a = result.assurance;

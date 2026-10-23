@@ -57,7 +57,7 @@ def test_the_generated_table_of_claim_kinds_matches_the_handlers():
 
 
 def test_every_answer_kind_is_proved_by_a_claim_kind_that_has_a_handler():
-    assert set(SPEC["answerKinds"]) == {"sum-of-roots", "product-of-roots", "roots", "solution"}
+    assert set(SPEC["answerKinds"]) == {"sum-of-roots", "product-of-roots", "roots", "solution", "value"}  # value (ADR 0076): proved as an equivalent claim
     for answer_kind, claim_kind in SPEC["answerKinds"].items():
         assert CLAIM_HANDLERS[claim_kind] is not None, answer_kind
 
