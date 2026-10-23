@@ -263,3 +263,204 @@
 .eve-equation {
   clip-path: inset(-12px calc((1 - var(--eve-draw, 1)) * 100% - 12px) -12px -12px);
 }
+
+/* Table (ADR 0076): a grid of square cells; each cell is a number, tinted by its value. */
+.eve-table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.eve-table-grid {
+  display: grid;
+  gap: 4px;
+}
+.eve-table-cell {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--eve-ink);
+  box-shadow: 0 0 0 calc(3px * var(--eve-hl, 0)) var(--eve-hl-color);
+}
+.eve-table-label {
+  color: var(--eve-muted);
+  font-size: 0.95rem;
+}
+
+/* Circuit (ADR 0082): wires, a battery, a resistor, a meter, and dots for the current. */
+.eve-circuit {
+  display: flex;
+  justify-content: center;
+}
+.eve-circuit-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  overflow: visible;
+}
+.eve-circuit-wire,
+.eve-circuit-part,
+.eve-circuit-plate {
+  fill: none;
+  stroke: var(--eve-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.eve-circuit-wire {
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--eve-draw, 1));
+}
+.eve-circuit-plate-long {
+  stroke-width: 5;
+}
+.eve-circuit-part {
+  stroke: var(--eve-yellow);
+}
+.eve-circuit-meter {
+  fill: var(--eve-bg);
+  stroke: var(--eve-green);
+  stroke-width: 3;
+}
+.eve-circuit-dot {
+  fill: var(--eve-blue);
+}
+.eve-circuit-sign {
+  fill: var(--eve-ink);
+  font-size: 18px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+}
+.eve-circuit-value {
+  fill: var(--eve-ink);
+  font-size: 18px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+}
+.eve-circuit-value-battery {
+  fill: var(--eve-blue);
+}
+.eve-circuit-value-resistor {
+  fill: var(--eve-yellow);
+}
+.eve-circuit-value-meter {
+  fill: var(--eve-green);
+}
+.eve-circuit-lead {
+  fill: none;
+  stroke: var(--eve-purple);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.eve-circuit-voltmeter {
+  fill: var(--eve-bg);
+  stroke: var(--eve-purple);
+  stroke-width: 3;
+}
+.eve-circuit-value-voltmeter {
+  fill: var(--eve-purple);
+}
+.eve-circuit-node {
+  fill: var(--eve-ink);
+}
+
+/* Magnet and coil (ADR 0083). */
+.eve-magnet {
+  display: flex;
+  justify-content: center;
+}
+.eve-magnet-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  overflow: visible;
+}
+.eve-magnet-turn {
+  fill: none;
+  stroke: var(--eve-yellow);
+  stroke-width: 3;
+}
+.eve-magnet-wire,
+.eve-magnet-dial,
+.eve-magnet-tick {
+  fill: none;
+  stroke: var(--eve-ink);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.eve-magnet-needle {
+  stroke: var(--eve-red);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.eve-magnet-pivot {
+  fill: var(--eve-ink);
+}
+.eve-magnet-north {
+  fill: var(--eve-red);
+}
+.eve-magnet-south {
+  fill: var(--eve-blue);
+}
+.eve-magnet-pole {
+  fill: var(--eve-bg);
+  font-size: 20px;
+  font-weight: 700;
+  font-family: Inter, sans-serif;
+}
+.eve-magnet-label {
+  fill: var(--eve-muted);
+  font-size: 14px;
+  font-family: Inter, sans-serif;
+}
+
+/* Water analogy (ADR 0085). */
+.eve-water {
+  display: flex;
+  justify-content: center;
+}
+.eve-water-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  overflow: visible;
+}
+.eve-water-wall {
+  fill: none;
+  stroke: var(--eve-ink);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.eve-water-level {
+  fill: var(--eve-blue);
+  fill-opacity: 0.4;
+}
+.eve-water-pipe-fill {
+  fill: var(--eve-blue);
+  fill-opacity: 0.22;
+  stroke: none;
+}
+.eve-water-drop {
+  fill: var(--eve-blue);
+}
+.eve-water-label {
+  font-size: 18px;
+  font-weight: 600;
+  font-family: Inter, sans-serif;
+}
+.eve-water-label-push {
+  fill: var(--eve-blue);
+}
+.eve-water-label-narrow {
+  fill: var(--eve-yellow);
+}
+.eve-water-label-flow {
+  fill: var(--eve-green);
+}

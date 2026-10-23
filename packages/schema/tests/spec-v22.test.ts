@@ -100,7 +100,7 @@ describe("the morph cue of an equation (ADR 0068)", () => {
     expect(has(noCue, "an equation with props.from needs a morph cue on the whole object")).toBe(true);
     const noFrom = morphing();
     noFrom.scenes[3]!.objects[0]!.props = {};
-    expect(has(noFrom, "a morph cue belongs to an equation with props.from or a graph with props.sweep")).toBe(true);
+    expect(has(noFrom, "a morph cue belongs to an equation with props.from or a graph, circuit or water picture with props.sweep")).toBe(true);
   });
 
   it("from is an expression, and not the one the object already shows", () => {
@@ -124,7 +124,7 @@ describe("the morph cue of an equation (ADR 0068)", () => {
   it("only an equation morphs", () => {
     const b = morphing();
     b.scenes[3]!.cues.push({ targetObject: "line", action: "morph", anchor: { sentenceId: "s4.4", at: "start" }, minHoldMs: 700 });
-    expect(has(b, "a morph cue belongs to an equation with props.from or a graph with props.sweep")).toBe(true);
+    expect(has(b, "a morph cue belongs to an equation with props.from or a graph, circuit or water picture with props.sweep")).toBe(true);
   });
 });
 
@@ -153,7 +153,7 @@ describe("a graph that sweeps, and the fields only 2.2.0 may carry (ADR 0070)", 
   it("a morph on a graph needs the sweep", () => {
     const b = swept();
     b.scenes[2]!.objects.find((o) => o.id === "graph")!.props = { xMin: 0, xMax: 5, yMin: -1, yMax: 7, roots: true };
-    expect(has(b, "a morph cue belongs to an equation with props.from or a graph with props.sweep")).toBe(true);
+    expect(has(b, "a morph cue belongs to an equation with props.from or a graph, circuit or water picture with props.sweep")).toBe(true);
   });
 
   it("a 2.0.0 or 2.1.0 bundle may not carry the morph cue, the sweep or the from of an equation", () => {

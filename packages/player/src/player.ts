@@ -2,10 +2,14 @@ import { Sweep, componentsUsedBy, formulaLatex, loadComponents, loadedComponent,
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import { DEFAULT_CHROME_PX, PAD, solve, stageFrame } from "@eve/layout";
-import { colorTheme } from "../theme/palette";
+import { colorTheme, type Theme } from "../theme/palette";
 import type { MasterClock } from "./clock";
 
 export type PlayerOptions = {
+  /** False draws the lesson as a recording: no hint to drag, even while seeking (the video exporter, ADR 0085). Default true. */
+  interactive?: boolean;
+  /** The stage theme (ADR 0082): the colours the player writes into captions and formulas. Default dark. */
+  theme?: Theme;
   root: HTMLElement;
   /** Content only: objects, props, expressions, sentence text. Every time comes from the Timeline. */
   bundle: LessonBundle;
@@ -88,7 +92,7 @@ export class Player {
   constructor(private readonly o: PlayerOptions) {
     this.raf = o.raf ?? ((cb) => requestAnimationFrame(cb));
     this.caf = o.caf ?? ((id) => cancelAnimationFrame(id));
-    this.colors = colorTheme(o.bundle.termColors);
+    this.colors = colorTheme(o.bundle.termColors, o.theme);
     this.sceneById = new Map(o.bundle.scenes.map((s) => [s.id, s]));
     this.sentenceText = new Map(o.bundle.script.map((s) => [s.id, s.text]));
     o.root.replaceChildren();
@@ -231,7 +235,7 @@ export class Player {
           reduceMotion,
           rectOf,
           sweepOverride: this.dragged.get(obj.id),
-          interactive: !this.o.clock.isPlaying() && !this.asking,
+          interactive: this.o.interactive !== false && !this.o.clock.isPlaying(),
         };
         loadedComponent(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
       }
@@ -337,7 +341,7 @@ export class Player {
       this.draw(this.o.clock.nowMs());
     };
     el.addEventListener("pointerdown", (e) => {
-      if (this.o.clock.isPlaying() || this.asking) return;
+      if (this.o.clock.isPlaying()) return;
       on = true;
       (el as { setPointerCapture?: (id: number) => void }).setPointerCapture?.((e as PointerEvent).pointerId);
       set(e);
@@ -373,7 +377,7 @@ export class Player {
       }
       const el = (mounted && obj.carryFrom !== undefined ? kept.get(obj.carryFrom) : undefined) ?? document.createElement("div");
       el.dataset.objectId = obj.id;
-      const sweep = obj.component === "functionGraph" ? Sweep.safeParse((obj.props as { sweep?: unknown }).sweep) : null;
+      const sweep = ["functionGraph", "circuit", "waterAnalogy"].includes(obj.component) ? Sweep.safeParse((obj.props as { sweep?: unknown }).sweep) : null;
       if (sweep?.success) this.makeDraggable(el, obj.id, sweep.data);
       this.els.set(obj.id, el);
       this.events.set(obj.id, eventsFor(this.o.timeline, sceneId, obj.id));

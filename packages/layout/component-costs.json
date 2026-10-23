@@ -29,6 +29,10 @@
     "arrowCallout, one line": 43,
     "shape, size m": 96,
     "shape, line": 24,
+    "table, 2 by 2": 92,
+    "waterAnalogy": 210,
+    "magnetCoil": 210,
+    "circuit": 200,
     "highlight (overlay)": 0
   },
   "textLines": {
@@ -64,6 +68,10 @@
     "arrowCallout, one line": 5,
     "shape, size m": 3,
     "shape, line": 5,
+    "table, 2 by 2": 4,
+    "waterAnalogy": 1,
+    "magnetCoil": 1,
+    "circuit": 2,
     "highlight (overlay)": "any number (an overlay costs no height)"
   },
   "exampleScenes": [

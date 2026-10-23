@@ -10,6 +10,9 @@ export const COMPONENT_NAMES = [
   "fractionBar",
   "areaModel",
   "table",
+  "circuit",
+  "magnetCoil",
+  "waterAnalogy",
   "stepList",
   "arrowCallout",
   "shape",
@@ -43,7 +46,8 @@ export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_
 /** The claim kinds that exist from spec 2.1.0. A bundle of an earlier version may not carry them. */
 export const CLAIM_KINDS_FROM_2_1 = ["satisfied-by", "product-of-roots"] as const;
 /** What a recall practice question asks for, and so which claim the verifier proves (ADR 0042, 0053). */
-export const ANSWER_KINDS = ["sum-of-roots", "product-of-roots", "roots", "solution"] as const;
+/** `value` (ADR 0076): the answer equation is the problem worked out (z = 1 for a sum of products), proved as an `equivalent` claim. */
+export const ANSWER_KINDS = ["sum-of-roots", "product-of-roots", "roots", "solution", "value"] as const;
 
 /** What a beat does in the lesson (ADR 0028). Independent of how its claims are checked. */
 export const PEDAGOGY_BEAT_KINDS = ["hook", "prerequisite", "concept", "worked", "mistake", "check"] as const;
@@ -223,6 +227,7 @@ export const ANSWER_KIND_CLAIM: Record<(typeof ANSWER_KINDS)[number], ClaimKind>
   "product-of-roots": "product-of-roots",
   roots: "roots",
   solution: "roots",
+  value: "equivalent",
 };
 // the list above and the zod union must name the same kinds: a kind added to one and not the other does not compile
 const _sameKinds: [ClaimKind] extends [Claim["kind"]] ? ([Claim["kind"]] extends [ClaimKind] ? true : never) : never = true;

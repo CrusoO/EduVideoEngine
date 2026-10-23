@@ -19,6 +19,8 @@ describe("the report under other limits (beats 4 to 5, 99 pictures needed)", () 
         "concept_first/without: 4+,5- false",
         "misconception_first/with: 5- false",
         "misconception_first/without: 5- false",
+        "story_first/with:  false",
+        "story_first/without:  false",
       ]
     `);
   });

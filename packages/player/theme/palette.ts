@@ -22,10 +22,19 @@ export const SEMANTIC = {
   purple: "#9A72AC",
 } as const;
 
+/**
+ * The whiteboard theme (ADR 0082): the same stage on a warm white board, written in marker colours that read on it (each one 4.5:1 or better on the board, tests/theme.test.ts).
+ * Chosen at play time (`?theme=whiteboard`, `pnpm lesson:video`), never by a bundle, so no bundle and no hash changes. The same values live in theme/whiteboard.css.
+ */
+export const WHITEBOARD_STAGE = { bg: "#FBFAF6", grid: "#E9E6DB", axis: "#6B7080", text: "#1A2236", muted: "#5B6275" } as const;
+export const WHITEBOARD_SEMANTIC = { blue: "#1D63C9", yellow: "#9A5B00", green: "#1F7A3E", red: "#C42B22", purple: "#6B3FA0" } as const;
+export type Theme = "dark" | "whiteboard";
+
 export type ColorName = keyof typeof SEMANTIC;
 export const COLOR_NAMES = Object.keys(SEMANTIC) as ColorName[];
 
 /** What the components need to colour a formula: the hex of a term by its name (from the bundle termColors), and the dimmed colour. */
-export function colorTheme(termColors: Readonly<Record<string, ColorName>> | undefined): { of: (term: string) => string | undefined; muted: string } {
-  return { of: (term) => (termColors?.[term] ? SEMANTIC[termColors[term]!] : undefined), muted: STAGE.muted };
+export function colorTheme(termColors: Readonly<Record<string, ColorName>> | undefined, theme: Theme = "dark"): { of: (term: string) => string | undefined; muted: string } {
+  const palette = theme === "whiteboard" ? WHITEBOARD_SEMANTIC : SEMANTIC;
+  return { of: (term) => (termColors?.[term] ? palette[termColors[term]!] : undefined), muted: theme === "whiteboard" ? WHITEBOARD_STAGE.muted : STAGE.muted };
 }

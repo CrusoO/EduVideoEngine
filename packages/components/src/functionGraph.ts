@@ -15,7 +15,7 @@ import type { ComponentModule, ObjectEvent, ObjectState } from "./types";
  * address: `curve` (draw-on) and `root0`, `root1`, ... (pop in, labelled with their value), in increasing x.
  */
 export const GraphProps = z
-  .object({ xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number(), roots: z.boolean().optional(), sweep: Sweep.optional() })
+  .object({ xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number(), roots: z.boolean().optional(), sweep: Sweep.optional(), xLabel: z.string().min(1).max(40).optional(), yLabel: z.string().min(1).max(40).optional(), xName: z.string().min(1).max(4).optional() })
   .strict()
   .refine((p) => p.xMin < p.xMax && p.yMin < p.yMax, "the window must have xMin < xMax and yMin < yMax");
 export type GraphProps = z.infer<typeof GraphProps>;
@@ -119,22 +119,26 @@ export const functionGraph: ComponentModule<GraphProps> = {
     if (!f) throw new Error(`functionGraph ${ctx.objectId}: unknown exprRef ${ctx.exprRef}`);
     host.className = "eve-obj eve-graph";
     const sig = JSON.stringify([p, ctx.exprRef, f]);
-    const sx = (x: number) => PAD.l + ((x - p.xMin) / (p.xMax - p.xMin)) * (W - PAD.l - PAD.r);
-    const sy = (y: number) => H - PAD.b - ((y - p.yMin) / (p.yMax - p.yMin)) * (H - PAD.t - PAD.b);
+    // axis captions (ADR 0081) need room below and above the plot; a graph without them keeps the drawing it always had
+    const pad = { ...PAD, ...(p.xLabel ? { b: 42 } : {}), ...(p.yLabel ? { t: 30 } : {}) };
+    const sx = (x: number) => pad.l + ((x - p.xMin) / (p.xMax - p.xMin)) * (W - pad.l - pad.r);
+    const sy = (y: number) => H - pad.b - ((y - p.yMin) / (p.yMax - p.yMin)) * (H - pad.t - pad.b);
     if (host.dataset.sig !== sig) {
       host.dataset.sig = sig;
       host.replaceChildren();
       const svg = node("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": `Graph of y = ${toPlain(f)}`, class: "eve-graph-svg" });
       for (const v of ticks(p.xMin, p.xMax)) {
-        svg.append(node("line", { x1: String(sx(v)), x2: String(sx(v)), y1: String(PAD.t), y2: String(H - PAD.b), class: "eve-grid" }));
-        svg.append(node("text", { x: String(sx(v)), y: String(H - 8), class: "eve-tick", "text-anchor": "middle" }, String(v)));
+        svg.append(node("line", { x1: String(sx(v)), x2: String(sx(v)), y1: String(pad.t), y2: String(H - pad.b), class: "eve-grid" }));
+        svg.append(node("text", { x: String(sx(v)), y: String(H - pad.b + 18), class: "eve-tick", "text-anchor": "middle" }, String(v)));
       }
       for (const v of ticks(p.yMin, p.yMax)) {
-        svg.append(node("line", { x1: String(PAD.l), x2: String(W - PAD.r), y1: String(sy(v)), y2: String(sy(v)), class: "eve-grid" }));
-        svg.append(node("text", { x: String(PAD.l - 6), y: String(sy(v) + 4), class: "eve-tick", "text-anchor": "end" }, String(v)));
+        svg.append(node("line", { x1: String(pad.l), x2: String(W - pad.r), y1: String(sy(v)), y2: String(sy(v)), class: "eve-grid" }));
+        svg.append(node("text", { x: String(pad.l - 6), y: String(sy(v) + 4), class: "eve-tick", "text-anchor": "end" }, String(v)));
       }
-      if (p.yMin <= 0 && p.yMax >= 0) svg.append(node("line", { x1: String(PAD.l), x2: String(W - PAD.r), y1: String(sy(0)), y2: String(sy(0)), class: "eve-axis" }));
-      if (p.xMin <= 0 && p.xMax >= 0) svg.append(node("line", { x1: String(sx(0)), x2: String(sx(0)), y1: String(PAD.t), y2: String(H - PAD.b), class: "eve-axis" }));
+      if (p.yMin <= 0 && p.yMax >= 0) svg.append(node("line", { x1: String(pad.l), x2: String(W - pad.r), y1: String(sy(0)), y2: String(sy(0)), class: "eve-axis" }));
+      if (p.xMin <= 0 && p.xMax >= 0) svg.append(node("line", { x1: String(sx(0)), x2: String(sx(0)), y1: String(pad.t), y2: String(H - pad.b), class: "eve-axis" }));
+      if (p.xLabel) svg.append(node("text", { x: String((pad.l + W - pad.r) / 2), y: String(H - 4), class: "eve-tick", "text-anchor": "middle" }, p.xLabel));
+      if (p.yLabel) svg.append(node("text", { x: String(pad.l), y: "16", class: "eve-tick", "text-anchor": "start" }, p.yLabel));
       if (p.sweep) {
         // a swept graph: the curve, the roots and the readout are set at every draw from the factor at that time (below)
         svg.append(node("path", { d: "", class: "eve-curve", fill: "none", pathLength: "1", "data-part": "curve" }));
@@ -171,7 +175,7 @@ export const functionGraph: ComponentModule<GraphProps> = {
         g.append(node("circle", { cx: String(sx(r.x)), cy: String(sy(0)), r: "4.5", class: "eve-marker" }));
         // the label sits above the axis, inside the drawing, and flips to the left of a root near the right edge
         const right = sx(r.x) > W - 70;
-        g.append(node("text", { x: String(sx(r.x) + (right ? -9 : 9)), y: String(sy(0) - 9), class: "eve-root-label", "text-anchor": right ? "end" : "start" }, `x = ${formatRoot(r)}`));
+        g.append(node("text", { x: String(sx(r.x) + (right ? -9 : 9)), y: String(sy(0) - 9), class: "eve-root-label", "text-anchor": right ? "end" : "start" }, `${p.xName ?? "x"} = ${formatRoot(r)}`));
         svg.append(g);
       });
       host.append(svg);

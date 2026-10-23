@@ -11,7 +11,7 @@ describe("an empty library", () => {
   });
   it("reports every length as impossible, with the reason, zero pictures and no flags", () => {
     const report = textHeavyReport();
-    expect(report).toHaveLength(6);
+    expect(report).toHaveLength(8); // four arcs, with and without prerequisites (the story arc, ADR 0085)
     for (const r of report) {
       expect(r.satisfiable).toBe(false);
       expect(r.lengths.length).toBeGreaterThan(0);

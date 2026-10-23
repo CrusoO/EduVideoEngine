@@ -497,16 +497,375 @@ const statementCard: Pattern<StatementContent> = {
   },
 };
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 10 and 11. the neuron patterns (ADR 0076): a patch of pixels, and the weights and products that go with it. They read the `grids` of a passage.
+type Grid = { cols: number; cells: string[]; tint: "brightness" | "signed"; label?: string };
+const gridOf = (r: Retrieval, name: string): { grid: Grid; rec: ContentRecord } | undefined => {
+  for (const rec of r.byKind.passage) {
+    const grid = rec.grids?.[name];
+    if (grid) return { grid, rec };
+  }
+  return undefined;
+};
+const tableProps = (g: Grid) => ({ cols: g.cols, cells: g.cells, tint: g.tint, ...(g.label ? { label: g.label } : {}) });
+
+type PatchContent = { pixels: Grid; recordIds: string[] };
+const patchHook: Pattern<PatchContent> = {
+  id: "patch-hook",
+  beatKinds: ["hook"],
+  kinds: ["predict"],
+  pause: "optional",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Open on a small patch of pixels drawn as a grid of numbers, each as bright as its value, and ask what a neuron would make of it. For a hook of a lesson about a neuron or any lesson that starts from a picture made of numbers.",
+  components: ["text", "table"],
+  slots: [{ name: "pixels", source: "content", what: "a passage with a grid named pixels: whole rows of numbers from 0 (dark) to 1 (bright)" }, TITLE, PROMPT_OPTIONAL, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "table, 2 by 2"]),
+  fill(r): FillResult<PatchContent> {
+    const found = gridOf(r, "pixels");
+    return found && found.grid.tint === "brightness" ? { ok: true, content: { pixels: found.grid, recordIds: [found.rec.id] } } : { ok: false, missing: ["a passage with a brightness grid named pixels"] };
+  },
+  build(c, a) {
+    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 0, "pixels", "reveal", 1500, "end"), ...c.pixels.cells.map((_x, i) => cue(a, a.sentenceIds.length - 1, `pixels#cell${i}`, "pop", 300))];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "pixels", component: "table", props: tableProps(c.pixels) },
+      ],
+      [...column(["title", "pixels"]), { rule: "center", item: "title" }, { rule: "center", item: "pixels" }],
+      cues,
+      ask(a),
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+type WeightsContent = { grids: [Grid, Grid, Grid]; recordIds: string[] };
+const weightsOnPixels: Pattern<WeightsContent> = {
+  id: "weights-on-pixels",
+  beatKinds: ["concept"],
+  kinds: ["explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Set the pixels of a strip, a weight for each, and each pixel times its weight one under another as three grids, so the sum a neuron takes is visible before it is added. For the concept beat of a neuron.",
+  components: ["text", "table"],
+  slots: [{ name: "grids", source: "content", what: "a passage with three grids of the same size: pixels (brightness), weights (signed) and products (signed)" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "table, 2 by 2"]),
+  fill(r): FillResult<WeightsContent> {
+    const [px, w, pr] = ["pixels", "weights", "products"].map((n) => gridOf(r, n));
+    if (!px || !w || !pr) return { ok: false, missing: ["a passage with the grids pixels, weights and products"] };
+    const same = px.grid.cells.length === w.grid.cells.length && w.grid.cells.length === pr.grid.cells.length;
+    if (!same) return { ok: false, missing: ["pixels, weights and products with the same number of cells"] };
+    return { ok: true, content: { grids: [px.grid, w.grid, pr.grid], recordIds: [...new Set([px.rec.id, w.rec.id, pr.rec.id])] } };
+  },
+  build(c, a) {
+    const [pixels, weights, products] = c.grids;
+    const cues = [cue(a, 0, "title", "reveal", 800), cue(a, 0, "pixels", "reveal", 1500), cue(a, 1, "weights", "reveal", 1500), cue(a, 2, "products", "reveal", 1500)];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "pixels", component: "table", props: tableProps(pixels) },
+        { id: "weights", component: "table", props: tableProps(weights) },
+        { id: "products", component: "table", props: tableProps(products) },
+      ],
+      [...column(["title", "pixels", "weights", "products"]), { rule: "center", item: "title" }, { rule: "center", item: "pixels" }, { rule: "center", item: "weights" }, { rule: "center", item: "products" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+type SumOnGridContent = { rec: ContentRecord; problem: string; steps: string[]; products: Grid; recordIds: string[] };
+const workedSumOnGrid: Pattern<SumOnGridContent> = {
+  id: "worked-sum-on-grid",
+  beatKinds: ["worked"],
+  kinds: ["worked"],
+  pause: "optional",
+  derivesClaims: true,
+  sources: (c) => c.recordIds,
+  useWhen: "Work a sum of products from a stored solution with the products drawn as a grid above the steps: the problem, the grid of each product, then the steps that add them. For a worked beat of a weighted sum.",
+  components: ["equation", "table", "stepList"],
+  slots: [
+    { name: "problem", source: "content", what: "the equation of a stored solution" },
+    { name: "products", source: "content", what: "a passage with a grid named products" },
+    { name: "steps", source: "content", what: `the first ${MAX_STEPS} steps of that solution that are not notes` },
+    PROMPT_OPTIONAL,
+    ALT,
+  ],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["equation", "table, 2 by 2", "stepList, 3 steps"]),
+  fill(r): FillResult<SumOnGridContent> {
+    const rec = solution(r);
+    const found = gridOf(r, "products");
+    if (!rec?.problem) return { ok: false, missing: ["a solutionSteps record"] };
+    if (!found) return { ok: false, missing: ["a passage with a grid named products"] };
+    const steps = (rec.steps ?? []).filter((s) => s.role !== "note").slice(0, MAX_STEPS).map((s) => s.expr);
+    if (steps.length === 0) return { ok: false, missing: ["steps that are not notes"] };
+    return { ok: true, content: { rec, problem: rec.problem, steps, products: found.grid, recordIds: [rec.id, found.rec.id] } };
+  },
+  build(c, a) {
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "eq", component: "equation", props: { size: "m" }, exprRef: c.problem },
+        { id: "products", component: "table", props: tableProps(c.products) },
+        { id: "steps", component: "stepList", props: { steps: c.steps } },
+      ],
+      [...column(["eq", "products", "steps"]), { rule: "center", item: "products" }],
+      [cue(a, 0, "eq", "reveal", 1000), cue(a, 0, "products", "reveal", 1500, "end"), cue(a, 1, "steps", "reveal", 2000)],
+      ask(a),
+    );
+    return { scene: s, expressions: {}, claims: claimsFor(c.rec, a.beatId), recordIds: c.recordIds };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 12. circuit scene (ADR 0082): a battery, a resistor and a meter in one loop, drawn on a step at a time, then the current set going round
+type CircuitContent = { circuit: NonNullable<ContentRecord["circuit"]>; recordIds: string[] };
+const circuitScene: Pattern<CircuitContent> = {
+  id: "circuit-scene",
+  beatKinds: ["hook", "concept"],
+  kinds: ["predict", "explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Draw a simple electric circuit: the wires, then the battery, the resistor and the meter, each with its value, and then the current as dots going round the loop. For a lesson about current, voltage or resistance.",
+  components: ["text", "circuit"],
+  slots: [{ name: "circuit", source: "content", what: "a passage with a circuit: a battery, a resistor and (optionally) a meter, each an expression that is a number" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "circuit"]),
+  fill(r): FillResult<CircuitContent> {
+    const rec = r.byKind.passage.find((p) => p.circuit && !p.circuit.sweep) ?? r.byKind.passage.find((p) => p.circuit);
+    return rec?.circuit ? { ok: true, content: { circuit: rec.circuit, recordIds: [rec.id] } } : { ok: false, missing: ["a passage with a circuit"] };
+  },
+  build(c, a) {
+    const cues = [
+      cue(a, 0, "title", "reveal", 800),
+      cue(a, 0, "circuit#wires", "draw", 1500),
+      cue(a, 1, "circuit#battery", "pop", 600),
+      cue(a, 1, "circuit#resistor", "pop", 400),
+      ...(c.circuit.meter ? [cue(a, 2, "circuit#meter", "pop", 400)] : []),
+      cue(a, Math.min(2, a.sentenceIds.length - 1), "circuit#flow", "reveal", 600),
+    ];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "circuit", component: "circuit", props: c.circuit },
+      ],
+      [...column(["title", "circuit"]), { rule: "center", item: "title" }, { rule: "center", item: "circuit" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 13. magnet and coil scene (ADR 0083): a magnet moving towards and away from a coil, and the meter that answers it
+type MagnetContent = { magnetCoil: NonNullable<ContentRecord["magnetCoil"]>; recordIds: string[] };
+const magnetCoilScene: Pattern<MagnetContent> = {
+  id: "magnet-coil-scene",
+  beatKinds: ["hook", "concept"],
+  kinds: ["predict", "explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Show a bar magnet and a coil joined to a meter: the parts appear, then the magnet moves towards the coil and away from it, and the needle swings while it moves. For electromagnetic induction.",
+  components: ["text", "magnetCoil"],
+  slots: [{ name: "magnetCoil", source: "content", what: "a passage with a magnet and a coil: the number of turns" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "magnetCoil"]),
+  fill(r): FillResult<MagnetContent> {
+    const rec = r.byKind.passage.find((p) => p.magnetCoil);
+    return rec?.magnetCoil ? { ok: true, content: { magnetCoil: rec.magnetCoil, recordIds: [rec.id] } } : { ok: false, missing: ["a passage with a magnet and a coil"] };
+  },
+  build(c, a) {
+    const cues = [
+      cue(a, 0, "title", "reveal", 800),
+      cue(a, 0, "magnet#magnet", "pop", 600),
+      cue(a, 0, "magnet#coil", "pop", 600),
+      cue(a, 1, "magnet#meter", "pop", 400),
+      cue(a, 1, "magnet#motion", "reveal", 600),
+    ];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "magnet", component: "magnetCoil", props: c.magnetCoil },
+      ],
+      [...column(["title", "magnet"]), { rule: "center", item: "title" }, { rule: "center", item: "magnet" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 14. water scene (ADR 0085): water in a pipe as a picture of current: the tank is the push, the narrow part the resistance, the drops the flow
+type WaterContent = { water: NonNullable<ContentRecord["water"]>; recordIds: string[] };
+const waterScene: Pattern<WaterContent> = {
+  id: "water-scene",
+  beatKinds: ["concept"],
+  kinds: ["explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Show water in a pipe as a picture of electric current: the tank fills (the push), the narrow part is picked out (what holds the flow back), and the drops run (the current). With a sweep the tank rises and the drops speed up, and the student may drag the level while paused. An analogy: say where it stops.",
+  components: ["text", "waterAnalogy"],
+  slots: [{ name: "water", source: "content", what: "a passage with a water picture: the push, the narrowness and the reading" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "waterAnalogy"]),
+  fill(r): FillResult<WaterContent> {
+    const rec = r.byKind.passage.find((p) => p.water);
+    return rec?.water ? { ok: true, content: { water: rec.water, recordIds: [rec.id] } } : { ok: false, missing: ["a passage with a water picture"] };
+  },
+  build(c, a) {
+    const last = a.sentenceIds.length - 1;
+    const cues = [
+      cue(a, 0, "title", "reveal", 800),
+      cue(a, 0, "water#tank", "pop", 500),
+      cue(a, 1, "water#tank", "highlight", 900),
+      cue(a, 1, "water#pipe", "pop", 500),
+      cue(a, 2, "water#pipe", "highlight", 900),
+      cue(a, 2, "water#flow", "reveal", 500),
+      ...(c.water.flow ? [cue(a, Math.min(3, last), "water#reading", "reveal", 500)] : []),
+      ...(c.water.sweep ? [cue(a, Math.min(4, last), "water", "morph", 3200)] : []),
+    ];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "water", component: "waterAnalogy", props: c.water },
+      ],
+      [...column(["title", "water"]), { rule: "center", item: "title" }, { rule: "center", item: "water" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 15. paired tables (ADR 0085): the measurements of an experiment, a row of what was set and a row of what was read, filled in one pair at a time
+type PairedContent = { inputs: Grid; outputs: Grid; recordIds: string[] };
+const pairedTables: Pattern<PairedContent> = {
+  id: "paired-tables",
+  beatKinds: ["concept"],
+  kinds: ["explore", "explain"],
+  pause: "none",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Show an experiment's readings: what was set (a row of numbers) above what was measured (a row of numbers), each pair appearing in turn, so the pattern between them is seen before it is said.",
+  components: ["text", "table"],
+  slots: [{ name: "grids", source: "content", what: "a passage with two grids of the same size: inputs (what was set) and outputs (what was measured)" }, TITLE, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "table, 2 by 2", "table, 2 by 2"]),
+  fill(r): FillResult<PairedContent> {
+    const [i, o] = ["inputs", "outputs"].map((n) => gridOf(r, n));
+    if (!i || !o) return { ok: false, missing: ["a passage with the grids inputs and outputs"] };
+    if (i.grid.cells.length !== o.grid.cells.length) return { ok: false, missing: ["inputs and outputs with the same number of cells"] };
+    return { ok: true, content: { inputs: i.grid, outputs: o.grid, recordIds: [...new Set([i.rec.id, o.rec.id])] } };
+  },
+  build(c, a) {
+    const last = a.sentenceIds.length - 1;
+    const cues = [
+      cue(a, 0, "title", "reveal", 800),
+      cue(a, 0, "inputs", "reveal", 600),
+      cue(a, 0, "outputs", "reveal", 600),
+      // each reading appears with the sentence that says it: the sentences after the first, one pair each, the last pair on the last sentence but one
+      ...c.inputs.cells.flatMap((_x, i) => [cue(a, Math.min(1 + i, last - 1), `inputs#cell${i}`, "pop", 400), cue(a, Math.min(1 + i, last - 1), `outputs#cell${i}`, "pop", 400, "end")]),
+      cue(a, last, "outputs", "highlight", 900),
+    ];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "inputs", component: "table", props: tableProps(c.inputs) },
+        { id: "outputs", component: "table", props: tableProps(c.outputs) },
+      ],
+      [...column(["title", "inputs", "outputs"]), { rule: "center", item: "title" }, { rule: "center", item: "inputs" }, { rule: "center", item: "outputs" }],
+      cues,
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// 16. circuit and its law (ADR 0085): the circuit with the law that ties its numbers, the terms of the law in the colours of the parts; the battery can be dragged
+type CircuitLawContent = { circuit: NonNullable<ContentRecord["circuit"]>; law: string; claimId: string; recordIds: string[] };
+const circuitLawScene: Pattern<CircuitLawContent> = {
+  id: "circuit-law-scene",
+  beatKinds: ["concept"],
+  kinds: ["explain"],
+  pause: "required",
+  derivesClaims: false,
+  sources: (c) => c.recordIds,
+  useWhen: "Draw a circuit and, under it, the law that ties its voltage, current and resistance, each term in the colour of its part. With a sweep the battery moves and the meter follows, and the student may drag it while paused.",
+  components: ["text", "circuit", "equation"],
+  slots: [{ name: "circuit", source: "content", what: "a passage with a circuit" }, { name: "law", source: "content", what: "a grounded concept claim that is about an equation of at least two coloured terms" }, TITLE, PROMPT, ALT],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["text (title, one line)", "circuit", "equation, large"]),
+  fill(r): FillResult<CircuitLawContent> {
+    const rec = r.byKind.passage.find((p) => p.circuit?.sweep) ?? r.byKind.passage.find((p) => p.circuit);
+    const claim = r.byKind.conceptClaim.find((c) => c.claimMode === "grounded" && (c.exprRefs ?? []).some((id) => {
+      const e = r.expressions[id];
+      return e?.op === "eq" && [...termIds(e)].length >= 2 && [...termIds(e)].every((t) => r.termColors[t]);
+    }));
+    const law = claim?.exprRefs?.find((id) => {
+      const e = r.expressions[id];
+      return e?.op === "eq" && [...termIds(e)].length >= 2;
+    });
+    return rec?.circuit && claim && law ? { ok: true, content: { circuit: rec.circuit, law, claimId: claim.id, recordIds: [rec.id, claim.id] } } : { ok: false, missing: ["a passage with a circuit and a grounded claim about a coloured equation"] };
+  },
+  build(c, a) {
+    const last = a.sentenceIds.length - 1;
+    const cues = [
+      cue(a, 0, "title", "reveal", 800),
+      cue(a, 0, "circuit#wires", "draw", 1200),
+      cue(a, 0, "circuit#battery", "pop", 500),
+      cue(a, 0, "circuit#resistor", "pop", 500, "end"),
+      ...(c.circuit.meter ? [cue(a, 1, "circuit#meter", "pop", 500)] : []),
+      cue(a, 1, "circuit#flow", "reveal", 500, "end"),
+      cue(a, Math.min(2, last), "law", "reveal", 1500),
+      ...(c.circuit.sweep ? [cue(a, Math.min(4, last), "circuit", "morph", 3200)] : []),
+    ];
+    const s = scene(
+      a,
+      c.recordIds,
+      [
+        { id: "title", component: "text", props: { text: a.text.title!, role: "title" } },
+        { id: "circuit", component: "circuit", props: c.circuit },
+        { id: "law", component: "equation", props: { size: "l" }, exprRef: c.law },
+      ],
+      [...column(["title", "circuit", "law"]), { rule: "center", item: "title" }, { rule: "center", item: "circuit" }, { rule: "center", item: "law" }],
+      cues,
+      ask(a),
+    );
+    return { scene: s, expressions: {}, claims: [], recordIds: c.recordIds };
+  },
+};
+
 /**
- * The six patterns planner.v2 and planner.v3 know. Their requests and the recorded reference replies are keyed to exactly this list (ADR 0039), so it does not
+ * The patterns planner.v2 and planner.v3 know. Their requests and the recorded reference replies are keyed to exactly this list (ADR 0039), so it does not
  * grow: the two CO-2 patterns join the planner with the next planner version, through LIBRARY.
  */
 export const PATTERNS = [colourBoundTerms, predictThenReveal, hopsOnNumberLine, plotAndMarkRoots, stepByStep, commonMistakeContrast] as const;
 export type PatternId = (typeof PATTERNS)[number]["id"];
 export const PATTERN_IDS: readonly PatternId[] = PATTERNS.map((p) => p.id);
 
-/** The whole library: the six above, the two CO-2 patterns (recap card, check question; ADR 0038) and the statement card (ADR 0062). Nine, every one with a text-heavy flag. */
-export const LIBRARY = [...PATTERNS, recapCard, checkQuestion, statementCard] as const;
+/** The whole library: the six above, the two CO-2 patterns (recap card, check question; ADR 0038) and the statement card (ADR 0062). Nine, then the three neuron patterns (ADR 0076), the circuit scene (ADR 0082), the magnet and coil scene (ADR 0083) and the water, paired tables and circuit law scenes (ADR 0085), every one with a text-heavy flag. */
+export const LIBRARY = [...PATTERNS, recapCard, checkQuestion, statementCard, patchHook, weightsOnPixels, workedSumOnGrid, circuitScene, magnetCoilScene, waterScene, pairedTables, circuitLawScene] as const;
 export type LibraryPatternId = (typeof LIBRARY)[number]["id"];
 export const LIBRARY_IDS: readonly LibraryPatternId[] = LIBRARY.map((p) => p.id);
 
@@ -555,7 +914,7 @@ export function instantiate(id: string, r: Retrieval, args: PatternArgs): Instan
   return p.build(filled.content as never, args);
 }
 
-const VISUAL_COMPONENTS = new Set(["numberLine", "functionGraph", "shape", "fractionBar", "areaModel", "balanceScale", "table"]);
+const VISUAL_COMPONENTS = new Set(["numberLine", "functionGraph", "shape", "fractionBar", "areaModel", "balanceScale", "table", "circuit", "magnetCoil", "waterAnalogy"]);
 /** A pattern is text-heavy when none of its components is a picture or a diagram: it shows words and equations only. Derived from the components, never typed. */
 export const isTextHeavy = (p: { components: readonly string[] }): boolean => !p.components.some((c) => VISUAL_COMPONENTS.has(c));
 

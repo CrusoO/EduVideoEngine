@@ -22,8 +22,8 @@ const HINDI_KB = 170;
 // with everything in one file. ADR 0024 found the cause of the growth (module-level code of unused fixtures and the hashing library was being bundled) and removed it, and split the
 // two heavy components into chunks a lesson fetches only if it uses them. Ceilings below are measured plus a little headroom. Raising one needs an ADR with the measured cause;
 // 60 KB is the hard ceiling for any lesson (everything loaded) and is never raised.
-const PLAYER_CORE_GZIP_KB = 35; // 33 until ADR 0067 (carried objects, the morph rules of the validator: 33.5 measured), 34 until ADR 0070 (drag to explore: 34.03 measured); measured 31.4 before: the player, layout, resolver, schema and the six small components, with zod
-const PLAYER_ALL_GZIP_KB = 42; // 40 until ADR 0070 (the sweep of the graph chunk: 41.0 measured); measured 37.0 before: a lesson that uses every component
+const PLAYER_CORE_GZIP_KB = 36; // 35 until ADR 0076 (the table component: 35.2 measured); 33 until ADR 0067 (carried objects, the morph rules of the validator: 33.5 measured), 34 until ADR 0070 (drag to explore: 34.03 measured); measured 31.4 before: the player, layout, resolver, schema and the six small components, with zod
+const PLAYER_ALL_GZIP_KB = 53; // 49 until ADR 0085 (the water chunk 3.1 KB and the sweep of the circuit: 51.9 measured with every component loaded; the story lesson loads core 35.4 + circuit 3.9 + water 3.1 = 42.4 KB); 46 until ADR 0083 (the magnet and coil chunk 2.3 KB and the voltmeter and parallel layout in the circuit chunk, now 3.6 KB: 48.5 measured with every component loaded; the lesson of ADR 0081 loads 43.6, the induction lesson 37.8); 43 until ADR 0082 (the circuit chunk, 2.8 KB: 45.3 measured with every component loaded; a lesson that uses the graph and the circuit loads 42.7); 42 until ADR 0076 (42.2 measured); 40 until ADR 0070 (the sweep of the graph chunk: 41.0 measured); measured 37.0 before: a lesson that uses every component
 const PLAYER_HARD_CEILING_KB = 60;
 
 describe("budgets", () => {
@@ -48,13 +48,13 @@ describe("budgets", () => {
     });
     const outputs = (Array.isArray(out) ? out.flatMap((o) => ("output" in o ? o.output : [])) : "output" in out ? out.output : []) as Array<{ type: string; fileName: string; code?: string }>;
     const chunks = outputs.filter((o) => o.type === "chunk").map((c) => ({ name: c.fileName, code: c.code!, gz: gzipSync(c.code!).length / 1024 }));
-    const split = chunks.filter((c) => /^(functionGraph|numberLine)-/.test(c.name));
+    const split = chunks.filter((c) => /^(functionGraph|numberLine|circuit|magnetCoil|waterAnalogy)-/.test(c.name));
     const core = chunks.filter((c) => !split.includes(c));
     const coreGz = core.reduce((n, c) => n + c.gz, 0);
     const allGz = chunks.reduce((n, c) => n + c.gz, 0);
     console.log(`player: core ${coreGz.toFixed(1)} KB gzip; ${split.map((c) => `${c.name.split("-")[0]} ${c.gz.toFixed(1)}`).join(", ")}; everything ${allGz.toFixed(1)} KB`);
-    expect(split.map((c) => c.name.split("-")[0]).sort()).toEqual(["functionGraph", "numberLine"]);
-    expect(core.map((c) => c.code).join("\n"), "the heavy components must not be in the core").not.toMatch(/eve-graph-svg|eve-hop/);
+    expect(split.map((c) => c.name.split("-")[0]).sort()).toEqual(["circuit", "functionGraph", "magnetCoil", "numberLine", "waterAnalogy"]);
+    expect(core.map((c) => c.code).join("\n"), "the heavy components must not be in the core").not.toMatch(/eve-graph-svg|eve-hop|eve-circuit-svg|eve-magnet-svg|eve-water-svg/);
     expect(coreGz).toBeLessThanOrEqual(PLAYER_CORE_GZIP_KB);
     expect(allGz).toBeLessThanOrEqual(PLAYER_ALL_GZIP_KB);
     expect(PLAYER_ALL_GZIP_KB).toBeLessThanOrEqual(PLAYER_HARD_CEILING_KB);

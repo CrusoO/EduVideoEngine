@@ -28,3 +28,7 @@ __pycache__/
 .pytest_cache/
 *.sqlite
 stryker.quick.json
+
+# NCERT books: all rights reserved, local reference only, never committed (ADR 0086)
+assets/
+tools/kokoro/

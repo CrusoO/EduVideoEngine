@@ -34,9 +34,21 @@ describe("patterns for each slot", () => {
             "plot-and-mark-roots",
             "recap-card",
             "statement-card",
+            "weights-on-pixels",
+            "circuit-scene",
+            "magnet-coil-scene",
+            "water-scene",
+            "paired-tables",
+            "circuit-law-scene",
           ],
           "picture": [
             "plot-and-mark-roots",
+            "weights-on-pixels",
+            "circuit-scene",
+            "magnet-coil-scene",
+            "water-scene",
+            "paired-tables",
+            "circuit-law-scene",
           ],
           "textHeavy": [
             "colour-bound-terms",
@@ -48,8 +60,15 @@ describe("patterns for each slot", () => {
           "all": [
             "predict-then-reveal",
             "common-mistake-contrast",
+            "patch-hook",
+            "circuit-scene",
+            "magnet-coil-scene",
           ],
-          "picture": [],
+          "picture": [
+            "patch-hook",
+            "circuit-scene",
+            "magnet-coil-scene",
+          ],
           "textHeavy": [
             "predict-then-reveal",
             "common-mistake-contrast",
@@ -72,9 +91,11 @@ describe("patterns for each slot", () => {
           "all": [
             "hops-on-number-line",
             "step-by-step-worked-example",
+            "worked-sum-on-grid",
           ],
           "picture": [
             "hops-on-number-line",
+            "worked-sum-on-grid",
           ],
           "textHeavy": [
             "step-by-step-worked-example",
@@ -95,9 +116,11 @@ describe("patterns for each slot", () => {
           "all": [
             "hops-on-number-line",
             "step-by-step-worked-example",
+            "worked-sum-on-grid",
           ],
           "picture": [
             "hops-on-number-line",
+            "worked-sum-on-grid",
           ],
           "textHeavy": [
             "step-by-step-worked-example",
@@ -112,7 +135,7 @@ describe("patterns for each slot", () => {
     expect(bestFlags([])).toEqual([]);
   });
   it("gives each slot a picture pattern when one fits, in telling order", () => {
-    expect(bestFlags(["hook", "concept", "worked_example", "check"])).toEqual([true, false, false, true]);
+    expect(bestFlags(["hook", "concept", "worked_example", "check"])).toEqual([false, false, false, true]);
   });
 });
 
@@ -189,6 +212,30 @@ describe("slot sequences", () => {
             "check",
           ],
         ],
+        "story_first/with": [
+          [
+            "hook",
+            "concept",
+            "concept",
+            "concept",
+            "concept",
+            "worked_example",
+            "common_mistake_contrast",
+            "check",
+          ],
+        ],
+        "story_first/without": [
+          [
+            "hook",
+            "concept",
+            "concept",
+            "concept",
+            "concept",
+            "worked_example",
+            "common_mistake_contrast",
+            "check",
+          ],
+        ],
       }
     `);
   });
@@ -215,7 +262,7 @@ describe("the variety report, whole", () => {
             {
               "beats": 6,
               "longestTextHeavyRun": 2,
-              "pictureBeats": 2,
+              "pictureBeats": 3,
               "possible": true,
               "problems": [],
               "sequence": [
@@ -227,7 +274,7 @@ describe("the variety report, whole", () => {
                 "check",
               ],
               "textHeavy": [
-                true,
+                false,
                 true,
                 false,
                 false,
@@ -245,7 +292,7 @@ describe("the variety report, whole", () => {
             {
               "beats": 5,
               "longestTextHeavyRun": 2,
-              "pictureBeats": 2,
+              "pictureBeats": 3,
               "possible": true,
               "problems": [],
               "sequence": [
@@ -256,7 +303,7 @@ describe("the variety report, whole", () => {
                 "check",
               ],
               "textHeavy": [
-                true,
+                false,
                 false,
                 false,
                 true,
@@ -266,7 +313,7 @@ describe("the variety report, whole", () => {
             {
               "beats": 6,
               "longestTextHeavyRun": 2,
-              "pictureBeats": 2,
+              "pictureBeats": 3,
               "possible": true,
               "problems": [],
               "sequence": [
@@ -278,7 +325,7 @@ describe("the variety report, whole", () => {
                 "check",
               ],
               "textHeavy": [
-                true,
+                false,
                 true,
                 false,
                 false,
@@ -370,8 +417,8 @@ describe("the variety report, whole", () => {
           "lengths": [
             {
               "beats": 5,
-              "longestTextHeavyRun": 2,
-              "pictureBeats": 2,
+              "longestTextHeavyRun": 1,
+              "pictureBeats": 3,
               "possible": true,
               "problems": [],
               "sequence": [
@@ -382,7 +429,7 @@ describe("the variety report, whole", () => {
                 "check",
               ],
               "textHeavy": [
-                true,
+                false,
                 true,
                 false,
                 false,
@@ -398,8 +445,8 @@ describe("the variety report, whole", () => {
           "lengths": [
             {
               "beats": 5,
-              "longestTextHeavyRun": 2,
-              "pictureBeats": 2,
+              "longestTextHeavyRun": 1,
+              "pictureBeats": 3,
               "possible": true,
               "problems": [],
               "sequence": [
@@ -410,10 +457,78 @@ describe("the variety report, whole", () => {
                 "check",
               ],
               "textHeavy": [
-                true,
+                false,
                 true,
                 false,
                 false,
+                true,
+              ],
+            },
+          ],
+          "satisfiable": true,
+        },
+        {
+          "arcId": "story_first",
+          "hasPrerequisites": true,
+          "lengths": [
+            {
+              "beats": 8,
+              "longestTextHeavyRun": 2,
+              "pictureBeats": 6,
+              "possible": true,
+              "problems": [],
+              "sequence": [
+                "hook",
+                "concept",
+                "concept",
+                "concept",
+                "concept",
+                "worked_example",
+                "common_mistake_contrast",
+                "check",
+              ],
+              "textHeavy": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+              ],
+            },
+          ],
+          "satisfiable": true,
+        },
+        {
+          "arcId": "story_first",
+          "hasPrerequisites": false,
+          "lengths": [
+            {
+              "beats": 8,
+              "longestTextHeavyRun": 2,
+              "pictureBeats": 6,
+              "possible": true,
+              "problems": [],
+              "sequence": [
+                "hook",
+                "concept",
+                "concept",
+                "concept",
+                "concept",
+                "worked_example",
+                "common_mistake_contrast",
+                "check",
+              ],
+              "textHeavy": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                false,
+                true,
                 true,
               ],
             },

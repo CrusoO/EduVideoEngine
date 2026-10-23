@@ -1,4 +1,4 @@
-import { CALLOUT_WORDS, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, toPlain } from "@eve/components";
+import { CALLOUT_WORDS, CIRCUIT_HEIGHT_PX, MAGNET_HEIGHT_PX, WATER_HEIGHT_PX, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, TABLE_CELL_PX, TABLE_GAP_PX, TABLE_LABEL_PX, toPlain } from "@eve/components";
 import type { Expr } from "@eve/schema";
 import { COLOR, GRAPH_ASPECT, GRAPH_MAX_WIDTH, MIN_READING_PX, MIN_TEXT_PX } from "./tokens";
 
@@ -199,6 +199,34 @@ export function measure(o: LayoutObject, width: number, ctx: MeasureCtx): Intrin
         facts: label ? [{ what: label, fontPx: 16.8, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }] : [],
       };
     }
+    case "table": {
+      const p = o.props as { cols?: number; cells?: string[]; label?: string };
+      const cols = p.cols ?? 1;
+      const rows = Math.ceil((p.cells?.length ?? 0) / cols);
+      const label = p.label ?? "";
+      const gridW = cols * TABLE_CELL_PX + (cols - 1) * TABLE_GAP_PX;
+      return {
+        height: rows * TABLE_CELL_PX + Math.max(0, rows - 1) * TABLE_GAP_PX + (label ? TABLE_LABEL_PX : 0),
+        maxWidth: gridW,
+        words: label ? wordsOf(label) : 0,
+        equations: 0,
+        facts: [{ what: "table numbers", fontPx: 17.6, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }, ...(label ? [{ what: label, fontPx: 15, bold: false, fg: COLOR.muted, bg: COLOR.stage, kind: "annotation" as const }] : [])],
+      };
+    }
+    case "circuit": {
+      const p = o.props as { meter?: unknown };
+      return {
+        height: CIRCUIT_HEIGHT_PX,
+        maxWidth: 320,
+        words: 0,
+        equations: 0,
+        facts: [{ what: "circuit values", fontPx: p.meter ? 16 : 16, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "annotation" }],
+      };
+    }
+    case "magnetCoil":
+      return { height: MAGNET_HEIGHT_PX, maxWidth: 320, words: 0, equations: 0, facts: [{ what: "magnet labels", fontPx: 16, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "annotation" }] };
+    case "waterAnalogy":
+      return { height: WATER_HEIGHT_PX, maxWidth: 320, words: 0, equations: 0, facts: [{ what: "water labels", fontPx: 16, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "annotation" }] };
     case "highlight":
       return { ...none, height: 0 };
     default:

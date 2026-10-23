@@ -26,6 +26,10 @@ describe("component-costs.json (for the composer prompt)", () => {
       "arrowCallout, one line": 43,
       "shape, size m": 96,
       "shape, line": 24,
+      "table, 2 by 2": 92,
+      circuit: 200,
+      magnetCoil: 210,
+      waterAnalogy: 210,
       "highlight (overlay)": 0,
     });
     expect(file.padding).toBe(40);

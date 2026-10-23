@@ -50,13 +50,20 @@ describe("the equation morph (ADR 0068)", () => {
     expect(l.to!.innerHTML).toBe(plain);
   });
 
-  it("cross-fades the two while the cue runs, one going out as the other comes in", () => {
-    const l = layers(draw([morph(1000)], 1350));
-    expect(l.from!.style.opacity).toBe("0.5");
-    expect(l.to!.style.opacity).toBe("0.5");
-    const early = layers(draw([morph(1000)], 1175));
-    expect(early.from!.style.opacity).toBe("0.75");
-    expect(early.to!.style.opacity).toBe("0.25");
+  it("fades the first formula out over the first half of the cue and the second in over the second half: they are never both visible", () => {
+    const mid = layers(draw([morph(1000)], 1350));
+    expect(mid.from!.style.opacity).toBe("0");
+    expect(mid.to!.style.opacity).toBe("0");
+    const early = layers(draw([morph(1000)], 1175)); // a quarter of the way
+    expect(early.from!.style.opacity).toBe("0.5");
+    expect(early.to!.style.opacity).toBe("0");
+    const late = layers(draw([morph(1000)], 1525)); // three quarters
+    expect(late.from!.style.opacity).toBe("0");
+    expect(late.to!.style.opacity).toBe("0.5");
+    for (let t = 1000; t < 1700; t += 35) {
+      const l = layers(draw([morph(1000)], t));
+      expect(Number(l.from!.style.opacity) * Number(l.to!.style.opacity)).toBe(0);
+    }
   });
 
   it("shows the second formula alone, as a plain equation, when the cue is over", () => {

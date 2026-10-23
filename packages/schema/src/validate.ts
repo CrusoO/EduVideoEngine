@@ -278,9 +278,10 @@ export function validateBundle(input: unknown): Validation {
         if (morphs.length === 0) bad(here, "an equation with props.from needs a morph cue on the whole object");
       }
       const sweep = (o.props as { sweep?: unknown }).sweep;
-      const morphable = (o.component === "equation" && from !== undefined) || (o.component === "functionGraph" && sweep !== undefined);
-      if (morphs.length > 0 && !morphable) bad(here, "a morph cue belongs to an equation with props.from or a graph with props.sweep");
-      if (o.component === "functionGraph" && sweep !== undefined && morphs.length === 0) bad(here, "a graph with props.sweep needs a morph cue on the whole object");
+      const sweeps = o.component === "functionGraph" || o.component === "circuit" || o.component === "waterAnalogy";
+      const morphable = (o.component === "equation" && from !== undefined) || (sweeps && sweep !== undefined);
+      if (morphs.length > 0 && !morphable) bad(here, "a morph cue belongs to an equation with props.from or a graph, circuit or water picture with props.sweep");
+      if (sweeps && sweep !== undefined && morphs.length === 0) bad(here, `a ${o.component === "functionGraph" ? "graph" : "picture"} with props.sweep needs a morph cue on the whole object`);
       if (morphs.length > 1) bad(here, "an object morphs once per scene");
     }
     for (const c of scene.cues) if (c.action === "morph" && c.targetObject.includes("#")) bad(`${at}.cues`, `morph acts on a whole object, not on ${c.targetObject}`);

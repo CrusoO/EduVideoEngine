@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { morphProgress } from "./morph";
+import type { ObjectEvent } from "./types";
 
 /**
  * A sweep (ADR 0070): the graphed quadratic is drawn for a family, with its x-coefficient b multiplied by a factor that a `morph` cue moves from `from` to `to`
@@ -14,3 +16,14 @@ export const sweepValueAt = (s: SweepProps, fraction: number): number => {
   return lo + (hi - lo) * Math.min(1, Math.max(0, fraction));
 };
 
+
+/**
+ * Where the factor of a sweep is at time t for a picture that is not a graph (the circuit, the water analogy; ADR 0085): its start before the `morph` cue on the object, its end
+ * after it, linear between, going to `to` and back with `roundTrip`; or what the student dragged to while the lesson is paused.
+ */
+export function sweepFactorAt(sw: SweepProps, events: readonly ObjectEvent[], t: number, reduceMotion?: boolean, override?: number): number {
+  if (override !== undefined) return override;
+  const ev = events.find((e) => e.part === undefined && e.action === "morph");
+  const u = morphProgress(ev, t, reduceMotion);
+  return sw.from + (sw.to - sw.from) * (sw.roundTrip ? 1 - Math.abs(2 * u - 1) : u);
+}

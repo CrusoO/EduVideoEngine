@@ -54,8 +54,9 @@ export const equation: ComponentModule<EquationProps> = {
         el.dataset.latex = key;
       }
       const [first, second] = [el.children[0] as HTMLElement, el.children[1] as HTMLElement];
-      first.style.opacity = String(css(1 - k));
-      second.style.opacity = String(css(k));
+      // one after the other, with a blink between: the first fades out over the first half, the second fades in over the second half, so the two never overlap into one garbled line
+      first.style.opacity = String(css(Math.max(0, 1 - 2 * k)));
+      second.style.opacity = String(css(Math.max(0, 2 * k - 1)));
     } else if (el.dataset.latex !== latex) {
       // Same input, same DOM: only re-typeset when the formula changes, never on a time change.
       el.innerHTML = ctx.math(latex, display);
