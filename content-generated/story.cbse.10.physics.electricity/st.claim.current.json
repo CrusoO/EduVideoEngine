@@ -1,0 +1,14 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.current",
+  "kind": "conceptClaim",
+  "text": "Electric current is the charge that passes a point in a circuit divided by the time taken.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "sourceNote": "Written for this project as claim c.current.def of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "bd2a602126a6cf17cb50128c5001846e4219bdd384632f462ec2e932a81218f6"
+}

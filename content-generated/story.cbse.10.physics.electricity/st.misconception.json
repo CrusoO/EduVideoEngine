@@ -1,0 +1,53 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.misconception",
+  "kind": "misconception",
+  "text": "A common mistake is to multiply the potential difference by the resistance. That gives {expr:st.wrong}, which is not the current.",
+  "expressions": {
+    "st.wrong": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 48
+      }
+    },
+    "st.right": {
+      "op": "eq",
+      "a": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    }
+  },
+  "contrast": {
+    "wrong": "st.wrong",
+    "right": "st.right"
+  },
+  "sourceNote": "Written for this project as the common mistake of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "a572fa08205d088ed210f0825af0e9760768d0a68cc9644bae090348073e3c8e"
+}

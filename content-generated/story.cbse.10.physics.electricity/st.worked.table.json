@@ -1,0 +1,37 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.worked.table",
+  "kind": "passage",
+  "text": "The current for a third, two thirds and all of the push.",
+  "expressions": {
+    "st.p1": {
+      "op": "num",
+      "n": 1
+    },
+    "st.p2": {
+      "op": "num",
+      "n": 2
+    },
+    "st.p3": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "grids": {
+    "products": {
+      "cols": 3,
+      "cells": [
+        "st.p1",
+        "st.p2",
+        "st.p3"
+      ],
+      "tint": "signed",
+      "label": "Current in amperes"
+    }
+  },
+  "sourceNote": "Written for this project as the table of the worked example of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "c3fd0edc384308ddb2b0b1473d958c463c835027a69e5ce853591e7b54f0900e"
+}

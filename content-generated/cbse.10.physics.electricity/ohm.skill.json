@@ -1,0 +1,12 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.skill",
+  "kind": "skill",
+  "text": "Define current, potential difference and resistance. State and use Ohm's law and say when it does not hold",
+  "expressions": {},
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the skill description; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "b64a7971d39fb3f7158a77b497fa60160140f2a75519f05213266ddddd2e59f4"
+}

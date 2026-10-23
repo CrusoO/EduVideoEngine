@@ -1,0 +1,17 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.a.avoid",
+  "kind": "conceptClaim",
+  "text": "A larger resistance lets less current through, so the current cannot be found by multiplying the potential difference by the resistance.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "exprRefs": [
+    "st.wrong"
+  ],
+  "importance": "support",
+  "sourceNote": "Written for this project as why the tempting mistake fails of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "d06a49616b40872746ca7560383c3c18f02f1d93fbaad3b091e3abf219c1c8a7"
+}

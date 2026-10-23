@@ -1,0 +1,42 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.misconception",
+  "kind": "misconception",
+  "text": "A common mistake is to add up the pixel values and forget the weights. That gives {expr:nn.wrong}, which is not what the neuron adds up.",
+  "expressions": {
+    "nn.wrong": {
+      "op": "eq",
+      "a": {
+        "op": "add",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "num",
+            "n": 1
+          },
+          "b": {
+            "op": "num",
+            "n": 0
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 1
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 2
+      }
+    }
+  },
+  "contrast": {
+    "wrong": "nn.wrong",
+    "right": "nn.total"
+  },
+  "sourceNote": "Written for this project as the common mistake of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "7680f89f942a7443150ed07ddc82eae632dc47db07cdb64598d47619371240a0"
+}

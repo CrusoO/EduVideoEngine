@@ -1,0 +1,49 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.q.recall",
+  "kind": "practiceQuestion",
+  "text": "What current flows through this resistor?",
+  "expressions": {
+    "st.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 20
+        },
+        "b": {
+          "op": "num",
+          "n": 5
+        }
+      }
+    },
+    "st.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "num",
+        "n": 4
+      }
+    }
+  },
+  "questionType": "recall",
+  "answerKind": "value",
+  "question": {
+    "problem": "st.q.eq",
+    "answer": "st.q.answer"
+  },
+  "humanApproved": false,
+  "sourceNote": "Written for this project as a recall question of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "55c6746b03c74ede314a1d924d245251270beea27e12f8b592ff21a328551415"
+}

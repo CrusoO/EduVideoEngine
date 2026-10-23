@@ -1,0 +1,17 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.analogy",
+  "kind": "conceptClaim",
+  "text": "Water in a pipe is a picture of current in a wire: the tank stands for the battery, the pipe for the wire and the running water for the current, and the height of the tank is the push.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "dependsOn": [
+    "st.claim.current"
+  ],
+  "sourceNote": "Written for this project as claim c.analogy.water (a simplification: it says where it stops) of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "f28970af97ecbccb082384f44d5cea77a68fe97cc0c78e3df20482b82c2cae72"
+}

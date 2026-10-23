@@ -17,6 +17,8 @@ function withHops(scene: SceneSpec, line: HopLine, ctx: SceneContext, sentences:
   if (!answer || scene.objects.some((o) => o.id === line.object.id)) return null;
   const at = (i: number): Cue["anchor"] => ({ sentenceId: answer.anchor.sentenceId, at: "start", offsetMs: i * PREVIEW_STEP_MS });
   const cues: Cue[] = [
+    // the line itself appears with the answer: without this its axis is on an otherwise empty stage from the first moment
+    { targetObject: line.object.id, action: "reveal", anchor: at(0), minHoldMs: 300 },
     ...Array.from({ length: line.hops }, (_h, i): Cue => ({ targetObject: `${line.object.id}#hop${i}`, action: "draw", anchor: at(i), minHoldMs: 800 })),
     { targetObject: `${line.object.id}#bracket0`, action: "draw", anchor: at(line.hops), minHoldMs: 800 },
   ];

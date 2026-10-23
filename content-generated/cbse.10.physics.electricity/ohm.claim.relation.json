@@ -1,0 +1,66 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.claim.relation",
+  "kind": "conceptClaim",
+  "text": "The law {expr:ohm.law} means that {expr:ohm.rearranged}.",
+  "expressions": {
+    "ohm.law": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "V",
+        "term": "t.V"
+      },
+      "b": {
+        "op": "mul",
+        "a": {
+          "op": "sym",
+          "name": "I",
+          "term": "t.I"
+        },
+        "b": {
+          "op": "sym",
+          "name": "R",
+          "term": "t.R"
+        }
+      }
+    },
+    "ohm.rearranged": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I",
+        "term": "t.I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "sym",
+          "name": "V",
+          "term": "t.V"
+        },
+        "b": {
+          "op": "sym",
+          "name": "R",
+          "term": "t.R"
+        }
+      }
+    }
+  },
+  "termColors": {
+    "t.V": "blue",
+    "t.I": "yellow",
+    "t.R": "green"
+  },
+  "claimMode": "grounded",
+  "exprRefs": [
+    "ohm.law",
+    "ohm.rearranged"
+  ],
+  "importance": "core",
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the law and its rearrangement, as a claim; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "735c8639e35fa905977f99bf85553bfe1381b5e0acbb4ecffd121a5c18dfa8bd"
+}

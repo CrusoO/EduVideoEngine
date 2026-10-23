@@ -28,7 +28,7 @@ export const LEGACY_KIND: Record<PedagogyBeatKind, LessonBundle["plan"]["beats"]
   mistake: "explain",
   check: "check",
 };
-const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first" } as const;
+const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first", story_first: "problem-first" } as const;
 
 /** What ADRs 0066 to 0072 added to a lesson, each on by default. All off builds the lesson as it was before them. */
 export type Features = { signalling?: boolean; carry?: boolean; motion?: boolean; writeOn?: boolean };

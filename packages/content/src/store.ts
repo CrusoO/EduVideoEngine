@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import type { ColorName, Expr } from "@eve/schema";
 import { CONTENT_CONFIG, ContentRecord, KINDS } from "./record";
@@ -15,6 +15,17 @@ function files(dir: string): string[] {
       return name.endsWith(".json") && !name.startsWith("_") && !/template/i.test(name) ? [p] : [];
     })
     .sort();
+}
+
+/** The records of several folders together (the hand-written content and the content compiled from the knowledge base, ADR 0081). A folder that is not there is skipped. */
+export function loadStores(...dirs: string[]): Store {
+  const out: Store = { records: [], problems: [] };
+  for (const d of dirs.filter((x) => existsSync(x))) {
+    const s = loadStore(d);
+    out.records.push(...s.records);
+    out.problems.push(...s.problems);
+  }
+  return out;
 }
 
 /** Reads the records of a folder. A file that is not a valid record is a problem, not a crash. Does not call the verifier (see `checkStore`). */

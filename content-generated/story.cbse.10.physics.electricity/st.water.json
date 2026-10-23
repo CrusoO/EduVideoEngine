@@ -1,0 +1,42 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.water",
+  "kind": "passage",
+  "text": "Water in a tank and a pipe with a narrow part.",
+  "expressions": {
+    "st.w.h": {
+      "op": "num",
+      "n": 12
+    },
+    "st.w.r": {
+      "op": "num",
+      "n": 4
+    }
+  },
+  "water": {
+    "height": {
+      "value": "st.w.h",
+      "unit": "V"
+    },
+    "narrow": {
+      "value": "st.w.r",
+      "unit": "Ω"
+    },
+    "flow": {
+      "unit": "A"
+    },
+    "full": 24,
+    "sweep": {
+      "from": 1,
+      "to": 2,
+      "min": 0.5,
+      "max": 2,
+      "roundTrip": true
+    }
+  },
+  "sourceNote": "Written for this project as the water picture of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "aef455ae1565fb6e8e60f9a527d994bf853dde3e4525dee0188f7826a8aa367f"
+}

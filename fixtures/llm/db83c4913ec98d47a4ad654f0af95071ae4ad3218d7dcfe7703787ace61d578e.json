@@ -1,0 +1,18 @@
+{
+  "key": "db83c4913ec98d47a4ad654f0af95071ae4ad3218d7dcfe7703787ace61d578e",
+  "step": "planner",
+  "promptVersion": "planner.v4",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-23T12:11:58.212Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"arcId\":\"problem_first\",\"prerequisites\":[],\"beats\":[{\"id\":\"b1\",\"slotId\":\"hook\",\"pattern\":\"common-mistake-contrast\",\"title\":\"A tempting mistake\",\"learningGoal\":\"Why is multiplying the potential difference by the resistance not the current?\",\"sourceIds\":[\"ohm.misconception\"]},{\"id\":\"b2\",\"slotId\":\"concept\",\"pattern\":\"plot-and-mark-roots\",\"title\":\"The law on a graph\",\"learningGoal\":\"How are the three quantities tied together?\",\"sourceIds\":[\"ohm.graph\",\"ohm.steps\",\"ohm.claim.relation\",\"ohm.claim.roots\",\"ohm.claim.graph\"]},{\"id\":\"b3\",\"slotId\":\"worked_example\",\"pattern\":\"worked-sum-on-grid\",\"title\":\"A worked example\",\"learningGoal\":\"What current flows for these numbers?\",\"sourceIds\":[\"ohm.steps\",\"ohm.table\"]},{\"id\":\"b4\",\"slotId\":\"common_mistake_contrast\",\"pattern\":\"statement-card\",\"title\":\"Why it fails\",\"learningGoal\":\"Why can that not be right?\",\"sourceIds\":[\"ohm.claim.wrong\"]},{\"id\":\"b5\",\"slotId\":\"check\",\"pattern\":\"check-question\",\"title\":\"Your turn\",\"learningGoal\":\"What current flows?\",\"sourceIds\":[\"ohm.q.recall\"]}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

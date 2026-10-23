@@ -1,0 +1,66 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.graph",
+  "kind": "passage",
+  "text": "The graph shows how far the potential difference is from its example value as the current changes. It crosses zero exactly at the answer.",
+  "expressions": {
+    "ohm.fn": {
+      "op": "sub",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sym",
+          "name": "x"
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 12
+      }
+    },
+    "ohm.graphEq": {
+      "op": "eq",
+      "a": {
+        "op": "sub",
+        "a": {
+          "op": "mul",
+          "a": {
+            "op": "sym",
+            "name": "x"
+          },
+          "b": {
+            "op": "num",
+            "n": 4
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 12
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 0
+      }
+    }
+  },
+  "plot": {
+    "expr": "ohm.fn",
+    "xMin": 0,
+    "xMax": 5,
+    "yMin": -14,
+    "yMax": 10,
+    "xLabel": "current I (amperes)",
+    "yLabel": "potential difference minus 12 (volts)",
+    "xName": "I"
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the graph of the law; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "62b56b844f811dfa9442e971b224a1b630ef0fdc4750bfecf40d91e6a91c3ba8"
+}

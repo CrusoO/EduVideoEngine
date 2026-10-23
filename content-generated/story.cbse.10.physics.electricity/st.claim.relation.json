@@ -1,0 +1,72 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.relation",
+  "kind": "conceptClaim",
+  "text": "The law {expr:st.law} means that {expr:st.rearranged}.",
+  "expressions": {
+    "st.law": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "V",
+        "term": "t.V"
+      },
+      "b": {
+        "op": "mul",
+        "a": {
+          "op": "sym",
+          "name": "I",
+          "term": "t.I"
+        },
+        "b": {
+          "op": "sym",
+          "name": "R",
+          "term": "t.R"
+        }
+      }
+    },
+    "st.rearranged": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I",
+        "term": "t.I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "sym",
+          "name": "V",
+          "term": "t.V"
+        },
+        "b": {
+          "op": "sym",
+          "name": "R",
+          "term": "t.R"
+        }
+      }
+    }
+  },
+  "termColors": {
+    "t.V": "blue",
+    "t.I": "green",
+    "t.R": "yellow"
+  },
+  "claimMode": "grounded",
+  "exprRefs": [
+    "st.law",
+    "st.rearranged",
+    "st.e.v",
+    "st.e.r",
+    "st.e.i"
+  ],
+  "importance": "core",
+  "dependsOn": [
+    "st.claim.law"
+  ],
+  "sourceNote": "Written for this project as the law and its rearrangement of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "6d5665e19cb2058fb4d032894ce7960b579e575bcc0a2a09cab381c2097c8c21"
+}

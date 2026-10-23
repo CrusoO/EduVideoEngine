@@ -1,0 +1,14 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.claim.number",
+  "kind": "conceptClaim",
+  "text": "A neuron holds a single number, called its activation.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "sourceNote": "Written for this project as what a neuron is of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "4327c2aa15ef0e68af598396ac9d58e3fb80ac4f50c70ac16276312820e7458d"
+}

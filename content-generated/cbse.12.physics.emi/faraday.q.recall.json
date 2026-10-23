@@ -1,0 +1,56 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.q.recall",
+  "kind": "practiceQuestion",
+  "text": "What emf does the coil give?",
+  "expressions": {
+    "faraday.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "E"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 3
+          },
+          "b": {
+            "op": "num",
+            "n": 18
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 3
+        }
+      }
+    },
+    "faraday.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "E"
+      },
+      "b": {
+        "op": "num",
+        "n": 18
+      }
+    }
+  },
+  "questionType": "recall",
+  "answerKind": "value",
+  "question": {
+    "problem": "faraday.q.eq",
+    "answer": "faraday.q.answer"
+  },
+  "humanApproved": false,
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as a recall question; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "975d79d3f53ae50e635a4edf50a1a8f51d5a7ff07875d87debca7812f335b612"
+}

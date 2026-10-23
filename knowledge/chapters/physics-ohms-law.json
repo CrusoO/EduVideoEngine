@@ -1,0 +1,383 @@
+{
+  "concepts": [
+    {
+      "id": "phys.current",
+      "label": "Electric current",
+      "subject": "physics",
+      "level": "class-10",
+      "definition": "The rate at which electric charge flows past a point in a circuit, measured in amperes.",
+      "prerequisites": []
+    },
+    {
+      "id": "phys.pd",
+      "label": "Potential difference",
+      "subject": "physics",
+      "level": "class-10",
+      "definition": "The work done per unit charge in moving charge between two points, measured in volts.",
+      "prerequisites": []
+    },
+    {
+      "id": "phys.resistance",
+      "label": "Electrical resistance",
+      "subject": "physics",
+      "level": "class-10",
+      "definition": "How strongly a conductor opposes the flow of current through it, measured in ohms.",
+      "prerequisites": [
+        "phys.current",
+        "phys.pd"
+      ]
+    },
+    {
+      "id": "phys.ohm",
+      "label": "Ohm's law",
+      "subject": "physics",
+      "level": "class-10",
+      "definition": "For many conductors at constant temperature the current is proportional to the potential difference across them.",
+      "prerequisites": [
+        "phys.current",
+        "phys.pd",
+        "phys.resistance"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "kb.mock.physics10",
+      "title": "Mock reference notes, electricity (written for testing the knowledge base)",
+      "rightsHolder": "LearningUplift project",
+      "licence": "owner-original",
+      "mock": true,
+      "passages": [
+        {
+          "id": "p1",
+          "loc": "notes 1",
+          "text": "Electric current is the rate of flow of electric charge past a point in a circuit. It equals the charge that passes divided by the time taken, and its unit is the ampere."
+        },
+        {
+          "id": "p2",
+          "loc": "notes 2",
+          "text": "By convention the direction of current is taken from the positive terminal of the cell to the negative terminal. The electrons that carry the charge in a metal wire actually move the opposite way."
+        },
+        {
+          "id": "p3",
+          "loc": "notes 3",
+          "text": "Potential difference between two points is the work done to move one unit of charge from one point to the other. Its unit is the volt, and a voltmeter is connected in parallel across the two points."
+        },
+        {
+          "id": "p4",
+          "loc": "notes 4",
+          "text": "Resistance measures how much a conductor opposes the flow of current through it. Its unit is the ohm. For a given potential difference, a larger resistance allows a smaller current."
+        },
+        {
+          "id": "p5",
+          "loc": "notes 5",
+          "text": "Ohm's law states that the current through a conductor is directly proportional to the potential difference across its ends, provided its temperature and other physical conditions stay the same. This gives V equals I times R, where R is a constant for that conductor."
+        },
+        {
+          "id": "p6",
+          "loc": "notes 6",
+          "text": "Not every conductor obeys Ohm's law. A graph of potential difference against current is a straight line through the origin for an ohmic conductor, and is curved for a non-ohmic device such as a filament lamp whose temperature changes as current flows."
+        },
+        {
+          "id": "p7",
+          "loc": "notes 7",
+          "text": "The resistance of a uniform conductor is directly proportional to its length and inversely proportional to its area of cross section, and it depends on the material and the temperature."
+        },
+        {
+          "id": "p8",
+          "loc": "notes 8",
+          "text": "A picture that helps is water in a pipe. The tank stands for the battery, the pipe for the wire and the running water for the current. The height of the tank is the push, and a narrow part of the pipe holds the flow back. Charges are not water and a wire is not a pipe, so the picture shows how the push and what holds it back decide the flow, and nothing more."
+        },
+        {
+          "id": "p9",
+          "loc": "notes 9",
+          "text": "In a metal the moving charges collide with the atoms of the material, and every collision holds the flow back. A longer wire gives more collisions, and a thinner wire gives more collisions, so a longer or thinner wire has more resistance."
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "c.current.def",
+      "conceptId": "phys.current",
+      "statement": "Electric current is the charge that passes a point in a circuit divided by the time taken.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p1"
+        }
+      ]
+    },
+    {
+      "id": "c.current.direction",
+      "conceptId": "phys.current",
+      "statement": "The conventional direction of current is from the positive terminal to the negative terminal, and the electrons in a metal wire move the opposite way.",
+      "conditions": [
+        "in a metal wire, where electrons carry the charge"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p2"
+        }
+      ]
+    },
+    {
+      "id": "c.pd.def",
+      "conceptId": "phys.pd",
+      "statement": "Potential difference between two points is the work done to move one unit of charge from one point to the other.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p3"
+        }
+      ]
+    },
+    {
+      "id": "c.pd.meter",
+      "conceptId": "phys.pd",
+      "statement": "A voltmeter is connected in parallel across the two points whose potential difference is measured.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p3"
+        }
+      ]
+    },
+    {
+      "id": "c.res.def",
+      "conceptId": "phys.resistance",
+      "statement": "Resistance measures how much a conductor opposes the flow of current, and for a given potential difference a larger resistance allows a smaller current.",
+      "conditions": [
+        "for a fixed potential difference"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p4"
+        }
+      ]
+    },
+    {
+      "id": "c.res.geometry",
+      "conceptId": "phys.resistance",
+      "statement": "The resistance of a uniform conductor is directly proportional to its length and inversely proportional to its area of cross section.",
+      "conditions": [
+        "a uniform conductor",
+        "at constant temperature"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p7"
+        }
+      ]
+    },
+    {
+      "id": "c.ohm.law",
+      "conceptId": "phys.ohm",
+      "statement": "The current through a conductor is directly proportional to the potential difference across its ends, so V equals I times R with R constant.",
+      "conditions": [
+        "the temperature and other physical conditions stay the same"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p5"
+        }
+      ]
+    },
+    {
+      "id": "c.ohm.graph",
+      "conceptId": "phys.ohm",
+      "statement": "A graph of potential difference against current is a straight line through the origin for an ohmic conductor and is curved for a non-ohmic device such as a filament lamp.",
+      "conditions": [
+        "the conductor is ohmic"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p6"
+        }
+      ]
+    },
+    {
+      "id": "c.ohm.number",
+      "conceptId": "phys.ohm",
+      "statement": "A 4 ohm resistor with 12 volts across it carries a current of 3 amperes.",
+      "conditions": [
+        "an ohmic resistor at constant temperature"
+      ],
+      "kind": "computed",
+      "proof": {
+        "expr": {
+          "op": "div",
+          "a": {
+            "op": "sym",
+            "name": "V"
+          },
+          "b": {
+            "op": "sym",
+            "name": "R"
+          }
+        },
+        "given": {
+          "V": 12,
+          "R": 4
+        },
+        "equals": 3
+      },
+      "support": []
+    },
+    {
+      "id": "c.ohm.electrons",
+      "conceptId": "phys.current",
+      "statement": "Current is the flow of electrons.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "simplification",
+      "simplification": {
+        "limit": "in electrolytes and semiconductors the charge carriers are ions or holes, and conventional current is defined opposite to electron flow",
+        "replacedBy": "c.current.direction"
+      },
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p2"
+        }
+      ]
+    },
+    {
+      "id": "c.analogy.water",
+      "conceptId": "phys.current",
+      "statement": "Water in a pipe is a picture of current in a wire: the tank stands for the battery, the pipe for the wire and the running water for the current, and the height of the tank is the push.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "simplification",
+      "simplification": {
+        "limit": "charges are not water and a wire is not a pipe: the picture shows how the push and what holds it back decide the flow, and nothing about what a charge is",
+        "replacedBy": "c.current.def"
+      },
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p8"
+        }
+      ]
+    },
+    {
+      "id": "c.res.cause",
+      "conceptId": "phys.resistance",
+      "statement": "In a metal the moving charges collide with the atoms of the material and every collision holds the flow back, so a longer or thinner wire has more resistance.",
+      "conditions": [
+        "in a metal conductor"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics10",
+          "passageId": "p9"
+        }
+      ]
+    }
+  ],
+  "laws": [
+    {
+      "id": "law.ohm",
+      "conceptId": "phys.ohm",
+      "relation": {
+        "op": "eq",
+        "a": {
+          "op": "sym",
+          "name": "V"
+        },
+        "b": {
+          "op": "mul",
+          "a": {
+            "op": "sym",
+            "name": "I"
+          },
+          "b": {
+            "op": "sym",
+            "name": "R"
+          }
+        }
+      },
+      "solveFor": "I",
+      "rearranged": {
+        "op": "eq",
+        "a": {
+          "op": "sym",
+          "name": "I"
+        },
+        "b": {
+          "op": "div",
+          "a": {
+            "op": "sym",
+            "name": "V"
+          },
+          "b": {
+            "op": "sym",
+            "name": "R"
+          }
+        }
+      },
+      "quantities": {
+        "V": {
+          "label": "potential difference",
+          "unit": "volts",
+          "symbol": "V"
+        },
+        "I": {
+          "label": "current",
+          "unit": "amperes",
+          "symbol": "A"
+        },
+        "R": {
+          "label": "resistance",
+          "unit": "ohms",
+          "symbol": "Ω"
+        }
+      },
+      "example": {
+        "given": {
+          "V": 12,
+          "R": 4
+        },
+        "answer": 3
+      },
+      "check": {
+        "given": {
+          "V": 20,
+          "R": 5
+        },
+        "answer": 4
+      },
+      "mistake": {
+        "op": "mul",
+        "a": "V",
+        "b": "R",
+        "why": "A larger resistance lets less current through, so the current cannot be found by multiplying the potential difference by the resistance."
+      },
+      "circuit": {
+        "source": "V",
+        "load": "R",
+        "meter": "I"
+      }
+    }
+  ]
+}

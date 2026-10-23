@@ -1,0 +1,29 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.glossary",
+  "kind": "glossary",
+  "text": "Words used in this lesson.",
+  "expressions": {},
+  "terms": [
+    {
+      "id": "g.phys_current",
+      "term": "electric current",
+      "definition": "The rate at which electric charge flows past a point in a circuit, measured in amperes."
+    },
+    {
+      "id": "g.phys_pd",
+      "term": "potential difference",
+      "definition": "The work done per unit charge in moving charge between two points, measured in volts."
+    },
+    {
+      "id": "g.phys_resistance",
+      "term": "electrical resistance",
+      "definition": "How strongly a conductor opposes the flow of current through it, measured in ohms."
+    }
+  ],
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the glossary; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "1ccf261e0c989371af5b8ca7fc52013cb9c19ee231f56f4b285639274ff709e5"
+}

@@ -1,5 +1,5 @@
 import type { JsonSchema } from "@eve/adapters";
-import { IMPLEMENTED } from "@eve/components";
+import { OFFERED_TO_MODELS } from "@eve/components";
 import { PATTERN_IDS } from "@eve/patterns";
 import { BEAT_KINDS, COLOR_NAMES, CUE_ACTIONS } from "@eve/schema";
 
@@ -38,7 +38,7 @@ export function allowedValues(
   extra: Readonly<Record<string, readonly string[]>> = {},
 ): Record<string, string[]> {
   const out: Record<string, string[]> = {
-    components: [...IMPLEMENTED],
+    components: [...OFFERED_TO_MODELS],
     patterns: [...PATTERN_IDS],
     colours: [...COLOR_NAMES],
     cueActions: [...CUE_ACTIONS],

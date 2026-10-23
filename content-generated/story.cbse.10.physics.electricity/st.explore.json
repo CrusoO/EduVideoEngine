@@ -1,0 +1,46 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.explore",
+  "kind": "passage",
+  "text": "The same circuit, with a battery that can be moved.",
+  "expressions": {
+    "st.e.v": {
+      "op": "num",
+      "n": 12
+    },
+    "st.e.r": {
+      "op": "num",
+      "n": 4
+    },
+    "st.e.i": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "circuit": {
+    "battery": {
+      "value": "st.e.v",
+      "unit": "V"
+    },
+    "resistor": {
+      "value": "st.e.r",
+      "unit": "Ω"
+    },
+    "meter": {
+      "value": "st.e.i",
+      "unit": "A"
+    },
+    "sweep": {
+      "from": 1,
+      "to": 2,
+      "min": 0.5,
+      "max": 2,
+      "roundTrip": true
+    }
+  },
+  "sourceNote": "Written for this project as the circuit the student can drag of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "5a02cf7c74b3d6a88efac6e15273e50cb6a543cc85bfcf17de605f4eb2a90567"
+}

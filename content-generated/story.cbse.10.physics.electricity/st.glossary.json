@@ -1,0 +1,29 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.glossary",
+  "kind": "glossary",
+  "text": "Words used in this lesson.",
+  "expressions": {},
+  "terms": [
+    {
+      "id": "g.st.phys_current",
+      "term": "electric current",
+      "definition": "The rate at which electric charge flows past a point in a circuit, measured in amperes."
+    },
+    {
+      "id": "g.st.phys_pd",
+      "term": "potential difference",
+      "definition": "The work done per unit charge in moving charge between two points, measured in volts."
+    },
+    {
+      "id": "g.st.phys_resistance",
+      "term": "electrical resistance",
+      "definition": "How strongly a conductor opposes the flow of current through it, measured in ohms."
+    }
+  ],
+  "sourceNote": "Written for this project as the glossary of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "992dd4b9d4f3b13b2ff62ce4456e3065255d924d185929d05b5acbb482c79cdf"
+}

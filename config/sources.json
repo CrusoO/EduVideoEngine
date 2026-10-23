@@ -1,0 +1,15 @@
+{
+  "_comment": "The rights ledger (ADR 0078). A content record whose licence is not owner-original, CC0-1.0 or public-domain names one of these sources in `sourceId`; the record is rejected if the source is missing, carries another licence, has expired, or does not permit its use. `permittedUses`: lesson-wording (text of the record may reach prompts and lessons), claim-check (the source may only be used to check claims, no wording from it). Add a source only with the licence text or the written permission on file (`evidence`).",
+  "sources": [
+    {
+      "id": "ncert-maths-books",
+      "title": "NCERT mathematics textbooks, Grades 7 to 12 (chapter PDFs kept in assets/, never committed)",
+      "rightsHolder": "National Council of Educational Research and Training (NCERT)",
+      "licence": "all-rights-reserved",
+      "permittedUses": [
+        "reference-only"
+      ],
+      "evidence": "The copyright notice on the preliminary pages of each book reserves all rights: no part may be reproduced, stored or transmitted without the publisher's prior written permission. No permission has been asked or given. The books are used only for section titles and page numbers (knowledge/books, ADR 0086); no text, equation, figure or exercise of a book enters a record, a prompt, an index or a lesson."
+    }
+  ]
+}

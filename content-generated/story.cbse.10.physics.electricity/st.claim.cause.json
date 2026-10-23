@@ -1,0 +1,17 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.cause",
+  "kind": "conceptClaim",
+  "text": "In a metal the moving charges collide with the atoms of the material and every collision holds the flow back, so a longer or thinner wire has more resistance.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "dependsOn": [
+    "st.claim.resist"
+  ],
+  "sourceNote": "Written for this project as claim c.res.cause of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "0968d6d273d13fe3caf851fd92e8d5dfe52c3ea0af69df4d78d823631ce91d0a"
+}

@@ -1,0 +1,17 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.claim.mistake",
+  "kind": "conceptClaim",
+  "text": "Adding the pixels without their weights does not give what the neuron adds up.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "exprRefs": [
+    "nn.wrong"
+  ],
+  "importance": "support",
+  "sourceNote": "Written for this project as the common mistake, as a claim of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "71edabfdfa48fd9a0d6c4520119b8d5f794219063261f9a20ec7f660edd2bb0a"
+}

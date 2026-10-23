@@ -1,0 +1,17 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.resist",
+  "kind": "conceptClaim",
+  "text": "Resistance measures how much a conductor opposes the flow of current, and for a given potential difference a larger resistance allows a smaller current.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "dependsOn": [
+    "st.claim.push"
+  ],
+  "sourceNote": "Written for this project as claim c.res.def of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "5a3ff36aaca4a329f27a792c671452c09ee4f78147371d0bf89d46fd1b6d2573"
+}

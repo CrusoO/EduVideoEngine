@@ -1,0 +1,18 @@
+{
+  "key": "4f1768a88926c931fbde4b474357fbdac2a1f4418abdb45dda13eff64b98645c",
+  "step": "scriptwriter",
+  "promptVersion": "scriptwriter.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-23T15:22:56.964Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"beats\":[{\"sentences\":[{\"claimId\":\"faraday.claim.law\",\"text\":\"A magnet moves towards a coil, and the flux through the coil changes while it moves.\"},{\"claimId\":\"faraday.claim.law\",\"text\":\"That changing flux gives an emf, and the emf equals the rate at which the flux changes.\"},{\"claimId\":\"faraday.claim.law\",\"text\":\"A faster change in flux gives a larger emf, so the needle of the meter swings further.\"},{\"claimId\":\"faraday.claim.law\",\"text\":\"When the magnet stops, the flux stops changing, and the needle falls back to rest.\"}],\"beatId\":\"b2\"},{\"sentences\":[{\"claimId\":\"c.faraday.steps.roots\",\"text\":\"The law multiplies the number of turns by the change in flux and divides by the time taken, which gives {expr:faraday.problem}.\"},{\"claimId\":\"c.faraday.steps.roots\",\"text\":\"Working it out, the emf is thirty volts.\"},{\"claimId\":\"c.faraday.steps.check.1\",\"text\":\"Now we check it by putting the emf back, which gives {expr:faraday.back}.\"},{\"claimId\":\"c.faraday.steps.check.1\",\"text\":\"Both sides match, so thirty volts is right for five turns, twelve webers and two seconds.\"}],\"prompt\":\"What do we divide by?\",\"beatId\":\"b3\"},{\"sentences\":[{\"claimId\":\"faraday.claim.avoid\",\"text\":\"A tempting mistake is to divide the change in flux by the time taken and stop, which gives {expr:faraday.wrong}.\"},{\"claimId\":\"faraday.claim.avoid\",\"text\":\"But every turn of the coil adds its own emf, so leaving out the turns gives too small a value.\"}],\"note\":\"Every turn adds to the emf\",\"beatId\":\"b4\"},{\"sentences\":[{\"claimId\":\"faraday.q.recall.answer.b5\",\"text\":\"The answer is {expr:faraday.q.answer}, which is eighteen volts.\"},{\"claimId\":\"faraday.q.recall.answer.b5\",\"text\":\"We multiply the turns by the change in flux and divide by the time, as in {expr:faraday.q.eq}.\"},{\"claimId\":\"faraday.q.recall.answer.b5\",\"text\":\"So the emf comes out the same way as in the worked example, with new numbers.\"}],\"prompt\":\"What emf does the coil give?\",\"beatId\":\"b5\"}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

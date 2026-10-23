@@ -1,0 +1,12 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.skill",
+  "kind": "skill",
+  "text": "Find what a neuron adds up from a patch of pixels: each pixel times its weight, then the bias.",
+  "expressions": {},
+  "sourceNote": "Written for this project as the skill description of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "f2a67e7d6574b1ba0ed7db5a9171e51b59d7c280ccf7dae0abb5c554fda1ee58"
+}

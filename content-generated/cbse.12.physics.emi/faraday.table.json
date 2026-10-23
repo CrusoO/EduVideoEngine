@@ -1,0 +1,37 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.table",
+  "kind": "passage",
+  "text": "The emf grows in step with the change in flux.",
+  "expressions": {
+    "faraday.e1": {
+      "op": "num",
+      "n": 10
+    },
+    "faraday.e2": {
+      "op": "num",
+      "n": 20
+    },
+    "faraday.e3": {
+      "op": "num",
+      "n": 30
+    }
+  },
+  "grids": {
+    "products": {
+      "cols": 3,
+      "cells": [
+        "faraday.e1",
+        "faraday.e2",
+        "faraday.e3"
+      ],
+      "tint": "signed",
+      "label": "Emf in volts"
+    }
+  },
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the table of the proportion; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "37da3828249bc19f7f6d6346d4b680e9cc5ab04bf50c66fa9a79502544dc6eaf"
+}

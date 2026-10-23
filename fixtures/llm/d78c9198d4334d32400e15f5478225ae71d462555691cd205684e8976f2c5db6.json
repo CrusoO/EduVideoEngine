@@ -1,0 +1,18 @@
+{
+  "key": "d78c9198d4334d32400e15f5478225ae71d462555691cd205684e8976f2c5db6",
+  "step": "scriptwriter",
+  "promptVersion": "scriptwriter.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-23T13:05:58.040Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"beats\":[{\"sentences\":[{\"claimId\":\"ohm.claim.relation\",\"text\":\"The law says that {expr:ohm.law}, so the potential difference is the current times the resistance.\"},{\"claimId\":\"ohm.claim.relation\",\"text\":\"Turn it round and it reads {expr:ohm.rearranged}, so the current is the potential difference divided by the resistance.\"},{\"claimId\":\"ohm.claim.relation\",\"text\":\"For a fixed resistance, a larger potential difference drives a larger current, and a larger resistance lets less through.\"},{\"claimId\":\"ohm.claim.roots\",\"text\":\"Take a resistance of four ohms across twelve volts: the equation {expr:ohm.problem} has a single answer, and that answer is the current.\"},{\"claimId\":\"ohm.claim.graph\",\"text\":\"On the graph the line crosses zero at three amperes, which is the answer to {expr:ohm.graphEq}.\"}],\"beatId\":\"b2\"},{\"sentences\":[{\"claimId\":\"c.ohm.steps.equivalent.1\",\"text\":\"The equation {expr:ohm.problem} says the same as {expr:ohm.divided}, so we divide the potential difference by the resistance.\"},{\"claimId\":\"c.ohm.steps.roots\",\"text\":\"That division gives three amperes, which is the root of the equation.\"},{\"claimId\":\"c.ohm.steps.check.1\",\"text\":\"Now we check it by putting the current back into the law, which gives {expr:ohm.back}.\"},{\"claimId\":\"c.ohm.steps.check.1\",\"text\":\"Both sides match, so three amperes is right for four ohms across twelve volts.\"}],\"prompt\":\"Which quantity do we divide by?\",\"beatId\":\"b3\"},{\"sentences\":[{\"claimId\":\"ohm.claim.avoid\",\"text\":\"A tempting mistake is to multiply the potential difference by the resistance, which gives {expr:ohm.wrong}.\"},{\"claimId\":\"ohm.claim.avoid\",\"text\":\"But a larger resistance lets less current through, so multiplying by it cannot be right.\"}],\"note\":\"Resistance cuts the current, never raises it\",\"beatId\":\"b4\"},{\"sentences\":[{\"claimId\":\"ohm.q.recall.answer.b5\",\"text\":\"The answer is {expr:ohm.q.answer}, which is four amperes.\"},{\"claimId\":\"ohm.q.recall.answer.b5\",\"text\":\"We divide the potential difference of twenty volts by the resistance of five ohms, as in {expr:ohm.q.eq}.\"},{\"claimId\":\"ohm.q.recall.answer.b5\",\"text\":\"So the current comes out the same way as in the worked example, with new numbers.\"}],\"prompt\":\"What current flows through this resistor?\",\"beatId\":\"b5\"}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

@@ -61,7 +61,7 @@ describe("the lesson context", () => {
     expect(c.skillRecord?.id).toBe("quad.sum.skill");
     expect(c.lesson.skillId).toBe(SKILL);
     expect(c.prerequisites.map((p) => [p.skillId, p.assumableAtLevels, p.retrieval.skillId])).toEqual([[FACTORISE, ["class-10"], FACTORISE]]);
-    expect(Object.keys(c.skills).sort()).toEqual([FACTORISE, SKILL]);
+    expect(Object.keys(c.skills).sort()).toEqual([FACTORISE, SKILL, "MATH.ML.NEURON.WEIGHTED_SUM"]); // every skill of the store, the neuron skill (ADR 0076) among them
     expect(c.skills[SKILL]).toEqual({ prerequisiteSkillIds: [FACTORISE], assumableAtLevels: [] });
     expect(c.skills[FACTORISE]).toEqual({ prerequisiteSkillIds: [], assumableAtLevels: ["class-10"] });
     expect(Object.keys(c.recordSkill)).toHaveLength(STORE.length);

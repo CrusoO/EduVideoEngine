@@ -1,0 +1,15 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.magnet",
+  "kind": "passage",
+  "text": "A bar magnet and a coil joined to a meter.",
+  "expressions": {},
+  "magnetCoil": {
+    "turns": 5
+  },
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the magnet and coil drawing; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "5d68a1b3cee97eee0fba8fcd34bf433a0cc84e5c822799bbcbebdee399670cea"
+}

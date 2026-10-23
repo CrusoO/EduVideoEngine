@@ -1,0 +1,87 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.q.recall",
+  "kind": "practiceQuestion",
+  "text": "What total does this neuron work out?",
+  "expressions": {
+    "nn.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "z"
+      },
+      "b": {
+        "op": "sub",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "add",
+            "a": {
+              "op": "mul",
+              "a": {
+                "op": "num",
+                "n": 2
+              },
+              "b": {
+                "op": "num",
+                "n": 0
+              }
+            },
+            "b": {
+              "op": "mul",
+              "a": {
+                "op": "neg",
+                "a": {
+                  "op": "num",
+                  "n": 1
+                }
+              },
+              "b": {
+                "op": "num",
+                "n": 1
+              }
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 3
+            },
+            "b": {
+              "op": "num",
+              "n": 1
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 1
+        }
+      }
+    },
+    "nn.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "z"
+      },
+      "b": {
+        "op": "num",
+        "n": 1
+      }
+    }
+  },
+  "questionType": "recall",
+  "answerKind": "value",
+  "question": {
+    "problem": "nn.q.eq",
+    "answer": "nn.q.answer"
+  },
+  "humanApproved": false,
+  "sourceNote": "Written for this project as a recall question of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "3495d489767c0564cb020ebd564dedb428707fb22545dc54a800012d581436b9"
+}

@@ -1,0 +1,280 @@
+{
+  "concepts": [
+    {
+      "id": "phys.mag.flux",
+      "label": "Magnetic flux",
+      "subject": "physics",
+      "level": "class-12",
+      "definition": "The measure of how much magnetic field passes through a surface, equal to B A cos theta for a uniform field, in webers.",
+      "prerequisites": []
+    },
+    {
+      "id": "phys.emi.faraday",
+      "label": "Faraday's law of induction",
+      "subject": "physics",
+      "level": "class-12",
+      "definition": "A changing magnetic flux through a loop induces an emf equal in size to the rate of change of flux.",
+      "prerequisites": [
+        "phys.mag.flux"
+      ]
+    },
+    {
+      "id": "phys.emi.lenz",
+      "label": "Lenz's law",
+      "subject": "physics",
+      "level": "class-12",
+      "definition": "The direction of an induced current is such that it opposes the change that produced it.",
+      "prerequisites": [
+        "phys.emi.faraday"
+      ]
+    },
+    {
+      "id": "phys.emi.motional",
+      "label": "Motional emf",
+      "subject": "physics",
+      "level": "class-12",
+      "definition": "The emf induced in a conductor moving through a magnetic field, equal to B l v for a rod moving at right angles to the field.",
+      "prerequisites": [
+        "phys.emi.faraday"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "kb.mock.physics12",
+      "title": "Mock reference notes, electromagnetic induction (written for testing the knowledge base)",
+      "rightsHolder": "LearningUplift project",
+      "licence": "owner-original",
+      "mock": true,
+      "passages": [
+        {
+          "id": "p1",
+          "loc": "notes 1",
+          "text": "Magnetic flux through a flat surface in a uniform magnetic field is the product of the field strength, the area, and the cosine of the angle between the field and the normal to the surface. Its unit is the weber."
+        },
+        {
+          "id": "p2",
+          "loc": "notes 2",
+          "text": "Faraday's law of induction says that the emf induced in a loop equals the rate of change of the magnetic flux through the loop. No emf is induced while the flux is constant."
+        },
+        {
+          "id": "p3",
+          "loc": "notes 3",
+          "text": "Lenz's law says that the direction of the induced current is such that it opposes the change in flux that produced it. This is the reason for the minus sign in Faraday's law, and it follows from conservation of energy."
+        },
+        {
+          "id": "p4",
+          "loc": "notes 4",
+          "text": "When a straight conductor of length l moves with speed v at right angles to a uniform magnetic field B, the emf induced between its ends is B times l times v."
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "e.flux.def",
+      "conceptId": "phys.mag.flux",
+      "statement": "Magnetic flux through a flat surface is the field strength times the area times the cosine of the angle between the field and the normal to the surface.",
+      "conditions": [
+        "a uniform magnetic field",
+        "a flat surface"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics12",
+          "passageId": "p1"
+        }
+      ]
+    },
+    {
+      "id": "e.faraday",
+      "conceptId": "phys.emi.faraday",
+      "statement": "The emf induced in a loop equals the rate of change of the magnetic flux through the loop, and no emf is induced while the flux is constant.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics12",
+          "passageId": "p2"
+        }
+      ]
+    },
+    {
+      "id": "e.lenz",
+      "conceptId": "phys.emi.lenz",
+      "statement": "The induced current flows in the direction that opposes the change in flux that produced it, which follows from conservation of energy.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics12",
+          "passageId": "p3"
+        }
+      ]
+    },
+    {
+      "id": "e.motional",
+      "conceptId": "phys.emi.motional",
+      "statement": "A straight conductor of length l moving with speed v at right angles to a uniform field B has an emf of B times l times v between its ends.",
+      "conditions": [
+        "a straight conductor",
+        "a uniform magnetic field",
+        "motion at right angles to the field"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.physics12",
+          "passageId": "p4"
+        }
+      ]
+    },
+    {
+      "id": "e.motional.number",
+      "conceptId": "phys.emi.motional",
+      "statement": "A rod 0.4 m long moving at 2 m/s across a field of 0.5 T has an emf of 0.4 V.",
+      "conditions": [
+        "the rod moves at right angles to a uniform field"
+      ],
+      "kind": "computed",
+      "proof": {
+        "expr": {
+          "op": "div",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "mul",
+              "a": {
+                "op": "sym",
+                "name": "B_tenths"
+              },
+              "b": {
+                "op": "sym",
+                "name": "l_tenths"
+              }
+            },
+            "b": {
+              "op": "sym",
+              "name": "v"
+            }
+          },
+          "b": {
+            "op": "num",
+            "n": 100
+          }
+        },
+        "given": {
+          "B_tenths": 5,
+          "l_tenths": 4,
+          "v": 2
+        },
+        "equals": 2,
+        "equalsDen": 5
+      },
+      "support": []
+    }
+  ],
+  "laws": [
+    {
+      "id": "law.faraday",
+      "conceptId": "phys.emi.faraday",
+      "relation": {
+        "op": "eq",
+        "a": {
+          "op": "sym",
+          "name": "E"
+        },
+        "b": {
+          "op": "div",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "N"
+            },
+            "b": {
+              "op": "sym",
+              "name": "F"
+            }
+          },
+          "b": {
+            "op": "sym",
+            "name": "t"
+          }
+        }
+      },
+      "solveFor": "E",
+      "rearranged": {
+        "op": "eq",
+        "a": {
+          "op": "sym",
+          "name": "E"
+        },
+        "b": {
+          "op": "div",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "N"
+            },
+            "b": {
+              "op": "sym",
+              "name": "F"
+            }
+          },
+          "b": {
+            "op": "sym",
+            "name": "t"
+          }
+        }
+      },
+      "quantities": {
+        "E": {
+          "label": "emf",
+          "unit": "volts",
+          "symbol": "V"
+        },
+        "N": {
+          "label": "number of turns",
+          "unit": "turns"
+        },
+        "F": {
+          "label": "change in flux",
+          "unit": "webers"
+        },
+        "t": {
+          "label": "time taken",
+          "unit": "seconds"
+        }
+      },
+      "vary": "F",
+      "magnet": true,
+      "example": {
+        "given": {
+          "N": 5,
+          "F": 12,
+          "t": 2
+        },
+        "answer": 30
+      },
+      "check": {
+        "given": {
+          "N": 3,
+          "F": 18,
+          "t": 3
+        },
+        "answer": 18
+      },
+      "mistake": {
+        "op": "div",
+        "a": "F",
+        "b": "t",
+        "why": "Every turn of the coil adds its own emf, so leaving out the number of turns gives too small an emf."
+      }
+    }
+  ]
+}

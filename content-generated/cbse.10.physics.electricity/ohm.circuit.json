@@ -1,0 +1,40 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.circuit",
+  "kind": "passage",
+  "text": "A battery, a resistor and a meter joined in one loop.",
+  "expressions": {
+    "ohm.cv": {
+      "op": "num",
+      "n": 12
+    },
+    "ohm.cr": {
+      "op": "num",
+      "n": 4
+    },
+    "ohm.ci": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "circuit": {
+    "battery": {
+      "value": "ohm.cv",
+      "unit": "V"
+    },
+    "resistor": {
+      "value": "ohm.cr",
+      "unit": "Ω"
+    },
+    "meter": {
+      "value": "ohm.ci",
+      "unit": "A",
+      "hidden": true
+    }
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the circuit drawing; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "3a983ae22f903b0152b4b7756fc67b1f36deb20137937ed6b9f94cc4b0a4f170"
+}

@@ -1,0 +1,29 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.glossary",
+  "kind": "glossary",
+  "text": "Words used in this lesson.",
+  "expressions": {},
+  "terms": [
+    {
+      "id": "g.phys_mag_flux",
+      "term": "magnetic flux",
+      "definition": "The measure of how much magnetic field passes through a surface, equal to B A cos theta for a uniform field, in webers."
+    },
+    {
+      "id": "g.phys_emi_faraday",
+      "term": "faraday's law of induction",
+      "definition": "A changing magnetic flux through a loop induces an emf equal in size to the rate of change of flux."
+    },
+    {
+      "id": "g.phys_emi_motional",
+      "term": "motional emf",
+      "definition": "The emf induced in a conductor moving through a magnetic field, equal to B l v for a rod moving at right angles to the field."
+    }
+  ],
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the glossary; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "d224359e8f87bddd944d446fc871ec7682d0eda66892cadd9aa320e4dcd2a137"
+}

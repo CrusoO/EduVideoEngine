@@ -1,0 +1,12 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.skill",
+  "kind": "skill",
+  "text": "Calculate magnetic flux. Apply Faraday's and Lenz's laws. Find the emf of a moving conductor",
+  "expressions": {},
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the skill description; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "4148dcb0eb35accef1eb374b028135ca1955b0cf5aa3378bc9a024020ca6ab7a"
+}

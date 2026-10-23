@@ -1,0 +1,49 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.q.recall",
+  "kind": "practiceQuestion",
+  "text": "What current flows?",
+  "expressions": {
+    "ohm.q.eq": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 20
+        },
+        "b": {
+          "op": "num",
+          "n": 5
+        }
+      }
+    },
+    "ohm.q.answer": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "num",
+        "n": 4
+      }
+    }
+  },
+  "questionType": "recall",
+  "answerKind": "value",
+  "question": {
+    "problem": "ohm.q.eq",
+    "answer": "ohm.q.answer"
+  },
+  "humanApproved": false,
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as a recall question; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "0d79bc421a08888acf2bcfbc21d49965cb091fa4a2a567a6a96e949047d7c87b"
+}
