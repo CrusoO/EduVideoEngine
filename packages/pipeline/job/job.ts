@@ -7,7 +7,8 @@ import { briefFor, sectionPlace, skillIdOf, type Brief, type CurriculumNode, typ
  * Everything here is pure; scripts/video-job.ts does the work (child processes, files) and calls these to decide. The job names a curriculum place, never a student: no
  * personal data reaches the engine (docs/ENGINE_INTERFACE.md).
  */
-const token = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{5,79}$/, "6 to 80 characters: letters, digits and _ . : -");
+/** At most 48 characters: the id names a folder, and a deeper folder than this passes the 260-character path limit of Windows. */
+const token = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{5,47}$/, "6 to 48 characters: letters, digits and _ . : -");
 
 export const LessonRequest = z
   .object({

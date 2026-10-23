@@ -126,7 +126,12 @@ export async function synthesizeLesson(bundle: LessonBundle, outDir: string, syn
     return { id: s.id, spoken, hash: trackHash(spoken, synth.voice.id, synth.voice.modelVersion), file: `${s.id}.wav`, target: join(outDir, `${s.id}.wav`) };
   });
   const tracks: Array<VoiceManifest["tracks"][number] | undefined> = items.map(() => undefined);
-  const cachePath = (hash: string) => join(cacheDir, `${hash}.wav`);
+  // file names carry the first 32 hex digits of the hash (the index key stays whole): a long cache path passes Windows MAX_PATH (260) in a deep job folder. A file stored under the old full-hash name is still found.
+  const shortName = (hash: string) => hash.slice(0, 32);
+  const cachePath = (hash: string) => {
+    const legacy = join(cacheDir, `${hash}.wav`);
+    return existsSync(legacy) ? legacy : join(cacheDir, `${shortName(hash)}.wav`);
+  };
   /** The cache entry for a hash if its file is there and is what the index says. */
   const cached = (hash: string): CacheEntry | undefined => {
     const entry = index[hash];
@@ -159,7 +164,7 @@ export async function synthesizeLesson(bundle: LessonBundle, outDir: string, syn
   const jobs = Math.max(1, Math.floor(options.jobs ?? defaultVoiceJobs()));
   const worker = async (): Promise<void> => {
     for (let it = queue.shift(); it; it = queue.shift()) {
-      const part = join(cacheDir, `${it.hash}.part.wav`);
+      const part = join(cacheDir, `${shortName(it.hash)}.part.wav`);
       try {
         if (synth.synthesizeAsync) await synth.synthesizeAsync(it.spoken, part);
         else synth.synthesize(it.spoken, part);

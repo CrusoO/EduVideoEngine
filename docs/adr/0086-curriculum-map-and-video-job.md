@@ -20,6 +20,9 @@ The owner supplied the NCERT mathematics books for Classes VII to XII as PDFs (`
 - The lesson is not in the book's words (roots, not zeroes) and has no product beat. Writing one is the next piece of authoring.
 - The voice is a development voice (ADR 0084); the lesson is not publishable until its grounded claims are approved.
 
+## Found by the first host run
+YourTutor ran a job with a UUID request id on Windows and the build failed: the voice cache file `<job>/package/<bundle>/voice/.voice-cache/<64 hex>.part.wav` passed the 260-character path limit. Cache files are now named by the first 32 hex digits of the track hash (the index key and the track hash are unchanged; an old full-name file is still found), and a request id is at most 48 characters.
+
 ## Consequences
 - A new board, year or subject arrives as data: books in the map, a ledger entry, a chapter file and a node.
 - YourTutor can import the book map as data and call `pnpm video:job` through a worker (ENGINE_INTERFACE.md section 10); nothing of the engine's code crosses.

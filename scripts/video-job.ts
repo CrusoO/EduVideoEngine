@@ -32,7 +32,7 @@ const raw = (() => {
   }
 })();
 const rawId = typeof (raw as { requestId?: unknown } | undefined)?.requestId === "string" ? (raw as { requestId: string }).requestId : "";
-const safeId = /^[A-Za-z0-9][A-Za-z0-9_.:-]{5,79}$/.test(rawId) ? rawId : "invalid-request";
+const safeId = /^[A-Za-z0-9][A-Za-z0-9_.:-]{5,47}$/.test(rawId) ? rawId : "invalid-request";
 const jobDir = join(REPO_ROOT, "dist", "jobs", safeId.replace(/:/g, "_"));
 mkdirSync(jobDir, { recursive: true });
 const eventsFile = join(jobDir, "events.jsonl");

@@ -18,6 +18,10 @@ describe("LessonRequest", () => {
     expect(LessonRequest.safeParse({ ...req(), studentName: "A" }).success).toBe(false);
     expect(LessonRequest.safeParse({ ...req(), curriculum: { ...req().curriculum, email: "a@b.c" } }).success).toBe(false);
   });
+  it("accepts a UUID as the id and refuses one longer than 48 characters (Windows path limit)", () => {
+    expect(LessonRequest.safeParse({ ...req(), requestId: "123e4567-e89b-12d3-a456-426614174000" }).success).toBe(true);
+    expect(LessonRequest.safeParse({ ...req(), requestId: "a".repeat(49) }).success).toBe(false);
+  });
   it("refuses a short id, a grade outside 9 to 12 and a frame rate outside 6 to 30", () => {
     expect(LessonRequest.safeParse({ ...req(), requestId: "x" }).success).toBe(false);
     expect(LessonRequest.safeParse({ ...req(), curriculum: { ...req().curriculum, grade: 7 } }).success).toBe(false);
