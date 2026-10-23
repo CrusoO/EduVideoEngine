@@ -43,7 +43,8 @@
     "mutate:floor": "vite-node scripts/mutation-floor.ts",
     "video:job": "vite-node scripts/video-job.ts",
     "curriculum:extract": "python -I scripts/curriculum/extract.py",
-    "job:watch": "vite-node scripts/job-watch.ts"
+    "job:watch": "vite-node scripts/job-watch.ts",
+    "llm:bakeoff": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-bakeoff.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.49.1",

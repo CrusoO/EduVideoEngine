@@ -10,6 +10,7 @@ import { lessonContext, type LessonContext } from "../lesson/context";
 import type { ArcPlan, LessonScript } from "../lesson/types";
 import { SYSTEM_PROMPT_VERSION } from "../planner";
 import { SCRIPTWRITER_VERSION, writeScript } from "../script";
+import { SCRIPTWRITER_V2_VERSION, writeScriptPerBeat } from "../script/per-beat";
 import { assureLesson, type Assurance } from "./assure";
 import { synthesizeLesson, type Synthesizer, type VoiceOutput } from "./voice";
 
@@ -26,6 +27,8 @@ export type BuildInput = {
   approvals?: readonly Approval[];
   /** Build without signalling highlights or carried objects, to compare with a lesson built with them (ADR 0066, 0067). */
   features?: Features;
+  /** How the script is written: one request for the lesson (default, scriptwriter.v1) or one request for each beat (scriptwriter.v2, ADR 0087). */
+  script?: { mode: "whole" } | { mode: "per-beat"; candidates?: number };
   log?: (line: string) => void;
 };
 
@@ -69,7 +72,8 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
   log(`  ${planned.plan.arcId}: ${planned.plan.beats.map((b) => `${b.slotId} (${b.pattern})`).join(", ")}${planned.repaired ? " [repaired once]" : ""}`);
 
   log("writing the script");
-  const scripted = await writeScript(client, ctx, planned.plan);
+  const perBeat = input.script?.mode === "per-beat";
+  const scripted = perBeat ? await writeScriptPerBeat(client, ctx, planned.plan, { candidates: input.script?.mode === "per-beat" ? input.script.candidates : undefined }) : await writeScript(client, ctx, planned.plan);
   if (!scripted.ok) {
     const details = scripted.reason === "invalid" ? scripted.errors : scripted.reason === "insufficient_content" ? scripted.missing : scripted.reason === "unknown_id" ? [scripted.id] : [];
     return { ok: false, stage: "script", reason: scripted.reason, details, requests: used().requests };
@@ -121,6 +125,6 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     tracks,
     ...(voice ? { voice } : {}),
     assurance,
-    usage: { model: client.model, promptVersions: { system: SYSTEM_PROMPT_VERSION, planner: ARC_PLANNER_VERSION, scriptwriter: SCRIPTWRITER_VERSION }, ...u, plannerRepaired: planned.repaired, scriptRepaired: scripted.repaired },
+    usage: { model: client.model, promptVersions: { system: SYSTEM_PROMPT_VERSION, planner: ARC_PLANNER_VERSION, scriptwriter: perBeat ? SCRIPTWRITER_V2_VERSION : SCRIPTWRITER_VERSION }, ...u, plannerRepaired: planned.repaired, scriptRepaired: scripted.repaired },
   };
 }
