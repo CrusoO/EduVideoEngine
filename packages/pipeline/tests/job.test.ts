@@ -14,6 +14,11 @@ describe("LessonRequest", () => {
   it("fills the options with their defaults", () => {
     expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard" });
   });
+  it("takes an optional trace of the host app and environment, and refuses anything else in it", () => {
+    expect(LessonRequest.safeParse({ ...req(), trace: { origin: "yourtutor-api", env: "qa" } }).success).toBe(true);
+    expect(LessonRequest.safeParse({ ...req(), trace: { origin: "yourtutor-api", user: "a" } }).success).toBe(false);
+    expect(LessonRequest.safeParse({ ...req(), trace: { origin: "Has Spaces" } }).success).toBe(false);
+  });
   it("refuses a field it does not know, so a student name cannot ride along", () => {
     expect(LessonRequest.safeParse({ ...req(), studentName: "A" }).success).toBe(false);
     expect(LessonRequest.safeParse({ ...req(), curriculum: { ...req().curriculum, email: "a@b.c" } }).success).toBe(false);

@@ -17,6 +17,8 @@ export const LessonRequest = z
     /** The same key asks for the same video: a repeated request finds the finished job instead of starting another. */
     idempotencyKey: token,
     curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(9).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token }).strict(),
+    /** Who asked, for tracing a job across systems (no student data): the host app and the environment it runs in. */
+    trace: z.object({ origin: z.string().regex(/^[a-z0-9][a-z0-9._-]{0,39}$/), env: z.enum(["local", "dev", "qa", "prod"]).optional() }).strict().optional(),
     options: z
       .object({
         locale: z.literal("en-IN").default("en-IN"),

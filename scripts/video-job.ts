@@ -83,6 +83,7 @@ if (!parsed.success) {
   fail("request", "invalid_request", parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ") || "the request is not valid JSON");
 }
 const request = parsed.data!;
+writeFileSync(join(jobDir, "request.json"), JSON.stringify(request, null, 2) + "\n"); // kept beside the events so a job can be traced and retried from its folder
 const requestHash = createHash("sha256").update(JSON.stringify(request)).digest("hex");
 const stateFile = join(jobDir, "state.json");
 type Keys = { idempotencyKey?: string; requestHash?: string; stages: Partial<Record<JobStage, string>> };
