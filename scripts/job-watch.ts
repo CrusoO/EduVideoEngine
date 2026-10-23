@@ -7,7 +7,7 @@
  * Local only (127.0.0.1), no login: development and diagnosis only, never to be exposed (ADR 0086).
  */
 import { spawn } from "node:child_process";
-import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { join, resolve } from "node:path";
 import { REPO_ROOT, childEnv } from "../packages/adapters/src";
@@ -52,6 +52,9 @@ function originOf(id: string, req?: Req): { origin: string; env: string | null }
   return { origin: "unknown", env: null };
 }
 
+/** A short name to say and to type: a host UUID is cut to its first eight characters; short ids stay as they are. */
+const shortOf = (id: string): string => (/^[0-9a-f]{8}-[0-9a-f]{4}-/.test(id) ? id.slice(0, 8) : id);
+
 /** One job in a line: everything the list shows, worked out from the files. */
 function summary(id: string) {
   const dir = join(JOBS, id);
@@ -74,7 +77,7 @@ function summary(id: string) {
   const running = STAGES.find((s) => stageStatus[s] === "running");
   const status = result ? result.status : !ev.length ? "queued" : now - last > STALLED_MS ? "stalled" : "running";
   const o = originOf(id, req);
-  return { id, ...o, nodeId: req?.curriculum?.nodeId ?? null, status, stage: running ?? null, code: result?.code ?? null, detail: result?.detail ?? null, startedAt: new Date(started).toISOString(), endedAt: result ? new Date(last).toISOString() : null, durationMs: end - started, lastEventAt: ev.length ? new Date(last).toISOString() : null, stageMs, stageStatus };
+  return { id, short: shortOf(id), hasVideo: existsSync(join(dir, "lesson.mp4")) && result?.status === "done", ...o, nodeId: req?.curriculum?.nodeId ?? null, status, stage: running ?? null, code: result?.code ?? null, detail: result?.detail ?? null, startedAt: new Date(started).toISOString(), endedAt: result ? new Date(last).toISOString() : null, durationMs: end - started, lastEventAt: ev.length ? new Date(last).toISOString() : null, stageMs, stageStatus };
 }
 
 const jobIds = (): string[] => (existsSync(JOBS) ? readdirSync(JOBS).filter((d) => safe(d) && statSync(join(JOBS, d)).isDirectory() && (existsSync(join(JOBS, d, "events.jsonl")) || existsSync(join(JOBS, d, "request.json")))) : []);
@@ -95,7 +98,9 @@ const launch = (file: string, extra: string[] = []): void => {
 function start(nodeId: string, fps: number): { id: string } | { error: string } {
   const node = topics().kb.nodes.find((n) => n.id === nodeId);
   if (!node) return { error: `${nodeId} is not a topic of the knowledge base` };
-  const id = `ui-${Date.now().toString(36)}`;
+  let id = "";
+  do id = `ui-${Math.random().toString(36).slice(2, 7)}`;
+  while (existsSync(join(JOBS, id)) || existsSync(join(JOBS, `${id}.request.json`)));
   const file = join(JOBS, `${id}.request.json`);
   writeFileSync(file, JSON.stringify({ requestId: id, idempotencyKey: `${id}-key`, curriculum: { board: node.board, grade: node.grade, subject: node.subject, nodeId: node.id }, trace: { origin: "job-watch", env: "local" }, options: { locale: "en-IN", voice: "auto", fps, theme: "whiteboard" } }));
   launch(file);
@@ -148,6 +153,26 @@ createServer(async (req, res) => {
     const b = (await body(req)) as { nodeId?: string; fps?: number };
     const r = start(String(b.nodeId), Math.min(30, Math.max(6, Math.round(Number(b.fps) || 12))));
     return json(res, "error" in r ? 400 : 200, r);
+  }
+  if (url.pathname === "/api/delete" && req.method === "POST") {
+    const b = (await body(req)) as { ids?: string[] };
+    const deleted: string[] = [];
+    const kept: Array<{ id: string; why: string }> = [];
+    for (const id of (b.ids ?? []).map(String)) {
+      if (!safe(id) || !existsSync(join(JOBS, id))) {
+        kept.push({ id, why: "no such job" });
+        continue;
+      }
+      const s = summary(id);
+      if (s.status === "running" || (s.status === "queued" && s.durationMs < 120_000)) {
+        kept.push({ id, why: `${s.status}: a job that is running is not deleted` });
+        continue;
+      }
+      rmSync(join(JOBS, id), { recursive: true, force: true });
+      rmSync(join(JOBS, `${id}.request.json`), { force: true });
+      deleted.push(id);
+    }
+    return json(res, 200, { deleted, kept });
   }
   if (url.pathname === "/api/retry" && req.method === "POST") {
     const b = (await body(req)) as { id?: string; fresh?: boolean };

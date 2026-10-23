@@ -63,6 +63,7 @@
   <aside class="list">
     <div class="tools">
       <div class="row"><input id="search" placeholder="search id, topic, origin" style="flex:1"><select id="origin"><option value="">all origins</option></select></div>
+      <div class="row"><button type="button" id="clear">Delete listed jobs that are finished&hellip;</button></div>
       <details class="start"><summary>Start a job</summary>
         <div class="row" style="margin-top:8px"><select id="topic" style="width:100%"></select></div>
         <div class="row"><input id="q" placeholder="or type a topic" style="flex:1"><button id="find" type="button">Find</button></div>
@@ -104,7 +105,7 @@ function renderList(){
   var v = visible();
   $('jobs').innerHTML = v.length ? v.map(function(j){
     var mini = STAGES.map(function(s){ var st = j.stageStatus[s]; return '<i class="'+(st==='done'?'c-done':st==='running'?'c-running':st==='failed'?'c-failed':st==='skipped'?'c-skipped':'')+'"></i>'; }).join('');
-    return '<div class="item '+(j.id===state.sel?'sel':'')+'" data-id="'+esc(j.id)+'"><div class="top"><span class="id mono">'+esc(j.id)+'</span><span class="pill s-'+j.status+'">'+j.status+'</span></div>'
+    return '<div class="item '+(j.id===state.sel?'sel':'')+'" data-id="'+esc(j.id)+'" title="'+esc(j.id)+'"><div class="top"><span class="id mono">'+esc(j.short)+'</span><span>'+(j.hasVideo?'<span class="pill s-done" style="margin-right:4px">&#9654; video</span>':'')+'<span class="pill s-'+j.status+'">'+j.status+'</span></span></div>'
       + '<div class="muted" style="display:flex;justify-content:space-between;gap:8px"><span>'+esc(j.origin)+(j.env?' / '+esc(j.env):'')+'</span><span class="tnum">'+hhmm(j.startedAt)+' &middot; '+fmt(j.durationMs)+'</span></div>'
       + '<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(j.nodeId||'no request file')+(j.code?' &middot; '+esc(j.code):'')+'</div><div class="mini">'+mini+'</div></div>'; }).join('') : '<div class="empty">no jobs match</div>';
   Array.prototype.forEach.call(document.querySelectorAll('.item'), function(el){ el.onclick = function(){ state.sel = el.dataset.id; renderList(); loadDetail(); }; });
@@ -139,19 +140,31 @@ function tabBody(d){
 }
 function renderDetail(d){
   var s = d.summary, el = $('detail');
-  var head = '<div class="card"><div class="head"><h2 class="mono">'+esc(s.id)+'</h2><span class="pill s-'+s.status+'">'+s.status+'</span><span style="flex:1"></span>'
-    + '<button type="button" id="retry">Retry (resume)</button><button type="button" id="fresh">Run again from scratch</button></div>'
+  var head = '<div class="card"><div class="head"><h2 class="mono" title="'+esc(s.id)+'">'+esc(s.short)+'</h2><span class="pill s-'+s.status+'">'+s.status+'</span><button type="button" id="copy" title="copy the full id">copy id</button><span class="muted mono" style="flex:1;overflow:hidden;text-overflow:ellipsis">'+(s.short!==s.id?esc(s.id):'')+'</span>'
+    + '<button type="button" id="retry">Retry (resume)</button><button type="button" id="fresh">Run again from scratch</button><button type="button" id="del" style="color:var(--bad)">Delete</button></div>'
     + '<div class="kv"><div><span>origin</span><b>'+esc(s.origin)+(s.env?' / '+esc(s.env):'')+'</b></div><div><span>topic</span><b class="mono">'+esc(s.nodeId||'-')+'</b></div><div><span>started</span><b class="tnum">'+hhmm(s.startedAt)+'</b></div><div><span>'+(s.endedAt?'ended':'last event')+'</span><b class="tnum">'+hhmm(s.endedAt||s.lastEventAt)+'</b></div><div><span>total</span><b class="tnum">'+fmt(s.durationMs)+'</b></div>'
     + '<div><span>voice / fps / theme</span><b>'+esc(d.request&&d.request.options?[d.request.options.voice,d.request.options.fps,d.request.options.theme].join(' / '):'-')+'</b></div>'+(s.code?'<div><span>result</span><b style="color:var(--bad)">'+esc(s.code)+'</b></div>':'')+'</div></div>'
     + '<div class="card">'+workflow(d)+'</div>'
+    + '<div class="card" id="result"></div>'
     + '<div class="tabs">'+['events','request','checks','sources','files'].map(function(n){ return '<button class="tab '+(state.tab===n?'on':'')+'" data-t="'+n+'">'+n+'</button>'; }).join('')+'</div><div id="tabbody"></div>';
   if (!el.querySelector('#tabbody') || el.dataset.id !== s.id) { el.innerHTML = head; el.dataset.id = s.id; el.dataset.key = ''; } else {
     var cards = el.querySelectorAll('.card'); var tmp = document.createElement('div'); tmp.innerHTML = head; var nc = tmp.querySelectorAll('.card'); cards[0].innerHTML = nc[0].innerHTML; cards[1].innerHTML = nc[1].innerHTML; }
   Array.prototype.forEach.call(el.querySelectorAll('.tab'), function(b){ b.className = 'tab '+(b.dataset.t===state.tab?'on':''); b.onclick = function(){ state.tab = b.dataset.t; el.dataset.key = ''; renderDetail(d); }; });
+  var rk = s.status+'|'+(s.hasVideo?1:0), rc = $('result');
+  if (rc.dataset.k !== rk) { rc.dataset.k = rk; rc.innerHTML = '<h2 style="margin:0 0 8px;font-size:14px">Result</h2>' + (s.hasVideo
+      ? '<video controls preload="metadata" src="/api/job/'+encodeURIComponent(s.id)+'/video"></video><div class="row" style="margin-top:8px"><a href="/api/job/'+encodeURIComponent(s.id)+'/video" target="_blank" rel="noopener">open the video in a new tab</a><span class="muted">'+(d.result&&d.result.files&&d.result.files.video?Math.round(d.result.files.video.bytes/1024)+' KB':'')+'</span></div>'
+      : s.status==='running'||s.status==='queued' ? '<div class="muted">The video will appear here when the job is done.</div>'
+      : s.status==='failed'||s.status==='stalled' ? '<div class="muted">No video: the job did not finish. See the error above and the events below.</div>' : '<div class="muted">No video.</div>'); }
+  $('copy').onclick = function(){ if (navigator.clipboard) navigator.clipboard.writeText(s.id); this.textContent = 'copied'; var b = this; setTimeout(function(){ b.textContent = 'copy id'; }, 1200); };
+  $('del').onclick = function(){ if (confirm('Delete job '+s.id+' and all its files (video, package, events)?')) del([s.id]); };
   $('retry').onclick = function(){ post('/api/retry', {id:s.id}).then(function(){ poll(); }); }; $('fresh').onclick = function(){ post('/api/retry', {id:s.id, fresh:true}).then(function(){ poll(); }); };
   var key = state.tab+'|'+d.events.length+'|'+s.status+'|'+(d.sources?1:0)+'|'+(d.qa?1:0)+'|'+d.notes.length;
   if (el.dataset.key !== key) { el.dataset.key = key; $('tabbody').innerHTML = '<div class="card">'+tabBody(d)+'</div>'; }
 }
+function del(ids){ post('/api/delete', {ids: ids}).then(function(r){ if (r.kept.length) alert('not deleted: '+r.kept.map(function(k){ return k.id+' ('+k.why+')'; }).join('; ')); if (ids.indexOf(state.sel) >= 0) { state.sel = null; $('detail').innerHTML = '<div class="empty">deleted</div>'; delete $('detail').dataset.id; } poll(); }); }
+$('clear').onclick = function(){ var v = visible().filter(function(j){ return j.status==='done'||j.status==='failed'||j.status==='cancelled'||j.status==='stalled'; });
+  if (!v.length) { alert('no finished job in the current list'); return; }
+  if (confirm('Delete '+v.length+' finished job(s) in the current list, with all their files? Running jobs are kept.')) del(v.map(function(j){ return j.id; })); };
 function loadDetail(){ if (!state.sel) return; get('/api/job/'+encodeURIComponent(state.sel)).then(function(d){ if (!d.error) renderDetail(d); }); }
 function poll(){
   get('/api/jobs').then(function(r){ $('live').className = 'live'; state.jobs = r.jobs; state.counts = r.counts; state.med = r.stageMedianMs;
