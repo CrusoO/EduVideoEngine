@@ -9,9 +9,9 @@
  * when the lesson passes every gate, 1 when it does not or the build stopped.
  */
 import { join, resolve } from "node:path";
-import { REPO_ROOT, clientFromEnv } from "../packages/adapters/src";
+import { FixtureStore, REPO_ROOT, clientFromEnv } from "../packages/adapters/src";
 import { loadStores } from "../packages/content/src";
-import { buildLesson, bundleIdFor, kokoroMissing, kokoroSynthesizer, kokoroTools, lessonFolderName, piperMissing, piperSynthesizer, piperTools, reportOf, writeLessonPackage } from "../packages/pipeline";
+import { buildLesson, buildLessonAuto, bundleIdFor, kokoroMissing, kokoroSynthesizer, kokoroTools, lessonFolderName, piperMissing, piperSynthesizer, piperTools, reportOf, writeLessonPackage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(`--${name}`);
@@ -53,21 +53,29 @@ if (!flag("no-voice") && voiceName === "piper" && piperMissing(tools).length > 0
   process.exit(2);
 }
 const dir = join(out, lessonFolderName(bundleIdFor(skillId, locale)));
-const client = clientFromEnv();
+const fixturesDir = option("fixtures", "");
+const client = clientFromEnv(fixturesDir ? { fixtures: new FixtureStore(resolve(fixturesDir)) } : {});
 console.log(`${client.model}: mode ${client.mode}`);
 
 const synth = flag("no-voice") ? undefined : voiceName === "kokoro" ? kokoroSynthesizer(kTools, { voice: option("kokoro-voice", "bf_emma") }) : piperSynthesizer(tools);
-const result = await buildLesson({
+// --strategy: recorded (the default: the recorded or authored model answers), auto (those when they exist, else the lesson written by code, ADR 0089), draft (written by code), polish (code drafts, a model says it better: needs LLM_MODE record or live)
+const strategy = option("strategy", "recorded");
+if (!["recorded", "auto", "draft", "polish"].includes(strategy)) {
+  console.error("--strategy must be recorded, auto, draft or polish");
+  process.exit(2);
+}
+const common = {
   client,
   store: records,
   skillId,
   locale,
   level,
-  voice: flag("no-voice") ? "synthetic" : { dir: join(dir, "voice"), synth },
+  voice: flag("no-voice") ? ("synthetic" as const) : { dir: join(dir, "voice"), synth: synth! },
   verify: !flag("no-verify"),
   ...(baseline ? { features: { signalling: false, carry: false, motion: false, writeOn: false } } : {}),
-  log: (l) => console.log(l),
-}).catch((e: unknown) => {
+  log: (l: string) => console.log(l),
+};
+const result = await (strategy === "auto" ? buildLessonAuto(common) : strategy === "draft" ? buildLesson({ ...common, planner: "code", script: { mode: "draft" } }) : strategy === "polish" ? buildLesson({ ...common, planner: "code", script: { mode: "polish" } }) : buildLesson(common)).catch((e: unknown) => {
   if ((e as { fatal?: boolean }).fatal === true) {
     console.error(`stopped: ${(e as Error).message}`);
     process.exit(1);

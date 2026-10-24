@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
-import { briefFor, sectionPlace, skillIdOf, type Brief, type CurriculumNode, type Kb } from "@eve/content";
+import { bm25, briefFor, sectionPlace, skillIdOf, stems, type Brief, type CurriculumNode, type Kb } from "@eve/content";
+import { findPersonalData, findSecrets } from "@eve/safety";
 
 /**
  * The video job (ADR 0086): a request for a lesson video on one place of a curriculum, the stages that make it, the events they write and the checks that decide it is done.
@@ -16,7 +17,9 @@ export const LessonRequest = z
     requestId: token,
     /** The same key asks for the same video: a repeated request finds the finished job instead of starting another. */
     idempotencyKey: token,
-    curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(9).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token }).strict(),
+    curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(9).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token.optional() }).strict(),
+    /** What the student asked, in words (at most 300 characters). Used to find the topic when `curriculum.nodeId` is not given; the engine reads it against the knowledge base and keeps it only in the job's own request file. Personal data and secrets are refused. */
+    prompt: z.string().trim().min(3).max(300).optional(),
     /** Who asked, for tracing a job across systems (no student data): the host app and the environment it runs in. */
     trace: z.object({ origin: z.string().regex(/^[a-z0-9][a-z0-9._-]{0,39}$/), env: z.enum(["local", "dev", "qa", "prod"]).optional() }).strict().optional(),
     options: z
@@ -25,18 +28,27 @@ export const LessonRequest = z
         voice: z.enum(["auto", "kokoro", "piper"]).default("auto"),
         fps: z.number().int().min(6).max(30).default(12),
         theme: z.enum(["whiteboard", "dark"]).default("whiteboard"),
+        /** auto: the recorded or authored lesson when there is one, else the narration written by code (no model); draft: written by code only; polish: written by code and said better by a model, which only a runner started with --allow-live may do (ADR 0089). */
+        narration: z.enum(["auto", "draft", "polish"]).default("auto"),
       })
       .strict()
       .default({}),
   })
-  .strict();
+  .strict()
+  .superRefine((r, ctx) => {
+    if (!r.curriculum.nodeId && !r.prompt) ctx.addIssue({ code: "custom", path: ["curriculum", "nodeId"], message: "give curriculum.nodeId or a prompt" });
+    if (r.prompt) {
+      const found = [...findPersonalData(r.prompt), ...findSecrets(r.prompt)];
+      if (found.length > 0) ctx.addIssue({ code: "custom", path: ["prompt"], message: "the prompt holds personal data or a secret (" + found.map((f) => f.kind).join(", ") + "); ask about the topic, not about a person" });
+    }
+  });
 export type LessonRequest = z.infer<typeof LessonRequest>;
 
 export const JOB_STAGES = ["request", "retrieve", "ground", "build", "render", "qa"] as const;
 export type JobStage = (typeof JOB_STAGES)[number];
 
 /** Why a job ended without a video. `no_curriculum_data` and `no_lesson_for_topic` are gaps in the content, not faults: the caller shows them as "not available yet". */
-export const ERROR_CODES = ["invalid_request", "no_curriculum_data", "knowledge_base_invalid", "ungrounded_claims", "no_lesson_for_topic", "build_failed", "render_failed", "qa_failed", "cancelled"] as const;
+export const ERROR_CODES = ["invalid_request", "live_not_allowed", "no_curriculum_data", "knowledge_base_invalid", "ungrounded_claims", "no_lesson_for_topic", "build_failed", "render_failed", "qa_failed", "cancelled"] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
 export type JobEvent = { t: string; jobId: string; stage: JobStage | "job"; status: "started" | "done" | "skipped" | "failed" | "cancelled"; code?: ErrorCode; detail?: string };
@@ -67,8 +79,34 @@ export function reduceJob(events: readonly JobEvent[]): JobState {
 export const stageKey = (stage: JobStage, inputs: unknown): string => createHash("sha256").update(JSON.stringify([stage, inputs])).digest("hex");
 
 export type Resolved =
-  | { ok: true; node: CurriculumNode; brief: Brief; skillId: string }
+  | { ok: true; node: CurriculumNode; brief: Brief; skillId: string; matched?: { prompt: string; coverage: number; candidates: Array<{ id: string; topic: string; coverage: number }> } }
   | { ok: false; code: ErrorCode; message: string };
+
+export type TopicMatch = { ok: true; node: CurriculumNode; coverage: number; candidates: Array<{ id: string; topic: string; coverage: number }> } | { ok: false; message: string; candidates: Array<{ id: string; topic: string; coverage: number }> };
+
+/** The words of a topic a prompt can be read against: its title, unit, outcomes and the labels of its concepts (the same words `briefFor` reads). */
+const topicWords = (kb: Kb, n: CurriculumNode): string[] => stems([n.topic, n.unit, ...n.outcomes, ...n.conceptIds.map((c) => kb.concepts.find((x) => x.id === c)?.label ?? "")].join(" "));
+
+/**
+ * Finds the topic a prompt asks about, among the topics of the board, class and subject the request names. It is lexical (BM25 over the topic's words, the way the knowledge
+ * base is searched everywhere else), so it needs no model and gives the same answer each time. A topic is taken only when at least half of the prompt's content words are
+ * found in it; otherwise the answer is no match, with the closest topics, never a guess.
+ */
+export function matchPrompt(kb: Kb, prompt: string, where: { board: string; grade: number; subject: string }): TopicMatch {
+  const nodes = kb.nodes.filter((n) => n.board === where.board && n.grade === where.grade && n.subject === where.subject);
+  const query = stems(prompt);
+  if (nodes.length === 0) return { ok: false, message: `the knowledge base has no topic for ${where.board} class ${where.grade} ${where.subject}`, candidates: [] };
+  if (query.length === 0) return { ok: false, message: "the prompt has no word to look for", candidates: [] };
+  const docs = nodes.map((n) => ({ id: n.id, tokens: topicWords(kb, n) }));
+  const covered = (id: string): number => {
+    const have = new Set(docs.find((d) => d.id === id)!.tokens);
+    return Math.round((query.filter((q) => have.has(q)).length / new Set(query).size) * 100) / 100;
+  };
+  const ranked = bm25(docs, query).slice(0, 3).map((r) => ({ id: r.id, topic: nodes.find((n) => n.id === r.id)!.topic, coverage: covered(r.id) }));
+  const best = ranked[0];
+  if (!best || best.coverage < 0.5) return { ok: false, message: `no topic of ${where.board} class ${where.grade} ${where.subject} matches "${prompt.slice(0, 80)}"`, candidates: ranked };
+  return { ok: true, node: nodes.find((n) => n.id === best.id)!, coverage: best.coverage, candidates: ranked };
+}
 
 /**
  * Finds the place the request names and what a lesson on it may say. A place that is not in the knowledge base, a place whose brief lands on another place, a lesson that
@@ -76,7 +114,15 @@ export type Resolved =
  */
 export function resolveRequest(kb: Kb, request: LessonRequest, lessonSkills: ReadonlySet<string>): Resolved {
   const c = request.curriculum;
-  const node = kb.nodes.find((n) => n.id === c.nodeId);
+  let matched: Extract<Resolved, { ok: true }>["matched"];
+  let node: CurriculumNode | undefined;
+  if (c.nodeId) node = kb.nodes.find((n) => n.id === c.nodeId);
+  else {
+    const m = matchPrompt(kb, request.prompt ?? "", c);
+    if (!m.ok) return { ok: false, code: "no_curriculum_data", message: `${m.message}${m.candidates.length ? `; closest: ${m.candidates.map((x) => `${x.id} (${x.topic})`).join("; ")}` : ""}` };
+    node = m.node;
+    matched = { prompt: request.prompt!, coverage: m.coverage, candidates: m.candidates };
+  }
   if (!node) return { ok: false, code: "no_curriculum_data", message: `${c.nodeId} is not a place in the knowledge base: nothing is known about it yet` };
   if (node.board !== c.board || node.grade !== c.grade || node.subject !== c.subject) return { ok: false, code: "invalid_request", message: `${node.id} is ${node.board} class ${node.grade} ${node.subject}, not ${c.board} class ${c.grade} ${c.subject}` };
   const brief = briefFor(kb, node.topic, { board: node.board, grade: node.grade });
@@ -86,10 +132,10 @@ export function resolveRequest(kb: Kb, request: LessonRequest, lessonSkills: Rea
   if (taught.some((x) => x.claims.length === 0) || held.length > 0) return { ok: false, code: "ungrounded_claims", message: `${node.id} has a concept without a claim, or claims without support: ${held.join(", ") || "no claims"}` };
   const skillId = node.lessonSkillId ?? skillIdOf(node.id);
   if (!lessonSkills.has(skillId)) return { ok: false, code: "no_lesson_for_topic", message: `no lesson (skill ${skillId}) has been written for ${node.id}` };
-  return { ok: true, node, brief, skillId };
+  return { ok: true, node, brief, skillId, ...(matched ? { matched } : {}) };
 }
 
-export type BuildFacts = { passes: boolean; publishable: boolean; verified: boolean | null; lengthS: number | null; sentences: number; findings: Array<{ level: string; code: string; message: string; source: string }>; voice: { id: string; status: string }; bundleHash: string };
+export type BuildFacts = { passes: boolean; publishable: boolean; verified: boolean | null; lengthS: number | null; sentences: number; findings: Array<{ level: string; code: string; message: string; source: string }>; voice: { id: string; status: string }; bundleHash: string; /** How the narration was written: from recorded or authored answers, by code alone, or by code and then a model. */ narration?: "recorded" | "code" | "polished" };
 
 /**
  * sources.json: what the video is built on, said plainly. The book is a pointer (section, pages, edition); the claims are the project's own wording with their trust tier;
@@ -113,7 +159,10 @@ export function buildSources(kb: Kb, r: Extract<Resolved, { ok: true }>, facts: 
     "The wording, examples and pictures are the project's own; the book is named only to say where it treats the same topic.",
     ...(place && !place.confirmed ? [`The page range of section ${place.section} was found by a program and has not been confirmed by a person.`] : []),
     ...(claims.some((c) => c.citations.some((x) => !x.confirmedByPerson)) ? ["No person has yet read these claims against the book's pages."] : []),
-    ...(r.node.lessonNote ? [r.node.lessonNote] : []),
+    ...(r.node.lessonNote && facts.narration !== "code" ? [r.node.lessonNote] : []),
+    ...(facts.narration === "code" ? ["The narration was written by a program from the claims, without a model. It is plain, and it says only what the claims say."] : []),
+    ...(facts.narration === "polished" ? ["The narration was written by a program from the claims and then reworded by an AI model; every sentence was checked by rules, and any that failed kept the program's wording."] : []),
+    ...(r.matched ? [`The topic was found from the question "${r.matched.prompt.slice(0, 100)}" by matching words (${Math.round(r.matched.coverage * 100)}% of its words); other close topics: ${r.matched.candidates.filter((c) => c.id !== r.node.id).map((c) => c.topic).join("; ") || "none"}.`] : []),
     ...(facts.publishable ? [] : ["Not approved for publication: grounded claims in the lesson still need a person's approval."]),
     `The voice is AI-generated (${facts.voice.id}, ${facts.voice.status}).`,
   ];

@@ -118,7 +118,7 @@ const skills = new Set(stores.records.filter((r) => r.kind === "skill").map((r) 
 const resolved = resolveRequest(loaded.kb, request, skills);
 if (!resolved.ok) fail("retrieve", resolved.code, resolved.message);
 const r = resolved as Extract<typeof resolved, { ok: true }>;
-emit("retrieve", "done", { detail: `${r.node.id}: ${r.brief.concepts.filter((c) => c.taught).length} concept(s) taught, lesson ${r.skillId}` });
+emit("retrieve", "done", { detail: `${r.node.id}: ${r.brief.concepts.filter((c) => c.taught).length} concept(s) taught, lesson ${r.skillId}${r.matched ? `; found from the prompt (${Math.round(r.matched.coverage * 100)}% of its words)` : ""}` });
 
 // 3. ground: the knowledge base is valid (rights, citations, proofs)
 current = "ground";
@@ -144,18 +144,21 @@ const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO
 const skillRecords = stores.records.filter((x) => x.skillId === r.skillId).map((x) => x.hash).sort();
 const bundleDir = join(packageDir, lessonFolderName(bundleIdFor(r.skillId, request.options.locale)));
 pkg = bundleDir.slice(jobDir.length + 1);
-const buildKey = stageKey("build", { skill: r.skillId, records: skillRecords, voice, locale: request.options.locale, level: `class-${r.node.grade}` });
+const narration = request.options.narration;
+const buildKey = stageKey("build", { skill: r.skillId, records: skillRecords, voice, locale: request.options.locale, level: `class-${r.node.grade}`, narration });
 current = "build";
 if (keys.stages.build === buildKey && existsSync(join(bundleDir, "report.json"))) emit("build", "skipped", { detail: "same inputs as the last run" });
 else {
   emit("build", "started", { detail: `skill ${r.skillId}, voice ${voice}` });
-  const code = await run("build-lesson.ts", [r.skillId, "--level", `class-${r.node.grade}`, "--locale", request.options.locale, "--voice", voice, "--out", packageDir], { LLM_MODE: "replay" });
+  if (narration === "polish" && !args.includes("--allow-live")) fail("build", "live_not_allowed", "this request asks for a model to polish the narration, and this runner was not started with --allow-live");
+  const live = narration === "polish";
+  const code = await run("build-lesson.ts", [r.skillId, "--level", `class-${r.node.grade}`, "--locale", request.options.locale, "--voice", voice, "--out", packageDir, "--strategy", narration, ...(live ? ["--fixtures", join(jobDir, "llm")] : [])], { LLM_MODE: live ? "record" : "replay" });
   if (code !== 0 || !existsSync(join(bundleDir, "report.json"))) fail("build", "build_failed", `the lesson build stopped (exit ${code}); see events.jsonl`);
   keys.stages.build = buildKey;
   save();
   emit("build", "done");
 }
-const report = JSON.parse(readFileSync(join(bundleDir, "report.json"), "utf8")) as { sentences: number; lengthS: number | null; bundleHash: string; voice: { id: string; status: string }; assurance: { passes: boolean; publishable: boolean; verified: boolean | null; findings: Array<{ level: string; code: string; message: string; source: string }> } };
+const report = JSON.parse(readFileSync(join(bundleDir, "report.json"), "utf8")) as { sentences: number; lengthS: number | null; bundleHash: string; voice: { id: string; status: string }; model: { promptVersions: { scriptwriter: string } }; assurance: { passes: boolean; publishable: boolean; verified: boolean | null; findings: Array<{ level: string; code: string; message: string; source: string }> } };
 
 // 5. render
 current = "render";
@@ -175,7 +178,7 @@ else {
 // 6. qa: sources.json, then the delivery checks
 current = "qa";
 emit("qa", "started");
-const sources = buildSources(loaded.kb, r, { passes: report.assurance.passes, publishable: report.assurance.publishable, verified: report.assurance.verified, lengthS: report.lengthS, sentences: report.sentences, findings: report.assurance.findings, voice: report.voice, bundleHash: report.bundleHash }, request);
+const sources = buildSources(loaded.kb, r, { passes: report.assurance.passes, publishable: report.assurance.publishable, verified: report.assurance.verified, lengthS: report.lengthS, sentences: report.sentences, findings: report.assurance.findings, voice: report.voice, bundleHash: report.bundleHash, narration: report.model.promptVersions.scriptwriter === "draft.code" ? "code" : report.model.promptVersions.scriptwriter === "polisher.v1" ? "polished" : "recorded" }, request);
 writeFileSync(join(jobDir, "sources.json"), JSON.stringify(sources, null, 2) + "\n");
 const probe = spawnSync(ffmpegPath ?? "ffmpeg", ["-hide_banner", "-i", mp4], { encoding: "utf8" }).stderr ?? "";
 const dur = /Duration: (\d+):(\d+):(\d+(?:\.\d+)?)/.exec(probe);

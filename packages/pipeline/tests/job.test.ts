@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolve } from "node:path";
 import { loadKb } from "@eve/content";
-import { LessonRequest, buildSources, qaChecks, reduceJob, resolveRequest, stageKey, type JobEvent } from "../job/job";
+import { LessonRequest, buildSources, matchPrompt, qaChecks, reduceJob, resolveRequest, stageKey, type JobEvent } from "../job/job";
 
 /** The video job (ADR 0086): the request, the stages' events, the resolution of a curriculum place, sources.json and the delivery checks. */
 const { kb } = loadKb(resolve(__dirname, "..", "..", "..", "knowledge"));
@@ -12,7 +12,7 @@ const ev = (stage: JobEvent["stage"], status: JobEvent["status"], extra: Partial
 
 describe("LessonRequest", () => {
   it("fills the options with their defaults", () => {
-    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard" });
+    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard", narration: "auto" });
   });
   it("takes an optional trace of the host app and environment, and refuses anything else in it", () => {
     expect(LessonRequest.safeParse({ ...req(), trace: { origin: "yourtutor-api", env: "qa" } }).success).toBe(true);
@@ -132,5 +132,62 @@ describe("qaChecks", () => {
     ["sources", { sourcesBookResolved: false }],
   ])("fails %s", (id, over) => {
     expect(qaChecks({ ...good, ...over }).find((c) => c.id === id)!.ok).toBe(false);
+  });
+});
+
+describe("a request in words (ADR 0089)", () => {
+  const where = { board: "CBSE", grade: 10, subject: "maths" };
+  const asked = (prompt: string, over: Record<string, unknown> = {}) =>
+    LessonRequest.safeParse({ requestId: "job-test-0002", idempotencyKey: "idem-test-0002", curriculum: where, prompt, ...over });
+  it("takes a prompt instead of a topic id, and defaults the narration to auto", () => {
+    const r = asked("explain the sum of zeroes of a quadratic polynomial");
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.options.narration).toBe("auto");
+  });
+  it("needs a topic id or a prompt, and refuses a prompt with personal data or a secret", () => {
+    expect(LessonRequest.safeParse({ requestId: "job-test-0003", idempotencyKey: "idem-test-0003", curriculum: where }).success).toBe(false);
+    expect(asked("my email is someone@example.com, explain polynomials").success).toBe(false);
+    expect(asked("explain zeroes").success).toBe(true);
+  });
+  it("refuses a prompt of more than 300 characters and an unknown narration", () => {
+    expect(asked("a ".repeat(200)).success).toBe(false);
+    expect(asked("explain zeroes", { options: { narration: "magic" } }).success).toBe(false);
+  });
+  it("matches the prompt to the topic of its class and subject, by words, with the closest topics", () => {
+    const m = matchPrompt(kb, "explain the sum of zeroes of a quadratic polynomial", where);
+    expect(m.ok).toBe(true);
+    if (m.ok) {
+      expect(m.node.id).toBe("cbse.10.maths.ch02.s2_3");
+      expect(m.coverage).toBeGreaterThanOrEqual(0.5);
+      expect(m.candidates[0]!.id).toBe("cbse.10.maths.ch02.s2_3");
+    }
+  });
+  it("gives the same answer each time, and finds the same topic from other words", () => {
+    expect(matchPrompt(kb, "relationship between zeroes and coefficients", where)).toEqual(matchPrompt(kb, "relationship between zeroes and coefficients", where));
+    const m = matchPrompt(kb, "what are zeroes of a polynomial and how do they relate to the coefficients", where);
+    expect(m.ok && m.node.id).toBe("cbse.10.maths.ch02.s2_3");
+  });
+  it("says there is no match, and names the closest, when the words are not in any topic of the class", () => {
+    expect(matchPrompt(kb, "how do volcanoes erupt", where).ok).toBe(false);
+    expect(matchPrompt(kb, "explain zeroes", { board: "CBSE", grade: 9, subject: "maths" })).toMatchObject({ ok: false, candidates: [] });
+  });
+  it("is limited to the board, class and subject of the request", () => {
+    expect(matchPrompt(kb, "explain the sum of zeroes of a quadratic polynomial", { board: "CBSE", grade: 11, subject: "maths" }).ok).toBe(false);
+  });
+  it("resolves a prompt to the topic and the lesson, and the sources say how it was found and how the narration was written", () => {
+    const req2 = LessonRequest.parse({ requestId: "job-test-0004", idempotencyKey: "idem-test-0004", curriculum: where, prompt: "explain the sum of zeroes of a quadratic polynomial" });
+    const r = resolveRequest(kb, req2, SKILLS);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.node.id).toBe("cbse.10.maths.ch02.s2_3");
+    expect(r.matched?.prompt).toMatch(/zeroes/);
+    const s = buildSources(kb, r, { passes: true, publishable: false, verified: true, lengthS: 1, sentences: 1, findings: [], voice: { id: "v", status: "development-only" }, bundleHash: "h", narration: "code" }, req2);
+    expect(s.caveats.join(" ")).toMatch(/found from the question/);
+    expect(s.caveats.join(" ")).toMatch(/written by a program from the claims, without a model/);
+    expect(s.caveats.join(" ")).not.toMatch(/sum-of-roots lesson written for Chapter 4/);
+  });
+  it("ends a prompt with no match as no_curriculum_data", () => {
+    const r = resolveRequest(kb, LessonRequest.parse({ requestId: "job-test-0005", idempotencyKey: "idem-test-0005", curriculum: where, prompt: "how do volcanoes erupt" }), SKILLS);
+    expect(r).toMatchObject({ ok: false, code: "no_curriculum_data" });
   });
 });

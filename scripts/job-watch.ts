@@ -42,7 +42,7 @@ const readEvents = (id: string): Ev[] => {
   }
 };
 const safe = (id: string): boolean => /^[A-Za-z0-9][A-Za-z0-9_.-]{0,60}$/.test(id);
-type Req = { requestId?: string; curriculum?: { board: string; grade: number; subject: string; nodeId: string }; trace?: { origin: string; env?: string }; options?: { voice?: string; fps?: number; theme?: string } };
+type Req = { requestId?: string; prompt?: string; curriculum?: { board: string; grade: number; subject: string; nodeId?: string }; trace?: { origin: string; env?: string }; options?: { voice?: string; fps?: number; theme?: string } };
 
 /** Where a job came from: its trace when the host sent one, the shape of its id when not. */
 function originOf(id: string, req?: Req): { origin: string; env: string | null } {
@@ -77,7 +77,7 @@ function summary(id: string) {
   const running = STAGES.find((s) => stageStatus[s] === "running");
   const status = result ? result.status : !ev.length ? "queued" : now - last > STALLED_MS ? "stalled" : "running";
   const o = originOf(id, req);
-  return { id, short: shortOf(id), hasVideo: existsSync(join(dir, "lesson.mp4")) && result?.status === "done", ...o, nodeId: req?.curriculum?.nodeId ?? null, status, stage: running ?? null, code: result?.code ?? null, detail: result?.detail ?? null, startedAt: new Date(started).toISOString(), endedAt: result ? new Date(last).toISOString() : null, durationMs: end - started, lastEventAt: ev.length ? new Date(last).toISOString() : null, stageMs, stageStatus };
+  return { id, short: shortOf(id), hasVideo: existsSync(join(dir, "lesson.mp4")) && result?.status === "done", ...o, nodeId: req?.curriculum?.nodeId ?? ev.find((e) => e.stage === "retrieve" && e.status === "done")?.detail?.split(":")[0] ?? null, prompt: req?.prompt ?? null, status, stage: running ?? null, code: result?.code ?? null, detail: result?.detail ?? null, startedAt: new Date(started).toISOString(), endedAt: result ? new Date(last).toISOString() : null, durationMs: end - started, lastEventAt: ev.length ? new Date(last).toISOString() : null, stageMs, stageStatus };
 }
 
 const jobIds = (): string[] => (existsSync(JOBS) ? readdirSync(JOBS).filter((d) => safe(d) && statSync(join(JOBS, d)).isDirectory() && (existsSync(join(JOBS, d, "events.jsonl")) || existsSync(join(JOBS, d, "request.json")))) : []);
@@ -95,14 +95,17 @@ const launch = (file: string, extra: string[] = []): void => {
   spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", "video-job.ts"), file, ...extra], { cwd: REPO_ROOT, detached: true, stdio: "ignore", windowsHide: true, env: childEnv({ LLM_MODE: "replay" }) }).unref();
 };
 
-function start(nodeId: string, fps: number): { id: string } | { error: string } {
-  const node = topics().kb.nodes.find((n) => n.id === nodeId);
-  if (!node) return { error: `${nodeId} is not a topic of the knowledge base` };
+type StartBody = { nodeId?: string; prompt?: string; board?: string; grade?: number; subject?: string; fps?: number; narration?: string };
+function start(b: StartBody, fps: number): { id: string } | { error: string } {
+  const node = b.nodeId ? topics().kb.nodes.find((n) => n.id === b.nodeId) : undefined;
+  if (b.nodeId && !node) return { error: `${b.nodeId} is not a topic of the knowledge base` };
+  if (!node && !(b.prompt && b.board && b.grade && b.subject)) return { error: "give a topic, or a prompt with the board, class and subject" };
+  const narration = b.narration === "draft" || b.narration === "polish" ? b.narration : "auto";
   let id = "";
   do id = `ui-${Math.random().toString(36).slice(2, 7)}`;
   while (existsSync(join(JOBS, id)) || existsSync(join(JOBS, `${id}.request.json`)));
   const file = join(JOBS, `${id}.request.json`);
-  writeFileSync(file, JSON.stringify({ requestId: id, idempotencyKey: `${id}-key`, curriculum: { board: node.board, grade: node.grade, subject: node.subject, nodeId: node.id }, trace: { origin: "job-watch", env: "local" }, options: { locale: "en-IN", voice: "auto", fps, theme: "whiteboard" } }));
+  writeFileSync(file, JSON.stringify({ requestId: id, idempotencyKey: `${id}-key`, curriculum: node ? { board: node.board, grade: node.grade, subject: node.subject, nodeId: node.id } : { board: b.board, grade: Number(b.grade), subject: b.subject }, ...(!node ? { prompt: b.prompt } : {}), trace: { origin: "job-watch", env: "local" }, options: { locale: "en-IN", voice: "auto", fps, theme: "whiteboard", narration } }));
   launch(file);
   return { id };
 }
@@ -150,8 +153,8 @@ createServer(async (req, res) => {
     return json(res, 200, { now: new Date().toISOString(), counts, stageMedianMs: stats, jobs: rows });
   }
   if (url.pathname === "/api/start" && req.method === "POST") {
-    const b = (await body(req)) as { nodeId?: string; fps?: number };
-    const r = start(String(b.nodeId), Math.min(30, Math.max(6, Math.round(Number(b.fps) || 12))));
+    const b = (await body(req)) as StartBody;
+    const r = start(b, Math.min(30, Math.max(6, Math.round(Number(b.fps) || 12))));
     return json(res, "error" in r ? 400 : 200, r);
   }
   if (url.pathname === "/api/delete" && req.method === "POST") {

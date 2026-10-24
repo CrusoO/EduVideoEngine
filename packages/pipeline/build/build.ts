@@ -1,4 +1,4 @@
-import type { LlmClient } from "@eve/adapters";
+import { LlmRefused, type LlmClient } from "@eve/adapters";
 import type { ContentRecord } from "@eve/content";
 import { syntheticDurationMs, type Approval } from "@eve/gates";
 import { resolve } from "@eve/resolver";
@@ -157,4 +157,24 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     assurance,
     usage: { model: client.model, promptVersions: { system: SYSTEM_PROMPT_VERSION, planner: input.planner === "code" && !input.plan ? "plan.code" : ARC_PLANNER_VERSION, scriptwriter: mode === "per-beat" ? SCRIPTWRITER_V2_VERSION : mode === "polish" ? POLISHER_VERSION : mode === "draft" ? "draft.code" : SCRIPTWRITER_VERSION }, ...u, plannerRepaired: planned.repaired, scriptRepaired: scripted.repaired },
   };
+}
+
+/**
+ * The lesson from whatever exists (ADR 0089): first the recorded or authored way (the model planner and the whole-script writer, answered from recordings), and when there is no
+ * recorded answer for the skill, or the recorded ones do not pass, the lesson written by code alone (the plan from `planDeterministic`, the narration from `draftScript`), which
+ * asks no model and passes every rule whenever the records can make a lesson at all. `strategy` says which one produced it, so the sources can say how the narration was written.
+ */
+export async function buildLessonAuto(input: BuildInput): Promise<BuildResult & { strategy: "recorded" | "code"; fellBackBecause?: string }> {
+  let why = "";
+  try {
+    const r = await buildLesson({ ...input, planner: "model", script: { mode: "whole" } });
+    if (r.ok) return { ...r, strategy: "recorded" };
+    why = `the recorded way stopped at the ${r.stage} (${r.reason})`;
+  } catch (e) {
+    if (!(e instanceof LlmRefused)) throw e;
+    why = "no recorded answer for this skill";
+  }
+  input.log?.(`  ${why}: writing the lesson from code`);
+  const r = await buildLesson({ ...input, planner: "code", script: { mode: "draft" } });
+  return { ...r, strategy: "code", fellBackBecause: why };
 }

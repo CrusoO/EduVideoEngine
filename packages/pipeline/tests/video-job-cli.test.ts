@@ -8,7 +8,7 @@ import { reduceJob, type JobEvent } from "../job/job";
 /** The job runner's failure paths, run as the host would run it (ADR 0086): a bad request or a missing topic ends with a code and a result file, before anything is built. */
 const ROOT = resolve(__dirname, "..", "..", "..");
 const TMP = join(ROOT, "dist", "job-tests");
-const IDS = ["job-cli-badplace-1", "job-cli-nolesson-1", "job-cli-mismatch-1", "job-cli-extrafield-1"];
+const IDS = ["job-cli-badplace-1", "job-cli-nolesson-1", "job-cli-mismatch-1", "job-cli-extrafield-1", "job-cli-noprompt-1", "job-cli-pii-1", "job-cli-live-1"];
 afterAll(() => {
   rmSync(TMP, { recursive: true, force: true });
   for (const id of IDS) rmSync(join(ROOT, "dist", "jobs", id), { recursive: true, force: true });
@@ -50,6 +50,24 @@ describe("pnpm video:job, the failure paths", () => {
     expect(r.state).toMatchObject({ status: "failed", stage: "request", code: "invalid_request" });
     expect(r.events.some((e) => e.stage === "retrieve")).toBe(false);
   }, 60_000);
+  it("a prompt that matches no topic of the class ends as no_curriculum_data, with the closest topics", () => {
+    const r = run("noprompt", { requestId: "job-cli-noprompt-1", idempotencyKey: "job-cli-noprompt-key", curriculum: { board: "CBSE", grade: 10, subject: "maths" }, prompt: "how do volcanoes erupt" });
+    expect(r.status).toBe(1);
+    expect(r.state).toMatchObject({ status: "failed", stage: "retrieve", code: "no_curriculum_data" });
+    expect(result("job-cli-noprompt-1")).toMatchObject({ status: "failed", code: "no_curriculum_data" });
+  }, 60_000);
+  it("a prompt with personal data is refused before any work", () => {
+    const r = run("pii", { requestId: "job-cli-pii-1", idempotencyKey: "job-cli-pii-key", curriculum: { board: "CBSE", grade: 10, subject: "maths" }, prompt: "I am someone@example.com, explain zeroes" });
+    expect(r.status).toBe(1);
+    expect(r.state).toMatchObject({ status: "failed", stage: "request", code: "invalid_request" });
+    expect(r.events.some((e) => e.stage === "retrieve")).toBe(false);
+  }, 60_000);
+  it("asking for a model to polish the narration is refused when the runner was not started with --allow-live", () => {
+    const r = run("live", { requestId: "job-cli-live-1", idempotencyKey: "job-cli-live-key", curriculum: { board: "CBSE", grade: 10, subject: "maths" }, prompt: "explain the sum of zeroes of a quadratic polynomial", options: { narration: "polish" } });
+    expect(r.status).toBe(1);
+    expect(r.state).toMatchObject({ status: "failed", stage: "build", code: "live_not_allowed" });
+    expect(r.events.find((e) => e.stage === "retrieve" && e.status === "done")!.detail).toMatch(/found from the prompt/);
+  }, 90_000);
   it("a file that is not JSON is an invalid_request, with a result file for the host to read", () => {
     const r = run("notjson", "{ not json");
     expect(r.status).toBe(1);
