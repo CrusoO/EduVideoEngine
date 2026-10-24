@@ -14,3 +14,6 @@ export { CO2_PROBES, PROBES, runProbe, probeRequest } from "./probes";
 export * from "./script/law-script";
 export * from "./job/job";
 export * from "./bakeoff/bakeoff";
+export * from "./script/draft";
+export * from "./script/polish";
+export * from "./arcplan/deterministic";

@@ -3,7 +3,7 @@ import type { ContentRecord } from "@eve/content";
 import { syntheticDurationMs, type Approval } from "@eve/gates";
 import { resolve } from "@eve/resolver";
 import type { AudioTrack, LessonBundle } from "@eve/schema";
-import { ARC_PLANNER_VERSION, planArc } from "../arcplan";
+import { ARC_PLANNER_VERSION, planArc, type ArcPlanResult } from "../arcplan";
 import { assembleLesson, type AssembleResult, type Features } from "../lesson/assemble";
 import { PADDING_TRANSITIONS } from "../lesson/sentences";
 import { lessonContext, type LessonContext } from "../lesson/context";
@@ -11,6 +11,11 @@ import type { ArcPlan, LessonScript } from "../lesson/types";
 import { SYSTEM_PROMPT_VERSION } from "../planner";
 import { SCRIPTWRITER_VERSION, writeScript } from "../script";
 import { SCRIPTWRITER_V2_VERSION, writeScriptPerBeat } from "../script/per-beat";
+import { planDeterministic } from "../arcplan/deterministic";
+import { draftScript } from "../script/draft";
+import { POLISHER_VERSION, polishScript } from "../script/polish";
+import { buildBeats } from "../lesson/beats";
+import { scriptOf } from "../script";
 import { assureLesson, type Assurance } from "./assure";
 import { synthesizeLesson, type Synthesizer, type VoiceOutput } from "./voice";
 
@@ -25,10 +30,14 @@ export type BuildInput = {
   /** Run the SymPy verifier (default true). A lesson is `publishable` only when it ran. */
   verify?: boolean;
   approvals?: readonly Approval[];
+  /** An arc plan to use instead of asking the planner for one. */
+  plan?: ArcPlan;
   /** Build without signalling highlights or carried objects, to compare with a lesson built with them (ADR 0066, 0067). */
   features?: Features;
   /** How the script is written: one request for the lesson (default, scriptwriter.v1) or one request for each beat (scriptwriter.v2, ADR 0087). */
-  script?: { mode: "whole" } | { mode: "per-beat"; candidates?: number };
+  script?: { mode: "whole" } | { mode: "per-beat"; candidates?: number } | { mode: "draft" } | { mode: "polish"; concurrency?: number };
+  /** Who plans the arc: the model (default) or code (ADR 0088: the same rules choose from the same lists, no request). */
+  planner?: "model" | "code";
   log?: (line: string) => void;
 };
 
@@ -64,7 +73,12 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
   const used = () => ({ requests: client.stats.sent - before.sent, replayed: client.stats.replayed - before.replayed, repairs: client.stats.repairs - before.repairs });
 
   log(`planning the arc for ${ctx.skillId}`);
-  const planned = await planArc(client, ctx);
+  // a plan given by the caller (the bake-off compares scriptwriters on one fixed plan) is used as it is; otherwise the model plans it
+  const coded = (): ArcPlanResult => {
+    const d = planDeterministic(ctx);
+    return d.ok ? { ok: true, plan: d.plan, repaired: false, requests: 0 } : { ok: false, reason: "invalid", errors: d.errors };
+  };
+  const planned: ArcPlanResult = input.plan ? { ok: true, plan: input.plan, repaired: false, requests: 0 } : input.planner === "code" ? coded() : await planArc(client, ctx);
   if (!planned.ok) {
     const details = planned.reason === "invalid" ? planned.errors : planned.reason === "insufficient_content" ? planned.missing : planned.reason === "unknown_id" ? [planned.id] : [];
     return { ok: false, stage: "plan", reason: planned.reason, details, requests: used().requests };
@@ -72,8 +86,24 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
   log(`  ${planned.plan.arcId}: ${planned.plan.beats.map((b) => `${b.slotId} (${b.pattern})`).join(", ")}${planned.repaired ? " [repaired once]" : ""}`);
 
   log("writing the script");
-  const perBeat = input.script?.mode === "per-beat";
-  const scripted = perBeat ? await writeScriptPerBeat(client, ctx, planned.plan, { candidates: input.script?.mode === "per-beat" ? input.script.candidates : undefined }) : await writeScript(client, ctx, planned.plan);
+  const mode = input.script?.mode ?? "whole";
+  let plan = planned.plan;
+  const scripted = await (async (): Promise<Awaited<ReturnType<typeof writeScript>>> => {
+    if (mode === "per-beat") return writeScriptPerBeat(client, ctx, plan, { candidates: input.script?.mode === "per-beat" ? input.script.candidates : undefined });
+    if (mode === "polish") {
+      const r = await polishScript(client, ctx, plan, { concurrency: input.script?.mode === "polish" ? input.script.concurrency : undefined, log });
+      if (!r.ok) return { ok: false, reason: "invalid", errors: r.errors };
+      plan = r.plan;
+      return { ok: true, script: r.script, repaired: r.repaired, requests: r.requests };
+    }
+    if (mode === "draft") {
+      const built = buildBeats(ctx, plan);
+      if (!built.ok) return { ok: false, reason: "invalid", errors: built.errors };
+      const d = draftScript(ctx, plan, built.beats);
+      return d.problems.length > 0 ? { ok: false, reason: "invalid", errors: d.problems } : { ok: true, script: scriptOf(d.beats), repaired: false, requests: 0 };
+    }
+    return writeScript(client, ctx, plan);
+  })();
   if (!scripted.ok) {
     const details = scripted.reason === "invalid" ? scripted.errors : scripted.reason === "insufficient_content" ? scripted.missing : scripted.reason === "unknown_id" ? [scripted.id] : [];
     return { ok: false, stage: "script", reason: scripted.reason, details, requests: used().requests };
@@ -81,7 +111,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
 
   log("assembling the lesson");
   const padded: Record<string, number> = {};
-  let assembled = assembleLesson(ctx, planned.plan, scripted.script, { features: input.features });
+  let assembled = assembleLesson(ctx, plan, scripted.script, { features: input.features });
   let tracks: AudioTrack[];
   let voice: VoiceOutput | undefined;
   let assurance: Assurance;
@@ -100,7 +130,7 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     // the plan records the measured length; only the length differs, so the sentences and their audio stay valid
     try {
       const lengthS = Math.max(1, Math.ceil(resolve(assembled.bundle, tracks).totalMs / 1000));
-      if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, planned.plan, scripted.script, { targetLengthS: lengthS, extraTransitions: padded, features: input.features });
+      if (lengthS !== assembled.bundle.plan.targetLengthS) assembled = assembleLesson(ctx, plan, scripted.script, { targetLengthS: lengthS, extraTransitions: padded, features: input.features });
     } catch {
       // a lesson that cannot be resolved is reported by the assurance below
     }
@@ -111,20 +141,20 @@ export async function buildLesson(input: BuildInput): Promise<BuildResult> {
     if (tooShort.length === 0) break;
     for (const id of tooShort) padded[id] = (padded[id] ?? 0) + 1;
     log(`  the scene of ${tooShort.join(", ")} is too short to read: one more transition`);
-    assembled = assembleLesson(ctx, planned.plan, scripted.script, { extraTransitions: padded, features: input.features });
+    assembled = assembleLesson(ctx, plan, scripted.script, { extraTransitions: padded, features: input.features });
   }
   if (input.verify !== false) assurance = await assure(true);
   const u = used();
   return {
     ok: true,
     ctx,
-    plan: planned.plan,
+    plan: plan,
     script: scripted.script,
     assembled,
     bundle: assembled.bundle,
     tracks,
     ...(voice ? { voice } : {}),
     assurance,
-    usage: { model: client.model, promptVersions: { system: SYSTEM_PROMPT_VERSION, planner: ARC_PLANNER_VERSION, scriptwriter: perBeat ? SCRIPTWRITER_V2_VERSION : SCRIPTWRITER_VERSION }, ...u, plannerRepaired: planned.repaired, scriptRepaired: scripted.repaired },
+    usage: { model: client.model, promptVersions: { system: SYSTEM_PROMPT_VERSION, planner: input.planner === "code" && !input.plan ? "plan.code" : ARC_PLANNER_VERSION, scriptwriter: mode === "per-beat" ? SCRIPTWRITER_V2_VERSION : mode === "polish" ? POLISHER_VERSION : mode === "draft" ? "draft.code" : SCRIPTWRITER_VERSION }, ...u, plannerRepaired: planned.repaired, scriptRepaired: scripted.repaired },
   };
 }

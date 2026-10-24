@@ -5,15 +5,19 @@
  * dist/bakeoff/<run>/report.md (and rows.json). Without --go it only prints what it would do (the models, whether a key is present, the requests it would make against
  * each model's daily cap) and sends NOTHING. With --go it calls the models, in record mode: every answer is saved under dist/bakeoff/<run>/fixtures/<model>, so running the
  * same command again with --run <id> replays what was done and asks only for what is missing (a stopped run loses nothing). The daily caps use the shared ledger.
+ * --plan recorded (the default) gives every model the same arc plan, taken from the recorded planner answer, so only the scriptwriter is compared and a small token limit
+ * (Groq's 8,000 a minute) does not stop the planner request; --plan model lets each model plan too. A skill with no recorded plan needs --plan model.
  * --dry builds the default lesson once from the recorded answers, offline, to check the harness itself.
- * strategies: whole = one request for the whole script (scriptwriter.v1); beat = one request per beat (v2); beat3 = three candidates per beat, the best kept.
+ * strategies: whole = one request for the whole script (scriptwriter.v1); beat = one request per beat (v2); beat3 = three candidates per beat, the best kept;
+ * draft = code writes the narration, no model (the floor, run once); polish = code drafts and the model says it better, a beat at a time, with the draft as the fallback (ADR 0088).
+ * --plan code makes the plan with the deterministic planner (no request, the same rules); the default recorded plan and --plan model are as before.
  * Models are written provider/model, for example gemini/gemini-3.8-flash or groq/openai/gpt-oss-120b; a model needs an entry in packages/adapters/model-profiles.json.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { FixtureStore, LEDGER_PATH, Ledger, PROVIDERS, REPO_ROOT, clientFromEnv, loadLlmConfig, profileFor, resetTimeZone, scriptEnv, dayIn, type LlmConfig } from "../packages/adapters/src";
 import { loadStores } from "../packages/content/src";
-import { STRATEGIES, reportMarkdown, runOne, type Candidate, type RunRow } from "../packages/pipeline";
+import { STRATEGIES, lessonContext, planArc, reportMarkdown, runOne, type ArcPlan, type Candidate, type RunRow } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const opt = (name: string): string | undefined => {
@@ -22,6 +26,11 @@ const opt = (name: string): string | undefined => {
 };
 const flag = (name: string) => args.includes(`--${name}`);
 const go = flag("go");
+const planMode = opt("plan") ?? "recorded";
+if (planMode !== "recorded" && planMode !== "model" && planMode !== "code") {
+  console.error("--plan must be recorded, model or code");
+  process.exit(2);
+}
 const dry = flag("dry");
 const strategyIds = (opt("strategies") ?? "whole,beat").split(",").map((s) => s.trim()).filter(Boolean);
 for (const s of strategyIds) if (!(s in STRATEGIES)) {
@@ -66,7 +75,7 @@ if (specs.length === 0) {
 }
 
 // the plan: what would be asked, and whether the keys and the daily caps allow it
-const perRun = (strategy: string) => (strategy === "whole" ? 2 : strategy === "beat" ? 1 + 5 : 1 + 5 * 3);
+const perRun = (strategy: string) => (strategy === "draft" ? 0 : strategy === "polish" ? 5 : strategy === "whole" ? 2 : strategy === "beat" ? 1 + 5 : 1 + 5 * 3);
 console.log(`bake-off ${runId}: ${skills.length} lesson(s) x ${strategyIds.length} strategy(ies) x ${specs.length} model(s)`);
 let blocked = false;
 for (const s of specs) {
@@ -91,6 +100,19 @@ if (blocked) {
 }
 
 mkdirSync(outDir, { recursive: true });
+const recorder = clientFromEnv({ log: () => {} }, loadLlmConfig({ ...env, LLM_MODE: "replay" }));
+const plans = new Map<string, ArcPlan | string>();
+async function recordedPlan(skill: string): Promise<ArcPlan | string> {
+  if (!plans.has(skill)) {
+    try {
+      const r = await planArc(recorder, lessonContext(records, skill, "en-IN", "class-10"));
+      plans.set(skill, r.ok ? r.plan : `the recorded plan is not usable (${r.reason}); use --plan model`);
+    } catch (e) {
+      plans.set(skill, `no recorded plan for ${skill} (${(e as Error).message.slice(0, 80)}); use --plan model`);
+    }
+  }
+  return plans.get(skill)!;
+}
 const rows: RunRow[] = [];
 const save = () => {
   writeFileSync(join(outDir, "rows.json"), JSON.stringify(rows, null, 2) + "\n");
@@ -103,8 +125,13 @@ for (const s of specs) {
   for (const skill of skills) {
     for (const st of strategyIds) {
       if (dry && st !== "whole") continue;
+      if (st === "draft" && s !== specs[0]) continue; // no model is asked, so one run is the whole answer
       console.log(`\n${s.id}  ${skill}  ${st}`);
-      const row = await runOne(c, skill, STRATEGIES[st]!, records, { verify: !flag("no-verify"), log: (l) => console.log(`  ${l}`) });
+      const plan = dry || planMode !== "recorded" ? undefined : await recordedPlan(skill);
+      const row: RunRow =
+        typeof plan === "string"
+          ? { candidate: s.id, skill, strategy: st, ok: false, stage: "plan", reason: "no_plan", details: [], sent: 0, replayed: 0, repairs: 0, plannerRepaired: false, scriptRepaired: false, inputTokens: 0, outputTokens: 0, thinkingTokens: 0, wallMs: 0, passesGates: null, verified: null, failures: [], lengthS: null, sentences: null, narration: null, error: plan }
+          : await runOne(c, skill, STRATEGIES[st]!, records, { verify: !flag("no-verify"), plan, planner: planMode === "code" ? "code" : undefined, log: (l) => console.log(`  ${l}`) });
       rows.push(row);
       save();
       console.log(`  -> ${row.ok ? "pass" : "FAIL"} (${row.stage}${row.reason ? `, ${row.reason}` : ""}), sent ${row.sent}, replayed ${row.replayed}, repairs ${row.repairs}, ${Math.round(row.wallMs / 100) / 10} s${row.narration !== null ? `, narration ${row.narration}` : ""}${row.error ? `\n  stopped: ${row.error}` : ""}`);

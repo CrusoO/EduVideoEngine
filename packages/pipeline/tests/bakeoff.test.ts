@@ -15,6 +15,11 @@ const oneBeat = (id: string, text?: string) => JSON.stringify({ beats: [{ beatId
 function candidate(id: string, behave: "good" | "repairs" | "broken"): Candidate {
   const seen = new Set<string>();
   const adapter = new FakeAdapter((r) => {
+    if (r.input.includes("Prompt version: polisher.v1")) {
+      const i = JSON.parse(r.input.slice(r.input.lastIndexOf("INPUT") + 6)) as { beat: { beatId: string; draft: Array<{ n: number; text: string; filler: boolean }>; redo?: Array<{ n: number }> } };
+      const only = i.beat.redo?.map((x) => x.n);
+      return JSON.stringify({ beats: [{ beatId: i.beat.beatId, sentences: i.beat.draft.filter((d) => !only || only.includes(d.n)).map((d) => ({ n: d.n, text: d.filler ? "Look at the picture and notice where the curve meets the line." : d.text })) }] });
+    }
     if (r.input.includes("Prompt version: planner.v4")) return JSON.stringify(REFERENCE_PLAN);
     if (r.input.includes("Prompt version: scriptwriter.v2")) {
       const b = beatOf(r);
@@ -54,6 +59,19 @@ describe("runOne", () => {
     const row = await runOne(candidate("bad", "broken"), SKILL, STRATEGIES.beat!, STORE, { verify: false });
     expect(row).toMatchObject({ ok: false });
     expect(["plan", "script"]).toContain(row.stage);
+  });
+  it("uses a plan it is given and does not ask the planner, so only the script is asked for", async () => {
+    const row = await runOne(candidate("good", "good"), SKILL, STRATEGIES.whole!, STORE, { verify: false, plan: REFERENCE_PLAN });
+    expect(row).toMatchObject({ ok: true, sent: 1, plannerRepaired: false });
+  });
+  it("builds the lesson from code alone with the draft strategy: no request, a plan and a script from code", async () => {
+    const row = await runOne(candidate("none", "good"), SKILL, STRATEGIES.draft!, STORE, { verify: false, planner: "code" });
+    expect(row).toMatchObject({ ok: true, sent: 0, strategy: "draft", plannerRepaired: false, scriptRepaired: false });
+    expect(row.narration).toBeGreaterThan(0);
+  });
+  it("builds it with the polish strategy: one request for each beat that has words, the plan from code", async () => {
+    const row = await runOne(candidate("polisher", "good"), SKILL, STRATEGIES.polish!, STORE, { verify: false, planner: "code" });
+    expect(row).toMatchObject({ ok: true, sent: 5, strategy: "polish" });
   });
   it("reports a stopped provider as the error of the row, not as an exception", async () => {
     const c = candidate("stops", "good");

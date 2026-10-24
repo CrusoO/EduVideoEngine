@@ -1,6 +1,7 @@
 import type { LlmClient } from "@eve/adapters";
 import type { ContentRecord } from "@eve/content";
 import { buildLesson, type BuildInput } from "../build/build";
+import type { ArcPlan } from "../lesson/types";
 import { narrationScore } from "../script/per-beat";
 
 /**
@@ -16,6 +17,10 @@ export const STRATEGIES: Record<string, Strategy> = {
   whole: { id: "whole", script: { mode: "whole" } },
   beat: { id: "beat", script: { mode: "per-beat", candidates: 1 } },
   beat3: { id: "beat3", script: { mode: "per-beat", candidates: 3 } },
+  /** Code writes the narration and no model is asked: the floor every polished lesson falls back to (ADR 0088). */
+  draft: { id: "draft", script: { mode: "draft" } },
+  /** Code drafts, a model says it better, a beat at a time; whatever fails goes back to the draft. */
+  polish: { id: "polish", script: { mode: "polish" } },
 };
 
 export type RunRow = {
@@ -46,7 +51,7 @@ export type RunRow = {
 };
 
 /** One build, judged. A stopped provider (a refused request, a cap) is reported as the row's error, not thrown, so the other rows still run. */
-export async function runOne(c: Candidate, skill: string, strategy: Strategy, store: readonly ContentRecord[], opts: { level?: string; verify?: boolean; log?: (l: string) => void } = {}): Promise<RunRow> {
+export async function runOne(c: Candidate, skill: string, strategy: Strategy, store: readonly ContentRecord[], opts: { level?: string; verify?: boolean; plan?: ArcPlan; planner?: "model" | "code"; log?: (l: string) => void } = {}): Promise<RunRow> {
   const t0 = Date.now();
   const entriesBefore = c.entries().length;
   const sentBefore = c.client.stats.sent;
@@ -59,14 +64,14 @@ export async function runOne(c: Candidate, skill: string, strategy: Strategy, st
   const base = { candidate: c.id, skill, strategy: strategy.id };
   const counts = () => ({ sent: c.client.stats.sent - sentBefore, replayed: c.client.stats.replayed - replayedBefore, repairs: c.client.stats.repairs - repairsBefore, ...tokens(), wallMs: Date.now() - t0 });
   try {
-    const r = await buildLesson({ client: c.client, store, skillId: skill, level: opts.level, voice: "synthetic", verify: opts.verify ?? true, script: strategy.script, log: opts.log });
+    const r = await buildLesson({ client: c.client, store, skillId: skill, level: opts.level, voice: "synthetic", verify: opts.verify ?? true, script: strategy.script, plan: opts.plan, planner: opts.planner, log: opts.log });
     if (!r.ok) return { ...base, ok: false, stage: r.stage, reason: r.reason, details: r.details, plannerRepaired: false, scriptRepaired: false, passesGates: null, verified: null, failures: [], lengthS: null, sentences: null, narration: null, error: null, ...counts() };
     const fails = r.assurance.findings.filter((f) => f.level === "fail" && f.code !== "grounded-claim-not-approved" && f.source !== "approval").map((f) => `${f.source} ${f.code}`);
     const beats = Object.values(r.script);
     const narration = beats.length ? Math.round((beats.reduce((a, b) => a + narrationScore(b), 0) / beats.length) * 10) / 10 : null;
     return { ...base, ok: r.assurance.passes, stage: "done", reason: r.assurance.passes ? null : "gates", details: fails, plannerRepaired: r.usage.plannerRepaired, scriptRepaired: r.usage.scriptRepaired, passesGates: r.assurance.passes, verified: r.assurance.verified, failures: fails, lengthS: r.bundle.plan.targetLengthS ?? null, sentences: r.bundle.script.length, narration, error: null, ...counts() };
   } catch (e) {
-    return { ...base, ok: false, stage: "plan", reason: "stopped", details: [], plannerRepaired: false, scriptRepaired: false, passesGates: null, verified: null, failures: [], lengthS: null, sentences: null, narration: null, error: e instanceof Error ? e.message.slice(0, 400) : String(e).slice(0, 400), ...counts() };
+    return { ...base, ok: false, stage: opts.plan ? "script" : "plan", reason: "stopped", details: [], plannerRepaired: false, scriptRepaired: false, passesGates: null, verified: null, failures: [], lengthS: null, sentences: null, narration: null, error: e instanceof Error ? e.message.slice(0, 400) : String(e).slice(0, 400), ...counts() };
   }
 }
 
