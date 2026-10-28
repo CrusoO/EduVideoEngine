@@ -6,7 +6,7 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["packages/*/tests/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "packages/player/tests/budget.test.ts", "packages/adapters/tests/no-process-env.test.ts", "packages/pipeline/tests/build.test.ts", "packages/pipeline/tests/recorded.test.ts"],
+    exclude: ["**/node_modules/**", "packages/player/tests/budget.test.ts", "packages/adapters/tests/no-process-env.test.ts", "packages/pipeline/tests/build.test.ts", "packages/pipeline/tests/recorded.test.ts", "packages/content/tests/book-map.test.ts"],
     environmentMatchGlobs: [],
   },
 });

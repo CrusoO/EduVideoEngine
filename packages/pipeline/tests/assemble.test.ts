@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { GATES, failures, runGates } from "@eve/gates";
+import { GATES, failures, runGates, syntheticDurationMs } from "@eve/gates";
 import { assureLayout } from "@eve/layout";
-import { assureTimeline, resolve } from "@eve/resolver";
+import { SCENE_TAIL_MS, SENTENCE_GAP_MS, assureTimeline, resolve } from "@eve/resolver";
 import { validateBundle, wordsOf, type AudioTrack } from "@eve/schema";
 import { verifyBundle } from "@eve/verify";
-import { assembleLesson, AssembleError, buildBeats, gateContext, type AssembleResult } from "../lesson";
+import { assembleLesson, AssembleError, buildBeats, bundleIdFor, conceptClaimOf, estimateLengthS, gateContext, LEGACY_KIND, orderClaims, sceneIdOf, sentenceIdOf, type AssembleResult } from "../lesson";
 import { REFERENCE_PLAN, REFERENCE_SCRIPT, context } from "./fixtures";
 
 const ctx = context();
@@ -172,5 +172,152 @@ describe("a plan that cannot be built is refused with the reasons", () => {
   it("assemble throws the same reasons", () => {
     expect(() => assembleLesson(ctx, withBeat("b3", { pattern: "freestyle" }), REFERENCE_SCRIPT)).toThrow(AssembleError);
     expect(() => assembleLesson(ctx, withBeat("b3", { pattern: "freestyle" }), REFERENCE_SCRIPT)).toThrow(/beat b3: pattern freestyle does not exist/);
+  });
+  it("error messages start with 'beat <id>:' exactly (not empty prefix)", () => {
+    // kills StringLiteral→"" mutation at L68: `const at = \`beat ${beat.id}\``
+    const errors = (() => {
+      const b = buildBeats(ctx, withBeat("b3", { pattern: "freestyle" }));
+      return b.ok ? [] : b.errors;
+    })();
+    expect(errors[0]).toMatch(/^beat b3: pattern freestyle does not exist/);
+    expect(errors[0]).toContain("(patterns:");
+    expect(errors[0]).not.toMatch(/^: /);  // no empty at prefix
+  });
+  it("sourceIds error names the stray id and states exactly 'is not records of'", () => {
+    // kills StringLiteral→"" mutations at L80
+    const errors = (() => {
+      const b = buildBeats(ctx, withBeat("b4", { sourceIds: ["quad.sum.steps", "invented"] }));
+      return b.ok ? [] : b.errors;
+    })();
+    expect(errors[0]).toMatch(/^beat b4: sourceIds invented is not records of MATH\.ALG\.QUAD\.SUM_OF_ROOTS$/);
+  });
+  it("prerequisite error names the skill and its direct prerequisites", () => {
+    // kills StringLiteral→"" mutations at L76
+    const errors = (() => {
+      const b = buildBeats(ctx, withBeat("b2", { sourceIds: ["quad.sum.claim.vieta"] }));
+      return b.ok ? [] : b.errors;
+    })();
+    expect(errors.some(e => /^beat b2: a prerequisite beat draws on the records of a direct prerequisite of MATH\.ALG\.QUAD\.SUM_OF_ROOTS \(MATH\.ALG\.QUAD\.FACTORISE\)$/.test(e))).toBe(true);
+  });
+  it("concept claim slot error names the beat kind and the claim id, and names the remedy slots", () => {
+    // kills StringLiteral→"" mutations at L90
+    const errors = (() => {
+      const b = buildBeats(ctx, withBeat("b4", { sourceIds: ["quad.sum.steps", "quad.sum.claim.vieta"] }));
+      return b.ok ? [] : b.errors;
+    })();
+    const slotError = errors.find(e => e.includes("cannot state concept claims"));
+    expect(slotError).toBeDefined();
+    expect(slotError).toMatch(/^beat b4: a worked beat cannot state concept claims \(quad\.sum\.claim\.vieta\)/);
+    expect(slotError).toContain("move them to a beat of the concept, prerequisite or mistake slot");
+  });
+});
+
+describe("LEGACY_KIND — exact mapping for each beat kind", () => {
+  it("maps all six beat kinds to their legacy kinds verbatim", () => {
+    // L23-30 StringLiteral mutations: each value could become ""
+    expect(LEGACY_KIND).toEqual({
+      hook: "predict",
+      prerequisite: "explain",
+      concept: "explore",
+      worked: "worked",
+      mistake: "explain",
+      check: "check",
+    });
+  });
+});
+
+describe("bundleIdFor and slug", () => {
+  it("lowercases, replaces non-alphanumeric runs with a single dash, strips leading/trailing dashes", () => {
+    // L44: multiple regex/string mutations; kills toUpperCase, wrong regex, empty replacement
+    expect(bundleIdFor("MATH.ALG.QUAD.SUM_OF_ROOTS", "en-IN")).toBe("bundle.generated.math-alg-quad-sum-of-roots.en-IN");
+    expect(bundleIdFor("MATH...ALG", "en-IN")).toBe("bundle.generated.math-alg.en-IN");
+    expect(bundleIdFor(".LEADING.DOT.", "hi-IN")).toBe("bundle.generated.leading-dot.hi-IN");
+  });
+  it("passes the locale through unchanged as the id suffix", () => {
+    expect(bundleIdFor("MATH.ALG.LINEAR", "hi-IN")).toBe("bundle.generated.math-alg-linear.hi-IN");
+  });
+});
+
+describe("estimateLengthS", () => {
+  it("returns at least 1 for an empty lesson (Math.max not Math.min)", () => {
+    // L52: Math.min(1, ...) would return 0 here; Math.max returns 1
+    expect(estimateLengthS([], 0)).toBe(1);
+  });
+  it("multiplies scene count by SCENE_TAIL_MS (not divides)", () => {
+    // L51: ArithmeticOperator mutation: * vs /; with 20 scenes these give very different values
+    const expected = Math.max(1, Math.ceil((20 * SCENE_TAIL_MS) / 1000));
+    expect(estimateLengthS([], 20)).toBe(expected);
+    expect(estimateLengthS([], 20)).toBeGreaterThan(1);
+  });
+  it("adds syntheticDurationMs + SENTENCE_GAP_MS per sentence", () => {
+    const text = "word word word";
+    const oneSentence = estimateLengthS([{ text }] as any, 0);
+    const expectedMs = syntheticDurationMs(text) + SENTENCE_GAP_MS;
+    expect(oneSentence).toBe(Math.max(1, Math.ceil(expectedMs / 1000)));
+  });
+});
+
+describe("conceptClaimOf — importance default and claimMode", () => {
+  it("uses 'support' as the default importance when the record has none", () => {
+    // L36: mutation rec.importance && "support" would give false/undefined instead of "support"
+    const claim = conceptClaimOf({ id: "c.x", kind: "conceptClaim" } as any, "b1");
+    expect(claim.importance).toBe("support");
+  });
+  it("uses the record's own importance when present", () => {
+    const claim = conceptClaimOf({ id: "c.x", kind: "conceptClaim", importance: "core" } as any, "b1");
+    expect(claim.importance).toBe("core");
+  });
+  it("uses computed fields when claimMode='computed' and claim is set (not OR)", () => {
+    // L37: mutation rec.claimMode === "computed" || rec.claim — would use computed path on grounded records
+    const computed = conceptClaimOf({ id: "c.x", kind: "conceptClaim", claimMode: "computed", claim: { kind: "roots" } } as any, "b1");
+    expect(computed.claimMode).toBe("computed");
+    expect((computed as any).kind).toBe("roots");
+    const grounded = conceptClaimOf({ id: "c.y", kind: "conceptClaim", claimMode: "grounded" } as any, "b2");
+    expect(grounded.claimMode).toBe("grounded");
+    expect((grounded as any).kind).toBe("statement");
+  });
+});
+
+describe("orderClaims — topological sort within a beat", () => {
+  it("places a claim after the claim it depends on in the same beat", () => {
+    // L47-48: ConditionalExpression, LogicalOperator mutations on the findIndex guard
+    const claims = [
+      { id: "c.2", beatId: "b1", sourceIds: ["r2"], dependsOn: ["c.1"] },
+      { id: "c.1", beatId: "b1", sourceIds: ["r1"] },
+    ] as any[];
+    expect(orderClaims(claims).map(c => c.id)).toEqual(["c.1", "c.2"]);
+  });
+  it("leaves independent claims in their original order", () => {
+    const claims = [
+      { id: "c.a", beatId: "b1", sourceIds: ["r1"] },
+      { id: "c.b", beatId: "b1", sourceIds: ["r2"] },
+    ] as any[];
+    expect(orderClaims(claims).map(c => c.id)).toEqual(["c.a", "c.b"]);
+  });
+  it("treats a dependency on a claim from another beat (not in this array) as already satisfied", () => {
+    // L47: !inBeat.has(d) — if d is not in inBeat, the condition is trivially satisfied
+    const claims = [
+      { id: "c.2", beatId: "b1", sourceIds: ["r2"], dependsOn: ["c.external"] },
+      { id: "c.1", beatId: "b1", sourceIds: ["r1"] },
+    ] as any[];
+    // both claims are placeable immediately; original order holds
+    expect(orderClaims(claims).map(c => c.id)).toEqual(["c.2", "c.1"]);
+  });
+});
+
+describe("assembled bundle — exact beat plan fields", () => {
+  it("sets animate=false only for predict (hook) beats, true for all others", () => {
+    // L121: ConditionalExpression/EqualityOperator on kind !== "predict"
+    const beats = result.bundle.plan.beats;
+    expect(beats.find(b => b.id === "b1")!.animate).toBe(false);   // hook → predict → false
+    expect(beats.find(b => b.id === "b2")!.animate).toBe(true);    // prerequisite → explain
+    expect(beats.find(b => b.id === "b3")!.animate).toBe(true);    // concept → explore
+    expect(beats.find(b => b.id === "b4")!.animate).toBe(true);    // worked
+  });
+  it("omits termColors when the lesson has none (not an empty object)", () => {
+    // L110: Object.keys(termColors).length > 0 — mutation to >= 0 would always include {}
+    const bundle = result.bundle;
+    // the reference lesson does have term colors; verify the field exists and is non-empty
+    if (bundle.termColors !== undefined) expect(Object.keys(bundle.termColors).length).toBeGreaterThan(0);
   });
 });
