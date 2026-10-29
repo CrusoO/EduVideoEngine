@@ -17,6 +17,8 @@ export const CIRCUIT_HEIGHT_PX = 200;
 export const MAGNET_HEIGHT_PX = 210;
 /** The water analogy (ADR 0085), kept here for the same reason. */
 export const WATER_HEIGHT_PX = 210;
+/** The balance scale (ADR 0094): two pans on a beam for a linear equation, kept here for the same reason. */
+export const BALANCE_HEIGHT_PX = 80;
 
 /** The ring colour and the stage colour it must stand out from (WCAG 1.4.11: 3:1 for graphical objects). */
 export const HIGHLIGHT_COLOR = "#F5D547";

@@ -54,6 +54,7 @@ export function componentCosts(screenWidth: number = DESIGN_SCREEN.width, chrome
     waterAnalogy: { component: "waterAnalogy", props: { height: { value: "zero", unit: "V" }, narrow: { value: "two", unit: "R" } } },
     magnetCoil: { component: "magnetCoil", props: { turns: 4 } },
     circuit: { component: "circuit", props: { battery: { value: "zero", unit: "V" }, resistor: { value: "two", unit: "R" }, meter: { value: "five", unit: "A" } } },
+    balanceScale: { component: "balanceScale", props: {}, exprRef: "total" },
     "highlight (overlay)": { component: "highlight", props: { target: "o" } },
   };
 

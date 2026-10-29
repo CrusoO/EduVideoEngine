@@ -33,6 +33,7 @@
     "waterAnalogy": 210,
     "magnetCoil": 210,
     "circuit": 200,
+    "balanceScale": 80,
     "highlight (overlay)": 0
   },
   "textLines": {
@@ -72,6 +73,7 @@
     "waterAnalogy": 1,
     "magnetCoil": 1,
     "circuit": 2,
+    "balanceScale": 4,
     "highlight (overlay)": "any number (an overlay costs no height)"
   },
   "exampleScenes": [

@@ -32,6 +32,7 @@ const SPLIT: Partial<Record<ComponentName, Loader>> = {
   circuit: () => import("./circuit").then((m) => m.circuit as ComponentModule<never>),
   magnetCoil: () => import("./magnetCoil").then((m) => m.magnetCoil as ComponentModule<never>),
   waterAnalogy: () => import("./waterAnalogy").then((m) => m.waterAnalogy as ComponentModule<never>),
+  balanceScale: () => import("./balanceScale").then((m) => m.balanceScale as ComponentModule<never>),
 };
 
 const loaded = new Map<ComponentName, ComponentModule<never>>();

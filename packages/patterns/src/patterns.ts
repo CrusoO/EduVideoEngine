@@ -864,8 +864,68 @@ export const PATTERNS = [colourBoundTerms, predictThenReveal, hopsOnNumberLine, 
 export type PatternId = (typeof PATTERNS)[number]["id"];
 export const PATTERN_IDS: readonly PatternId[] = PATTERNS.map((p) => p.id);
 
-/** The whole library: the six above, the two CO-2 patterns (recap card, check question; ADR 0038) and the statement card (ADR 0062). Nine, then the three neuron patterns (ADR 0076), the circuit scene (ADR 0082), the magnet and coil scene (ADR 0083) and the water, paired tables and circuit law scenes (ADR 0085), every one with a text-heavy flag. */
-export const LIBRARY = [...PATTERNS, recapCard, checkQuestion, statementCard, patchHook, weightsOnPixels, workedSumOnGrid, circuitScene, magnetCoilScene, waterScene, pairedTables, circuitLawScene] as const;
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+// balance-scale-worked (ADR 0094)
+function hasPow(e: Expr): boolean {
+  switch (e.op) {
+    case "pow":
+      return true;
+    case "num":
+    case "sym":
+      return false;
+    case "neg":
+      return hasPow(e.a);
+    default:
+      return hasPow(e.a) || hasPow(e.b);
+  }
+}
+type BalanceContent = { rec: ContentRecord; problem: string; steps: string[] };
+const MAX_BALANCE_STEPS = 3;
+const balanceScaleWorked: Pattern<BalanceContent> = {
+  id: "balance-scale-worked",
+  beatKinds: ["worked"],
+  kinds: ["worked"],
+  pause: "optional",
+  derivesClaims: true,
+  sources: (c) => [c.rec.id],
+  useWhen: "Show a linear equation as a balance scale: the problem in the pans and the solution steps listed below. Use only for degree-1 equations (no squared or higher terms).",
+  components: ["balanceScale", "stepList"],
+  slots: [
+    { name: "problem", source: "content", what: "the equation of a stored linear-equation solution (no pow nodes)" },
+    { name: "steps", source: "content", what: `the first ${MAX_BALANCE_STEPS} non-note steps of that solution` },
+    PROMPT_OPTIONAL,
+    ALT,
+  ],
+  minSentences: 2,
+  heightCostPx: heightCostPx(["balanceScale", "stepList, 3 steps"]),
+  fill(r) {
+    const rec = solution(r);
+    if (!rec?.problem) return { ok: false, missing: ["a solutionSteps record"] };
+    const probExpr = rec.expressions[rec.problem];
+    if (!probExpr || probExpr.op !== "eq") return { ok: false, missing: ["a solutionSteps record whose problem is an equation"] };
+    if (hasPow(probExpr)) return { ok: false, missing: ["a linear equation for the problem (no squared or higher terms)"] };
+    const steps = (rec.steps ?? []).filter((s) => s.role !== "note").slice(0, MAX_BALANCE_STEPS).map((s) => s.expr);
+    if (steps.length === 0) return { ok: false, missing: ["steps that are not notes"] };
+    return { ok: true, content: { rec, problem: rec.problem, steps } };
+  },
+  build(c, a) {
+    const s = scene(
+      a,
+      [c.rec.id],
+      [
+        { id: "scale", component: "balanceScale", props: {}, exprRef: c.problem },
+        { id: "steps", component: "stepList", props: { steps: c.steps } },
+      ],
+      column(["scale", "steps"]),
+      [cue(a, 0, "scale", "reveal", 1000), cue(a, 1, "steps", "reveal", 2000)],
+      ask(a),
+    );
+    return { scene: s, expressions: {}, claims: claimsFor(c.rec, a.beatId), recordIds: [c.rec.id] };
+  },
+};
+
+/** The whole library: the six above, the two CO-2 patterns (recap card, check question; ADR 0038) and the statement card (ADR 0062). Nine, then the three neuron patterns (ADR 0076), the circuit scene (ADR 0082), the magnet and coil scene (ADR 0083) and the water, paired tables and circuit law scenes (ADR 0085), and the balance-scale pattern for linear equations (ADR 0094). */
+export const LIBRARY = [...PATTERNS, recapCard, checkQuestion, statementCard, patchHook, weightsOnPixels, workedSumOnGrid, circuitScene, magnetCoilScene, waterScene, pairedTables, circuitLawScene, balanceScaleWorked] as const;
 export type LibraryPatternId = (typeof LIBRARY)[number]["id"];
 export const LIBRARY_IDS: readonly LibraryPatternId[] = LIBRARY.map((p) => p.id);
 

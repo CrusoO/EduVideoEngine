@@ -30,6 +30,7 @@ describe("component-costs.json (for the composer prompt)", () => {
       circuit: 200,
       magnetCoil: 210,
       waterAnalogy: 210,
+      balanceScale: 80,
       "highlight (overlay)": 0,
     });
     expect(file.padding).toBe(40);

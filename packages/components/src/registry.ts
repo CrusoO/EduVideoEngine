@@ -1,4 +1,5 @@
 import type { ComponentName } from "@eve/schema";
+import { balanceScale } from "./balanceScale";
 import { equation } from "./equation";
 import { functionGraph } from "./functionGraph";
 import { highlight } from "./highlight";
@@ -13,7 +14,7 @@ import { magnetCoil } from "./magnetCoil";
 import { waterAnalogy } from "./waterAnalogy";
 import type { ComponentModule } from "./types";
 
-/** Components built so far. The remaining names of the schema's closed list (fractionBar, areaModel, balanceScale) are not built. */
+/** Components built so far. The remaining names of the schema's closed list (fractionBar, areaModel) are not built. */
 export const REGISTRY: Partial<Record<ComponentName, ComponentModule<never>>> = {
   text: text as ComponentModule<never>,
   equation: equation as ComponentModule<never>,
@@ -27,6 +28,7 @@ export const REGISTRY: Partial<Record<ComponentName, ComponentModule<never>>> = 
   circuit: circuit as ComponentModule<never>,
   magnetCoil: magnetCoil as ComponentModule<never>,
   waterAnalogy: waterAnalogy as ComponentModule<never>,
+  balanceScale: balanceScale as ComponentModule<never>,
 };
 
 export const IMPLEMENTED = Object.keys(REGISTRY) as ComponentName[];

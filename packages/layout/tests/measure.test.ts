@@ -213,7 +213,7 @@ describe("measure: graph, highlight and the rest", () => {
   });
   it("a highlight has no height, and an unknown component is refused with advice", () => {
     expect(measure({ id: "r", component: "highlight", props: {} }, 320, ctx)).toEqual({ height: 0, words: 0, equations: 0, facts: [] });
-    expect(() => measure({ id: "z", component: "balanceScale", props: {} }, 320, ctx)).toThrow("layout: no size model for component balanceScale (add it to measure.ts before using it)");
+    expect(() => measure({ id: "z", component: "unknownWidget", props: {} }, 320, ctx)).toThrow("layout: no size model for component unknownWidget (add it to measure.ts before using it)");
   });
   it("the minimum size depends on the kind of text", () => {
     expect(minPx("reading")).toBe(16);

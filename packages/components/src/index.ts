@@ -1,5 +1,6 @@
 export * from "./types";
 export * from "./state";
+export { balanceScale, BalanceScaleProps } from "./balanceScale";
 export * from "./latex";
 export * from "./sample";
 export * from "./registry";

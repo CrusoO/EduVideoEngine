@@ -420,6 +420,36 @@
   font-family: Inter, sans-serif;
 }
 
+/* Balance scale (ADR 0094): a linear equation shown as two pans on a beam. */
+.eve-balance-scale {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+.eve-balance-pans {
+  display: flex;
+  gap: 16px;
+}
+.eve-balance-pan {
+  flex: 1;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 2px solid var(--eve-ink);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 1.1rem;
+}
+.eve-balance-beam-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  color: var(--eve-ink);
+}
+
 /* Water analogy (ADR 0085). */
 .eve-water {
   display: flex;

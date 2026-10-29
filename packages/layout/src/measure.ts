@@ -1,4 +1,4 @@
-import { CALLOUT_WORDS, CIRCUIT_HEIGHT_PX, MAGNET_HEIGHT_PX, WATER_HEIGHT_PX, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, TABLE_CELL_PX, TABLE_GAP_PX, TABLE_LABEL_PX, toPlain } from "@eve/components";
+import { BALANCE_HEIGHT_PX, CALLOUT_WORDS, CIRCUIT_HEIGHT_PX, MAGNET_HEIGHT_PX, WATER_HEIGHT_PX, SHAPE_HEIGHT, SHAPE_LINE_HEIGHT, TABLE_CELL_PX, TABLE_GAP_PX, TABLE_LABEL_PX, toPlain } from "@eve/components";
 import type { Expr } from "@eve/schema";
 import { COLOR, GRAPH_ASPECT, GRAPH_MAX_WIDTH, MIN_READING_PX, MIN_TEXT_PX } from "./tokens";
 
@@ -227,6 +227,11 @@ export function measure(o: LayoutObject, width: number, ctx: MeasureCtx): Intrin
       return { height: MAGNET_HEIGHT_PX, maxWidth: 320, words: 0, equations: 0, facts: [{ what: "magnet labels", fontPx: 16, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "annotation" }] };
     case "waterAnalogy":
       return { height: WATER_HEIGHT_PX, maxWidth: 320, words: 0, equations: 0, facts: [{ what: "water labels", fontPx: 16, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "annotation" }] };
+    case "balanceScale": {
+      const e = o.exprRef ? ctx.expressions[o.exprRef] : undefined;
+      if (!e) throw new Error(`balanceScale ${o.id}: unknown exprRef ${o.exprRef}`);
+      return { height: BALANCE_HEIGHT_PX, maxWidth: 320, words: 0, equations: 1, facts: [{ what: "balance scale", fontPx: 17.6, bold: false, fg: COLOR.ink, bg: COLOR.stage, kind: "reading" }] };
+    }
     case "highlight":
       return { ...none, height: 0 };
     default:

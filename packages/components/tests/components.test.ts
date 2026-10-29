@@ -74,10 +74,11 @@ describe("every implemented component honours the contract", () => {
     shape: { name: "shape", props: { kind: "rect", size: "m", color: "green", label: "Total" } },
     highlight: { name: "highlight", props: { target: "eq1", points: [2, 3] } },
     table: { name: "table", props: { cols: 2, cells: ["zero", "two", "five", "two"], tint: "signed", label: "Weights" } },
+    balanceScale: { name: "balanceScale", props: {}, exprRef: "eq1" },
   };
 
-  it("twelve components are implemented and the registry is a subset of the closed schema list", () => {
-    expect([...IMPLEMENTED].sort()).toEqual(["arrowCallout", "circuit", "equation", "functionGraph", "highlight", "magnetCoil", "numberLine", "shape", "stepList", "table", "text", "waterAnalogy"]);
+  it("thirteen components are implemented and the registry is a subset of the closed schema list", () => {
+    expect([...IMPLEMENTED].sort()).toEqual(["arrowCallout", "balanceScale", "circuit", "equation", "functionGraph", "highlight", "magnetCoil", "numberLine", "shape", "stepList", "table", "text", "waterAnalogy"]);
     for (const n of IMPLEMENTED) expect(REGISTRY[n]).toBeDefined();
   });
 
