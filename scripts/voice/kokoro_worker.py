@@ -1,6 +1,7 @@
 """A voice worker for the Kokoro voice (ADR 0084).
 
-Started once by the build with the model, the voices file, the voice name and the speed. It reads one JSON object per line on standard input, {"text": ..., "out": ...},
+Started once by the build with the model, the voices file, the voice name and the speed. It reads one JSON object per line on standard input,
+{"text": ..., "out": ...} or {"text": ..., "out": ..., "speed": 0.80} (optional speed overrides the global speed for that sentence),
 voices the text into a 16-bit mono WAV at `out`, and answers with one JSON line on standard output, {"ok": true} or {"ok": false, "error": ...}. Loading the model takes a
 few seconds, so one worker voices every sentence of a build. It ends when standard input closes. Nothing is fetched from the network.
 """
@@ -36,7 +37,9 @@ def main() -> int:
             continue
         try:
             req = json.loads(line)
-            samples, rate = kokoro.create(req["text"], voice=voice, speed=speed, lang=lang)
+            # optional per-sentence speed override (e.g. 0.80 for [slow]-marked sentences)
+            req_speed = float(req["speed"]) if "speed" in req and req["speed"] is not None else speed
+            samples, rate = kokoro.create(req["text"], voice=voice, speed=req_speed, lang=lang)
             sf.write(req["out"], level(samples), rate, subtype="PCM_16")
             print(json.dumps({"ok": True}), flush=True)
         except Exception as e:  # one bad sentence must not end the worker

@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 import { z } from "zod";
 import { bm25, briefFor, sectionPlace, skillIdOf, stems, type Brief, type CurriculumNode, type Kb } from "@eve/content";
 import { findPersonalData, findSecrets } from "@eve/safety";
+import { SourceLesson } from "./source";
+import { sanitizeStory } from "./story";
 
 /**
  * The video job (ADR 0086): a request for a lesson video on one place of a curriculum, the stages that make it, the events they write and the checks that decide it is done.
@@ -20,23 +22,40 @@ export const LessonRequest = z
     curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(9).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token.optional() }).strict(),
     /** What the student asked, in words (at most 300 characters). Used to find the topic when `curriculum.nodeId` is not given; the engine reads it against the knowledge base and keeps it only in the job's own request file. Personal data and secrets are refused. */
     prompt: z.string().trim().min(3).max(300).optional(),
+    /** A draft explainer (ADR 0090): text the host already has (a title and sections), voiced and drawn as cards. It is not matched to the knowledge base and no gate judges it; sources.json says so. Give it instead of `curriculum.nodeId` and `prompt`. */
+    source: SourceLesson.optional(),
+    /** An animated story (ADR 0091): scenes of narration and the shapes to draw while it is said. Read by `sanitizeStory`: a shape that is not valid is dropped, a story with nothing usable is refused. Give it instead of `nodeId`, `prompt` and `source`. */
+    story: z.record(z.unknown()).optional(),
     /** Who asked, for tracing a job across systems (no student data): the host app and the environment it runs in. */
     trace: z.object({ origin: z.string().regex(/^[a-z0-9][a-z0-9._-]{0,39}$/), env: z.enum(["local", "dev", "qa", "prod"]).optional() }).strict().optional(),
     options: z
       .object({
-        locale: z.literal("en-IN").default("en-IN"),
+        locale: z.enum(["en-IN", "hi-IN", "ne-NP"]).default("en-IN"),
         voice: z.enum(["auto", "kokoro", "piper"]).default("auto"),
         fps: z.number().int().min(6).max(30).default(12),
         theme: z.enum(["whiteboard", "dark"]).default("whiteboard"),
         /** auto: the recorded or authored lesson when there is one, else the narration written by code (no model); draft: written by code only; polish: written by code and said better by a model, which only a runner started with --allow-live may do (ADR 0089). */
         narration: z.enum(["auto", "draft", "polish"]).default("auto"),
+        /**
+         * Visual style for story jobs (ADR 0091):
+         *   technical  — 3Blue1Brown-style: axes, plots, wavefunction curves, mathematical relationships.
+         *   animated   — L amine Labs-style: illustrated cartoon objects, expressive motion, visual metaphors, bold caption text.
+         * Has no effect on source or knowledge-base jobs. The style must be preserved from request through every pipeline stage.
+         */
+        style: z.enum(["technical", "animated"]).default("technical"),
       })
       .strict()
       .default({}),
   })
   .strict()
   .superRefine((r, ctx) => {
-    if (!r.curriculum.nodeId && !r.prompt) ctx.addIssue({ code: "custom", path: ["curriculum", "nodeId"], message: "give curriculum.nodeId or a prompt" });
+    const given = [r.curriculum.nodeId, r.prompt, r.source, r.story].filter((x) => x !== undefined).length;
+    if (given === 0) ctx.addIssue({ code: "custom", path: ["curriculum", "nodeId"], message: "give curriculum.nodeId, a prompt, a source or a story" });
+    if (given > 1) ctx.addIssue({ code: "custom", path: ["source"], message: "give one of curriculum.nodeId, a prompt, a source or a story, not several" });
+    if (r.story) {
+      const clean = sanitizeStory(r.story);
+      if (!clean.story) ctx.addIssue({ code: "custom", path: ["story"], message: clean.notes.join("; ") });
+    }
     if (r.prompt) {
       const found = [...findPersonalData(r.prompt), ...findSecrets(r.prompt)];
       if (found.length > 0) ctx.addIssue({ code: "custom", path: ["prompt"], message: "the prompt holds personal data or a secret (" + found.map((f) => f.kind).join(", ") + "); ask about the topic, not about a person" });

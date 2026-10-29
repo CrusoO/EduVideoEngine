@@ -73,6 +73,61 @@ export function piperSynthesizer(tools: PiperTools): Synthesizer {
   };
 }
 
+export type PiperLangModelSpec = { model: string; config: string; voiceName: string };
+
+/** Resolves paths for a locale-specific Piper model under tools/piper/models/. */
+export const piperLangModel = (root: string, locale: string): PiperLangModelSpec => {
+  const LOCALE_MODELS: Record<string, string> = {
+    "ne-NP": "ne_NP-chitwan-medium",
+    "hi-IN": "hi_IN-priyamvada-medium",
+  };
+  const name = LOCALE_MODELS[locale];
+  if (!name) throw new Error(`no piper model configured for locale "${locale}" — add it to LOCALE_MODELS in voice.ts`);
+  const base = join(root, "tools", "piper", "models", name);
+  return { model: `${base}.onnx`, config: `${base}.onnx.json`, voiceName: name };
+};
+
+/** Piper with a language-specific model (Hindi, Nepali, …). The exe is shared with the base Piper install. */
+export function piperLangSynthesizer(exe: string, spec: PiperLangModelSpec): Synthesizer {
+  if (!existsSync(spec.model) || !existsSync(spec.config)) {
+    throw new Error(`piper language model not installed: ${spec.model} — download from https://huggingface.co/rhasspy/piper-voices`);
+  }
+  const modelSha = sha(readFileSync(spec.model));
+  const configSha = sha(readFileSync(spec.config));
+  const piperArgs = (outFile: string) => ["--model", spec.model, "--config", spec.config, "--output_file", outFile];
+  return {
+    voice: {
+      id: `piper:${spec.voiceName}`,
+      provider: "piper",
+      modelVersion: `piper+${modelSha.slice(0, 12)}`,
+      engine: { name: "Piper", version: "2023.11.14-2", archiveSha256: "" },
+      model: { name: spec.voiceName, modelSha256: modelSha, configSha256: configSha },
+      credit: `AI-generated voice: ${spec.voiceName}`,
+      status: "development-only",
+      licences: {
+        engine: "Piper 2023.11.14-2 is MIT.",
+        model: `${spec.voiceName} — Apache 2.0 / CC BY 4.0; verify per model card at huggingface.co/rhasspy/piper-voices.`,
+      },
+    },
+    synthesize(spoken, outFile) {
+      const run = spawnSync(exe, piperArgs(outFile), { input: spoken, encoding: "utf8" });
+      if (run.status !== 0) throw new Error(`piper failed: ${run.stderr || run.error?.message || `exit ${run.status}`}`);
+    },
+    synthesizeAsync(spoken, outFile) {
+      return new Promise<void>((resolve, reject) => {
+        const child = spawn(exe, piperArgs(outFile), { stdio: ["pipe", "ignore", "pipe"] });
+        let stderr = "";
+        child.stderr.setEncoding("utf8");
+        child.stderr.on("data", (d: string) => (stderr += d));
+        child.on("error", (e) => reject(new Error(`piper failed: ${e.message}`)));
+        child.on("close", (code) => (code === 0 ? resolve() : reject(new Error(`piper failed: ${stderr || `exit ${code}`}`))));
+        child.stdin.on("error", () => {});
+        child.stdin.end(spoken, "utf8");
+      });
+    },
+  };
+}
+
 export type VoiceOutput = {
   manifest: VoiceManifest;
   tracks: AudioTrack[];

@@ -14,7 +14,7 @@ import { join, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv } from "../packages/adapters/src";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
-import { LessonRequest, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -105,6 +105,8 @@ rmSync(join(jobDir, "result.json"), { force: true });
 emit("job", "started");
 emit("request", "started");
 emit("request", "done");
+if (request.source) await hostJob("source"); // a draft explainer (ADR 0090): voiced and drawn from the text the host sent, no knowledge base, no gates
+if (request.story) await hostJob("story"); // an animated story (ADR 0091): the host sent scenes of narration and shapes to draw
 
 // 2. retrieve: the place and what a lesson on it may say
 current = "retrieve";
@@ -200,3 +202,80 @@ if (bad.length > 0) fail("qa", "qa_failed", bad.map((c) => `${c.id}: ${c.message
 emit("qa", "done", { detail: `${checks.length} checks passed` });
 emit("job", "done");
 finish(undefined);
+
+/**
+ * A video made from what the host sent, not from the knowledge base (ADR 0090 and 0091): `source` is text drawn as cards, `story` is scenes of narration with shapes drawn
+ * and moved on cues. There is no place to retrieve and no claim to ground. The build voices and draws it (scripts/<kind>-video.ts --stage build), the render joins them
+ * into an MP4 (--stage render), and qa checks the file. sources.json says plainly that nothing in the video was checked. Never returns: it ends the job.
+ */
+async function hostJob(kind: "source" | "story"): Promise<never> {
+  const sourceText = request.source;
+  const storyClean = kind === "story" ? sanitizeStory(request.story) : undefined;
+  const story = storyClean?.story ?? undefined;
+  current = "retrieve";
+  emit("retrieve", "started");
+  emit("retrieve", "done", { detail: kind === "story" ? `a story of ${story!.scenes.length} scene(s) from the host; it was not matched to the knowledge base${storyClean!.notes.length ? `; ${storyClean!.notes.length} shape(s) dropped` : ""}` : `a source of ${sourceText!.sections.length} section(s) from the host; it was not matched to the knowledge base` });
+  current = "ground";
+  emit("ground", "skipped", { detail: `a ${kind === "story" ? "story" : "draft explainer"} holds no claims of the knowledge base` });
+  const viteNode = join(REPO_ROOT, "node_modules", "vite-node", "vite-node.mjs");
+  const dir = join(jobDir, kind);
+  const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
+  const script = (stage: "build" | "render"): Promise<number> =>
+    new Promise((done) => {
+      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
+      let tail = "";
+      child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
+      child.on("exit", (c) => {
+        child = undefined;
+        if (c !== 0 && tail.trim()) appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage: current, note: tail.trim() }) + "\n");
+        done(c ?? 1);
+      });
+    });
+  const timelineFile = join(dir, "timeline.json");
+  const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, v: 2 });
+  current = "build";
+  if (keys.stages.build === buildKey && existsSync(timelineFile)) emit("build", "skipped", { detail: "same inputs as the last run" });
+  else {
+    emit("build", "started", { detail: kind === "story" ? `${story!.scenes.reduce((n, s) => n + s.sentences.length, 0)} sentences, ${story!.scenes.reduce((n, s) => n + s.visuals.length, 0)} shapes, voice ${voice}` : `${narrationOf(sourceText!).length} cards, voice ${voice}` });
+    const code = await script("build");
+    if (code !== 0 || !existsSync(timelineFile)) fail("build", "build_failed", `the voice and pictures stopped (exit ${code}); see events.jsonl`);
+    keys.stages.build = buildKey;
+    save();
+    emit("build", "done");
+  }
+  const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as { totalMs: number; units?: unknown[]; audio?: unknown[]; voice: { id: string; status: string } };
+  const mp4 = join(dir, "lesson.mp4");
+  const renderKey = stageKey("render", { build: buildKey, fps: request.options.fps, theme: request.options.theme });
+  current = "render";
+  if (keys.stages.render === renderKey && existsSync(mp4)) emit("render", "skipped", { detail: "same inputs as the last run" });
+  else {
+    emit("render", "started", { detail: `${request.options.fps} frames a second where something moves, ${request.options.theme} theme` });
+    rmSync(mp4, { force: true });
+    const code = await script("render");
+    if (code !== 0 || !existsSync(mp4)) fail("render", "render_failed", `the video export stopped (exit ${code}); see events.jsonl`);
+    keys.stages.render = renderKey;
+    save();
+    emit("render", "done");
+  }
+  current = "qa";
+  emit("qa", "started");
+  const facts = { sentences: (timeline.units ?? timeline.audio ?? []).length, lengthS: timeline.totalMs / 1000, voice: timeline.voice };
+  const sheet = kind === "story" ? storySheet(request.requestId, story!, facts) : sourceSheet(request.requestId, sourceText!, facts);
+  writeFileSync(join(jobDir, "sources.json"), JSON.stringify(sheet, null, 2) + "\n");
+  const probe = spawnSync(ffmpegPath ?? "ffmpeg", ["-hide_banner", "-i", mp4], { encoding: "utf8" }).stderr ?? "";
+  const dur = /Duration: (\d+):(\d+):(\d+(?:\.\d+)?)/.exec(probe);
+  const checks = sourceQaChecks({
+    mp4Bytes: statSync(mp4).size,
+    hasVideo: /Stream #\d+:\d+.*Video:/.test(probe),
+    hasAudio: /Stream #\d+:\d+.*Audio:/.test(probe),
+    mp4DurationS: dur ? Number(dur[1]) * 3600 + Number(dur[2]) * 60 + Number(dur[3]) : null,
+    expectedS: timeline.totalMs / 1000,
+  });
+  writeFileSync(join(jobDir, "qa.json"), JSON.stringify(checks, null, 2) + "\n");
+  writeFileSync(join(jobDir, "lesson.mp4"), readFileSync(mp4));
+  const bad = checks.filter((c) => !c.ok);
+  if (bad.length > 0) fail("qa", "qa_failed", bad.map((c) => `${c.id}: ${c.message}`).join("; "));
+  emit("qa", "done", { detail: `${checks.length} checks passed` });
+  emit("job", "done");
+  return finish(undefined);
+}

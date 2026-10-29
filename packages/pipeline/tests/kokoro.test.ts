@@ -72,7 +72,7 @@ describe("the Kokoro voice adapter (ADR 0084)", () => {
     expect(s.voice).toMatchObject({ id: "kokoro:af_heart", provider: "kokoro", status: "development-only", credit: "AI-generated voice: Kokoro" });
     expect(s.voice.modelVersion).toMatch(/^kokoro-onnx-.+\+fp16\+[0-9a-f]{12}\+[0-9a-f]{12}\+speed0\.9\+w[0-9a-f]{8}$/);
     expect(s.voice.model.modelSha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(kokoroSynthesizer(tools()).voice.id).toBe("kokoro:bf_emma");
+    expect(kokoroSynthesizer(tools()).voice.id).toBe("kokoro:af_heart");
     expect(kokoroSynthesizer(tools()).voice.modelVersion).toContain("+speed0.92+");
     // a different speed or another voice is another track hash: the voice step never reuses a file made at another pace
     expect(kokoroSynthesizer(tools(), { speed: 1 }).voice.modelVersion).not.toBe(kokoroSynthesizer(tools()).voice.modelVersion);
@@ -135,7 +135,7 @@ describe("the Kokoro voice adapter (ADR 0084)", () => {
     const s = kokoroSynthesizer(tools());
     const first = await synthesizeLesson(bundle, dir, s, { jobs: 3 });
     expect(first).toMatchObject({ synthesized: new Set(first.manifest.tracks.map((t) => t.trackHash)).size });
-    expect(first.manifest.voice.id).toBe("kokoro:bf_emma");
+    expect(first.manifest.voice.id).toBe("kokoro:af_heart");
     const again = await synthesizeLesson(bundle, dir, s, { jobs: 3 });
     s.dispose();
     expect(again.synthesized).toBe(0);

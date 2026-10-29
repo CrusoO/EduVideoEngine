@@ -38,9 +38,10 @@ export function kokoroSynthesizer(tools: KokoroTools, opts: KokoroOptions = {}):
   const missing = kokoroMissing(tools);
   if (missing.length > 0) throw new Error(`the Kokoro voice is not installed: ${missing.join(", ")} (docs/adr/0084-kokoro-voice.md)`);
   const flags = tools.pythonArgs ?? ["-I"];
-  const voice = opts.voice ?? "bf_emma";
+  const voice = opts.voice ?? "af_heart"; // af_heart: warm American female — better for educational narration than bf_emma
   const speed = opts.speed ?? 0.92;
-  const lang = opts.lang ?? (voice.startsWith("a") ? "en-us" : "en-gb");
+  const VOICE_LANG: Record<string, string> = { a: "en-us", b: "en-gb", e: "es", f: "fr-fr", h: "hi", i: "it", j: "ja", p: "pt-br", z: "cmn" };
+  const lang = opts.lang ?? VOICE_LANG[voice[0] ?? "a"] ?? "en-us";
   const modelSha = sha(readFileSync(tools.model));
   const voicesSha = sha(readFileSync(tools.voices));
   const workerSha = sha(readFileSync(tools.worker));
