@@ -11,6 +11,13 @@ const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
 /** The expression ids a text uses, once each, in order. */
 export const placeholdersOf = (text: string): string[] => [...new Set([...text.matchAll(PLACEHOLDER)].map((m) => m[1]!))];
 
+/** LaTeX command sequences or subscript/superscript brace syntax that must not appear in sentence text outside `{expr:…}` placeholders. */
+const RAW_LATEX = /\\[a-zA-Z]+|[\^_]\{/;
+/** Returns true when the text contains raw LaTeX tokens outside `{expr:…}` placeholders. */
+export function hasRawLatex(text: string): boolean {
+  return RAW_LATEX.test(text.replace(PLACEHOLDER, ""));
+}
+
 export type BeatSentences = {
   sentences: NarrationSentence[];
   /** The sentences the pattern anchors its cues and its pause to, in order (see `windowOf`). */
@@ -25,6 +32,7 @@ export type BeatSentences = {
 export function sentencesOf(b: BeatBuild, script: BeatScript | undefined, transitions: readonly string[], extraTransitions = 0): BeatSentences {
   const out: NarrationSentence[] = [];
   const add = (role: NarrationSentence["role"], text: string, more: Partial<NarrationSentence> = {}): string => {
+    if (hasRawLatex(text)) throw new Error(`raw_latex_in_sentence: beat ${b.beat.id} "${text.slice(0, 80)}" — use {expr:id} placeholders instead of LaTeX`);
     const id = sentenceIdOf(b.index, out.length + 1);
     out.push({ id, beatId: b.beat.id, text, termSpans: [], exprRefs: placeholdersOf(text), status: "draft", role, ...more });
     return id;

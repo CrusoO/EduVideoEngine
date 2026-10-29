@@ -53,7 +53,11 @@ export async function assureLesson(input: AssureInput): Promise<Assurance> {
   for (const w of valid.warnings) add("validator", "warn", w.path, w.message);
 
   const durations = Object.fromEntries(tracks.map((t) => [t.sentenceId, t.durationMs]));
-  for (const f of runGates(gateContext(ctx, bundle, durations))) add("gate", f.level, `${f.gate} ${f.code}`, f.message);
+  const production = process.env["APP_ENV"] === "production";
+  for (const f of runGates(gateContext(ctx, bundle, durations))) {
+    const level = production && f.gate === "G2" ? "fail" : f.level;
+    add("gate", level, `${f.gate} ${f.code}`, f.message);
+  }
 
   let timeline: Timeline | undefined;
   try {
