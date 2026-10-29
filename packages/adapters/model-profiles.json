@@ -98,7 +98,7 @@
     }
   },
   "openrouter": {
-    "defaultModel": "minimax/minimax-m3.1-flash:free",
+    "defaultModel": "google/gemma-4-31b-it:free",
     "resetTimeZone": "UTC",
     "models": {
       "google/gemma-4-31b-it:free": {
