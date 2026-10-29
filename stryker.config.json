@@ -37,6 +37,7 @@
     "packages/pipeline/lesson/gates.ts",
     "packages/pipeline/lesson/scene.ts",
     "packages/pipeline/lesson/sentences.ts",
+    "packages/pipeline/script/index.ts",
     "packages/pipeline/script/meaning.ts",
     "packages/pipeline/scene/compose.ts"
   ],

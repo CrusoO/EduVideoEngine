@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-  "_comment": "Report-only run for the compile-pipeline files that ADR 0064 waives: the four below were measured and miss the floor. packages/pipeline/build (assure, build, package, voice) is waived too and not measured: only the tests that start the SymPy verifier cover it. Not part of pnpm mutate. Static mutants (module-level constants and patterns, about 42 percent of the mutants) are skipped, because each one needs the whole test suite. The waiver lapses on _expires; packages/gates/tests/waiver.test.ts fails after that date.",
-  "_expires": "2026-11-30",
+  "_comment": "Report-only run for the compile-pipeline files that ADR 0064 and ADR 0095 waive. Scores after run 3 (2026-10-29): arcplan/index.ts 79.47%, lesson/beats.ts 80.57%, lesson/assemble.ts 66.09%. script/index.ts reached 93.54% and was promoted to stryker.config.json. packages/pipeline/build (assure, build, package, voice) waived under ADR 0095 — unmeasured (need SymPy). Static mutants skipped (ignoreStatic). Waiver lapses on _expires; packages/gates/tests/waiver.test.ts fails after that date.",
+  "_expires": "2027-03-31",
   "testRunner": "vitest",
   "plugins": [
     "@stryker-mutator/vitest-runner"
@@ -9,8 +9,7 @@
   "mutate": [
     "packages/pipeline/lesson/beats.ts",
     "packages/pipeline/lesson/assemble.ts",
-    "packages/pipeline/arcplan/index.ts",
-    "packages/pipeline/script/index.ts"
+    "packages/pipeline/arcplan/index.ts"
   ],
   "vitest": {
     "configFile": "vitest.stryker.config.ts"
