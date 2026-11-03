@@ -1,0 +1,26 @@
+# ADR 0091: An animated story from a drawing language the host writes
+
+Status: proposed (agent, at the owner's request of 2026-10-25: the card video of ADR 0090 was "only text in a line"; the owner wants storytelling videos that explain in depth, planned in advance, with real animations of mathematical shapes and physics set-ups, for any topic; the owner is asked to confirm this record). Supersedes nothing. `LessonRequest` grows one optional field; no frozen file changes.
+
+## Context
+The lesson pipeline draws only the components of a closed list (graph, number line, circuit, water picture and so on), each tied to a verified expression and a grounded claim, so it cannot draw a spring, an orbit or a cannon ball for a topic the knowledge base does not hold. ADR 0090 voiced text on cards. The host already has a model that can plan a lesson as a story and describe what to draw. What is missing is a safe, general vocabulary the engine can draw and animate from such a description.
+
+## Decision
+1. **A `story`.** `LessonRequest` may carry `story` (one of `curriculum.nodeId`, `prompt`, `source` or `story`). It is `{ title, scenes: [{ heading, sentences[], visuals[] }] }`. `visuals` are shapes of a small drawing language on a stage 100 units wide and 45 high (origin top left): `circle`, `rect`, `line`, `arrow`, `polygon`, `path` (an SVG path of M L H V C S Q T A Z and numbers), `text`, `math` (LaTeX, typeset by KaTeX at build), `plot` and `axes` (a graph of an expression), `curve` (a parametric path), `spring`, `numberline`, `angle`. Any shape may carry a `label` that is placed next to it and follows it. Colours are names (`blue`, `red` ...), never CSS.
+2. **Cues.** A shape appears (`in`) and disappears (`out`) on a sentence of its scene plus a delay, with `fade`, `draw`, `pop` or `slide`; `moves` do one-off changes (shift, turn, scale, recolour) on a cue. This ties the picture to the narration.
+3. **Motion is an expression of time.** Any number of a shape may be an expression over `t` (seconds since it appeared), `x`, `u` and `p`: `"cx": "30+20*cos(2*t)"`. This draws oscillation, projectile motion, orbits, waves (`plot` with `x - 2*t`) and live read-outs (`"v = {0} m/s"`). **No host text is run as code.** `story-expr.ts` parses the expression into a tree (numbers, four variables, three constants, 25 named functions, `+ - * / ^` and comparisons) and writes JavaScript from the tree alone, so the output holds only `Math.<name>` calls, numbers and those variables; anything else is refused with the reason. Names are looked up in tables with `hasOwnProperty`, so `constructor` and `__proto__` are not names (found by test).
+4. **Sanitise, do not fail.** `sanitizeStory` keeps what is valid and drops the rest with a note: an unknown shape, a missing field, a bad expression or path, an unknown colour (a default is used), numbers outside the stage (clamped). A scene with no sentence is dropped; a story with no scene or no title is `invalid_request`; personal data or a secret anywhere in the text (including labels) refuses the whole story. Limits: 10 scenes, 16 sentences each and 100 in all, 28 shapes a scene, 120,000 characters.
+5. **A deterministic player.** `scripts/story-runtime.js` draws the picture for a time T alone (`window.__draw(T)`): no clock, no random number. Words and formulas are drawn over shapes; the heading, the scene counter, the current sentence as a caption and a progress bar are part of every frame. It is a separate small SVG renderer, not the lesson player.
+6. **The job.** `video-job.ts` runs `scripts/story-video.ts`: *build* voices every sentence (Piper or Kokoro), works out every cue time, typesets the formulas and writes the page; *render* opens the page in three browser contexts and takes a picture at each time of a frame plan (about 15 a second where something moves, 2 a second where nothing does, always at the start of a sentence), then lays the voice on the timeline and encodes the MP4 with ffmpeg. About 1 to 2 minutes of rendering for a 3 minute video. No model is called.
+7. **Nothing is checked, and it says so.** No gate or SymPy proof runs. `sources.json` has `kind: "host-story"`, no book, no claims, `publishable: false`, and the caveats that the narration and pictures were written by an AI model, that the drawings are computed from its description and can be wrong, and that none of the engine's gates ran.
+
+## What this does not do
+- It does not make a picture right. A model can draw a wrong diagram; the engine only guarantees that the drawing is safe, bounded and in time with the voice.
+- It is English only (the voices). It has no interaction: the exported MP4 only plays.
+- It does not replace the lesson pipeline for topics the knowledge base holds.
+- Shapes are 2D and flat; there is no 3D, no image and no generated picture.
+
+## Consequences
+- The host (YourTutor) writes the story with a model and signs it for the student that asked; the engine builds the video. A model call is the host's, never the engine's.
+- Tests: `packages/pipeline/tests/story.test.ts` (expressions including injection attempts, the sanitiser, timing, frame plan, the page, `sources.json`).
+- The drawing language is the contract; adding a shape means adding it to `story.ts`, `story-runtime.js` and the host's prompt.

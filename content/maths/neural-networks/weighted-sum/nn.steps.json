@@ -1,0 +1,127 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.steps",
+  "kind": "solutionSteps",
+  "text": "Multiply each pixel by its weight, add the products, then add the bias.",
+  "problem": "nn.problem",
+  "expressions": {
+    "nn.problem": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "z"
+      },
+      "b": {
+        "op": "sub",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "add",
+            "a": {
+              "op": "mul",
+              "a": {
+                "op": "num",
+                "n": 2
+              },
+              "b": {
+                "op": "num",
+                "n": 1
+              }
+            },
+            "b": {
+              "op": "mul",
+              "a": {
+                "op": "neg",
+                "a": {
+                  "op": "num",
+                  "n": 1
+                }
+              },
+              "b": {
+                "op": "num",
+                "n": 0
+              }
+            }
+          },
+          "b": {
+            "op": "mul",
+            "a": {
+              "op": "num",
+              "n": 3
+            },
+            "b": {
+              "op": "num",
+              "n": 1
+            }
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 1
+        }
+      }
+    },
+    "nn.written": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "z"
+      },
+      "b": {
+        "op": "sub",
+        "a": {
+          "op": "add",
+          "a": {
+            "op": "add",
+            "a": {
+              "op": "num",
+              "n": 2
+            },
+            "b": {
+              "op": "num",
+              "n": 0
+            }
+          },
+          "b": {
+            "op": "num",
+            "n": 3
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 1
+        }
+      }
+    },
+    "nn.total": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "z"
+      },
+      "b": {
+        "op": "num",
+        "n": 4
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "t1",
+      "role": "transform",
+      "expr": "nn.written",
+      "note": "Write each product out."
+    },
+    {
+      "id": "t2",
+      "role": "transform",
+      "expr": "nn.total",
+      "note": "Add them up."
+    }
+  ],
+  "sourceNote": "Written for this project as the worked sum of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "0903336bd1bfd78be77aedc44bc8d1e608f27a963dac42c30b1dde6c0484c06a"
+}

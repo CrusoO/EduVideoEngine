@@ -1,0 +1,53 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.misconception",
+  "kind": "misconception",
+  "text": "A common mistake is to multiply the potential difference by the resistance. That gives {expr:ohm.wrong}, which is not the current.",
+  "expressions": {
+    "ohm.wrong": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 48
+      }
+    },
+    "ohm.right": {
+      "op": "eq",
+      "a": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    }
+  },
+  "contrast": {
+    "wrong": "ohm.wrong",
+    "right": "ohm.right"
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the common mistake; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "b97e9d9743dac6b516c8b56d462024a85ace9bb08df22b3d19ef2157610401f5"
+}

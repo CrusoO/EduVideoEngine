@@ -8,7 +8,10 @@
   "text": "Adding the numbers written in the equation does not give the sum of the roots.",
   "expressions": {},
   "claimMode": "grounded",
+  "exprRefs": [
+    "quad.wrong"
+  ],
   "importance": "support",
   "sourceNote": "Written for this project as the common mistake, as a claim of the sum-of-roots lesson; first seed of the content plane. No outside text.",
-  "hash": "cfa3fcfeab48af8a0b17f7a88cc8d2f1741dbb2764928b16a08362718bf91ebd"
+  "hash": "82ceda1bb21ce75c7361c264999c820eb0478ac227935b746c252d9821e1de93"
 }

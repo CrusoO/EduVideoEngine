@@ -37,7 +37,7 @@ export function isSideOf(ctx: Pick<GateContext, "bundle">, fnId: string, eqId: s
 export function claimExpressions(claim: Claim): string[] {
   if (claim.kind === "equivalent") return [claim.a, claim.b];
   if (claim.kind === "roots") return [claim.equation];
-  if (claim.kind === "statement") return [];
+  if (claim.kind === "statement") return claim.exprRefs ?? []; // prose names what it is about from spec 2.3.0 (ADR 0074)
   if (claim.kind === "satisfied-by") return [claim.equation, claim.instance];
   return [claim.equation, claim.equals]; // sum-of-roots, product-of-roots
 }

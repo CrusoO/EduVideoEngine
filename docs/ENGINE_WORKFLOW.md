@@ -122,6 +122,9 @@ Branches: `main` holds accepted work; `co-2` and `providers` are merged into `ma
 | Regenerate verifier inputs | `pnpm gen:ops` |
 | Content | `pnpm content:seal`, `pnpm content:validate`, `pnpm content:seed` |
 | Pattern report | `pnpm patterns:report` |
+| Lesson lab: one page that shows a built lesson end to end and compares two builds (ADR 0069; never calls a model); `--baseline` builds the comparison lesson | `pnpm lesson:lab`; `pnpm lesson:build <skill> --baseline` |
+| Authored stand-in for the scriptwriter, or with `--planner` for the planner (never a model output; ADR 0075, 0076): checked by the pass's own rules, then filed | `pnpm llm:standin-script <answer.json> [skillId] [--planner]` |
+| Lesson quality report (ADR 0065; reports, never rejects) | `pnpm lesson:quality dist/lessons/<bundle id>` or `pnpm lesson:quality --reference` |
 | Provider smoke and usage | `pnpm llm:smoke`, `pnpm llm:usage`, `pnpm llm:sizes` |
 | Behaviour probes | `pnpm llm:probes` (1 to 8), `pnpm llm:probes --co2` (9 to 13) |
 | Compile and play a lesson | `pnpm lesson:build <skillId>` (replay by default; `LLM_MODE=record` calls the model), then `pnpm lesson:play dist/lessons/<bundle id>` |

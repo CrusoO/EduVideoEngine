@@ -179,3 +179,81 @@ describe("the scriptwriter pass", () => {
     expect(await writeScript(client(new FakeAdapter([answer({ error: "unknown_id", id: "q" })])), ctx, REFERENCE_PLAN)).toEqual({ ok: false, reason: "unknown_id", id: "q" });
   });
 });
+
+describe("sentence and limit boundary conditions — exact threshold (kills > vs >= mutations)", () => {
+  // A sentence with exactly sentenceWords words must PASS.
+  // If the check is mutated from > to >=, a sentence at the limit would fail instead.
+  it(`a sentence with exactly ${SCRIPT_LIMITS.sentenceWords} words passes the word-count check`, () => {
+    // 24 words (sentenceWords=24), no digit, no notation, no placeholder — valid for quad.sum.claim.root
+    const words = Array.from({ length: SCRIPT_LIMITS.sentenceWords }, (_, i) =>
+      ["A", "root", "of", "a", "quadratic", "equation", "is", "a", "value", "of", "the", "unknown", "that", "when", "substituted", "into", "the", "given", "equation", "makes", "it", "equal", "to", "zero"][i]!
+    );
+    expect(words).toHaveLength(SCRIPT_LIMITS.sentenceWords);
+    const exact = words.join(" ") + ".";
+    expect(errors(mutate((a) => (beat(a, "b3").sentences[0] = { claimId: "quad.sum.claim.root", text: exact })))).not.toMatch(/words, at most/);
+  });
+
+  it(`a sentence with ${SCRIPT_LIMITS.sentenceWords + 1} words fails with the exact count in the message`, () => {
+    // one word over the limit: the message names the count and the limit
+    const over = Array.from({ length: SCRIPT_LIMITS.sentenceWords + 1 }, (_, i) =>
+      ["A", "root", "of", "a", "quadratic", "equation", "is", "a", "value", "of", "the", "unknown", "that", "when", "substituted", "into", "the", "given", "equation", "makes", "it", "equal", "to", "zero", "exactly"][i]!
+    ).join(" ") + ".";
+    expect(errors(mutate((a) => (beat(a, "b3").sentences[0] = { claimId: "quad.sum.claim.root", text: over })))).toMatch(
+      new RegExp(`sentence 1: ${SCRIPT_LIMITS.sentenceWords + 1} words, at most ${SCRIPT_LIMITS.sentenceWords}; split it`)
+    );
+  });
+
+  it(`a prompt with exactly ${SCRIPT_LIMITS.promptChars} characters passes the length check`, () => {
+    // exactly promptChars (120) chars, no digit/math/placeholder
+    const base = "Why does the sum of the roots equal negative b over a for this quadratic equation";
+    const atLimit = base.padEnd(SCRIPT_LIMITS.promptChars).slice(0, SCRIPT_LIMITS.promptChars);
+    expect(atLimit).toHaveLength(SCRIPT_LIMITS.promptChars);
+    expect(errors(mutate((a) => (beat(a, "b4").prompt = atLimit)))).not.toMatch(/characters, at most/);
+  });
+
+  it(`a prompt with ${SCRIPT_LIMITS.promptChars + 1} characters fails with the exact count in the message`, () => {
+    const base = "Why does the sum of the roots equal negative b over a for this quadratic equation today";
+    const overLimit = base.padEnd(SCRIPT_LIMITS.promptChars + 1).slice(0, SCRIPT_LIMITS.promptChars + 1);
+    expect(overLimit).toHaveLength(SCRIPT_LIMITS.promptChars + 1);
+    expect(errors(mutate((a) => (beat(a, "b4").prompt = overLimit)))).toMatch(
+      new RegExp(`the prompt is ${SCRIPT_LIMITS.promptChars + 1} characters, at most ${SCRIPT_LIMITS.promptChars}`)
+    );
+  });
+
+  it(`a note with exactly ${SCRIPT_LIMITS.noteWords} words and under the char limit passes`, () => {
+    // 10 words (noteWords=10), no digit/placeholder, ≤70 chars
+    const exact10 = "The sum of the roots equals negative b over a";
+    // count: The(1) sum(2) of(3) the(4) roots(5) equals(6) negative(7) b(8) over(9) a(10)
+    expect(exact10.split(" ")).toHaveLength(SCRIPT_LIMITS.noteWords);
+    expect(exact10.length).toBeLessThanOrEqual(SCRIPT_LIMITS.noteChars);
+    expect(errors(mutate((a) => (beat(a, "b5").note = exact10)))).not.toMatch(/words and \d+ characters, at most/);
+  });
+
+  it(`a note with ${SCRIPT_LIMITS.noteWords + 1} words fails with the exact count in the message`, () => {
+    // 11 words, under char limit (70 chars) — fails on word count only
+    const over10 = "The sum of the two roots of a quadratic equation equals negative b over a";
+    // The(1) sum(2) of(3) the(4) two(5) roots(6) of(7) a(8) quadratic(9) equation(10) equals(11) negative(12) b(13) over(14) a(15) — too many
+    // Use exactly 11 words:
+    const exact11 = "The sum of the roots always equals negative b over a";
+    // The(1) sum(2) of(3) the(4) roots(5) always(6) equals(7) negative(8) b(9) over(10) a(11)
+    expect(exact11.split(" ")).toHaveLength(SCRIPT_LIMITS.noteWords + 1);
+    expect(exact11.length).toBeLessThanOrEqual(SCRIPT_LIMITS.noteChars);
+    expect(errors(mutate((a) => (beat(a, "b5").note = exact11)))).toMatch(
+      new RegExp(`the note has ${SCRIPT_LIMITS.noteWords + 1} words and \\d+ characters, at most ${SCRIPT_LIMITS.noteWords} and ${SCRIPT_LIMITS.noteChars}`)
+    );
+  });
+});
+
+describe("scriptwriterData — beats filtering (kills claims.length > 0 vs >= 0 mutation)", () => {
+  it("the hook beat (b1, no claims) is excluded from the data sent to the model", () => {
+    // If b.claims.length > 0 is mutated to >= 0, all beats including claim-less ones would be included.
+    // The hook beat b1 has no claims — it must not appear in data.beats.
+    const data = scriptwriterData(ctx, builds);
+    expect(data.beats.map((b) => b.beatId)).not.toContain("b1");
+  });
+
+  it("beats with claims are all included", () => {
+    const data = scriptwriterData(ctx, builds);
+    expect(data.beats.map((b) => b.beatId)).toEqual(["b2", "b3", "b4", "b5", "b6"]);
+  });
+});

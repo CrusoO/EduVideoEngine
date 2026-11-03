@@ -37,10 +37,11 @@ describe("the arcs", () => {
     for (const id of ARC_IDS) for (const s of ARCS[id].slots) expect(s.need, `${id}/${s.slotId}`).toBe(s.slotId === "prerequisite_activation" ? "ifPrerequisites" : "always");
   });
   it("are the three named ones, each with only known slots, no slot twice, a worked example and a check", () => {
-    expect(ARC_IDS).toEqual(["problem_first", "concept_first", "misconception_first"]);
+    expect(ARC_IDS).toEqual(["problem_first", "concept_first", "misconception_first", "story_first"]);
     for (const id of ARC_IDS) {
       const slots = ARCS[id].slots.map((s) => s.slotId);
-      expect(new Set(slots).size, id).toBe(slots.length);
+      // the story arc lists the concept slot four times (ADR 0085); the others list none twice
+      if (id !== "story_first") expect(new Set(slots).size, id).toBe(slots.length);
       for (const s of slots) expect(SLOT_IDS).toContain(s);
       expect(ARCS[id].slots.find((s) => s.slotId === "check")?.need, id).toBe("always");
       expect(ARCS[id].slots.some((s) => s.need === "always" && SLOT_BEAT_KIND[s.slotId] === "worked"), id).toBe(true);
@@ -73,13 +74,13 @@ describe("the arcs", () => {
   });
 });
 
-describe("the library of nine patterns", () => {
-  it("has the six the planner knows, in their old order, plus recap card, check question and statement card", () => {
-    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question", "statement-card"]);
-    expect(LIBRARY).toHaveLength(9);
+describe("the library of seventeen patterns", () => {
+  it("has the six the planner knows, in their old order, plus recap card, check question, statement card and the three neuron patterns (ADR 0076)", () => {
+    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question", "statement-card", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
+    expect(LIBRARY).toHaveLength(17);
     expect(usablePatterns(r)).toEqual(PATTERN_IDS); // the list planner.v2 and v3 choose from does not grow
   });
-  it("gives all nine a text-heavy flag, derived from the components", () => {
+  it("gives all seventeen a text-heavy flag, derived from the components", () => {
     const flags = Object.fromEntries(libraryCatalogue().map((c) => [c.id, c.textHeavy]));
     expect(flags).toEqual({
       "colour-bound-terms": true,
@@ -91,9 +92,17 @@ describe("the library of nine patterns", () => {
       "recap-card": true,
       "check-question": true,
       "statement-card": true,
+      "patch-hook": false,
+      "weights-on-pixels": false,
+      "worked-sum-on-grid": false,
+      "circuit-scene": false,
+      "magnet-coil-scene": false,
+      "water-scene": false,
+      "paired-tables": false,
+      "circuit-law-scene": false,
     });
     for (const p of LIBRARY) expect(p.beatKinds.length, p.id).toBeGreaterThan(0);
-    expect(LIBRARY.filter((p) => !isTextHeavy(p)).map((p) => p.id)).toEqual(["hops-on-number-line", "plot-and-mark-roots"]);
+    expect(LIBRARY.filter((p) => !isTextHeavy(p)).map((p) => p.id)).toEqual(["hops-on-number-line", "plot-and-mark-roots", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
   });
 });
 
@@ -175,25 +184,28 @@ describe("the variety rule (ADR 0043): five or more beats need two pictures and 
     expect(varietyCheck([true, true, true, true, false]).problems).toHaveLength(2);
   });
   it("picks a picture pattern whenever a slot has one", () => {
-    expect(bestFlags(["hook", "concept", "worked_example", "check"])).toEqual([true, false, false, true]);
-    expect(bestFlags(["hook", "why_it_fails"])).toEqual([true, true]);
+    expect(bestFlags(["hook", "concept", "worked_example", "check"])).toEqual([false, false, false, true]);
+    expect(bestFlags(["hook", "why_it_fails"])).toEqual([false, true]);
   });
   it("every arc meets the rule at every length it can have, with and without prerequisites", () => {
     expect(report().filter((x) => !x.satisfiable).map((x) => `${x.arcId}/${x.hasPrerequisites}`)).toEqual([]);
     expect(report().flatMap((x) => x.lengths.map((l) => `${x.arcId}/${x.hasPrerequisites ? "with" : "without"}/${l.beats}/${l.pictureBeats}/${l.longestTextHeavyRun}`))).toEqual([
-      "problem_first/with/6/2/2",
-      "problem_first/without/5/2/2",
-      "problem_first/without/6/2/2",
+      "problem_first/with/6/3/2",
+      "problem_first/without/5/3/2",
+      "problem_first/without/6/3/2",
       "concept_first/with/5/3/1",
       "concept_first/without/4/3/1",
       "concept_first/without/5/3/1",
-      "misconception_first/with/5/2/2",
-      "misconception_first/without/5/2/2",
+      "misconception_first/with/5/3/1",
+      "misconception_first/without/5/3/1",
+      "story_first/with/8/6/2",
+      "story_first/without/8/6/2",
     ]);
   });
-  it("is tight: pictures exist only for concept and worked beats, so dropping either picture pattern breaks problem_first and misconception_first", () => {
-    expect(patternsForSlot("concept").picture).toEqual(["plot-and-mark-roots"]);
-    expect(patternsForSlot("worked_example").picture).toEqual(["hops-on-number-line"]);
-    for (const slot of ["hook", "prerequisite_activation", "common_mistake_contrast", "why_it_fails", "check"] as const) expect(patternsForSlot(slot).picture, slot).toEqual([]);
+  it("is tight: pictures exist only for hook, concept and worked beats (the hook one, the neuron patterns, arrived with ADR 0076)", () => {
+    expect(patternsForSlot("hook").picture).toEqual(["patch-hook", "circuit-scene", "magnet-coil-scene"]);
+    expect(patternsForSlot("concept").picture).toEqual(["plot-and-mark-roots", "weights-on-pixels", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
+    expect(patternsForSlot("worked_example").picture).toEqual(["hops-on-number-line", "worked-sum-on-grid"]);
+    for (const slot of ["prerequisite_activation", "common_mistake_contrast", "why_it_fails", "check"] as const) expect(patternsForSlot(slot).picture, slot).toEqual([]);
   });
 });

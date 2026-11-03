@@ -1,0 +1,17 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.claim.avoid",
+  "kind": "conceptClaim",
+  "text": "Every turn of the coil adds its own emf, so leaving out the number of turns gives too small an emf.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "exprRefs": [
+    "faraday.wrong"
+  ],
+  "importance": "support",
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as why the common mistake fails; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "ffcf4e7a5cffabad54ed55632eb165a00905fd9e21286dce001eedd9202cf4d2"
+}

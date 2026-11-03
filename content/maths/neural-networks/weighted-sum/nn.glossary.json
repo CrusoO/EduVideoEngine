@@ -1,0 +1,34 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.glossary",
+  "kind": "glossary",
+  "text": "Words used in this lesson.",
+  "expressions": {},
+  "terms": [
+    {
+      "id": "g.neuron",
+      "term": "neuron",
+      "definition": "A unit that holds one number, worked out from the numbers it is given."
+    },
+    {
+      "id": "g.weight",
+      "term": "weight",
+      "definition": "A number that says how strongly one input pushes a neuron up or down."
+    },
+    {
+      "id": "g.bias",
+      "term": "bias",
+      "definition": "A number added to the total, which sets how easily a neuron switches on."
+    },
+    {
+      "id": "g.activation",
+      "term": "activation",
+      "definition": "The number a neuron holds."
+    }
+  ],
+  "sourceNote": "Written for this project as the glossary of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "3decc4db020156c6dbe1f99e6fdd26f185c120e9294bbb5f72ee733b747accf9"
+}

@@ -3,9 +3,28 @@ import { findPersonalData, findSecrets } from "@eve/safety";
 import { verifyBundle } from "@eve/verify";
 import { recallAnswerClaim } from "./answer";
 import { deriveClaimGraph } from "./derive";
-import { ALLOWED_LICENCES, CONTENT_CONFIG, recordHash, type ContentRecord } from "./record";
+import { ALLOWED_LICENCES, CONTENT_CONFIG, NO_SOURCE_LICENCES, SOURCES, recordHash, type ContentRecord, type SourceEntry } from "./record";
 
 export type ContentProblem = { recordId: string; path: string; message: string };
+
+/**
+ * The rights ledger rule (ADR 0078). A record under a licence that needs a source names an entry of config/sources.json; the entry must carry the same licence, be
+ * unexpired on `today` (YYYY-MM-DD), and permit the use: record text reaches prompts and lessons, so it needs `lesson-wording`. ShareAlike content is never wording
+ * (a lesson built from it would have to carry the same licence); it may only check claims. CC-BY content needs its credit line.
+ */
+export function rightsProblems(r: Pick<ContentRecord, "licence" | "sourceId">, ledger: readonly SourceEntry[] = SOURCES, today: string = new Date().toISOString().slice(0, 10)): string[] {
+  if (NO_SOURCE_LICENCES.includes(r.licence)) return r.sourceId ? [`sourceId ${r.sourceId} is not needed for licence ${r.licence}`] : [];
+  if (!r.sourceId) return [`licence ${r.licence} needs a sourceId that names an entry of config/sources.json`];
+  const s = ledger.find((e) => e.id === r.sourceId);
+  if (!s) return [`sourceId ${r.sourceId} is not in config/sources.json`];
+  const out: string[] = [];
+  if (s.licence !== r.licence) out.push(`the record says ${r.licence} but source ${s.id} is ${s.licence}`);
+  if (s.expires !== undefined && s.expires < today) out.push(`the permission for source ${s.id} ran out on ${s.expires}`);
+  if (!s.permittedUses.includes("lesson-wording")) out.push(`source ${s.id} may only be used to check claims, not as the wording of a record`);
+  if (/-SA(-|$)/.test(s.licence) && s.permittedUses.includes("lesson-wording")) out.push(`source ${s.id} is ShareAlike: it may only check claims, because a lesson built from its wording would have to carry the same licence`);
+  if (/^CC-BY(-|$)/.test(s.licence) && !s.attribution) out.push(`source ${s.id} needs an attribution line`);
+  return out;
+}
 
 const PLACEHOLDER = /\{expr:([A-Za-z0-9][A-Za-z0-9_.:-]*)\}/g;
 
@@ -31,6 +50,7 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
   const bad = (path: string, message: string) => out.push({ recordId: r.id, path, message });
 
   if (!r.licence || !ALLOWED_LICENCES.includes(r.licence)) bad("licence", `licence ${JSON.stringify(r.licence)} is not on the allow-list (${ALLOWED_LICENCES.join(", ")}): prompts may only hold content the owner wrote or that is openly licensed`);
+  if (ALLOWED_LICENCES.includes(r.licence)) for (const m of rightsProblems(r)) bad("sourceId", m); // an unlisted licence is already reported above
   if (!CONTENT_CONFIG.locales.includes(r.locale)) bad("locale", `locale ${r.locale} is not allowed in Phase 1 (${CONTENT_CONFIG.locales.join(", ")}): Hindi and Nepali wait for native reviewers`);
   if (r.hash !== recordHash(r)) bad("hash", "the hash does not match the content: the record was edited without being sealed");
 
@@ -109,7 +129,7 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
     if (!r.questionType) bad("questionType", "a practiceQuestion sets questionType: recall or reasoning");
     if (r.humanApproved === undefined) bad("humanApproved", "a practiceQuestion sets humanApproved explicitly (true or false)");
     if (r.questionType === "recall") {
-      if (!r.answerKind) bad("answerKind", "a recall question sets answerKind: sum-of-roots, product-of-roots, roots or solution");
+      if (!r.answerKind) bad("answerKind", "a recall question sets answerKind: sum-of-roots, product-of-roots, roots, solution or value");
       if (!r.question) bad("question", "a recall question has a problem and an answer, both equations the verifier can prove");
       else {
         const q = r.question;
@@ -137,6 +157,16 @@ export function validateRecord(r: ContentRecord, knownExpressions?: ReadonlySet<
     }
   }
 
+  if (r.grids) {
+    if (r.kind !== "passage") bad("grids", `only a passage has grids (this is ${r.kind})`);
+    for (const [name, g] of Object.entries(r.grids)) {
+      g.cells.forEach((c, i) => {
+        if (!has(c)) bad(`grids.${name}.${i}`, `${c} is not an expression in the store`);
+        else if (!isNumber(r.expressions[c] ?? table[c])) bad(`grids.${name}.${i}`, `${c} is not a number (a grid cell is shown as a value)`);
+      });
+      if (g.cells.length % g.cols !== 0) bad(`grids.${name}`, `${g.cells.length} cells do not fill whole rows of ${g.cols}`);
+    }
+  }
   if (r.plot) {
     if (r.kind !== "passage") bad("plot", `only a passage has a plot (this is ${r.kind})`);
     if (!has(r.plot.expr)) bad("plot.expr", `${r.plot.expr} is not an expression in the store`);

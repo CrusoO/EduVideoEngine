@@ -1,0 +1,2735 @@
+{
+  "schema": 1,
+  "comment": "Structure only (ADR 0086): section titles and page numbers of NCERT chapter files. No text of any book. Rights: see config/sources.json (permittedUses is empty).",
+  "tool": "scripts/curriculum/extract.py",
+  "ledgerId": "ncert-maths-books",
+  "books": [
+    {
+      "id": "cbse.8.maths.p1",
+      "grade": 8,
+      "part": 1,
+      "title": "Ganita Prakash, Grade 8, Part I",
+      "edition": "First edition July 2025, reprint January 2026",
+      "folder": "CLASSVIII MATHS BOOK PART 1",
+      "chapters": [
+        {
+          "file": "hegp1ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 16,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp101.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "A SQUARE AND A CUBE",
+          "titleSource": "auto",
+          "fileCount": 22,
+          "printedFirst": 1,
+          "printedLast": 22,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Square Numbers",
+              "filePage": 3,
+              "printedPage": 3
+            },
+            {
+              "number": "1.2",
+              "title": "Cubic Numbers",
+              "filePage": 11,
+              "printedPage": 11
+            },
+            {
+              "number": "1.3",
+              "title": "A Pinch of History",
+              "filePage": 15,
+              "printedPage": 15
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp102.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "POWER PLAY",
+          "titleSource": "auto",
+          "fileCount": 38,
+          "printedFirst": -27,
+          "printedLast": 10,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "Experiencing the Power Play",
+              "filePage": 1,
+              "printedPage": -27
+            },
+            {
+              "number": "2.2",
+              "title": "Exponential Notation and Operations",
+              "filePage": 3,
+              "printedPage": -25
+            },
+            {
+              "number": "2.3",
+              "title": "The Other Side of Powers",
+              "filePage": 9,
+              "printedPage": -19
+            },
+            {
+              "number": "2.4",
+              "title": "Powers of 10",
+              "filePage": 12,
+              "printedPage": -16
+            },
+            {
+              "number": "2.5",
+              "title": "Did You Ever Wonder?",
+              "filePage": 15,
+              "printedPage": -13
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp103.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "NUMBERS A STORY OF",
+          "titleSource": "auto",
+          "fileCount": 46,
+          "printedFirst": 0,
+          "printedLast": 45,
+          "sections": [
+            {
+              "number": "3.1",
+              "title": "Reema's Curiosity",
+              "filePage": 1,
+              "printedPage": 0
+            },
+            {
+              "number": "3.2",
+              "title": "Some Early Number Systems",
+              "filePage": 7,
+              "printedPage": 6
+            },
+            {
+              "number": "3.3",
+              "title": "The Idea of a Base",
+              "filePage": 14,
+              "printedPage": 13
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp104.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "QUADRILATERALS",
+          "titleSource": "auto",
+          "fileCount": 39,
+          "printedFirst": 4,
+          "printedLast": 42,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "Rectangles and Squares",
+              "filePage": 2,
+              "printedPage": 5
+            },
+            {
+              "number": "4.2",
+              "title": "Angles in a Quadrilateral",
+              "filePage": 13,
+              "printedPage": 16
+            },
+            {
+              "number": "4.3",
+              "title": "More Quadrilaterals with Parallel Opposite",
+              "filePage": 14,
+              "printedPage": 17
+            },
+            {
+              "number": "4.4",
+              "title": "Quadrilaterals with Equal Sidelengths",
+              "filePage": 18,
+              "printedPage": 21
+            },
+            {
+              "number": "4.5",
+              "title": "Playing with Quadrilaterals",
+              "filePage": 22,
+              "printedPage": 25
+            },
+            {
+              "number": "4.6",
+              "title": "Kite and Trapezium",
+              "filePage": 24,
+              "printedPage": 27
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp105.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "NUMBER PLAY",
+          "titleSource": "auto",
+          "fileCount": 37,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Is This a Multiple Of?",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "5.2",
+              "title": "Checking Divisibility Quickly",
+              "filePage": 12,
+              "printedPage": null
+            },
+            {
+              "number": "5.3",
+              "title": "Digits in Disguise",
+              "filePage": 20,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp106.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "YET THINGS M U LT I P LY",
+          "titleSource": "auto",
+          "fileCount": 35,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Some Properties of Multiplication",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "6.2",
+              "title": "Special Cases of the Distributive Property",
+              "filePage": 10,
+              "printedPage": null
+            },
+            {
+              "number": "6.3",
+              "title": "Mind the Mistake, Mend the Mistake",
+              "filePage": 15,
+              "printedPage": null
+            },
+            {
+              "number": "6.4",
+              "title": "This Way or That Way, All Ways Lead to the Bay",
+              "filePage": 15,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "hegp107.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 30,
+          "printedFirst": 7,
+          "printedLast": 36,
+          "sections": [
+            {
+              "number": "7.1",
+              "title": "Observing Similarity in Change",
+              "filePage": 1,
+              "printedPage": 7
+            },
+            {
+              "number": "7.2",
+              "title": "Ratios",
+              "filePage": 3,
+              "printedPage": 9
+            },
+            {
+              "number": "7.3",
+              "title": "Ratios in their Simplest Form",
+              "filePage": 3,
+              "printedPage": 9
+            },
+            {
+              "number": "7.4",
+              "title": "Problem Solving with Proportional Reasoning",
+              "filePage": 4,
+              "printedPage": 10
+            },
+            {
+              "number": "7.5",
+              "title": "Sharing, but Not Equally!",
+              "filePage": 14,
+              "printedPage": 20
+            },
+            {
+              "number": "7.6",
+              "title": "Unit Conversions",
+              "filePage": 17,
+              "printedPage": 23
+            }
+          ],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.7.maths.p2",
+      "grade": 7,
+      "part": 2,
+      "title": "Ganita Prakash, Grade 7, Part II",
+      "edition": "First edition October 2025",
+      "note": "The folder is named Class VIII Part 2 but the book is Grade 7 Part II; Grade 8 Part II is not in assets/.",
+      "folder": "CLASS VIII MATHS BOOK PART 2",
+      "chapters": [
+        {
+          "file": "gegp2ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 18,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp201.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "GEOMETRIC TWINS",
+          "titleSource": "auto",
+          "fileCount": 23,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Geometric Twins",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "1.2",
+              "title": "Congruence of Triangles",
+              "filePage": 4,
+              "printedPage": null
+            },
+            {
+              "number": "1.3",
+              "title": "Angles of Isosceles and Equilateral Triangles",
+              "filePage": 17,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp202.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "OPERATIONS WITH INTEGERS",
+          "titleSource": "auto",
+          "fileCount": 23,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "A Quick Recap of Integers",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "2.2",
+              "title": "Multiplication of Integers",
+              "filePage": 6,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp203.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "FINDING COMMON GROUND",
+          "titleSource": "auto",
+          "fileCount": 20,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "3.1",
+              "title": "The Greatest of All",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "3.2",
+              "title": "Least, but not Last!",
+              "filePage": 9,
+              "printedPage": null
+            },
+            {
+              "number": "3.3",
+              "title": "Patterns, Properties, and a Pretty Procedure!",
+              "filePage": 12,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp204.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "ANOTHER PEEK BEYOND THE POINT",
+          "titleSource": "auto",
+          "fileCount": 30,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "A Quick Recap of Decimals",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "4.2",
+              "title": "Decimal Multiplication",
+              "filePage": 3,
+              "printedPage": null
+            },
+            {
+              "number": "4.3",
+              "title": "Decimal Division",
+              "filePage": 8,
+              "printedPage": null
+            },
+            {
+              "number": "4.4",
+              "title": "Look Before You Leap!",
+              "filePage": 22,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp205.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "CONNECTING THE DOTS...",
+          "titleSource": "auto",
+          "fileCount": 39,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Of Questions and Statements",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "5.2",
+              "title": "Representative Values",
+              "filePage": 2,
+              "printedPage": null
+            },
+            {
+              "number": "5.3",
+              "title": "Visualising Data",
+              "filePage": 18,
+              "printedPage": null
+            },
+            {
+              "number": "5.4",
+              "title": "Data Detective",
+              "filePage": 29,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp206.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "CONSTRUCTIONS AND TILINGS",
+          "titleSource": "auto",
+          "fileCount": 28,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Geometric Constructions",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "6.2",
+              "title": "Tiling                                                   B        E",
+              "filePage": 20,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "gegp207.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": "FINDING THE UNKNOWN",
+          "titleSource": "auto",
+          "fileCount": 35,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [
+            {
+              "number": "7.1",
+              "title": "Find the Unknowns",
+              "filePage": 1,
+              "printedPage": null
+            },
+            {
+              "number": "7.2",
+              "title": "Solving Equations Systematically",
+              "filePage": 5,
+              "printedPage": null
+            },
+            {
+              "number": "7.3",
+              "title": "Mind the Mistake, Mend the Mistake",
+              "filePage": 18,
+              "printedPage": null
+            },
+            {
+              "number": "7.4",
+              "title": "A Pinch of History",
+              "filePage": 19,
+              "printedPage": null
+            }
+          ],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.9.maths.p1",
+      "grade": 9,
+      "part": 1,
+      "title": "Ganita Manjari, Grade 9, Part I",
+      "edition": "First edition April 2026",
+      "folder": "CLASS IX MATHS PART 1",
+      "chapters": [
+        {
+          "file": "iemh1ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 20,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh101.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Coordinates",
+          "titleSource": "auto",
+          "fileCount": 15,
+          "printedFirst": 1,
+          "printedLast": 15,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 1
+            },
+            {
+              "number": "1.2",
+              "title": "Settling In",
+              "filePage": 2,
+              "printedPage": 2
+            },
+            {
+              "number": "1.3",
+              "title": "The 2-d Cartesian Coordinate System",
+              "filePage": 3,
+              "printedPage": 3
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh102.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Introduction to Linear Polynomials",
+          "titleSource": "auto",
+          "fileCount": 25,
+          "printedFirst": 16,
+          "printedLast": 40,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 16
+            },
+            {
+              "number": "2.3",
+              "title": "Exploring linear patterns",
+              "filePage": 6,
+              "printedPage": 21
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh103.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "The World of Numbers",
+          "titleSource": "auto",
+          "fileCount": 27,
+          "printedFirst": 41,
+          "printedLast": 67,
+          "sections": [
+            {
+              "number": "3.2",
+              "title": "The Revolution of hnya: When Nothing",
+              "filePage": 3,
+              "printedPage": 43
+            },
+            {
+              "number": "3.3",
+              "title": "Integers: Expanding the Horizon",
+              "filePage": 5,
+              "printedPage": 45
+            },
+            {
+              "number": "3.4",
+              "title": "Filling the Spaces: Fractions and Rational",
+              "filePage": 6,
+              "printedPage": 46
+            },
+            {
+              "number": "3.5",
+              "title": "Irrational Numbers",
+              "filePage": 13,
+              "printedPage": 53
+            },
+            {
+              "number": "3.6",
+              "title": "Real Numbers: Decimals and Cyclic Patterns",
+              "filePage": 17,
+              "printedPage": 57
+            },
+            {
+              "number": "3.7",
+              "title": "Conclusion: The Never-Ending Journey",
+              "filePage": 22,
+              "printedPage": 62
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh104.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Exploring Algebraic Identities",
+          "titleSource": "auto",
+          "fileCount": 24,
+          "printedFirst": 68,
+          "printedLast": 91,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 68
+            },
+            {
+              "number": "4.2",
+              "title": "Visualising Identities",
+              "filePage": 2,
+              "printedPage": 69
+            },
+            {
+              "number": "4.3",
+              "title": "Factorisation of Algebraic Expressions Using",
+              "filePage": 5,
+              "printedPage": 72
+            },
+            {
+              "number": "4.5",
+              "title": "Factorisation Using Algebra Tiles",
+              "filePage": 11,
+              "printedPage": 78
+            },
+            {
+              "number": "4.6",
+              "title": "Factorisation Without Using Algebra Tiles",
+              "filePage": 13,
+              "printedPage": 80
+            },
+            {
+              "number": "4.7",
+              "title": "Finding New Identities",
+              "filePage": 15,
+              "printedPage": 82
+            },
+            {
+              "number": "4.8",
+              "title": "Simplifying Rational Expressions",
+              "filePage": 19,
+              "printedPage": 86
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh105.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 26,
+          "printedFirst": 92,
+          "printedLast": 117,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Definitions",
+              "filePage": 2,
+              "printedPage": 93
+            },
+            {
+              "number": "5.2",
+              "title": "Symmetries of a Circle",
+              "filePage": 3,
+              "printedPage": 94
+            },
+            {
+              "number": "5.3",
+              "title": "How Many Circles?",
+              "filePage": 3,
+              "printedPage": 94
+            },
+            {
+              "number": "5.4",
+              "title": "Chords and the Angles They Subtend",
+              "filePage": 7,
+              "printedPage": 98
+            },
+            {
+              "number": "5.5",
+              "title": "Midpoints and Perpendicular Bisectors of Chords",
+              "filePage": 9,
+              "printedPage": 100
+            },
+            {
+              "number": "5.6",
+              "title": "Distance of Chords from the Centre",
+              "filePage": 11,
+              "printedPage": 102
+            },
+            {
+              "number": "5.7",
+              "title": "Angles Subtended by an Arc",
+              "filePage": 15,
+              "printedPage": 106
+            },
+            {
+              "number": "5.8",
+              "title": "Concyclicity of Points",
+              "filePage": 20,
+              "printedPage": 111
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh106.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Perimeter and Area",
+          "titleSource": "auto",
+          "fileCount": 37,
+          "printedFirst": 118,
+          "printedLast": 154,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Perimeter of a Shape",
+              "filePage": 2,
+              "printedPage": 119
+            },
+            {
+              "number": "6.2",
+              "title": "Perimeter of a Circle--The C/D Ratio",
+              "filePage": 3,
+              "printedPage": 120
+            },
+            {
+              "number": "6.3",
+              "title": "Is Irrational",
+              "filePage": 6,
+              "printedPage": 123
+            },
+            {
+              "number": "6.4",
+              "title": "Length of an Arc of a Circle",
+              "filePage": 8,
+              "printedPage": 125
+            },
+            {
+              "number": "6.5",
+              "title": "Problems, Puzzles, and Paradoxes on Perimeter",
+              "filePage": 10,
+              "printedPage": 127
+            },
+            {
+              "number": "6.6",
+              "title": "Area of a Rectangle",
+              "filePage": 13,
+              "printedPage": 130
+            },
+            {
+              "number": "6.7",
+              "title": "Area of a Parallelogram",
+              "filePage": 13,
+              "printedPage": 130
+            },
+            {
+              "number": "6.8",
+              "title": "Area of a Triangle",
+              "filePage": 15,
+              "printedPage": 132
+            },
+            {
+              "number": "6.9",
+              "title": "Squaring a Rectangle",
+              "filePage": 23,
+              "printedPage": 140
+            },
+            {
+              "number": "6.10",
+              "title": "Area of a Circle",
+              "filePage": 26,
+              "printedPage": 143
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh107.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": "Introduction to Probability",
+          "titleSource": "auto",
+          "fileCount": 19,
+          "printedFirst": 155,
+          "printedLast": 173,
+          "sections": [
+            {
+              "number": "7.1",
+              "title": "What is Probability?",
+              "filePage": 1,
+              "printedPage": 155
+            },
+            {
+              "number": "7.2",
+              "title": "Measuring Probability Objectively",
+              "filePage": 5,
+              "printedPage": 159
+            },
+            {
+              "number": "7.3",
+              "title": "Elements of Probability: Sample Spaces and",
+              "filePage": 12,
+              "printedPage": 166
+            },
+            {
+              "number": "7.4",
+              "title": "Tree diagrams",
+              "filePage": 14,
+              "printedPage": 168
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh108.pdf",
+          "kind": "chapter",
+          "number": 8,
+          "title": "Progressions",
+          "titleSource": "auto",
+          "fileCount": 27,
+          "printedFirst": 174,
+          "printedLast": 200,
+          "sections": [
+            {
+              "number": "8.1",
+              "title": "Introduction to Sequences",
+              "filePage": 1,
+              "printedPage": 174
+            },
+            {
+              "number": "8.2",
+              "title": "Explicit Rule for a Sequence",
+              "filePage": 3,
+              "printedPage": 176
+            },
+            {
+              "number": "8.3",
+              "title": "Recursive Rule for a Sequence",
+              "filePage": 5,
+              "printedPage": 178
+            },
+            {
+              "number": "8.4",
+              "title": "Arithmetic Progressions",
+              "filePage": 7,
+              "printedPage": 180
+            },
+            {
+              "number": "8.5",
+              "title": "Sum of the First n Natural Numbers",
+              "filePage": 10,
+              "printedPage": 183
+            },
+            {
+              "number": "8.6",
+              "title": "Geometric Progressions",
+              "filePage": 13,
+              "printedPage": 186
+            }
+          ],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.9.maths.p2",
+      "grade": 9,
+      "part": 2,
+      "title": "Ganita Manjari, Grade 9, Part II",
+      "edition": "First edition August 2026",
+      "folder": "CLASS IX MATHS PART 2",
+      "chapters": [
+        {
+          "file": "iemh2ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 20,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh201.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Propositions and their Converses",
+          "titleSource": "auto",
+          "fileCount": 7,
+          "printedFirst": 1,
+          "printedLast": 7,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh202.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Understanding Data",
+          "titleSource": "auto",
+          "fileCount": 29,
+          "printedFirst": 8,
+          "printedLast": 36,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh203.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "The World of Algorithms",
+          "titleSource": "auto",
+          "fileCount": 14,
+          "printedFirst": 37,
+          "printedLast": 50,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh204.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Quadrilaterals",
+          "titleSource": "auto",
+          "fileCount": 34,
+          "printedFirst": 51,
+          "printedLast": 84,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh205.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 38,
+          "printedFirst": 85,
+          "printedLast": 122,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "iemh206.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Surface Area and Volume",
+          "titleSource": "auto",
+          "fileCount": 42,
+          "printedFirst": 123,
+          "printedLast": 164,
+          "sections": [],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.10.maths",
+      "grade": 10,
+      "part": null,
+      "title": "Mathematics, Class X",
+      "edition": "Revised October 2022, reprint 2026-27",
+      "folder": "CLASS X MATHS",
+      "chapters": [
+        {
+          "file": "jemh1ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 14,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh101.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Real Numbers",
+          "titleSource": "contents",
+          "fileCount": 9,
+          "printedFirst": 1,
+          "printedLast": 9,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 1
+            },
+            {
+              "number": "1.2",
+              "title": "The Fundamental Theorem of Arithmetic",
+              "filePage": 2,
+              "printedPage": 2
+            },
+            {
+              "number": "1.3",
+              "title": "Revisiting Irrational Numbers",
+              "filePage": 6,
+              "printedPage": 6
+            },
+            {
+              "number": "1.4",
+              "title": "Summary",
+              "filePage": 9,
+              "printedPage": 9
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh102.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Polynomials",
+          "titleSource": "contents",
+          "fileCount": 14,
+          "printedFirst": 10,
+          "printedLast": 23,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 10
+            },
+            {
+              "number": "2.2",
+              "title": "Geometrical Meaning of the Zeroes of a Polynomial",
+              "filePage": 2,
+              "printedPage": 11
+            },
+            {
+              "number": "2.3",
+              "title": "Relationship between Zeroes and Coefficients of a Polynomial",
+              "filePage": 9,
+              "printedPage": 18
+            },
+            {
+              "number": "2.4",
+              "title": "Summary",
+              "filePage": 14,
+              "printedPage": 23
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh103.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "Pair of Linear Equations in Two Variables",
+          "titleSource": "contents",
+          "fileCount": 14,
+          "printedFirst": 24,
+          "printedLast": 37,
+          "sections": [
+            {
+              "number": "3.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 24
+            },
+            {
+              "number": "3.2",
+              "title": "Graphical Method of Solution of a Pair of Linear Equations",
+              "filePage": 2,
+              "printedPage": 25
+            },
+            {
+              "number": "3.3",
+              "title": "Algebraic Methods of Solving a Pair of Linear Equations",
+              "filePage": 7,
+              "printedPage": 30
+            },
+            {
+              "number": "3.4",
+              "title": "Summary",
+              "filePage": 14,
+              "printedPage": 37
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh104.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Quadratic Equations",
+          "titleSource": "contents",
+          "fileCount": 11,
+          "printedFirst": 38,
+          "printedLast": 48,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 38
+            },
+            {
+              "number": "4.2",
+              "title": "Quadratic Equations",
+              "filePage": 2,
+              "printedPage": 39
+            },
+            {
+              "number": "4.3",
+              "title": "Solution of a Quadratic Equation by Factorisation",
+              "filePage": 5,
+              "printedPage": 42
+            },
+            {
+              "number": "4.4",
+              "title": "Nature of Roots",
+              "filePage": 7,
+              "printedPage": 44
+            },
+            {
+              "number": "4.5",
+              "title": "Summary",
+              "filePage": 10,
+              "printedPage": 47
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh105.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "Arithmetic Progressions",
+          "titleSource": "contents",
+          "fileCount": 24,
+          "printedFirst": 49,
+          "printedLast": 72,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 49
+            },
+            {
+              "number": "5.2",
+              "title": "Arithmetic Progressions",
+              "filePage": 3,
+              "printedPage": 51
+            },
+            {
+              "number": "5.4",
+              "title": "Sum of First n Terms of an AP",
+              "filePage": 15,
+              "printedPage": 63
+            },
+            {
+              "number": "5.5",
+              "title": "Summary",
+              "filePage": 24,
+              "printedPage": 72
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh106.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Triangles",
+          "titleSource": "contents",
+          "fileCount": 26,
+          "printedFirst": 73,
+          "printedLast": 98,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 73
+            },
+            {
+              "number": "6.2",
+              "title": "Similar Figures",
+              "filePage": 2,
+              "printedPage": 74
+            },
+            {
+              "number": "6.3",
+              "title": "Similarity of Triangles",
+              "filePage": 7,
+              "printedPage": 79
+            },
+            {
+              "number": "6.4",
+              "title": "Criteria for Similarity of Triangles",
+              "filePage": 13,
+              "printedPage": 85
+            },
+            {
+              "number": "6.5",
+              "title": "Summary",
+              "filePage": 25,
+              "printedPage": 97
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh107.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": "Coordinate Geometry",
+          "titleSource": "contents",
+          "fileCount": 14,
+          "printedFirst": 99,
+          "printedLast": 112,
+          "sections": [
+            {
+              "number": "7.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 99
+            },
+            {
+              "number": "7.2",
+              "title": "Distance Formula",
+              "filePage": 2,
+              "printedPage": 100
+            },
+            {
+              "number": "7.3",
+              "title": "Section Formula",
+              "filePage": 8,
+              "printedPage": 106
+            },
+            {
+              "number": "7.4",
+              "title": "Summary",
+              "filePage": 14,
+              "printedPage": 112
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh108.pdf",
+          "kind": "chapter",
+          "number": 8,
+          "title": "Introduction to Trigonometry",
+          "titleSource": "contents",
+          "fileCount": 20,
+          "printedFirst": 113,
+          "printedLast": 132,
+          "sections": [
+            {
+              "number": "8.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 113
+            },
+            {
+              "number": "8.2",
+              "title": "Trigonometric Ratios                            Fig. 8.4",
+              "filePage": 2,
+              "printedPage": 114
+            },
+            {
+              "number": "8.3",
+              "title": "Trigonometric Ratios of Some Specific Angles",
+              "filePage": 9,
+              "printedPage": 121
+            },
+            {
+              "number": "8.4",
+              "title": "Trigonometric Identities                                Fig. 8.21",
+              "filePage": 16,
+              "printedPage": 128
+            },
+            {
+              "number": "8.5",
+              "title": "Summary",
+              "filePage": 20,
+              "printedPage": 132
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh109.pdf",
+          "kind": "chapter",
+          "number": 9,
+          "title": "Some Applications of Trigonometry",
+          "titleSource": "contents",
+          "fileCount": 11,
+          "printedFirst": 133,
+          "printedLast": 143,
+          "sections": [
+            {
+              "number": "9.1",
+              "title": "Heights and Distances",
+              "filePage": 1,
+              "printedPage": 133
+            },
+            {
+              "number": "9.2",
+              "title": "Summary",
+              "filePage": 11,
+              "printedPage": 143
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh110.pdf",
+          "kind": "chapter",
+          "number": 10,
+          "title": "Circles",
+          "titleSource": "contents",
+          "fileCount": 10,
+          "printedFirst": 144,
+          "printedLast": 153,
+          "sections": [
+            {
+              "number": "10.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 144
+            },
+            {
+              "number": "10.2",
+              "title": "Tangent to a Circle",
+              "filePage": 2,
+              "printedPage": 145
+            },
+            {
+              "number": "10.3",
+              "title": "Number of Tangents from a Point on a Circle",
+              "filePage": 4,
+              "printedPage": 147
+            },
+            {
+              "number": "10.4",
+              "title": "Summary",
+              "filePage": 10,
+              "printedPage": 153
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh111.pdf",
+          "kind": "chapter",
+          "number": 11,
+          "title": "Areas Related to Circles",
+          "titleSource": "contents",
+          "fileCount": 7,
+          "printedFirst": 154,
+          "printedLast": 160,
+          "sections": [
+            {
+              "number": "11.1",
+              "title": "Areas of Sector and Segment of a Circle",
+              "filePage": 1,
+              "printedPage": 154
+            },
+            {
+              "number": "11.2",
+              "title": "Summary",
+              "filePage": 7,
+              "printedPage": 160
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh112.pdf",
+          "kind": "chapter",
+          "number": 12,
+          "title": "Surface Areas and Volumes",
+          "titleSource": "contents",
+          "fileCount": 10,
+          "printedFirst": 161,
+          "printedLast": 170,
+          "sections": [
+            {
+              "number": "12.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 161
+            },
+            {
+              "number": "12.2",
+              "title": "Surface Area of a Combination of Solids",
+              "filePage": 2,
+              "printedPage": 162
+            },
+            {
+              "number": "12.3",
+              "title": "Volume of a Combination of Solids         Fig. 12.11",
+              "filePage": 7,
+              "printedPage": 167
+            },
+            {
+              "number": "12.4",
+              "title": "Summary",
+              "filePage": 10,
+              "printedPage": 170
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh113.pdf",
+          "kind": "chapter",
+          "number": 13,
+          "title": "Statistics",
+          "titleSource": "contents",
+          "fileCount": 31,
+          "printedFirst": 171,
+          "printedLast": 201,
+          "sections": [
+            {
+              "number": "13.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 171
+            },
+            {
+              "number": "13.2",
+              "title": "Mean of Grouped Data",
+              "filePage": 1,
+              "printedPage": 171
+            },
+            {
+              "number": "13.3",
+              "title": "Mode of Grouped Data",
+              "filePage": 13,
+              "printedPage": 183
+            },
+            {
+              "number": "13.4",
+              "title": "Median of Grouped Data",
+              "filePage": 18,
+              "printedPage": 188
+            },
+            {
+              "number": "13.5",
+              "title": "Summary",
+              "filePage": 30,
+              "printedPage": 200
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh114.pdf",
+          "kind": "chapter",
+          "number": 14,
+          "title": "Probability",
+          "titleSource": "contents",
+          "fileCount": 16,
+          "printedFirst": 202,
+          "printedLast": 217,
+          "sections": [
+            {
+              "number": "14.1",
+              "title": "Probability -- A Theoretical Approach",
+              "filePage": 1,
+              "printedPage": 202
+            },
+            {
+              "number": "14.2",
+              "title": "Summary",
+              "filePage": 16,
+              "printedPage": 217
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh1a1.pdf",
+          "kind": "appendix",
+          "number": 1,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 21,
+          "printedFirst": 218,
+          "printedLast": 238,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh1a2.pdf",
+          "kind": "appendix",
+          "number": 2,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 11,
+          "printedFirst": 239,
+          "printedLast": 249,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "jemh1an.pdf",
+          "kind": "answers",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 13,
+          "printedFirst": 250,
+          "printedLast": 262,
+          "sections": [],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.11.maths",
+      "grade": 11,
+      "part": null,
+      "title": "Mathematics, Class XI",
+      "edition": "Revised November 2022, reprint 2026-27",
+      "folder": "CLASS XI MATHS",
+      "chapters": [
+        {
+          "file": "kemh1ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 12,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh101.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Sets",
+          "titleSource": "auto",
+          "fileCount": 23,
+          "printedFirst": 1,
+          "printedLast": 23,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 1
+            },
+            {
+              "number": "1.2",
+              "title": "Sets and their Representations",
+              "filePage": 1,
+              "printedPage": 1
+            },
+            {
+              "number": "1.3",
+              "title": "The Empty Set",
+              "filePage": 5,
+              "printedPage": 5
+            },
+            {
+              "number": "1.4",
+              "title": "Finite and Infinite Sets",
+              "filePage": 6,
+              "printedPage": 6
+            },
+            {
+              "number": "1.5",
+              "title": "Equal Sets",
+              "filePage": 7,
+              "printedPage": 7
+            },
+            {
+              "number": "1.6",
+              "title": "Subsets",
+              "filePage": 9,
+              "printedPage": 9
+            },
+            {
+              "number": "1.7",
+              "title": "Universal Set",
+              "filePage": 12,
+              "printedPage": 12
+            },
+            {
+              "number": "1.8",
+              "title": "Venn Diagrams                                       Fig 1.2",
+              "filePage": 13,
+              "printedPage": 13
+            },
+            {
+              "number": "1.9",
+              "title": "Operations on Sets",
+              "filePage": 13,
+              "printedPage": 13
+            },
+            {
+              "number": "1.10",
+              "title": "Complement of a Set",
+              "filePage": 18,
+              "printedPage": 18
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh102.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Relations And Functions",
+          "titleSource": "auto",
+          "fileCount": 19,
+          "printedFirst": 24,
+          "printedLast": 42,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 24
+            },
+            {
+              "number": "2.2",
+              "title": "Cartesian Products of Sets                                              Fig 2.1",
+              "filePage": 1,
+              "printedPage": 24
+            },
+            {
+              "number": "2.3",
+              "title": "Relations",
+              "filePage": 5,
+              "printedPage": 28
+            },
+            {
+              "number": "2.4",
+              "title": "Functions",
+              "filePage": 7,
+              "printedPage": 30
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh103.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "Trigonometric Functions",
+          "titleSource": "auto",
+          "fileCount": 33,
+          "printedFirst": 43,
+          "printedLast": 75,
+          "sections": [
+            {
+              "number": "3.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 43
+            },
+            {
+              "number": "3.2",
+              "title": "Angles",
+              "filePage": 1,
+              "printedPage": 43
+            },
+            {
+              "number": "3.3",
+              "title": "Trigonometric Functions",
+              "filePage": 7,
+              "printedPage": 49
+            },
+            {
+              "number": "3.4",
+              "title": "Trigonometric Functions of Sum and Difference of Two Angles",
+              "filePage": 15,
+              "printedPage": 57
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh104.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Complex Numbers And",
+          "titleSource": "auto",
+          "fileCount": 13,
+          "printedFirst": 76,
+          "printedLast": 88,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 76
+            },
+            {
+              "number": "4.2",
+              "title": "Complex Numbers",
+              "filePage": 1,
+              "printedPage": 76
+            },
+            {
+              "number": "4.3",
+              "title": "Algebra of Complex Numbers",
+              "filePage": 2,
+              "printedPage": 77
+            },
+            {
+              "number": "4.4",
+              "title": "The Modulus and the Conjugate of a Complex Number",
+              "filePage": 6,
+              "printedPage": 81
+            },
+            {
+              "number": "4.5",
+              "title": "Argand Plane and Polar Representation",
+              "filePage": 8,
+              "printedPage": 83
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh105.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "Linear Inequalities",
+          "titleSource": "auto",
+          "fileCount": 11,
+          "printedFirst": 89,
+          "printedLast": 99,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 89
+            },
+            {
+              "number": "5.2",
+              "title": "Inequalities",
+              "filePage": 1,
+              "printedPage": 89
+            },
+            {
+              "number": "5.3",
+              "title": "Algebraic Solutions of Linear Inequalities in One Variable and their",
+              "filePage": 3,
+              "printedPage": 91
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh106.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Permutations And Combinations",
+          "titleSource": "auto",
+          "fileCount": 26,
+          "printedFirst": 100,
+          "printedLast": 125,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 100
+            },
+            {
+              "number": "6.2",
+              "title": "Fundamental Principle of Counting",
+              "filePage": 1,
+              "printedPage": 100
+            },
+            {
+              "number": "6.3",
+              "title": "Permutations",
+              "filePage": 5,
+              "printedPage": 104
+            },
+            {
+              "number": "6.4",
+              "title": "Combinations",
+              "filePage": 15,
+              "printedPage": 114
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh107.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": "Binomial Theorem",
+          "titleSource": "auto",
+          "fileCount": 9,
+          "printedFirst": 126,
+          "printedLast": 134,
+          "sections": [
+            {
+              "number": "7.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 126
+            },
+            {
+              "number": "7.2",
+              "title": "Binomial Theorem for Positive Integral Indices                Blaise Pascal",
+              "filePage": 1,
+              "printedPage": 126
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh108.pdf",
+          "kind": "chapter",
+          "number": 8,
+          "title": "Sequences And Series",
+          "titleSource": "auto",
+          "fileCount": 16,
+          "printedFirst": 135,
+          "printedLast": 150,
+          "sections": [
+            {
+              "number": "8.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 135
+            },
+            {
+              "number": "8.2",
+              "title": "Sequences",
+              "filePage": 1,
+              "printedPage": 135
+            },
+            {
+              "number": "8.3",
+              "title": "Series",
+              "filePage": 3,
+              "printedPage": 137
+            },
+            {
+              "number": "8.4",
+              "title": "Geometric Progression (G. P.)",
+              "filePage": 5,
+              "printedPage": 139
+            },
+            {
+              "number": "8.5",
+              "title": "Relationship Between A.M. and G.M",
+              "filePage": 10,
+              "printedPage": 144
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh109.pdf",
+          "kind": "chapter",
+          "number": 9,
+          "title": "Straight Lines",
+          "titleSource": "auto",
+          "fileCount": 25,
+          "printedFirst": 151,
+          "printedLast": 175,
+          "sections": [
+            {
+              "number": "9.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 151
+            },
+            {
+              "number": "9.2",
+              "title": "Slope of a Line",
+              "filePage": 2,
+              "printedPage": 152
+            },
+            {
+              "number": "9.3",
+              "title": "Various Forms of the Equation of a Line",
+              "filePage": 9,
+              "printedPage": 159
+            },
+            {
+              "number": "9.4",
+              "title": "Distance of a Point From a Line",
+              "filePage": 14,
+              "printedPage": 164
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh110.pdf",
+          "kind": "chapter",
+          "number": 10,
+          "title": "Conic Sections",
+          "titleSource": "auto",
+          "fileCount": 32,
+          "printedFirst": 176,
+          "printedLast": 207,
+          "sections": [
+            {
+              "number": "10.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 176
+            },
+            {
+              "number": "10.2",
+              "title": "Sections of a Cone                                                  Fig 10. 1",
+              "filePage": 1,
+              "printedPage": 176
+            },
+            {
+              "number": "10.3",
+              "title": "Circle             Fig 10. 10",
+              "filePage": 4,
+              "printedPage": 179
+            },
+            {
+              "number": "10.4",
+              "title": "Parabola",
+              "filePage": 7,
+              "printedPage": 182
+            },
+            {
+              "number": "10.6",
+              "title": "Hyperbola",
+              "filePage": 20,
+              "printedPage": 195
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh111.pdf",
+          "kind": "chapter",
+          "number": 11,
+          "title": "Introduction To Three",
+          "titleSource": "auto",
+          "fileCount": 9,
+          "printedFirst": 208,
+          "printedLast": 216,
+          "sections": [
+            {
+              "number": "11.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 208
+            },
+            {
+              "number": "11.2",
+              "title": "Coordinate Axes and Coordinate Planes in Three Dimensional Space",
+              "filePage": 2,
+              "printedPage": 209
+            },
+            {
+              "number": "11.3",
+              "title": "Coordinates of a Point in Space",
+              "filePage": 2,
+              "printedPage": 209
+            },
+            {
+              "number": "11.4",
+              "title": "Distance between Two Points",
+              "filePage": 4,
+              "printedPage": 211
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh112.pdf",
+          "kind": "chapter",
+          "number": 12,
+          "title": "Limits And Derivatives",
+          "titleSource": "auto",
+          "fileCount": 40,
+          "printedFirst": 217,
+          "printedLast": 256,
+          "sections": [
+            {
+              "number": "12.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 217
+            },
+            {
+              "number": "12.2",
+              "title": "Intuitive Idea of Derivatives                                 Sir Issac Newton",
+              "filePage": 1,
+              "printedPage": 217
+            },
+            {
+              "number": "12.3",
+              "title": "Limits",
+              "filePage": 4,
+              "printedPage": 220
+            },
+            {
+              "number": "12.4",
+              "title": "Limits of Trigonometric Functions",
+              "filePage": 18,
+              "printedPage": 234
+            },
+            {
+              "number": "12.5",
+              "title": "Derivatives",
+              "filePage": 23,
+              "printedPage": 239
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh113.pdf",
+          "kind": "chapter",
+          "number": 13,
+          "title": "Statistics",
+          "titleSource": "auto",
+          "fileCount": 32,
+          "printedFirst": 257,
+          "printedLast": 288,
+          "sections": [
+            {
+              "number": "13.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 257
+            },
+            {
+              "number": "13.2",
+              "title": "Measures of Dispersion",
+              "filePage": 3,
+              "printedPage": 259
+            },
+            {
+              "number": "13.3",
+              "title": "Range",
+              "filePage": 3,
+              "printedPage": 259
+            },
+            {
+              "number": "13.4",
+              "title": "Mean Deviation",
+              "filePage": 3,
+              "printedPage": 259
+            },
+            {
+              "number": "13.5",
+              "title": "Variance and Standard Deviation",
+              "filePage": 15,
+              "printedPage": 271
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh114.pdf",
+          "kind": "chapter",
+          "number": 14,
+          "title": "Probability",
+          "titleSource": "auto",
+          "fileCount": 25,
+          "printedFirst": 289,
+          "printedLast": 313,
+          "sections": [
+            {
+              "number": "14.1",
+              "title": "Event",
+              "filePage": 1,
+              "printedPage": 289
+            },
+            {
+              "number": "14.2",
+              "title": "Axiomatic Approach to Probability",
+              "filePage": 7,
+              "printedPage": 295
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh1a1.pdf",
+          "kind": "appendix",
+          "number": 1,
+          "title": "Infinite Series",
+          "titleSource": "auto",
+          "fileCount": 9,
+          "printedFirst": 314,
+          "printedLast": 322,
+          "sections": [
+            {
+              "number": "A.1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 314
+            },
+            {
+              "number": "A.1.2",
+              "title": "Binomial Theorem for any Index",
+              "filePage": 1,
+              "printedPage": 314
+            },
+            {
+              "number": "A.1.3",
+              "title": "Infinite Geometric Series",
+              "filePage": 3,
+              "printedPage": 316
+            },
+            {
+              "number": "A.1.4",
+              "title": "Exponential Series",
+              "filePage": 5,
+              "printedPage": 318
+            },
+            {
+              "number": "A.1.5",
+              "title": "Logarithmic Series",
+              "filePage": 8,
+              "printedPage": 321
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh1a2.pdf",
+          "kind": "appendix",
+          "number": 2,
+          "title": "Mathematical Modelling",
+          "titleSource": "auto",
+          "fileCount": 12,
+          "printedFirst": 323,
+          "printedLast": 334,
+          "sections": [
+            {
+              "number": "A.2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 323
+            },
+            {
+              "number": "A.2.2",
+              "title": "Preliminaries",
+              "filePage": 1,
+              "printedPage": 323
+            },
+            {
+              "number": "A.2.3",
+              "title": "What is Mathematical Modelling?",
+              "filePage": 5,
+              "printedPage": 327
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh1an.pdf",
+          "kind": "answers",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 22,
+          "printedFirst": 335,
+          "printedLast": 356,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "kemh1sm.pdf",
+          "kind": "supplement",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 8,
+          "printedFirst": 357,
+          "printedLast": 364,
+          "sections": [],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.12.maths.p1",
+      "grade": 12,
+      "part": 1,
+      "title": "Mathematics, Class XII, Part I",
+      "edition": "Revised October 2022, reprint 2026-27",
+      "folder": "CLASS XII MATHS",
+      "chapters": [
+        {
+          "file": "lemh1ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 12,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh101.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Relations And Functions",
+          "titleSource": "auto",
+          "fileCount": 17,
+          "printedFirst": 1,
+          "printedLast": 17,
+          "sections": [
+            {
+              "number": "1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 1
+            },
+            {
+              "number": "1.2",
+              "title": "Types of Relations",
+              "filePage": 2,
+              "printedPage": 2
+            },
+            {
+              "number": "1.3",
+              "title": "Types of Functions",
+              "filePage": 7,
+              "printedPage": 7
+            },
+            {
+              "number": "1.4",
+              "title": "Composition of Functions and Invertible Function",
+              "filePage": 12,
+              "printedPage": 12
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh102.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Inverse Trigonometric",
+          "titleSource": "auto",
+          "fileCount": 16,
+          "printedFirst": 18,
+          "printedLast": 33,
+          "sections": [
+            {
+              "number": "2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 18
+            },
+            {
+              "number": "2.2",
+              "title": "Basic Concepts",
+              "filePage": 1,
+              "printedPage": 18
+            },
+            {
+              "number": "2.3",
+              "title": "Properties of Inverse Trigonometric Functions",
+              "filePage": 10,
+              "printedPage": 27
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh103.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "Matrices",
+          "titleSource": "auto",
+          "fileCount": 42,
+          "printedFirst": 34,
+          "printedLast": 75,
+          "sections": [
+            {
+              "number": "3.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 34
+            },
+            {
+              "number": "3.2",
+              "title": "Matrix",
+              "filePage": 1,
+              "printedPage": 34
+            },
+            {
+              "number": "3.3",
+              "title": "Types of Matrices",
+              "filePage": 6,
+              "printedPage": 39
+            },
+            {
+              "number": "3.4",
+              "title": "Operations on Matrices",
+              "filePage": 10,
+              "printedPage": 43
+            },
+            {
+              "number": "3.6",
+              "title": "Symmetric and Skew Symmetric Matrices",
+              "filePage": 30,
+              "printedPage": 63
+            },
+            {
+              "number": "3.7",
+              "title": "Invertible Matrices",
+              "filePage": 35,
+              "printedPage": 68
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh104.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Determinants",
+          "titleSource": "auto",
+          "fileCount": 28,
+          "printedFirst": 76,
+          "printedLast": 103,
+          "sections": [
+            {
+              "number": "4.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 76
+            },
+            {
+              "number": "4.2",
+              "title": "Determinant",
+              "filePage": 1,
+              "printedPage": 76
+            },
+            {
+              "number": "4.3",
+              "title": "Area of a Triangle",
+              "filePage": 7,
+              "printedPage": 82
+            },
+            {
+              "number": "4.4",
+              "title": "Minors and Cofactors",
+              "filePage": 9,
+              "printedPage": 84
+            },
+            {
+              "number": "4.5",
+              "title": "Adjoint and Inverse of a Matrix",
+              "filePage": 12,
+              "printedPage": 87
+            },
+            {
+              "number": "4.6",
+              "title": "Applications of Determinants and Matrices",
+              "filePage": 18,
+              "printedPage": 93
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh105.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "Continuity And",
+          "titleSource": "auto",
+          "fileCount": 43,
+          "printedFirst": 104,
+          "printedLast": 146,
+          "sections": [
+            {
+              "number": "5.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 104
+            },
+            {
+              "number": "5.2",
+              "title": "Continuity",
+              "filePage": 1,
+              "printedPage": 104
+            },
+            {
+              "number": "5.4",
+              "title": "Exponential and Logarithmic Functions",
+              "filePage": 22,
+              "printedPage": 125
+            },
+            {
+              "number": "5.6",
+              "title": "Derivatives of Functions in Parametric Forms",
+              "filePage": 31,
+              "printedPage": 134
+            },
+            {
+              "number": "5.7",
+              "title": "Second Order Derivative",
+              "filePage": 34,
+              "printedPage": 137
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh106.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Application Of",
+          "titleSource": "auto",
+          "fileCount": 40,
+          "printedFirst": 147,
+          "printedLast": 186,
+          "sections": [
+            {
+              "number": "6.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 147
+            },
+            {
+              "number": "6.2",
+              "title": "Rate of Change of Quantities",
+              "filePage": 1,
+              "printedPage": 147
+            },
+            {
+              "number": "6.3",
+              "title": "Increasing and Decreasing Functions",
+              "filePage": 6,
+              "printedPage": 152
+            },
+            {
+              "number": "6.4",
+              "title": "Maxima and Minima",
+              "filePage": 13,
+              "printedPage": 159
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh1a1.pdf",
+          "kind": "appendix",
+          "number": 1,
+          "title": "Proofs In Mathematics",
+          "titleSource": "auto",
+          "fileCount": 9,
+          "printedFirst": 187,
+          "printedLast": 195,
+          "sections": [
+            {
+              "number": "A.1.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 187
+            },
+            {
+              "number": "A.1.2",
+              "title": "What is a Proof?",
+              "filePage": 1,
+              "printedPage": 187
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh1a2.pdf",
+          "kind": "appendix",
+          "number": 2,
+          "title": "Mathematical Modelling",
+          "titleSource": "auto",
+          "fileCount": 12,
+          "printedFirst": 196,
+          "printedLast": 207,
+          "sections": [
+            {
+              "number": "A.2.1",
+              "title": "Introduction",
+              "filePage": 1,
+              "printedPage": 196
+            },
+            {
+              "number": "A.2.2",
+              "title": "Why Mathematical Modelling?",
+              "filePage": 1,
+              "printedPage": 196
+            },
+            {
+              "number": "A.2.3",
+              "title": "Principles of Mathematical Modelling",
+              "filePage": 2,
+              "printedPage": 197
+            }
+          ],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh1an.pdf",
+          "kind": "answers",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 17,
+          "printedFirst": 208,
+          "printedLast": 224,
+          "sections": [],
+          "pageRangeConfirmed": false
+        }
+      ]
+    },
+    {
+      "id": "cbse.12.maths.p2",
+      "grade": 12,
+      "part": 2,
+      "title": "Mathematics, Class XII, Part II",
+      "edition": "Revised January 2023, reprint 2026-27",
+      "folder": "CLASS XII MATHS PART 2",
+      "chapters": [
+        {
+          "file": "lemh2ps.pdf",
+          "kind": "prelims",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 14,
+          "printedFirst": null,
+          "printedLast": null,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh201.pdf",
+          "kind": "chapter",
+          "number": 1,
+          "title": "Integrals",
+          "titleSource": "auto",
+          "fileCount": 67,
+          "printedFirst": 225,
+          "printedLast": 291,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh202.pdf",
+          "kind": "chapter",
+          "number": 2,
+          "title": "Application Of Integrals",
+          "titleSource": "auto",
+          "fileCount": 8,
+          "printedFirst": 292,
+          "printedLast": 299,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh203.pdf",
+          "kind": "chapter",
+          "number": 3,
+          "title": "Differential Equations",
+          "titleSource": "auto",
+          "fileCount": 38,
+          "printedFirst": 300,
+          "printedLast": 337,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh204.pdf",
+          "kind": "chapter",
+          "number": 4,
+          "title": "Vector Algebra",
+          "titleSource": "auto",
+          "fileCount": 39,
+          "printedFirst": 338,
+          "printedLast": 376,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh205.pdf",
+          "kind": "chapter",
+          "number": 5,
+          "title": "Three Dimensional Geometry",
+          "titleSource": "auto",
+          "fileCount": 17,
+          "printedFirst": 377,
+          "printedLast": 393,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh206.pdf",
+          "kind": "chapter",
+          "number": 6,
+          "title": "Linear Programming",
+          "titleSource": "auto",
+          "fileCount": 12,
+          "printedFirst": 394,
+          "printedLast": 405,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh207.pdf",
+          "kind": "chapter",
+          "number": 7,
+          "title": "Probability",
+          "titleSource": "auto",
+          "fileCount": 33,
+          "printedFirst": 406,
+          "printedLast": 438,
+          "sections": [],
+          "pageRangeConfirmed": false
+        },
+        {
+          "file": "lemh2an.pdf",
+          "kind": "answers",
+          "number": null,
+          "title": null,
+          "titleSource": "none",
+          "fileCount": 20,
+          "printedFirst": 439,
+          "printedLast": 458,
+          "sections": [],
+          "pageRangeConfirmed": false
+        }
+      ]
+    }
+  ]
+}

@@ -49,6 +49,10 @@ export type RenderContext = {
   colors?: ColorTheme;
   /** Jump every motion to its end state (prefers-reduced-motion). */
   reduceMotion?: boolean;
+  /** A value the student set by dragging (ADR 0070): replaces what the timeline says for this object while the lesson is paused. Only a graph with a sweep reads it. */
+  sweepOverride?: number;
+  /** The lesson is paused and the student may drag a swept graph (ADR 0070). */
+  interactive?: boolean;
   /** Where another object of the scene sits, relative to the stage (null if unknown). For overlays such as highlight. */
   rectOf?: (objectId: string) => Rect | null;
 };
@@ -64,6 +68,8 @@ export type VerifyContext = {
   cueParts?: string[];
   /** Every cue that addresses a part of this object: the part and the action. Lets a component refuse an action it cannot show on a part. */
   cueActions?: Array<{ part: string; action: string }>;
+  /** The actions of every cue that addresses the whole object (no part). Lets a component require or refuse one (the equation's morph, ADR 0068). */
+  wholeActions?: string[];
 };
 
 /**

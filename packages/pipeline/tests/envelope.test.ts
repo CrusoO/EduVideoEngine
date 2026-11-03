@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { IMPLEMENTED } from "@eve/components";
+import { IMPLEMENTED, OFFERED_TO_MODELS } from "@eve/components";
 import { PATTERN_IDS } from "@eve/patterns";
 import { BEAT_KINDS, COLOR_NAMES, CUE_ACTIONS } from "@eve/schema";
 import { EnvelopeError, SECTIONS, allowedValues, buildEnvelope, type EnvelopeParts } from "../envelope";
@@ -51,7 +51,9 @@ describe("the envelope", () => {
 
   it("ALLOWED VALUES is generated from the real registries, not typed by hand", () => {
     const a = allowedValues();
-    expect(a.components).toEqual([...IMPLEMENTED]);
+    expect(a.components).toEqual([...OFFERED_TO_MODELS]);
+    expect(IMPLEMENTED).toContain("table"); // built, and deliberately not offered until a prompt version that lists it is recorded (ADR 0076)
+    expect(OFFERED_TO_MODELS).not.toContain("table");
     expect(a.patterns).toEqual([...PATTERN_IDS]);
     expect(a.colours).toEqual([...COLOR_NAMES]);
     expect(a.cueActions).toEqual([...CUE_ACTIONS]);
@@ -61,7 +63,7 @@ describe("the envelope", () => {
     // and it shows up in the message as it is
     const text = buildEnvelope(full());
     for (const id of PATTERN_IDS) expect(text).toContain(id);
-    for (const c of IMPLEMENTED) expect(text).toContain(c);
+    for (const c of OFFERED_TO_MODELS) expect(text).toContain(c);
   });
 
   it("every behaviour probe builds a complete envelope", () => {

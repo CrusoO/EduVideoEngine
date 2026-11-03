@@ -1,0 +1,102 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.steps",
+  "kind": "solutionSteps",
+  "text": "Put the numbers in, solve for the current, then check it.",
+  "problem": "ohm.problem",
+  "expressions": {
+    "ohm.problem": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sym",
+          "name": "I"
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 12
+      }
+    },
+    "ohm.divided": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      }
+    },
+    "ohm.root": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    },
+    "ohm.back": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "num",
+          "n": 3
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 12
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "t1",
+      "role": "transform",
+      "expr": "ohm.divided",
+      "note": "Solve for the current."
+    },
+    {
+      "id": "r1",
+      "role": "root",
+      "expr": "ohm.root",
+      "note": "Work it out.",
+      "stepKind": "simplify"
+    },
+    {
+      "id": "c1",
+      "role": "check",
+      "expr": "ohm.back",
+      "note": "Put it back to check.",
+      "uses": "r1",
+      "stepKind": "substitute"
+    }
+  ],
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the worked solution; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "ebbdc06944884cbd8d05121de79ce87f2d8e1ca44b3d3331e1109e19ded9f62d"
+}

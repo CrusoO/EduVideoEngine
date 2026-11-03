@@ -6,7 +6,10 @@ import { fallbackContent } from "../fallback";
 import { composeSceneSync } from "../scene/compose";
 import { buildBeats, type BeatBuild } from "./beats";
 import { retrievalOf, type LessonContext } from "./context";
+import { applyCarry, type CarryBeat } from "./carry";
+import { previewCheckHops, previewHops, showWrongWorking } from "./preview";
 import { finishScene } from "./scene";
+import { writeOn } from "./style";
 import { sentencesOf } from "./sentences";
 import type { ArcPlan, LessonScript } from "./types";
 
@@ -25,13 +28,18 @@ export const LEGACY_KIND: Record<PedagogyBeatKind, LessonBundle["plan"]["beats"]
   mistake: "explain",
   check: "check",
 };
-const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first" } as const;
+const TEMPLATE_OF_ARC = { problem_first: "problem-first", concept_first: "example-first", misconception_first: "problem-first", story_first: "problem-first" } as const;
+
+/** What ADRs 0066 to 0072 added to a lesson, each on by default. All off builds the lesson as it was before them. */
+export type Features = { signalling?: boolean; carry?: boolean; motion?: boolean; writeOn?: boolean };
 
 export type AssembleOptions = {
   /** The length to record in the plan, in seconds (the measured length once there is audio). Estimated from the words otherwise. */
   targetLengthS?: number;
   /** How many transitions to add after the first in a beat that has no claims, by beat id: a beat that must last longer for its scene to be read (the build asks for it). */
   extraTransitions?: Readonly<Record<string, number>>;
+  /** Switch off what ADR 0066 and 0067 added, to build the lesson as it was before them and compare (the inspection tool, `pnpm lesson:build --baseline`). Both default to on. */
+  features?: Features;
 };
 
 export type AssembleResult = {
@@ -73,7 +81,8 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
   const termColors: Record<string, ColorName> = Object.assign({}, ...retrievals.map((r) => r.termColors));
 
   const sentences: NarrationSentence[] = [];
-  const scenes: SceneSpec[] = [];
+  const composed: SceneSpec[] = [];
+  const carryBeats: CarryBeat[] = [];
   const fallbacks: AssembleResult["fallbacks"] = [];
   for (const b of built.beats) {
     const mine = sentencesOf(b, script[b.beat.id], transitions, options.extraTransitions?.[b.beat.id] ?? 0);
@@ -89,16 +98,34 @@ export function assembleLesson(ctx: LessonContext, plan: ArcPlan, script: Lesson
     const problem = Object.entries(b.retrieval.expressions).find(([, e]) => e.op === "eq")?.[0] ?? Object.keys(expressions)[0]!;
     const outcome = composeSceneSync(
       sceneCtx,
-      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text }).scene, b.claims, mine.sentences, expressions, ctx.locale),
+      () => finishScene(instantiate(b.beat.pattern, b.retrieval, { sceneId: b.sceneId, beatId: b.beat.id, sentenceIds: mine.window, text, motion: options.features?.motion !== false }).scene, b.claims, mine.sentences, expressions, ctx.locale, options.features?.signalling !== false),
       fallbackContent(sceneCtx, b.beat.title, problem, `the ${b.beat.pattern} scene did not validate`),
     );
-    scenes.push(outcome.scene);
+    composed.push(outcome.scene);
+    carryBeats.push({ ctx: sceneCtx, sentences: mine.sentences, claims: b.claims });
     if (outcome.usedFallback) fallbacks.push({ beatId: b.beat.id, attempts: outcome.errors });
   }
+  // objects that stay from one scene to the next, and equations that turn into an equivalent one (ADR 0067, 0068); a scene that used the plain template is left alone
+  const reviewed = new Set(fallbacks.map((f) => f.beatId));
+  // a hook shows its answer as the hops of the worked example (ADR 0072)
+  // and a check shows why its answer is right, with the claim that proves the roots it walks out (ADR 0073)
+  const provedHere: Claim[] = [];
+  const previewed = options.features?.motion === false ? composed : composed.map((s, i) => {
+    if (reviewed.has(s.beatId)) return s;
+    const [b, c] = [built.beats[i]!, carryBeats[i]!];
+    const hooked = previewHops(s, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    const checked = previewCheckHops(hooked, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    const shown = showWrongWorking(checked.scene, b, c.ctx, c.sentences, c.claims, expressions, ctx.locale);
+    provedHere.push(...checked.claims);
+    return shown;
+  });
+  const carried = options.features?.carry === false ? previewed : applyCarry(previewed, carryBeats.map((c, i) => (reviewed.has(composed[i]!.beatId) ? { ...c, claims: [] } : c)), expressions, ctx.locale);
+  const scenes = options.features?.writeOn === false ? carried : carried.map(writeOn);
 
-  const claims: Claim[] = built.beats.flatMap((b) => b.claims);
+  const claims: Claim[] = [...built.beats.flatMap((b) => b.claims), ...provedHere];
   const sourceIds = [...new Set(built.beats.flatMap((b) => b.beat.sourceIds))];
-  const specVersion = claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
+  const carries = scenes.some((s) => s.cues.some((c) => c.action === "morph") || s.objects.some((o) => o.carryFrom !== undefined));
+  const specVersion = claims.some((c) => c.kind === "statement" && c.exprRefs !== undefined) ? "2.3.0" : carries ? "2.2.0" : claims.some((c) => (CLAIM_KINDS_FROM_2_1 as readonly string[]).includes(c.kind)) ? "2.1.0" : "2.0.0";
   const bundle = seal({
     bundleId: bundleIdFor(ctx.skillId, ctx.locale),
     specVersion,

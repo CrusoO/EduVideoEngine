@@ -1,0 +1,91 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.steps",
+  "kind": "solutionSteps",
+  "text": "Put the numbers in, work out the emf, then check it.",
+  "problem": "faraday.problem",
+  "expressions": {
+    "faraday.problem": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "E"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 5
+          },
+          "b": {
+            "op": "num",
+            "n": 12
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 2
+        }
+      }
+    },
+    "faraday.root": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "E"
+      },
+      "b": {
+        "op": "num",
+        "n": 30
+      }
+    },
+    "faraday.back": {
+      "op": "eq",
+      "a": {
+        "op": "num",
+        "n": 30
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 5
+          },
+          "b": {
+            "op": "num",
+            "n": 12
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 2
+        }
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "r1",
+      "role": "root",
+      "expr": "faraday.root",
+      "note": "Work it out."
+    },
+    {
+      "id": "c1",
+      "role": "check",
+      "expr": "faraday.back",
+      "note": "Put it back to check.",
+      "uses": "r1",
+      "stepKind": "substitute"
+    }
+  ],
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the worked solution; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "49fcfa378c937ad425e47c2b3bda1c6323e08f8e00dd68ef8df1242d320fe397"
+}

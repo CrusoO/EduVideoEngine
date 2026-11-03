@@ -1,0 +1,22 @@
+# ADR 0082: A circuit component, a circuit scene pattern, and a whiteboard theme
+
+Status: proposed (agent, at the owner's request of 2026-10-23: "port the whiteboard-style visuals and a circuit drawing into the engine so physics lessons look good"; the owner is asked to confirm this record). Supersedes nothing. The component list of the schema is closed (ADR 0003), so adding `circuit` is an ADR change; the theme is chosen at play time and changes no bundle and no hash.
+
+## Context
+The first physics lesson (ADR 0081) used the engine's dark portrait stage and could show only equations, a graph and a table. A physics lesson about current needs a circuit, and the standalone whiteboard videos built earlier showed what the owner wants to see: a white board, marker colours, drawings that look drawn by hand, current that moves.
+
+## Decision
+1. **`circuit`** (the thirteenth name of the closed list; `packages/components/src/circuit.ts`). A one-loop circuit of a battery, a resistor and an optional meter. Each part names an expression that is a number and the symbol of its unit, so every value on screen is evaluated (exact rationals), never typed (the rule of `table`, ADR 0076). Parts a cue may address: `wires` (drawn on), `battery`, `resistor`, `meter`, `flow` (reveal, pop, highlight, dim). A meter may be `hidden`: it shows `? A`, for a lesson that asks what it will read.
+2. **The current is dots round the loop in the conventional direction.** Their place and speed are a function of the lesson time and the current's value alone (loops per second, 0.05 per ampere, between 0.06 and 0.5), so a seek, a pause, a replay and a video frame agree (ADR 0009); with reduced motion they stand still. The wires wobble a little from fixed seeds (baked, not an SVG filter, which shimmered in the standalone pages), so the drawing looks hand-made and is identical in every frame.
+3. **`circuit-scene`** (the thirteenth library pattern; hook or concept; a picture pattern for the variety rule, ADR 0043): the wires are drawn on, the battery and the resistor pop in on the second sentence, the meter on the third, and the flow starts on the last. It reads a passage with `circuit` (a new optional record field). Like the neuron patterns it is in `LIBRARY` and not offered to a model's planner, and it is usable only for a skill that has such a passage, so no recorded planner request changes key.
+4. **`circuit` is a lazy chunk**, like the graph and the number line (ADR 0024): the player core stays at 35.4 KB gzip (ceiling 36), the circuit chunk is 2.8 KB, and the ceiling for a lesson that loads every component rises from 43 to 46 KB (45.3 measured); the lesson of ADR 0081 loads 42.7 KB. Its height constant is in `constants.ts`, not in the component module, so that measuring a scene does not pull the component into the core.
+5. **The whiteboard theme** (`?theme=whiteboard` on the harness; `Player` option `theme`; `packages/player/theme/whiteboard.css` and `WHITEBOARD_STAGE`, `WHITEBOARD_SEMANTIC` in `palette.ts`): a warm white board with a frame, ink and marker colours that each meet 4.5:1 on the board (the contrast tests of ADR 0019 now cover both themes, and the CSS values are tested equal to the palette), thicker rounded strokes, outlined table cells. The dark stage stays the default of the player. `pnpm lesson:video` defaults to the whiteboard (`--theme=dark` for the old look).
+6. **`functionGraph` axis captions** (ADR 0081) are used by the physics graph: the whiteboard shows them in ink.
+7. **Compiled lessons**: a law with a `circuit` mapping (which symbol is the battery, the resistor and the meter) opens with the circuit scene as the hook, meter hidden. A hook beat may state no concept claim (the planner's rule), so the hook is narrated by the beat's goal sentence ("Look at this circuit. What current will the meter show?") and the engine's transition; the values are on the screen.
+
+## Not built
+- A handwriting font (it would be a new download; the titles are Inter bold). Equations stay KaTeX.
+- Hand-drawn wobble for the graph, the table and the equations; only the circuit has it.
+- Parallel circuits, switches, bulbs, a voltmeter, a moving charge picture, a field diagram. Each is a component or a prop with its own ADR.
+- A golden image for the circuit (the browser golden specs list fixed cases); the circuit is covered by unit tests and by a checked video.
+- Sound design, pen sounds, music.

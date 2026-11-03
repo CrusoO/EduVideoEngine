@@ -1,0 +1,60 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.misconception",
+  "kind": "misconception",
+  "text": "A common mistake is to divide the change in flux by the time taken and stop. That gives {expr:faraday.wrong}, which is not the emf.",
+  "expressions": {
+    "faraday.wrong": {
+      "op": "eq",
+      "a": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 2
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 6
+      }
+    },
+    "faraday.right": {
+      "op": "eq",
+      "a": {
+        "op": "div",
+        "a": {
+          "op": "mul",
+          "a": {
+            "op": "num",
+            "n": 5
+          },
+          "b": {
+            "op": "num",
+            "n": 12
+          }
+        },
+        "b": {
+          "op": "num",
+          "n": 2
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 30
+      }
+    }
+  },
+  "contrast": {
+    "wrong": "faraday.wrong",
+    "right": "faraday.right"
+  },
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the common mistake; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "19cc4f3e6de6ebcf82a2d95d5b845c7505869af50eb767b2d067ed015d02f14f"
+}

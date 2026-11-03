@@ -50,6 +50,11 @@ export function componentCosts(screenWidth: number = DESIGN_SCREEN.width, chrome
     "arrowCallout, one line": { component: "arrowCallout", props: { text: "Look here", direction: "up" } },
     "shape, size m": { component: "shape", props: { kind: "rect", size: "m", color: "blue" } },
     "shape, line": { component: "shape", props: { kind: "line", size: "m", color: "blue" } },
+    "table, 2 by 2": { component: "table", props: { cols: 2, cells: ["zero", "two", "five", "two"], tint: "signed" } },
+    waterAnalogy: { component: "waterAnalogy", props: { height: { value: "zero", unit: "V" }, narrow: { value: "two", unit: "R" } } },
+    magnetCoil: { component: "magnetCoil", props: { turns: 4 } },
+    circuit: { component: "circuit", props: { battery: { value: "zero", unit: "V" }, resistor: { value: "two", unit: "R" }, meter: { value: "five", unit: "A" } } },
+    balanceScale: { component: "balanceScale", props: {}, exprRef: "total" },
     "highlight (overlay)": { component: "highlight", props: { target: "o" } },
   };
 

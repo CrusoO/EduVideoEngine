@@ -1,4 +1,4 @@
-import { CLAIM_KINDS_FROM_2_1, LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1 } from "./bundle";
+import { CLAIM_KINDS_FROM_2_1, LessonBundle, LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2, SPEC_VERSION_2_3 } from "./bundle";
 import type { Claim } from "./bundle";
 import type { LessonBundle as Bundle } from "./bundle";
 import { termIds } from "./expr";
@@ -48,6 +48,20 @@ type Bad = (path: string, message: string) => void;
  * Optional fields are omitted when absent, never empty.
  */
 function checkSpecVersion(b: Bundle, bad: Bad): void {
+  // Spec 2.2.0 is additive: `carryFrom`, a morph cue and the props that go with it (an equation's `from`, a graph's `sweep`) are what an earlier bundle may not carry (ADR 0067, 0068, 0070).
+  // Spec 2.3.0 is additive too: a statement claim's `exprRefs` is what an earlier bundle may not carry (ADR 0074). A 2.3.0 bundle may carry the fields of 2.2.0.
+  if (b.specVersion !== SPEC_VERSION_2_3) {
+    for (const c of b.claims ?? []) if (c.kind === "statement" && c.exprRefs !== undefined) bad(`claims.${c.id}`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_3}: exprRefs on a statement claim`);
+  }
+  if (b.specVersion !== SPEC_VERSION_2_2 && b.specVersion !== SPEC_VERSION_2_3) {
+    for (const sc of b.scenes) {
+      for (const o of sc.objects) {
+        const props = o.props as { from?: unknown; sweep?: unknown };
+        if (o.carryFrom !== undefined || props.from !== undefined || props.sweep !== undefined) bad(`scenes.${sc.id}.objects.${o.id}`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_2}`);
+      }
+      for (const c of sc.cues) if (c.action === "morph") bad(`scenes.${sc.id}.cues`, `a ${b.specVersion} bundle may not carry fields of ${SPEC_VERSION_2_2}: the morph cue`);
+    }
+  }
   if (b.specVersion === LEGACY_SPEC_VERSION) {
     const v2: Array<[string, boolean]> = [
       ["subjectId", b.subjectId !== undefined],
@@ -107,6 +121,7 @@ function checkSpecVersion(b: Bundle, bad: Bad): void {
     need(at, c.claimMode !== undefined && c.importance !== undefined, "claimMode and importance");
     need(at, c.sourceIds !== undefined, "sourceIds");
     if (c.kind === "statement" && c.claimMode !== "grounded") bad(at, "a statement claim is prose: its claimMode is grounded");
+    if (c.kind === "statement") for (const ref of c.exprRefs ?? []) if (!(ref in b.expressions)) bad(`${at}.exprRefs`, `names unknown expression ${ref}`);
     if (c.claimMode === "grounded" && c.kind !== "statement") bad(at, "a grounded claim is a statement claim: the verifier proves the other kinds, so they are computed");
     for (const src of c.sourceIds ?? []) if (!b.sourceIds.includes(src)) bad(`${at}.sourceIds`, `unknown source ${src}`);
     for (const d of c.dependsOn ?? []) if (!claimIds.has(d)) bad(`${at}.dependsOn`, `depends on unknown claim ${d}`);
@@ -234,6 +249,43 @@ export function validateBundle(input: unknown): Validation {
       if (ask.goalExprRef && !(ask.goalExprRef in b.expressions)) bad(`${at}.interactions.${ask.id}`, `unknown expression ${ask.goalExprRef}`);
     }
   }
+
+  // Objects that persist (ADR 0067) and morph cues (ADR 0068).
+  b.scenes.forEach((scene, i) => {
+    const at = `scenes.${scene.id}`;
+    const before = i > 0 ? b.scenes[i - 1]! : undefined;
+    const carried = new Set<string>();
+    for (const o of scene.objects) {
+      if (o.carryFrom === undefined) continue;
+      const here = `${at}.objects.${o.id}`;
+      const from = before?.objects.find((x) => x.id === o.carryFrom);
+      if (!before) bad(here, "carryFrom needs a scene before this one");
+      else if (!from) bad(here, `carryFrom names ${o.carryFrom}, which is not an object of the scene before (${before.id})`);
+      else if (from.component !== o.component) bad(here, `carryFrom: ${o.carryFrom} is a ${from.component}, this is a ${o.component}`);
+      if (o.role === "static") bad(here, "a static object is not carried");
+      if (carried.has(o.carryFrom)) bad(here, `${o.carryFrom} is carried by two objects of one scene`);
+      carried.add(o.carryFrom);
+      if (scene.cues.some((c) => c.targetObject === o.id && (c.action === "reveal" || c.action === "draw" || c.action === "pop"))) bad(here, "a carried object is on screen from the first moment: it has no reveal, draw or pop cue");
+    }
+    for (const o of scene.objects) {
+      const whole = scene.cues.filter((c) => c.targetObject === o.id);
+      const morphs = whole.filter((c) => c.action === "morph");
+      const from = (o.props as { from?: unknown }).from;
+      const here = `${at}.objects.${o.id}`;
+      if (o.component === "equation" && from !== undefined) {
+        if (typeof from !== "string" || !(from in b.expressions)) bad(here, `props.from names ${String(from)}, which is not an expression`);
+        else if (from === o.exprRef) bad(here, "props.from is the expression the object already shows: there is nothing to morph");
+        if (morphs.length === 0) bad(here, "an equation with props.from needs a morph cue on the whole object");
+      }
+      const sweep = (o.props as { sweep?: unknown }).sweep;
+      const sweeps = o.component === "functionGraph" || o.component === "circuit" || o.component === "waterAnalogy";
+      const morphable = (o.component === "equation" && from !== undefined) || (sweeps && sweep !== undefined);
+      if (morphs.length > 0 && !morphable) bad(here, "a morph cue belongs to an equation with props.from or a graph, circuit or water picture with props.sweep");
+      if (sweeps && sweep !== undefined && morphs.length === 0) bad(here, `a ${o.component === "functionGraph" ? "graph" : "picture"} with props.sweep needs a morph cue on the whole object`);
+      if (morphs.length > 1) bad(here, "an object morphs once per scene");
+    }
+    for (const c of scene.cues) if (c.action === "morph" && c.targetObject.includes("#")) bad(`${at}.cues`, `morph acts on a whole object, not on ${c.targetObject}`);
+  });
 
   // Colours (ADR 0019): a coloured term must exist; inside one scene two different terms may not share a colour. The same term has one
   // colour everywhere because the colour belongs to the term name, not to the scene.

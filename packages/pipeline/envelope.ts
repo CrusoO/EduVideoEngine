@@ -1,5 +1,5 @@
 import type { JsonSchema } from "@eve/adapters";
-import { IMPLEMENTED } from "@eve/components";
+import { OFFERED_TO_MODELS } from "@eve/components";
 import { PATTERN_IDS } from "@eve/patterns";
 import { BEAT_KINDS, COLOR_NAMES, CUE_ACTIONS } from "@eve/schema";
 
@@ -38,7 +38,7 @@ export function allowedValues(
   extra: Readonly<Record<string, readonly string[]>> = {},
 ): Record<string, string[]> {
   const out: Record<string, string[]> = {
-    components: [...IMPLEMENTED],
+    components: [...OFFERED_TO_MODELS],
     patterns: [...PATTERN_IDS],
     colours: [...COLOR_NAMES],
     cueActions: [...CUE_ACTIONS],
@@ -75,5 +75,27 @@ export function buildEnvelope(parts: Partial<EnvelopeParts>): string {
     `OUTPUT SCHEMA\n${json(p.schema)}`,
     `ERROR OBJECTS\n${p.errors.map((e) => `${e.when}: ${JSON.stringify(e.shape)}`).join("\n")}`,
     `EXAMPLE\ninput: ${JSON.stringify(p.example.input)}\noutput: ${JSON.stringify(p.example.output)}`,
+  ].join("\n\n");
+}
+
+/** The sections of a request whose text never changes between the requests of one pass (the polisher, ADR 0088): everything before ALLOWED VALUES. */
+export const STATIC_FIRST_SECTIONS = ["TASK", "RULES", "OUTPUT SCHEMA", "ERROR OBJECTS", "EXAMPLE", "ALLOWED VALUES", "INPUT"] as const;
+
+/**
+ * The same seven sections in an order that suits a provider that caches the start of a request: what is fixed for the pass (task, rules, schema, error objects, example)
+ * first, what changes with the beat (the allowed ids, the data) last. Two requests of the pass then share a long identical start, which a provider may cache and which does
+ * not count against its token limits where it does (Groq says so for cached tokens). `buildEnvelope` and the recorded requests of the older passes are untouched.
+ */
+export function buildStaticFirstEnvelope(parts: Partial<EnvelopeParts>): string {
+  buildEnvelope(parts); // the same checks: a request cannot go out missing a section
+  const p = parts as EnvelopeParts;
+  return [
+    `TASK\n${p.task.trim()}`,
+    `RULES\n${p.rules.map((r, i) => `${i + 1}. ${r.trim()}`).join("\n")}`,
+    `OUTPUT SCHEMA\n${json(p.schema)}`,
+    `ERROR OBJECTS\n${p.errors.map((e) => `${e.when}: ${JSON.stringify(e.shape)}`).join("\n")}`,
+    `EXAMPLE\ninput: ${JSON.stringify(p.example.input)}\noutput: ${JSON.stringify(p.example.output)}`,
+    `ALLOWED VALUES\n${json(p.allowed)}`,
+    `INPUT\n${json(p.input)}`,
   ].join("\n\n");
 }

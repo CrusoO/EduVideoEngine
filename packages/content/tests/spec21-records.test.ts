@@ -18,7 +18,7 @@ describe("recall questions name their answer kind", () => {
   const rec = (over: Draft = {}) => make("practiceQuestion", { expressions: { "q.p": quad, "q.s": eq(sym("S"), num(5)), "q.x": eq(x, num(2)), "q.y": eq(x, num(3)), "q.n": num(7), "q.l": linear, "q.r": rootEq }, questionType: "recall", answerKind: "sum-of-roots", question: { problem: "q.p", answer: "q.s" }, humanApproved: true, ...over });
 
   it("a recall question must write answerKind: nothing is defaulted", () => {
-    expect(probs(rec({ answerKind: undefined }))).toEqual(["answerKind | a recall question sets answerKind: sum-of-roots, product-of-roots, roots or solution"]);
+    expect(probs(rec({ answerKind: undefined }))).toEqual(["answerKind | a recall question sets answerKind: sum-of-roots, product-of-roots, roots, solution or value"]);
   });
   it("each of the four kinds is valid with its own shape", () => {
     expect(probs(rec())).toEqual([]);
@@ -120,7 +120,7 @@ describe("recallAnswerClaim, by answer kind", () => {
   });
   it("says why it cannot, as a string", () => {
     expect(at(rec({ answerKind: "sum-of-roots" }))).toBe("a recall question has a problem and an answer");
-    expect(at(rec({ question: { problem: "q.p", answer: "q.s" } }))).toBe("a recall question sets answerKind: sum-of-roots, product-of-roots, roots or solution");
+    expect(at(rec({ question: { problem: "q.p", answer: "q.s" } }))).toBe("a recall question sets answerKind: sum-of-roots, product-of-roots, roots, solution or value");
     expect(at(rec({ answerKind: "sum-of-roots", question: { problem: "q.p", answers: ["q.x"] } }))).toBe("a sum-of-roots question gives one answer equation");
     expect(at(rec({ answerKind: "product-of-roots", question: { problem: "q.p", answers: ["q.x"] } }))).toBe("a product-of-roots question gives one answer equation");
     expect(at(rec({ answerKind: "solution", question: { problem: "q.l", answers: ["q.r"] } }))).toBe("a solution question gives its answer equation");

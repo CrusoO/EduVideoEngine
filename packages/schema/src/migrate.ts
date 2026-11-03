@@ -1,4 +1,4 @@
-import { LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, type LessonBundle } from "./bundle";
+import { LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSIONS, type LessonBundle } from "./bundle";
 import { seal } from "./hash";
 
 /**
@@ -30,7 +30,7 @@ export class MigrationError extends Error {}
 const compact = <T extends object>(o: T): T => Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined)) as T;
 
 export function migrateToV2(bundle: LessonBundle, input: MigrationInput): LessonBundle {
-  if (bundle.specVersion === SPEC_VERSION || bundle.specVersion === SPEC_VERSION_2_1) return bundle;
+  if (bundle.specVersion !== LEGACY_SPEC_VERSION && (SPEC_VERSIONS as readonly string[]).includes(bundle.specVersion)) return bundle;
   if (bundle.specVersion !== LEGACY_SPEC_VERSION) throw new MigrationError(`cannot migrate spec ${bundle.specVersion}`);
   const missing: string[] = [];
   const beats = bundle.plan.beats.map((beat) => {

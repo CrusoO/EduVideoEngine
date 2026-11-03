@@ -32,8 +32,8 @@ const messages = (b: unknown) => {
 };
 
 describe("the versions and the kinds", () => {
-  it("lists three versions, and the claim kinds of the zod union are the list the verifier table is made from", () => {
-    expect([...SPEC_VERSIONS]).toEqual(["1.0.0", "2.0.0", "2.1.0"]);
+  it("lists five versions, and the claim kinds of the zod union are the list the verifier table is made from", () => {
+    expect([...SPEC_VERSIONS]).toEqual(["1.0.0", "2.0.0", "2.1.0", "2.2.0", "2.3.0"]);
     expect([...CLAIM_KINDS_FROM_2_1]).toEqual(["satisfied-by", "product-of-roots"]);
     const inUnion = Claim.options.map((o) => o.shape.kind.value).sort();
     expect(inUnion).toEqual([...CLAIM_KINDS].sort());

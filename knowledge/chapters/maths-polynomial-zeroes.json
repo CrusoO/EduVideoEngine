@@ -1,0 +1,381 @@
+{
+  "concepts": [
+    {
+      "id": "poly.quadratic",
+      "label": "Quadratic polynomial",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "A polynomial of degree two, written a x squared plus b x plus c with a not zero.",
+      "prerequisites": [
+        "alg.equation"
+      ]
+    },
+    {
+      "id": "poly.zero",
+      "label": "Zero of a polynomial",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "A number that makes the value of the polynomial zero when it is put in place of x.",
+      "prerequisites": [
+        "poly.quadratic"
+      ]
+    },
+    {
+      "id": "poly.zeroes.relation",
+      "label": "Sum and product of the zeroes",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "For a x squared plus b x plus c the zeroes add up to minus b over a and multiply to c over a.",
+      "prerequisites": [
+        "poly.zero"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "kb.own.maths10.poly",
+      "title": "Notes on zeroes of a quadratic polynomial (written by the project in its own words; the school book is cited as a pointer, not copied)",
+      "rightsHolder": "LearningUplift project",
+      "licence": "owner-original",
+      "passages": [
+        {
+          "id": "p1",
+          "loc": "notes 1",
+          "text": "A polynomial of degree two is called a quadratic polynomial. It can be written as a x squared plus b x plus c, where a, b and c are real numbers and a is not zero."
+        },
+        {
+          "id": "p2",
+          "loc": "notes 2",
+          "text": "A zero of a polynomial is a number which, put in place of x, makes the value of the polynomial zero. On the graph a zero is a point where the curve meets the x axis."
+        },
+        {
+          "id": "p3",
+          "loc": "notes 3",
+          "text": "If the zeroes of a x squared plus b x plus c are alpha and beta, then alpha plus beta equals minus b divided by a, and alpha times beta equals c divided by a."
+        },
+        {
+          "id": "p4",
+          "loc": "notes 4",
+          "text": "For two x squared minus eight x plus six the zeroes are one and three. Their sum, four, is eight divided by two, which is minus b divided by a, and their product, three, is six divided by two, which is c divided by a."
+        },
+        {
+          "id": "p5",
+          "loc": "notes 5",
+          "text": "A common slip is to forget the minus sign and say that the sum of the zeroes is b divided by a. The sum of the zeroes is minus b divided by a."
+        },
+        {
+          "id": "p6",
+          "loc": "notes 6",
+          "text": "A quadratic polynomial has at most two zeroes."
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "z.quad.def",
+      "conceptId": "poly.quadratic",
+      "statement": "A quadratic polynomial is a polynomial of degree two, written a x squared plus b x plus c with a not zero.",
+      "conditions": [],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p1"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true
+    },
+    {
+      "id": "z.zero.def",
+      "conceptId": "poly.zero",
+      "statement": "A zero of a polynomial is a number that makes its value zero when put in place of x.",
+      "conditions": [],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p2"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true
+    },
+    {
+      "id": "z.zero.graph",
+      "conceptId": "poly.zero",
+      "statement": "A zero of a polynomial is where its graph meets the x axis.",
+      "conditions": [
+        "the zero is a real number"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p2"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ]
+    },
+    {
+      "id": "z.zero.count",
+      "conceptId": "poly.zero",
+      "statement": "A quadratic polynomial has at most two zeroes.",
+      "conditions": [],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p6"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true
+    },
+    {
+      "id": "z.zero.check",
+      "conceptId": "poly.zero",
+      "statement": "One is a zero of two x squared minus eight x plus six, because the polynomial has value zero there.",
+      "conditions": [],
+      "kind": "computed",
+      "support": [],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true,
+      "proof": {
+        "expr": {
+          "op": "add",
+          "a": {
+            "op": "sub",
+            "a": {
+              "op": "mul",
+              "a": {
+                "op": "num",
+                "n": 2
+              },
+              "b": {
+                "op": "mul",
+                "a": {
+                  "op": "sym",
+                  "name": "x"
+                },
+                "b": {
+                  "op": "sym",
+                  "name": "x"
+                }
+              }
+            },
+            "b": {
+              "op": "mul",
+              "a": {
+                "op": "num",
+                "n": 8
+              },
+              "b": {
+                "op": "sym",
+                "name": "x"
+              }
+            }
+          },
+          "b": {
+            "op": "num",
+            "n": 6
+          }
+        },
+        "given": {
+          "x": 1
+        },
+        "equals": 0
+      }
+    },
+    {
+      "id": "z.sum.rule",
+      "conceptId": "poly.zeroes.relation",
+      "statement": "The sum of the zeroes of a x squared plus b x plus c is minus b divided by a.",
+      "conditions": [
+        "a x squared plus b x plus c with a not zero"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p3"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ]
+    },
+    {
+      "id": "z.prod.rule",
+      "conceptId": "poly.zeroes.relation",
+      "statement": "The product of the zeroes of a x squared plus b x plus c is c divided by a.",
+      "conditions": [
+        "a x squared plus b x plus c with a not zero"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p3"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ]
+    },
+    {
+      "id": "z.sum.proof",
+      "conceptId": "poly.zeroes.relation",
+      "statement": "For two x squared minus eight x plus six, with zeroes one and three, the sum of the zeroes is minus b divided by a.",
+      "conditions": [],
+      "kind": "computed",
+      "support": [],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true,
+      "proof": {
+        "expr": {
+          "op": "sub",
+          "a": {
+            "op": "add",
+            "a": {
+              "op": "sym",
+              "name": "alpha"
+            },
+            "b": {
+              "op": "sym",
+              "name": "beta"
+            }
+          },
+          "b": {
+            "op": "div",
+            "a": {
+              "op": "neg",
+              "a": {
+                "op": "sym",
+                "name": "b"
+              }
+            },
+            "b": {
+              "op": "sym",
+              "name": "a"
+            }
+          }
+        },
+        "given": {
+          "alpha": 1,
+          "beta": 3,
+          "a": 2,
+          "b": -8
+        },
+        "equals": 0
+      }
+    },
+    {
+      "id": "z.prod.proof",
+      "conceptId": "poly.zeroes.relation",
+      "statement": "For two x squared minus eight x plus six, with zeroes one and three, the product of the zeroes is c divided by a.",
+      "conditions": [],
+      "kind": "computed",
+      "support": [],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ],
+      "unconditional": true,
+      "proof": {
+        "expr": {
+          "op": "sub",
+          "a": {
+            "op": "mul",
+            "a": {
+              "op": "sym",
+              "name": "alpha"
+            },
+            "b": {
+              "op": "sym",
+              "name": "beta"
+            }
+          },
+          "b": {
+            "op": "div",
+            "a": {
+              "op": "sym",
+              "name": "c"
+            },
+            "b": {
+              "op": "sym",
+              "name": "a"
+            }
+          }
+        },
+        "given": {
+          "alpha": 1,
+          "beta": 3,
+          "a": 2,
+          "c": 6
+        },
+        "equals": 0
+      }
+    },
+    {
+      "id": "z.sum.avoid",
+      "conceptId": "poly.zeroes.relation",
+      "statement": "A common slip is to write the sum of the zeroes as b divided by a; the sum is minus b divided by a.",
+      "conditions": [
+        "a x squared plus b x plus c with a not zero"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.own.maths10.poly",
+          "passageId": "p5"
+        }
+      ],
+      "citations": [
+        {
+          "bookId": "cbse.10.maths",
+          "section": "2.3"
+        }
+      ]
+    }
+  ]
+}

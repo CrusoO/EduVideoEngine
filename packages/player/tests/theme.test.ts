@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { contrast } from "@eve/components";
 import { COLOR } from "@eve/layout";
-import { COLOR_NAMES, SEMANTIC, STAGE } from "../theme/palette";
+import { COLOR_NAMES, SEMANTIC, STAGE, WHITEBOARD_SEMANTIC, WHITEBOARD_STAGE, colorTheme } from "../theme/palette";
 
 const css = readFileSync(join(__dirname, "..", "..", "components", "src", "styles.css"), "utf8");
 const variable = (name: string) => css.match(new RegExp(`--eve-${name}:\\s*(#[0-9A-Fa-f]{6})`))?.[1];
@@ -51,5 +51,35 @@ describe("one palette everywhere", () => {
   });
   it("the layout checks use the same colours", () => {
     expect(COLOR).toMatchObject({ stage: STAGE.bg, ink: STAGE.text, muted: STAGE.muted, highlight: SEMANTIC.yellow, onHighlight: STAGE.bg });
+  });
+});
+
+describe("the whiteboard theme (ADR 0082)", () => {
+  const board = readFileSync(join(__dirname, "..", "theme", "whiteboard.css"), "utf8");
+  const wb = (name: string) => board.match(new RegExp(`--eve-${name}:\\s*(#[0-9A-Fa-f]{6})`))?.[1];
+  const PAIRS: Array<[string, string, string]> = [
+    ["ink", WHITEBOARD_STAGE.text, WHITEBOARD_STAGE.bg],
+    ["muted text", WHITEBOARD_STAGE.muted, WHITEBOARD_STAGE.bg],
+    ...COLOR_NAMES.map((n): [string, string, string] => [`${n} marker`, WHITEBOARD_SEMANTIC[n], WHITEBOARD_STAGE.bg]),
+  ];
+  it.each(PAIRS)("%s meets 4.5:1 on the board", (_name, fg, bg) => {
+    expect(contrast(fg, bg)).toBeGreaterThanOrEqual(4.5);
+  });
+  it("the axis is visible as a graphic (3:1) and the grid is only decoration", () => {
+    expect(contrast(WHITEBOARD_STAGE.axis, WHITEBOARD_STAGE.bg)).toBeGreaterThanOrEqual(3);
+    expect(contrast(WHITEBOARD_STAGE.grid, WHITEBOARD_STAGE.bg)).toBeLessThan(3);
+  });
+  it("whiteboard.css holds exactly the palette values", () => {
+    expect(wb("bg")).toBe(WHITEBOARD_STAGE.bg);
+    expect(wb("grid")).toBe(WHITEBOARD_STAGE.grid);
+    expect(wb("axis")).toBe(WHITEBOARD_STAGE.axis);
+    expect(wb("ink")).toBe(WHITEBOARD_STAGE.text);
+    expect(wb("muted")).toBe(WHITEBOARD_STAGE.muted);
+    for (const n of COLOR_NAMES) expect(wb(n)).toBe(WHITEBOARD_SEMANTIC[n]);
+  });
+  it("a formula term takes the marker colour of the theme, and the dark stage is the default", () => {
+    expect(colorTheme({ t: "blue" }, "whiteboard").of("t")).toBe(WHITEBOARD_SEMANTIC.blue);
+    expect(colorTheme({ t: "blue" }).of("t")).toBe(SEMANTIC.blue);
+    expect(colorTheme(undefined, "whiteboard").muted).toBe(WHITEBOARD_STAGE.muted);
   });
 });

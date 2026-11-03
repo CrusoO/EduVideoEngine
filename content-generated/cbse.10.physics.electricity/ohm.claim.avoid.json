@@ -1,0 +1,17 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.claim.avoid",
+  "kind": "conceptClaim",
+  "text": "A larger resistance lets less current through, so the current cannot be found by multiplying the potential difference by the resistance.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "exprRefs": [
+    "ohm.wrong"
+  ],
+  "importance": "support",
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as why the common mistake fails; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "ba3ec4d57b6c58fac99a521a5ba141ade94a9426e0be6b0fe2f2670dec66b82f"
+}

@@ -1,0 +1,59 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.table",
+  "kind": "passage",
+  "text": "The readings of the experiment.",
+  "expressions": {
+    "st.v1": {
+      "op": "num",
+      "n": 4
+    },
+    "st.v2": {
+      "op": "num",
+      "n": 8
+    },
+    "st.v3": {
+      "op": "num",
+      "n": 12
+    },
+    "st.i1": {
+      "op": "num",
+      "n": 1
+    },
+    "st.i2": {
+      "op": "num",
+      "n": 2
+    },
+    "st.i3": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "grids": {
+    "inputs": {
+      "cols": 3,
+      "cells": [
+        "st.v1",
+        "st.v2",
+        "st.v3"
+      ],
+      "tint": "signed",
+      "label": "Battery in volts"
+    },
+    "outputs": {
+      "cols": 3,
+      "cells": [
+        "st.i1",
+        "st.i2",
+        "st.i3"
+      ],
+      "tint": "signed",
+      "label": "Current in amperes"
+    }
+  },
+  "sourceNote": "Written for this project as the readings of the experiment of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "0dbb342033478a9534b7b17f2972bbf1fc735231892757d2896b29bd8dd9cbf9"
+}

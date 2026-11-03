@@ -18,6 +18,10 @@ export const ARC_PLANNER_VERSION = "planner.v4";
 
 /** Arcs the planner is not offered (config/arcs.json): misconception_first waits for a picture pattern for its hook and mistake beats. */
 const HELD: ReadonlySet<string> = new Set(arcsConfig.held);
+/** Arcs a person writes (config/arcs.json, ADR 0085): checked like any plan, never offered to a model. */
+const AUTHORED: ReadonlySet<string> = new Set((arcsConfig as { authored?: string[] }).authored ?? []);
+/** The arcs a model may choose: the request and its schema list these only, so adding an authored arc changes no recorded request. */
+const MODEL_ARCS = ARC_IDS.filter((id) => !AUTHORED.has(id));
 
 const Insufficient = z.object({ error: z.literal("insufficient_content"), missing: z.array(z.string().min(1)).min(1) }).strict();
 const Unsupported = z.object({ error: z.literal("unsupported_locale") }).strict();
@@ -67,7 +71,7 @@ export type OfferedArc = { id: ArcId; slots: Array<{ slotId: SlotId; beatKind: s
 /** The arcs the planner may choose: not held, and with a pattern for every slot that must be filled. */
 export function offeredArcs(ctx: LessonContext, options: Record<SlotId, SlotOption[]> = slotOptions(ctx)): OfferedArc[] {
   const hasPrerequisites = ctx.prerequisites.length > 0;
-  return ARC_IDS.filter((id) => !HELD.has(id))
+  return MODEL_ARCS.filter((id) => !HELD.has(id))
     .map((id) => ({
       id,
       slots: ARCS[id].slots.map((s) => ({ slotId: s.slotId, beatKind: SLOT_BEAT_KIND[s.slotId], required: s.need === "always" || (s.need === "ifPrerequisites" && hasPrerequisites) })),
@@ -79,7 +83,7 @@ export function offeredArcs(ctx: LessonContext, options: Record<SlotId, SlotOpti
 export function whatIsMissing(ctx: LessonContext, options: Record<SlotId, SlotOption[]> = slotOptions(ctx)): string[] {
   const hasPrerequisites = ctx.prerequisites.length > 0;
   const missing = new Set<string>();
-  for (const id of ARC_IDS.filter((a) => !HELD.has(a))) {
+  for (const id of MODEL_ARCS.filter((a) => !HELD.has(a))) {
     for (const s of ARCS[id].slots) {
       if ((s.need === "always" || hasPrerequisites) && options[s.slotId].length === 0) missing.add(`a pattern that can be filled from the records for the ${s.slotId} slot (a ${SLOT_BEAT_KIND[s.slotId]} beat)`);
     }
@@ -126,7 +130,7 @@ export function arcPlannerData(ctx: LessonContext) {
 export const ARC_PLANNER_JSON_SCHEMA: JsonSchema = {
   type: "object",
   properties: {
-    arcId: { type: "string", enum: [...ARC_IDS] },
+    arcId: { type: "string", enum: [...MODEL_ARCS] },
     prerequisites: { type: "array", items: { type: "object", properties: { skillId: { type: "string" }, status: { type: "string", enum: [...PREREQUISITE_STATUSES] } }, required: ["skillId", "status"] } },
     beats: {
       type: "array",
@@ -146,12 +150,14 @@ export const ARC_PLANNER_JSON_SCHEMA: JsonSchema = {
 export function arcPlannerCall(ctx: LessonContext) {
   const pass = loadPassPrompt(ARC_PLANNER_VERSION);
   const data = arcPlannerData(ctx);
+  // only the patterns that can fill a slot from this skill's records: a pattern for another subject is not an option, and listing it would change the request (ADR 0076)
+  const offered = new Set(Object.values(data.slots).flatMap((options) => options.map((o) => o.pattern)));
   const input = buildEnvelope({
     task: pass.task,
     rules: pass.rules,
     allowed: allowedValues(
       { records: [...ctx.lesson.records, ...ctx.prerequisites.flatMap((p) => p.retrieval.records)].map((r) => r.id), expressions: Object.keys(ctx.lesson.expressions) },
-      { patterns: LIBRARY.map((p) => p.id), beatKinds: PEDAGOGY_BEAT_KINDS, arcIds: data.arcs.map((a) => a.id), slotIds: Object.keys(data.slots), prerequisiteStatuses: PREREQUISITE_STATUSES, skillIds: [ctx.skillId, ...ctx.prerequisites.map((p) => p.skillId)] },
+      { patterns: LIBRARY.map((p) => p.id).filter((id) => offered.has(id)), beatKinds: PEDAGOGY_BEAT_KINDS, arcIds: data.arcs.map((a) => a.id), slotIds: Object.keys(data.slots), prerequisiteStatuses: PREREQUISITE_STATUSES, skillIds: [ctx.skillId, ...ctx.prerequisites.map((p) => p.skillId)] },
     ),
     input: data,
     schema: ARC_PLANNER_JSON_SCHEMA,

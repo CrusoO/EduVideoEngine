@@ -1,0 +1,102 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.steps",
+  "kind": "solutionSteps",
+  "text": "Put the numbers in, solve for the current, then check it.",
+  "problem": "st.problem",
+  "expressions": {
+    "st.problem": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "sym",
+          "name": "I"
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 12
+      }
+    },
+    "st.divided": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "div",
+        "a": {
+          "op": "num",
+          "n": 12
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      }
+    },
+    "st.root": {
+      "op": "eq",
+      "a": {
+        "op": "sym",
+        "name": "I"
+      },
+      "b": {
+        "op": "num",
+        "n": 3
+      }
+    },
+    "st.back": {
+      "op": "eq",
+      "a": {
+        "op": "mul",
+        "a": {
+          "op": "num",
+          "n": 3
+        },
+        "b": {
+          "op": "num",
+          "n": 4
+        }
+      },
+      "b": {
+        "op": "num",
+        "n": 12
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "t1",
+      "role": "transform",
+      "expr": "st.divided",
+      "note": "Solve for the current."
+    },
+    {
+      "id": "r1",
+      "role": "root",
+      "expr": "st.root",
+      "note": "Work it out.",
+      "stepKind": "simplify"
+    },
+    {
+      "id": "c1",
+      "role": "check",
+      "expr": "st.back",
+      "note": "Put it back to check.",
+      "uses": "r1",
+      "stepKind": "substitute"
+    }
+  ],
+  "sourceNote": "Written for this project as the worked solution of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "654ace69b82d73a4903a6307941d43604a93c97fc297094a7ee4ef88f8d4d803"
+}

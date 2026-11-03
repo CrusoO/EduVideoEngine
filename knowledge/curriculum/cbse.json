@@ -1,0 +1,102 @@
+{
+  "nodes": [
+    {
+      "id": "cbse.10.maths.quadratic",
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "maths",
+      "unit": "Algebra",
+      "topic": "Quadratic equations",
+      "outcomes": [
+        "Recognise a quadratic equation and its roots",
+        "Find the sum and product of the roots from the coefficients"
+      ],
+      "conceptIds": [
+        "quad.equation",
+        "quad.root",
+        "quad.vieta"
+      ],
+      "syllabus": {
+        "title": "CBSE curriculum (mock entry, edition to be confirmed)",
+        "edition": "unconfirmed"
+      }
+    },
+    {
+      "id": "cbse.10.physics.electricity",
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "physics",
+      "unit": "Electricity",
+      "topic": "Electric current, potential difference and Ohm's law",
+      "outcomes": [
+        "Define current, potential difference and resistance",
+        "State and use Ohm's law and say when it does not hold"
+      ],
+      "conceptIds": [
+        "phys.current",
+        "phys.pd",
+        "phys.resistance",
+        "phys.ohm"
+      ],
+      "syllabus": {
+        "title": "CBSE curriculum (mock entry, edition to be confirmed)",
+        "edition": "unconfirmed"
+      }
+    },
+    {
+      "id": "cbse.12.physics.emi",
+      "board": "CBSE",
+      "grade": 12,
+      "subject": "physics",
+      "unit": "Electromagnetic induction",
+      "topic": "Electromagnetic induction: flux, Faraday's law, Lenz's law and motional emf",
+      "outcomes": [
+        "Calculate magnetic flux",
+        "Apply Faraday's and Lenz's laws",
+        "Find the emf of a moving conductor"
+      ],
+      "conceptIds": [
+        "phys.mag.flux",
+        "phys.emi.faraday",
+        "phys.emi.lenz",
+        "phys.emi.motional"
+      ],
+      "exams": [
+        "JEE",
+        "NEET"
+      ],
+      "syllabus": {
+        "title": "CBSE curriculum (mock entry, edition to be confirmed)",
+        "edition": "unconfirmed"
+      }
+    },
+    {
+      "id": "cbse.10.maths.ch02.s2_3",
+      "board": "CBSE",
+      "grade": 10,
+      "subject": "maths",
+      "unit": "Polynomials",
+      "topic": "Relationship between zeroes and coefficients of a quadratic polynomial",
+      "outcomes": [
+        "Say what a zero of a polynomial is",
+        "State the sum and product of the zeroes of a quadratic polynomial from its coefficients",
+        "Check the relation on a worked example"
+      ],
+      "conceptIds": [
+        "poly.quadratic",
+        "poly.zero",
+        "poly.zeroes.relation"
+      ],
+      "syllabus": {
+        "title": "NCERT Mathematics Class X, section 2.3 (pointer only)",
+        "edition": "Revised October 2022, reprint 2026-27"
+      },
+      "book": {
+        "bookId": "cbse.10.maths",
+        "section": "2.3"
+      },
+      "lessonSkillId": "MATH.ALG.QUAD.SUM_OF_ROOTS",
+      "lessonNote": "The lesson is the verified sum-of-roots lesson written for Chapter 4. It calls the numbers roots of a quadratic equation, where section 2.3 calls them zeroes of a quadratic polynomial, and it teaches the sum only, not the product. A lesson in the book's words is the next piece of authoring."
+    }
+  ]
+}

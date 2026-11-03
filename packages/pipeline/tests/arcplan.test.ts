@@ -233,3 +233,99 @@ describe("the slot options", () => {
     expect(offeredArcs(none)[0]!.slots.find((s) => s.slotId === "prerequisite_activation")!.required).toBe(false);
   });
 });
+
+describe("hasPrerequisites boundary — offeredArcs and whatIsMissing", () => {
+  // The context with no prerequisites: removing the SKILL skill record leaves ctx.prerequisites === []
+  const noPreq = () => lessonContext(STORE.filter((r) => r.kind !== "skill" || r.skillId !== SKILL), SKILL, "en-IN", "class-10");
+
+  it("hook slot is required=true even when there are no prerequisites (need=always, not ifPrerequisites)", () => {
+    // If "always" is mutated to "" the condition becomes s.need === "" which is always false, making hook not required
+    const arcs = offeredArcs(noPreq());
+    expect(arcs[0]!.slots.find((s) => s.slotId === "hook")!.required).toBe(true);
+  });
+
+  it("with prerequisites: prerequisite_activation is required=true; without: required=false — exact pair", () => {
+    // kills ConditionalExpression and EqualityOperator mutations on the ifPrerequisites branch
+    const withPreq = offeredArcs(ctx);
+    const withoutPreq = offeredArcs(noPreq());
+    expect(withPreq[0]!.slots.find((s) => s.slotId === "prerequisite_activation")!.required).toBe(true);
+    expect(withoutPreq[0]!.slots.find((s) => s.slotId === "prerequisite_activation")!.required).toBe(false);
+  });
+
+  it("whatIsMissing with no prerequisites does not report the prerequisite slot as missing", () => {
+    // If prerequisites.length > 0 is mutated to >= 0, hasPrerequisites=true even for length=0,
+    // and the ifPrerequisites slot (which has no options) would be added to missing.
+    expect(whatIsMissing(noPreq()).join("\n")).not.toMatch(/prerequisite/i);
+  });
+
+  it("whatIsMissing names a missing always slot regardless of prerequisites", () => {
+    // worked_example is always required; drop solutionSteps so it has no options
+    const thin = lessonContext(STORE.filter((r) => r.kind !== "skill" || r.skillId !== SKILL).filter((r) => r.kind !== "solutionSteps"), SKILL, "en-IN", "class-10");
+    expect(whatIsMissing(thin).join("\n")).toMatch(/for the worked_example slot \(a worked beat\)/);
+  });
+});
+
+describe("arcPlannerData record filtering", () => {
+  const data = arcPlannerData(ctx);
+
+  it("records sent to the model do not include the skill record itself", () => {
+    // kills r.kind !== "skill" → r.kind === "skill" mutation (would include skill record in data)
+    expect(data.records.map((r) => r.id)).not.toContain("quad.sum.skill");
+  });
+
+  it("records sent to the model include non-skill records (conceptClaim, solutionSteps, etc.)", () => {
+    // confirms the filter keeps non-skill records (complement of the above)
+    expect(data.records.map((r) => r.id)).toContain("quad.sum.claim.root");
+    expect(data.records.map((r) => r.id)).toContain("quad.sum.steps");
+  });
+
+  it("prerequisite records sent to the model do not include the prerequisite skill record", () => {
+    // same filter applied to prerequisites
+    expect(data.prerequisites[0]!.records.map((r: { id: string }) => r.id)).not.toContain("quad.factorise.skill");
+  });
+
+  it("the locale sent is the language tag without the region suffix (split on '-', index 0)", () => {
+    // kills ArithmeticOperator mutations on the split index (e.g. index 1 would give "IN")
+    // ctx uses "en-IN" locale, so locale sent to model must be "en" (not "IN" or "en-IN")
+    expect(data.locale).toBe("en");
+    expect(data.locale).not.toContain("-");
+    expect(data.locale).not.toBe("IN");
+  });
+});
+
+describe("checkArcPlan — exact beat count boundary messages", () => {
+  it("too few beats message names the exact min and max and the actual count", () => {
+    // If StringLiteral mutations change "to" or the format, the exact message test catches it
+    const result = checkArcPlan(ctx, edit((p) => ({ ...p, beats: p.beats.slice(0, 3) })));
+    expect(result.join("\n")).toMatch(/^a lesson has 4 to 10 beats, this plan has 3$/m);
+  });
+
+  it("too many beats message names the actual count", () => {
+    const tooMany = edit((p) => ({
+      ...p,
+      beats: [
+        ...p.beats,
+        ...Array.from({ length: 5 }, (_, i) => ({ ...structuredClone(p.beats[4]!), id: `b${p.beats.length + i + 1}` })),
+      ],
+    }));
+    expect(checkArcPlan(ctx, tooMany).join("\n")).toMatch(/a lesson has 4 to 10 beats, this plan has 11/);
+  });
+});
+
+describe("checkArcPlan — prerequisite status exact error messages", () => {
+  it("a prerequisite listed with status assumed at a class that forbids it names the class and the choices", () => {
+    const low = lessonContext(STORE, SKILL, "en-IN", "class-9");
+    const plan = edit((p) => ({ ...p, prerequisites: [{ skillId: FACTORISE, status: "assumed" }] }));
+    expect(checkArcPlan(low, plan).join("\n")).toMatch(/MATH\.ALG\.QUAD\.FACTORISE cannot be assumed at level class-9; choose recapped or linked/);
+  });
+
+  it("a missing prerequisite names the skill and the choices: recapped, linked or assumed", () => {
+    const noneInPlan = edit((p) => ({ ...p, prerequisites: [] }));
+    expect(checkArcPlan(ctx, noneInPlan).join("\n")).toMatch(/MATH\.ALG\.QUAD\.FACTORISE is a direct prerequisite and needs a status \(recapped, linked or assumed\)/);
+  });
+
+  it("a prerequisite listed twice names the skill", () => {
+    const doubled = edit((p) => ({ ...p, prerequisites: [...p.prerequisites, ...p.prerequisites] }));
+    expect(checkArcPlan(ctx, doubled).join("\n")).toMatch(/MATH\.ALG\.QUAD\.FACTORISE is listed twice/);
+  });
+});

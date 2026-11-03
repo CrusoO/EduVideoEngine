@@ -62,6 +62,7 @@ export function validateScene(candidate: unknown, ctx: SceneContext): string[] {
         math: katexMath,
         cueParts: mine.map((c) => c.targetObject.split("#")[1]!),
         cueActions: mine.map((c) => ({ part: c.targetObject.split("#")[1]!, action: c.action })),
+        wholeActions: scene.cues.filter((c) => c.targetObject === o.id).map((c) => c.action),
       })) {
         bad(at, p);
       }

@@ -18,6 +18,8 @@ export type PatternArgs = {
   sentenceIds: readonly string[];
   /** The writer slots, by name. */
   text: Readonly<Record<string, string>>;
+  /** Let a pattern add motion where it can: sweep a graph (ADR 0070), turn a recap equation into its factored form (ADR 0072). Off unless asked: a bundle that was built before, such as the reference lesson, must not change. */
+  motion?: boolean;
 };
 
 /** A scene made from a pattern, with what it adds to the bundle: expressions (such as the points of a number line), claims (derived) and records used. */

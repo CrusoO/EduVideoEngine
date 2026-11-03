@@ -1,0 +1,17 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.claim.sum",
+  "kind": "conceptClaim",
+  "text": "A neuron multiplies every pixel by its weight, adds the products, and then adds its bias.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "core",
+  "dependsOn": [
+    "nn.claim.weight"
+  ],
+  "sourceNote": "Written for this project as the weighted sum, as a claim of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "244295eae3108d182eb69f1d518821e616a08f568d0d60f9d125c37054c2ffce"
+}

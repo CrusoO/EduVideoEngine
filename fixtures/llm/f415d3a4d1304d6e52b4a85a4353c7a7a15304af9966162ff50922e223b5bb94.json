@@ -1,0 +1,18 @@
+{
+  "key": "f415d3a4d1304d6e52b4a85a4353c7a7a15304af9966162ff50922e223b5bb94",
+  "step": "scriptwriter",
+  "promptVersion": "scriptwriter.v1",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-22T19:04:33.411Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"beats\":[{\"beatId\":\"b2\",\"sentences\":[{\"claimId\":\"nn.claim.number\",\"text\":\"A neuron holds a single number, and that number is called its activation.\"},{\"claimId\":\"nn.claim.weight\",\"text\":\"Every pixel has its own weight, which says how strongly that pixel pushes the neuron up or down.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"To get its total, the neuron multiplies every pixel by its weight, adds those products together, and then adds its bias.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"A pixel with a large weight matters a lot to the total, while a pixel with a weight near nothing hardly matters at all.\"}]},{\"beatId\":\"b3\",\"sentences\":[{\"claimId\":\"c.nn.steps.equivalent.1\",\"text\":\"The sum {expr:nn.problem} can be written out as {expr:nn.written}.\"},{\"claimId\":\"c.nn.steps.equivalent.1\",\"text\":\"Each pixel was multiplied by its weight to give those numbers, and the last term is the bias being taken off.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"Adding those terms leaves {expr:nn.total}, which is the total this neuron works out.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"The total is a plain number now, and it is what the neuron would pass on before squashing it into its small range.\"}],\"prompt\":\"Which pixel pushes the total up the most?\"},{\"beatId\":\"b4\",\"sentences\":[{\"claimId\":\"nn.claim.mistake\",\"text\":\"Adding the pixel values alone gives {expr:nn.wrong}, and that ignores every weight.\"},{\"claimId\":\"nn.claim.mistake\",\"text\":\"That total is not what the neuron adds up, because the weights and the bias were left out.\"}],\"note\":\"Pixels alone leave out the weights.\"},{\"beatId\":\"b5\",\"sentences\":[{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"This neuron works out {expr:nn.q.answer}.\"},{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"Each pixel is multiplied by its weight, the products are added, and the bias is taken off.\"},{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"It is the same weighted sum as before, now on a different strip of pixels.\"}],\"prompt\":\"What total does this neuron work out?\"}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

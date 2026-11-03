@@ -1,0 +1,18 @@
+{
+  "key": "b502bb60d07d052991ff7b18bdc87eef4cc9cc45ab264816e9c567bff6977315",
+  "step": "planner",
+  "promptVersion": "planner.v4",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-23T17:08:06.248Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"arcId\":\"story_first\",\"prerequisites\":[],\"beats\":[{\"id\":\"b1\",\"slotId\":\"hook\",\"pattern\":\"circuit-scene\",\"title\":\"The dimming torch\",\"learningGoal\":\"A torch grows dim as its battery runs down. What is really changing inside the wire?\",\"sourceIds\":[\"st.circuit\"]},{\"id\":\"b2\",\"slotId\":\"concept\",\"pattern\":\"circuit-scene\",\"title\":\"What is current?\",\"learningGoal\":\"What do we really mean when we say a current flows?\",\"sourceIds\":[\"st.circuit\",\"st.claim.current\"]},{\"id\":\"b3\",\"slotId\":\"concept\",\"pattern\":\"water-scene\",\"title\":\"Water in a pipe\",\"learningGoal\":\"What pushes the charges, and what holds them back?\",\"sourceIds\":[\"st.water\",\"st.claim.analogy\",\"st.claim.push\",\"st.claim.resist\",\"st.claim.cause\"]},{\"id\":\"b4\",\"slotId\":\"concept\",\"pattern\":\"paired-tables\",\"title\":\"Let us measure\",\"learningGoal\":\"What happens to the current when we change the push?\",\"sourceIds\":[\"st.table\",\"st.claim.law\"]},{\"id\":\"b5\",\"slotId\":\"concept\",\"pattern\":\"circuit-law-scene\",\"title\":\"One law, any circuit\",\"learningGoal\":\"How do the push, the resistance and the current fit together?\",\"sourceIds\":[\"st.explore\",\"st.claim.relation\"]},{\"id\":\"b6\",\"slotId\":\"worked_example\",\"pattern\":\"worked-sum-on-grid\",\"title\":\"A worked example\",\"learningGoal\":\"What current flows for these numbers?\",\"sourceIds\":[\"st.steps\",\"st.worked.table\"]},{\"id\":\"b7\",\"slotId\":\"common_mistake_contrast\",\"pattern\":\"statement-card\",\"title\":\"Why it fails\",\"learningGoal\":\"Why can multiplying not be right?\",\"sourceIds\":[\"st.claim.a.avoid\"]},{\"id\":\"b8\",\"slotId\":\"check\",\"pattern\":\"check-question\",\"title\":\"Your turn\",\"learningGoal\":\"What current flows through this resistor?\",\"sourceIds\":[\"st.q.recall\"]}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

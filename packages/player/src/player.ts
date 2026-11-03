@@ -1,11 +1,15 @@
-import { componentsUsedBy, formulaLatex, loadComponents, loadedComponent, spokenLabel, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
+import { Sweep, componentsUsedBy, formulaLatex, loadComponents, loadedComponent, spokenLabel, sweepValueAt, type MathRenderer, type Rect, type RenderContext } from "@eve/components";
 import { eventsFor } from "@eve/resolver";
 import type { LessonBundle, PausePoint, SceneSpec, Timeline } from "@eve/schema";
 import { DEFAULT_CHROME_PX, PAD, solve, stageFrame } from "@eve/layout";
-import { colorTheme } from "../theme/palette";
+import { colorTheme, type Theme } from "../theme/palette";
 import type { MasterClock } from "./clock";
 
 export type PlayerOptions = {
+  /** False draws the lesson as a recording: no hint to drag, even while seeking (the video exporter, ADR 0085). Default true. */
+  interactive?: boolean;
+  /** The stage theme (ADR 0082): the colours the player writes into captions and formulas. Default dark. */
+  theme?: Theme;
   root: HTMLElement;
   /** Content only: objects, props, expressions, sentence text. Every time comes from the Timeline. */
   bundle: LessonBundle;
@@ -40,6 +44,11 @@ export type PlayerOptions = {
 
 const OVERLAY = new Set(["highlight"]);
 
+/** How long a carried object takes to move from its place in the scene before to its place in this one, from the start of the scene (ADR 0067). */
+export const CARRY_MOVE_MS = 600;
+type Box = { x: number; y: number; width: number; height: number };
+const lerp = (a: number, b: number, q: number): number => Math.round((a + (b - a) * q) * 100) / 100;
+
 /**
  * Fetches the components a lesson uses (and only those): call it, and wait, before `new Player`. Each component is its own chunk, so a lesson of text and
  * equations does not download the graph or the number line (ADR 0024).
@@ -67,6 +76,14 @@ export class Player {
   private readonly sentenceText: Map<string, string>;
   private captionId: string | null = null;
   private laidKey = "";
+  /** Objects of the mounted scene that were kept from the scene before: this scene's object id to that scene's object id (ADR 0067). */
+  private carried = new Map<string, string>();
+  private carriedFrom: SceneSpec | null = null;
+  /** What the student dragged a swept graph to, by object id, while the lesson is paused (ADR 0070). Cleared by play and by seek, so the timeline always wins. */
+  private dragged = new Map<string, number>();
+  private boxes: Record<string, Box> = {};
+  private fromBoxes: Record<string, Box> = {};
+  private sceneStartMs = 0;
   private readonly colors: ReturnType<typeof colorTheme>;
   private resizeObserver: ResizeObserver | null = null;
   private readonly raf: (cb: () => void) => number;
@@ -75,7 +92,7 @@ export class Player {
   constructor(private readonly o: PlayerOptions) {
     this.raf = o.raf ?? ((cb) => requestAnimationFrame(cb));
     this.caf = o.caf ?? ((id) => cancelAnimationFrame(id));
-    this.colors = colorTheme(o.bundle.termColors);
+    this.colors = colorTheme(o.bundle.termColors, o.theme);
     this.sceneById = new Map(o.bundle.scenes.map((s) => [s.id, s]));
     this.sentenceText = new Map(o.bundle.script.map((s) => [s.id, s.text]));
     o.root.replaceChildren();
@@ -114,6 +131,7 @@ export class Player {
   }
 
   async play(): Promise<void> {
+    this.dragged.clear();
     if (this.o.clock.nowMs() >= this.o.timeline.totalMs) this.seek(0); // replay from the start
     await this.o.clock.play();
     if (!this.running) {
@@ -130,6 +148,7 @@ export class Player {
   }
 
   seek(ms: number): void {
+    this.dragged.clear();
     this.o.clock.seek(ms);
     const t = this.o.clock.nowMs();
     // Pause points ahead of the new position can be asked again; those behind it count as answered.
@@ -190,8 +209,10 @@ export class Player {
     const tl = this.o.timeline;
     const scene = [...tl.scenes].reverse().find((s) => s.startMs <= t) ?? tl.scenes[0]!;
     if (scene.sceneId !== this.sceneId) this.mount(scene.sceneId);
+    this.sceneStartMs = scene.startMs;
     const spec = this.sceneById.get(scene.sceneId)!;
     this.relayout(spec);
+    this.moveCarried(t, this.o.reduceMotion ?? (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches));
     const rectOf = (id: string): Rect | null => {
       const el = this.els.get(id);
       if (!el) return null;
@@ -213,6 +234,8 @@ export class Player {
           colors: this.colors,
           reduceMotion,
           rectOf,
+          sweepOverride: this.dragged.get(obj.id),
+          interactive: this.o.interactive !== false && !this.o.clock.isPlaying(),
         };
         loadedComponent(obj.component).render(this.els.get(obj.id)!, obj.props as never, t, ctx);
       }
@@ -269,6 +292,12 @@ export class Player {
     this.stage.classList.add("eve-laid");
     this.stage.dataset.frame = frame.mode;
     this.stage.style.height = `${frame.height}px`;
+    this.boxes = layout.boxes;
+    this.fromBoxes = {};
+    if (this.carriedFrom) {
+      // where the carried objects were: the scene before, solved in the same frame (pure, so the same width always gives the same boxes)
+      this.fromBoxes = solve({ objects: this.carriedFrom.objects, layout: this.carriedFrom.layout }, { width, height: frame.height }, { expressions: this.o.bundle.expressions, locale: this.o.bundle.locale }, { spread: true }).boxes;
+    }
     for (const [id, box] of Object.entries(layout.boxes)) {
       const el = this.els.get(id)!;
       el.style.position = "absolute";
@@ -281,18 +310,75 @@ export class Player {
     if (layout.contentHeight > frame.height) this.o.onOverflow?.({ sceneId: spec.id, excessPx: layout.contentHeight - frame.height });
   }
 
+  /**
+   * A carried object moves from its box in the scene before to its box in this one over CARRY_MOVE_MS from the start of the scene: a function of the lesson time
+   * alone, so seek, pause and replay agree (ADR 0009, 0067). With reduced motion it is in its place at once. Nothing happens when the stage has no layout.
+   */
+  private moveCarried(t: number, reduceMotion: boolean): void {
+    for (const [id, was] of this.carried) {
+      const from = this.fromBoxes[was];
+      const to = this.boxes[id];
+      const el = this.els.get(id);
+      if (!from || !to || !el) continue;
+      const q = reduceMotion ? 1 : Math.min(1, Math.max(0, (t - this.sceneStartMs) / CARRY_MOVE_MS));
+      el.style.left = `${lerp(from.x, to.x, q)}px`;
+      el.style.top = `${lerp(from.y, to.y, q)}px`;
+      el.style.width = `${lerp(from.width, to.width, q)}px`;
+      el.style.height = `${lerp(from.height, to.height, q)}px`;
+    }
+  }
+
+  /**
+   * While the lesson is paused, dragging across a swept graph sets its factor (ADR 0070): the left edge is the smallest factor, the right edge the largest. The
+   * drawing is redrawn from that value and nothing else; playing or seeking drops it, so the timeline is always what plays.
+   */
+  private makeDraggable(el: HTMLElement, id: string, sweep: ReturnType<typeof Sweep.parse>): void {
+    let on = false;
+    const set = (e: MouseEvent): void => {
+      const r = el.getBoundingClientRect();
+      if (r.width <= 0) return;
+      this.dragged.set(id, sweepValueAt(sweep, (e.clientX - r.left) / r.width));
+      this.draw(this.o.clock.nowMs());
+    };
+    el.addEventListener("pointerdown", (e) => {
+      if (this.o.clock.isPlaying()) return;
+      on = true;
+      (el as { setPointerCapture?: (id: number) => void }).setPointerCapture?.((e as PointerEvent).pointerId);
+      set(e);
+    });
+    el.addEventListener("pointermove", (e) => {
+      if (on) set(e);
+    });
+    for (const end of ["pointerup", "pointercancel"]) el.addEventListener(end, () => (on = false));
+  }
+
   private mount(sceneId: string): void {
+    const spec = this.sceneById.get(sceneId)!;
+    // the scene just before in the order of the lesson; its elements are kept only if it is the one on the stage now (ADR 0067)
+    const order = this.o.bundle.scenes;
+    const index = order.findIndex((s) => s.id === sceneId);
+    const before = index > 0 ? order[index - 1] : undefined;
+    const mounted = before !== undefined && this.sceneId === before.id;
+    const kept = new Map(this.els);
     this.sceneId = sceneId;
     this.laidKey = "";
     this.els.clear();
     this.events.clear();
-    const spec = this.sceneById.get(sceneId)!;
+    this.carried = new Map();
+    this.carriedFrom = null;
     this.stage.replaceChildren();
     this.stage.setAttribute("aria-label", spec.a11y.altText);
     this.stage.setAttribute("role", "img");
     for (const obj of spec.objects) {
-      const el = document.createElement("div");
+      // where it starts from is the scene before in the lesson, whether or not that scene was on the stage (a seek), so the time alone decides where it is
+      if (before && obj.carryFrom !== undefined) {
+        this.carried.set(obj.id, obj.carryFrom);
+        this.carriedFrom = before;
+      }
+      const el = (mounted && obj.carryFrom !== undefined ? kept.get(obj.carryFrom) : undefined) ?? document.createElement("div");
       el.dataset.objectId = obj.id;
+      const sweep = ["functionGraph", "circuit", "waterAnalogy"].includes(obj.component) ? Sweep.safeParse((obj.props as { sweep?: unknown }).sweep) : null;
+      if (sweep?.success) this.makeDraggable(el, obj.id, sweep.data);
       this.els.set(obj.id, el);
       this.events.set(obj.id, eventsFor(this.o.timeline, sceneId, obj.id));
       this.stage.append(el);

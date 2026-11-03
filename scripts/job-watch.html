@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job watch</title>
+<style>
+  :root { --bg:#f6f7f9; --panel:#fff; --fg:#161b26; --muted:#6b7385; --line:#e3e6ec; --soft:#f0f2f6; --accent:#3b6df0;
+    --ok:#1b8a4b; --run:#3b6df0; --bad:#d1362b; --warn:#b7791f; --idle:#8b93a5; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0e1118; --panel:#161a23; --fg:#e6e9f1; --muted:#8e97ab; --line:#262c3a; --soft:#1d2230; --accent:#6e96ff;
+    --ok:#4cc17f; --run:#6e96ff; --bad:#ff7b72; --warn:#e3a94b; --idle:#6f778a; color-scheme:dark; } }
+  * { box-sizing:border-box; }
+  html, body { height:100%; } body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 Inter, system-ui, "Segoe UI", sans-serif; display:flex; flex-direction:column; }
+  .mono { font-family:ui-monospace, "Cascadia Mono", Consolas, monospace; font-size:12px; }
+  .muted { color:var(--muted); } .tnum { font-variant-numeric:tabular-nums; }
+  header { display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header h1 { font-size:15px; margin:0; font-weight:650; } .live { width:8px; height:8px; border-radius:50%; background:var(--ok); display:inline-block; margin-right:6px; animation:p 1.4s infinite; } .live.off { background:var(--bad); animation:none; }
+  @keyframes p { 50% { opacity:.3; } }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-left:auto; }
+  .chip { border:1px solid var(--line); background:var(--soft); color:var(--fg); border-radius:99px; padding:2px 10px; font-size:12px; cursor:pointer; }
+  .chip.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .layout { flex:1; min-height:0; display:grid; grid-template-columns:340px 1fr; }
+  @media (max-width:860px) { .layout { grid-template-columns:1fr; } .list { max-height:38vh; } }
+  .list { border-right:1px solid var(--line); overflow:auto; background:var(--panel); min-width:0; }
+  .tools { padding:10px; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--panel); z-index:2; }
+  input, select, button, textarea { font:inherit; color:var(--fg); background:var(--panel); border:1px solid var(--line); border-radius:7px; padding:6px 9px; min-width:0; max-width:100%; }
+  button { cursor:pointer; } button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; } button:disabled { opacity:.5; cursor:default; }
+  .row { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+  details.start { border:1px solid var(--line); border-radius:8px; padding:6px 8px; } details.start summary { cursor:pointer; font-weight:600; }
+  .item { padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; display:grid; gap:2px; border-left:3px solid transparent; }
+  .item:hover { background:var(--soft); } .item.sel { background:var(--soft); border-left-color:var(--accent); }
+  .item .top { display:flex; justify-content:space-between; gap:8px; align-items:center; } .item .id { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .mini { display:flex; gap:2px; margin-top:3px; } .mini i { height:4px; flex:1; border-radius:2px; background:var(--line); }
+  .pill { font-size:11px; font-weight:700; letter-spacing:.03em; padding:1px 8px; border-radius:99px; color:#fff; text-transform:uppercase; white-space:nowrap; }
+  .s-done { background:var(--ok); } .s-running { background:var(--run); } .s-failed { background:var(--bad); } .s-stalled { background:var(--warn); } .s-queued, .s-waiting, .s-skipped, .s-cancelled { background:var(--idle); }
+  .c-done { background:var(--ok) !important; } .c-running { background:var(--run) !important; animation:p 1s infinite; } .c-failed { background:var(--bad) !important; } .c-skipped { background:var(--idle) !important; opacity:.6; }
+  .detail { overflow:auto; padding:16px; min-width:0; }
+  .empty { color:var(--muted); padding:40px 0; text-align:center; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:14px; min-width:0; }
+  .head { display:flex; gap:10px; align-items:center; flex-wrap:wrap; } .head h2 { margin:0; font-size:17px; word-break:break-all; }
+  .kv { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-top:12px; } .kv div span { display:block; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); } .kv div b { font-weight:600; word-break:break-word; }
+  .flow { display:flex; align-items:stretch; overflow-x:auto; padding-bottom:4px; gap:0; }
+  .node { flex:1 0 118px; border:1px solid var(--line); border-radius:10px; padding:8px 10px; background:var(--soft); position:relative; }
+  .node .n { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); } .node .d { font-size:18px; font-weight:650; margin:2px 0; } .node .m { font-size:11px; color:var(--muted); }
+  .node.running { border-color:var(--run); box-shadow:0 0 0 2px color-mix(in srgb, var(--run) 25%, transparent); } .node.failed { border-color:var(--bad); background:color-mix(in srgb, var(--bad) 8%, var(--panel)); } .node.done { border-color:color-mix(in srgb, var(--ok) 45%, var(--line)); }
+  .arrow { flex:0 0 22px; align-self:center; text-align:center; color:var(--muted); }
+  .slow { color:var(--warn); font-weight:600; }
+  .gantt { display:grid; gap:6px; } .g { display:grid; grid-template-columns:70px 1fr 70px; gap:8px; align-items:center; font-size:12px; } .track { position:relative; height:14px; background:var(--soft); border-radius:4px; } .track i { position:absolute; top:0; bottom:0; border-radius:4px; background:var(--ok); min-width:2px; }
+  .tabs { display:flex; gap:2px; border-bottom:1px solid var(--line); margin:4px 0 12px; flex-wrap:wrap; } .tab { border:0; background:none; padding:7px 12px; border-bottom:2px solid transparent; color:var(--muted); border-radius:0; } .tab.on { color:var(--fg); border-bottom-color:var(--accent); font-weight:600; }
+  table { border-collapse:collapse; width:100%; font-size:13px; } td, th { text-align:left; padding:5px 8px; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--muted); font-weight:500; font-size:12px; }
+  pre { background:var(--soft); border-radius:8px; padding:10px; overflow:auto; margin:0; max-height:360px; white-space:pre-wrap; word-break:break-word; }
+  video { width:100%; max-height:60vh; background:#000; border-radius:10px; }
+  .err { border-color:var(--bad); background:color-mix(in srgb, var(--bad) 7%, var(--panel)); }
+</style>
+</head>
+<body>
+<header>
+  <h1><span id="live" class="live"></span>Job watch</h1>
+  <span class="muted">every video job on this engine, by id &middot; <span id="clock" class="tnum"></span></span>
+  <div class="chips" id="chips"></div>
+</header>
+<div class="layout">
+  <aside class="list">
+    <div class="tools">
+      <div class="row"><input id="search" placeholder="search id, topic, origin" style="flex:1"><select id="origin"><option value="">all origins</option></select></div>
+      <div class="row"><button type="button" id="clear">Delete listed jobs that are finished&hellip;</button></div>
+      <details class="start"><summary>Start a job</summary>
+        <div class="row" style="margin-top:8px"><select id="topic" style="width:100%"></select></div>
+        <div class="row"><input id="q" placeholder="or ask in words, for example: explain the sum of zeroes of a quadratic" style="flex:1"><button id="find" type="button">Find</button></div>
+        <div class="row"><select id="board"><option>CBSE</option><option>BHUTAN</option></select><select id="grade"><option>9</option><option selected>10</option><option>11</option><option>12</option></select><select id="subject"><option>maths</option><option>physics</option></select><select id="narration" title="how the narration is written"><option value="auto">narration: auto</option><option value="draft">narration: code only</option><option value="polish">narration: model polish (needs --allow-live)</option></select><select id="style" title="visual style for story jobs"><option value="technical">style: technical (3Blue1Brown)</option><option value="animated">style: animated (L amine Labs)</option></select></div>
+        <div class="row"><label class="muted"><input id="useprompt" type="checkbox"> start from my words, not the topic above</label></div>
+        <div class="row"><label class="muted">fps <input id="fps" type="number" value="12" min="6" max="30" style="width:60px"></label><button id="go" class="primary" type="button">Start</button></div>
+        <div id="msg" class="muted"></div>
+      </details>
+    </div>
+    <div id="jobs"></div>
+  </aside>
+  <section class="detail" id="detail"><div class="empty">Waiting for jobs. Start one here, or from any host that uses this engine.</div></section>
+</div>
+<script>
+var STAGES = ['request','retrieve','ground','build','render','qa'];
+var state = { jobs: [], counts: {}, med: {}, sel: null, filter: '', tab: 'events', origin: '', search: '' }, last = {}, topics = [];
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function fmt(ms){ if (ms == null) return '-'; var s = ms/1000; if (s < 1) return Math.round(ms)+' ms'; if (s < 90) return s.toFixed(1)+' s'; var m = Math.floor(s/60); return m+' m '+Math.round(s-m*60)+' s'; }
+function hhmm(t){ return t ? new Date(t).toLocaleTimeString([], {hour12:false}) : '-'; }
+function get(u){ return fetch(u, {cache:'no-store'}).then(function(r){ return r.json(); }); }
+function post(u, b){ return fetch(u, {method:'POST', body:JSON.stringify(b)}).then(function(r){ return r.json(); }); }
+
+get('/api/topics').then(function(l){ topics = l; $('topic').innerHTML = l.map(function(t){ return '<option value="'+esc(t.id)+'">'+esc(t.board+' '+t.grade+' '+t.subject+': '+t.topic)+(t.lessonReady?'':' (no lesson yet)')+'</option>'; }).join(''); });
+$('find').onclick = function(){ get('/api/match?q='+encodeURIComponent($('q').value)).then(function(r){ if (r.error) { $('msg').textContent = r.error; return; } $('topic').value = r.id; $('msg').textContent = 'matched: '+r.topic; }); };
+$('go').onclick = function(){ $('go').disabled = true; post('/api/start', $('useprompt').checked ? {prompt:$('q').value, board:$('board').value, grade:Number($('grade').value), subject:$('subject').value, fps:Number($('fps').value), narration:$('narration').value, style:$('style').value} : {nodeId:$('topic').value, fps:Number($('fps').value), narration:$('narration').value, style:$('style').value}).then(function(r){ $('go').disabled = false; if (r.error) { $('msg').textContent = r.error; return; } $('msg').textContent = 'started '+r.id; state.sel = r.id; poll(); }); };
+$('search').oninput = function(){ state.search = this.value.toLowerCase(); renderList(); };
+$('origin').onchange = function(){ state.origin = this.value; renderList(); };
+
+function visible(){ return state.jobs.filter(function(j){
+  if (state.filter && j.status !== state.filter) return false; if (state.origin && j.origin !== state.origin) return false;
+  return !state.search || (j.id+' '+(j.nodeId||'')+' '+j.origin+' '+(j.env||'')+' '+(j.code||'')).toLowerCase().indexOf(state.search) >= 0; }); }
+function renderChips(){
+  var all = ['running','queued','done','failed','stalled','cancelled'], h = '<button class="chip '+(state.filter===''?'on':'')+'" data-f="">all '+state.jobs.length+'</button>';
+  all.forEach(function(s){ if (state.counts[s]) h += '<button class="chip '+(state.filter===s?'on':'')+'" data-f="'+s+'">'+s+' '+state.counts[s]+'</button>'; });
+  $('chips').innerHTML = h; Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(c){ c.onclick = function(){ state.filter = c.dataset.f; renderChips(); renderList(); }; });
+}
+function renderList(){
+  var origins = {}; state.jobs.forEach(function(j){ origins[j.origin] = 1; });
+  var cur = $('origin').value, o = '<option value="">all origins</option>'+Object.keys(origins).sort().map(function(x){ return '<option'+(x===state.origin?' selected':'')+'>'+esc(x)+'</option>'; }).join(''); if ($('origin').innerHTML !== o) $('origin').innerHTML = o;
+  var v = visible();
+  $('jobs').innerHTML = v.length ? v.map(function(j){
+    var mini = STAGES.map(function(s){ var st = j.stageStatus[s]; return '<i class="'+(st==='done'?'c-done':st==='running'?'c-running':st==='failed'?'c-failed':st==='skipped'?'c-skipped':'')+'"></i>'; }).join('');
+    return '<div class="item '+(j.id===state.sel?'sel':'')+'" data-id="'+esc(j.id)+'" title="'+esc(j.id)+'"><div class="top"><span class="id mono">'+esc(j.short)+'</span><span>'+(j.hasVideo?'<span class="pill s-done" style="margin-right:4px">&#9654; video</span>':'')+'<span class="pill s-'+j.status+'">'+j.status+'</span></span></div>'
+      + '<div class="muted" style="display:flex;justify-content:space-between;gap:8px"><span>'+esc(j.origin)+(j.env?' / '+esc(j.env):'')+'</span><span class="tnum">'+hhmm(j.startedAt)+' &middot; '+fmt(j.durationMs)+'</span></div>'
+      + '<div class="muted" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(j.nodeId||'no request file')+(j.code?' &middot; '+esc(j.code):'')+'</div><div class="mini">'+mini+'</div></div>'; }).join('') : '<div class="empty">no jobs match</div>';
+  Array.prototype.forEach.call(document.querySelectorAll('.item'), function(el){ el.onclick = function(){ state.sel = el.dataset.id; renderList(); loadDetail(); }; });
+}
+function slowNote(name, ms){ var m = state.med[name]; return m && ms && ms > m*1.5 && ms > 3000 ? '<span class="slow">'+(ms/m).toFixed(1)+'x median</span>' : (m ? 'median '+fmt(m) : ''); }
+function workflow(d){
+  var s = d.summary, h = '<div class="flow">';
+  STAGES.forEach(function(n, i){ var st = s.stageStatus[n], ms = s.stageMs[n], ev = d.events.filter(function(e){ return e.stage===n && e.status!=='started'; }).pop();
+    h += (i ? '<div class="arrow">&rsaquo;</div>' : '') + '<div class="node '+st+'"><div class="n">'+n+'</div><div class="d tnum">'+(st==='waiting'?'-':st==='skipped'?'skipped':fmt(ms))+'</div><div class="m"><span class="pill s-'+st+'">'+st+'</span></div><div class="m" style="margin-top:4px">'+(st==='done'||st==='running'?slowNote(n, ms):'')+'</div></div>'; });
+  h += '</div>';
+  var t0 = Date.parse(s.startedAt), total = Math.max(1000, s.durationMs), by = {};
+  d.events.forEach(function(e){ if (e.stage==='job') return; var b = by[e.stage] || (by[e.stage] = {}); if (e.status==='started') b.a = Date.parse(e.t); else { b.b = Date.parse(e.t); b.st = e.status; } });
+  h += '<div class="gantt" style="margin-top:14px">'+STAGES.map(function(n){ var b = by[n]; if (!b || !b.a) return '<div class="g"><span class="muted">'+n+'</span><div class="track"></div><span></span></div>';
+    var end = b.b || t0+total, l = (b.a-t0)/total*100, w = Math.max(.4, (end-b.a)/total*100);
+    return '<div class="g"><span>'+n+'</span><div class="track"><i class="'+(b.b?'':'c-running')+'" style="left:'+l+'%;width:'+w+'%;'+(b.st==='failed'?'background:var(--bad)':'')+'"></i></div><span class="tnum muted">+'+fmt(b.a-t0)+'</span></div>'; }).join('')+'</div>';
+  var f = d.events.filter(function(e){ return e.status==='failed'; })[0];
+  if (f) h += '<div class="card err" style="margin-top:14px"><b>'+esc(f.code)+'</b> at '+esc(f.stage)+'<div class="mono" style="margin-top:6px">'+esc(f.detail)+'</div>'+(d.notes.length?'<div class="muted" style="margin-top:8px">last output of the child process:</div><pre>'+esc(d.notes.map(function(n){ return n.note; }).join('\n'))+'</pre>':'')+'</div>';
+  return h;
+}
+function tabBody(d){
+  var t = state.tab, s = d.summary;
+  if (t === 'request') return '<pre class="mono">'+esc(JSON.stringify(d.request, null, 2) || 'no request file kept')+'</pre>';
+  if (t === 'events') return '<table><tr><th>time</th><th>stage</th><th>status</th><th>detail</th></tr>'+d.events.map(function(e){ return '<tr><td class="mono tnum">'+esc(hhmm(e.t)+'.'+String(new Date(e.t).getMilliseconds()).padStart(3,'0'))+'</td><td>'+esc(e.stage)+'</td><td><span class="pill s-'+(e.status==='started'?'running':e.status)+'">'+esc(e.status)+'</span></td><td class="mono">'+esc((e.code?'['+e.code+'] ':'')+(e.detail||''))+'</td></tr>'; }).join('')+'</table>'+(d.notes.length?'<h4>Process output</h4><pre>'+esc(d.notes.map(function(n){ return n.note; }).join('\n'))+'</pre>':'');
+  if (t === 'checks') return d.qa ? '<table>'+d.qa.map(function(c){ return '<tr><td><span class="pill s-'+(c.ok?'done':'failed')+'">'+(c.ok?'ok':'fail')+'</span></td><td>'+esc(c.id)+'</td><td>'+esc(c.message)+'</td></tr>'; }).join('')+'</table>' : '<div class="empty">no checks yet (they run in the last stage)</div>';
+  if (t === 'sources') { var x = d.sources; if (!x) return '<div class="empty">no sources.json yet</div>'; var b = x.book;
+    return (b ? '<p><b>'+esc(b.title)+'</b>, '+esc(b.edition)+'<br>chapter '+esc(b.chapter)+' '+esc(b.chapterTitle)+' &middot; section '+esc(b.section)+' '+esc(b.sectionTitle)+'<br>printed pages '+esc((b.printedPages||[]).join(' to '))+' &middot; page range confirmed by a person: <b>'+b.pageRangeConfirmedByPerson+'</b> &middot; use: '+esc(b.rights.use)+'</p>' : '<p>no book section</p>')
+      + '<p class="muted">lesson '+esc(x.lesson.skillId)+' &middot; gates '+x.lesson.passesEveryGate+' &middot; SymPy '+x.lesson.verifiedBySymPy+' &middot; publishable '+x.lesson.publishable+' &middot; '+x.lesson.sentences+' sentences, '+x.lesson.lengthS+' s</p>'
+      + '<table><tr><th>tier</th><th>claim</th><th>statement</th><th>person-confirmed</th></tr>'+x.claims.map(function(c){ return '<tr><td>'+esc(c.tier)+'</td><td class="mono">'+esc(c.id)+'</td><td>'+esc(c.statement)+'</td><td>'+(c.citations.every(function(q){ return q.confirmedByPerson; })?'yes':'no')+'</td></tr>'; }).join('')+'</table><h4>Caveats</h4><ul>'+x.caveats.map(function(c){ return '<li>'+esc(c)+'</li>'; }).join('')+'</ul>'; }
+  if (t === 'files') { var f = d.result && d.result.files; return (f ? '<table><tr><th>file</th><th>path</th><th>bytes</th><th>sha256</th></tr>'+Object.keys(f).map(function(k){ return '<tr><td>'+k+'</td><td class="mono">'+esc(f[k].path)+'</td><td class="tnum">'+f[k].bytes+'</td><td class="mono">'+esc(f[k].sha256.slice(0,16))+'...</td></tr>'; }).join('')+'</table>' : '<div class="empty">no files yet</div>')
+    + (s.status==='done' ? '<h4>Video</h4><video controls src="/api/job/'+encodeURIComponent(s.id)+'/video"></video>' : '') + (d.state ? '<h4>Resume keys (a stage with the same key is skipped on a retry)</h4><pre class="mono">'+esc(JSON.stringify(d.state.stages, null, 2))+'</pre>' : ''); }
+  return '';
+}
+function renderDetail(d){
+  var s = d.summary, el = $('detail');
+  var head = '<div class="card"><div class="head"><h2 class="mono" title="'+esc(s.id)+'">'+esc(s.short)+'</h2><span class="pill s-'+s.status+'">'+s.status+'</span><button type="button" id="copy" title="copy the full id">copy id</button><span class="muted mono" style="flex:1;overflow:hidden;text-overflow:ellipsis">'+(s.short!==s.id?esc(s.id):'')+'</span>'
+    + '<button type="button" id="retry">Retry (resume)</button><button type="button" id="fresh">Run again from scratch</button><button type="button" id="del" style="color:var(--bad)">Delete</button></div>'
+    + '<div class="kv"><div><span>origin</span><b>'+esc(s.origin)+(s.env?' / '+esc(s.env):'')+'</b></div><div><span>topic</span><b class="mono">'+esc(s.nodeId||'-')+'</b></div>'+(s.prompt?'<div><span>asked</span><b>"'+esc(s.prompt)+'"</b></div>':'')+'<div><span>started</span><b class="tnum">'+hhmm(s.startedAt)+'</b></div><div><span>'+(s.endedAt?'ended':'last event')+'</span><b class="tnum">'+hhmm(s.endedAt||s.lastEventAt)+'</b></div><div><span>total</span><b class="tnum">'+fmt(s.durationMs)+'</b></div>'
+    + '<div><span>voice / fps / theme / style</span><b>'+esc(d.request&&d.request.options?[d.request.options.voice,d.request.options.fps,d.request.options.theme,d.request.options.style||'technical'].join(' / '):'-')+'</b></div>'+(s.code?'<div><span>result</span><b style="color:var(--bad)">'+esc(s.code)+'</b></div>':'')+'</div></div>'
+    + '<div class="card">'+workflow(d)+'</div>'
+    + '<div class="card" id="result"></div>'
+    + '<div class="tabs">'+['events','request','checks','sources','files'].map(function(n){ return '<button class="tab '+(state.tab===n?'on':'')+'" data-t="'+n+'">'+n+'</button>'; }).join('')+'</div><div id="tabbody"></div>';
+  if (!el.querySelector('#tabbody') || el.dataset.id !== s.id) { el.innerHTML = head; el.dataset.id = s.id; el.dataset.key = ''; } else {
+    var cards = el.querySelectorAll('.card'); var tmp = document.createElement('div'); tmp.innerHTML = head; var nc = tmp.querySelectorAll('.card'); cards[0].innerHTML = nc[0].innerHTML; cards[1].innerHTML = nc[1].innerHTML; }
+  Array.prototype.forEach.call(el.querySelectorAll('.tab'), function(b){ b.className = 'tab '+(b.dataset.t===state.tab?'on':''); b.onclick = function(){ state.tab = b.dataset.t; el.dataset.key = ''; renderDetail(d); }; });
+  var rk = s.status+'|'+(s.hasVideo?1:0), rc = $('result');
+  if (rc.dataset.k !== rk) { rc.dataset.k = rk; rc.innerHTML = '<h2 style="margin:0 0 8px;font-size:14px">Result</h2>' + (s.hasVideo
+      ? '<video controls preload="metadata" src="/api/job/'+encodeURIComponent(s.id)+'/video"></video><div class="row" style="margin-top:8px"><a href="/api/job/'+encodeURIComponent(s.id)+'/video" target="_blank" rel="noopener">open the video in a new tab</a><span class="muted">'+(d.result&&d.result.files&&d.result.files.video?Math.round(d.result.files.video.bytes/1024)+' KB':'')+'</span></div>'
+      : s.status==='running'||s.status==='queued' ? '<div class="muted">The video will appear here when the job is done.</div>'
+      : s.status==='failed'||s.status==='stalled' ? '<div class="muted">No video: the job did not finish. See the error above and the events below.</div>' : '<div class="muted">No video.</div>'); }
+  $('copy').onclick = function(){ if (navigator.clipboard) navigator.clipboard.writeText(s.id); this.textContent = 'copied'; var b = this; setTimeout(function(){ b.textContent = 'copy id'; }, 1200); };
+  $('del').onclick = function(){ if (confirm('Delete job '+s.id+' and all its files (video, package, events)?')) del([s.id]); };
+  $('retry').onclick = function(){ post('/api/retry', {id:s.id}).then(function(){ poll(); }); }; $('fresh').onclick = function(){ post('/api/retry', {id:s.id, fresh:true}).then(function(){ poll(); }); };
+  var key = state.tab+'|'+d.events.length+'|'+s.status+'|'+(d.sources?1:0)+'|'+(d.qa?1:0)+'|'+d.notes.length;
+  if (el.dataset.key !== key) { el.dataset.key = key; $('tabbody').innerHTML = '<div class="card">'+tabBody(d)+'</div>'; }
+}
+function del(ids){ post('/api/delete', {ids: ids}).then(function(r){ if (r.kept.length) alert('not deleted: '+r.kept.map(function(k){ return k.id+' ('+k.why+')'; }).join('; ')); if (ids.indexOf(state.sel) >= 0) { state.sel = null; $('detail').innerHTML = '<div class="empty">deleted</div>'; delete $('detail').dataset.id; } poll(); }); }
+$('clear').onclick = function(){ var v = visible().filter(function(j){ return j.status==='done'||j.status==='failed'||j.status==='cancelled'||j.status==='stalled'; });
+  if (!v.length) { alert('no finished job in the current list'); return; }
+  if (confirm('Delete '+v.length+' finished job(s) in the current list, with all their files? Running jobs are kept.')) del(v.map(function(j){ return j.id; })); };
+function loadDetail(){ if (!state.sel) return; get('/api/job/'+encodeURIComponent(state.sel)).then(function(d){ if (!d.error) renderDetail(d); }); }
+function poll(){
+  get('/api/jobs').then(function(r){ $('live').className = 'live'; state.jobs = r.jobs; state.counts = r.counts; state.med = r.stageMedianMs;
+    if (!state.sel && r.jobs[0]) state.sel = r.jobs[0].id; renderChips(); renderList(); loadDetail(); }).catch(function(){ $('live').className = 'live off'; });
+}
+setInterval(function(){ $('clock').textContent = new Date().toLocaleTimeString([], {hour12:false}); }, 1000); setInterval(poll, 1500); poll();
+</script>
+</body>
+</html>

@@ -4,12 +4,13 @@ import { equation } from "./equation";
 import { highlight } from "./highlight";
 import { shape } from "./shape";
 import { stepList } from "./stepList";
+import { table } from "./table";
 import { text } from "./text";
 import type { ComponentModule } from "./types";
 
 /**
- * The player's way to get components (ADR 0024). The two heavy components, the graph and the number line (each over 2 KB gzipped), are separate chunks,
- * fetched only when a lesson uses them. The six small ones are part of the core: measured, a chunk of 1 KB costs more in per-file overhead than it saves,
+ * The player's way to get components (ADR 0024). The heavy components, the graph, the number line and the circuit (ADR 0082; each over 2 KB gzipped), are separate chunks,
+ * fetched only when a lesson uses them. The seven small ones are part of the core: measured, a chunk of 1 KB costs more in per-file overhead than it saves,
  * so splitting them made lessons that use several of them larger, not smaller. `loadComponents` is called once with the component names of the bundle's
  * scenes, before the first draw; `loadedComponent` is then a plain lookup, so rendering stays synchronous. Build tools and tests that want every
  * component at once use `componentFor` from the registry instead.
@@ -21,12 +22,17 @@ const CORE: Partial<Record<ComponentName, ComponentModule<never>>> = {
   highlight: highlight as ComponentModule<never>,
   arrowCallout: arrowCallout as ComponentModule<never>,
   shape: shape as ComponentModule<never>,
+  table: table as ComponentModule<never>,
 };
 
 type Loader = () => Promise<ComponentModule<never>>;
 const SPLIT: Partial<Record<ComponentName, Loader>> = {
   functionGraph: () => import("./functionGraph").then((m) => m.functionGraph as ComponentModule<never>),
   numberLine: () => import("./numberLine").then((m) => m.numberLine as ComponentModule<never>),
+  circuit: () => import("./circuit").then((m) => m.circuit as ComponentModule<never>),
+  magnetCoil: () => import("./magnetCoil").then((m) => m.magnetCoil as ComponentModule<never>),
+  waterAnalogy: () => import("./waterAnalogy").then((m) => m.waterAnalogy as ComponentModule<never>),
+  balanceScale: () => import("./balanceScale").then((m) => m.balanceScale as ComponentModule<never>),
 };
 
 const loaded = new Map<ComponentName, ComponentModule<never>>();

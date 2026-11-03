@@ -1,0 +1,17 @@
+{
+  "skillId": "MATH.ML.NEURON.WEIGHTED_SUM",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "nn.claim.weight",
+  "kind": "conceptClaim",
+  "text": "A weight says how strongly one pixel pushes the neuron up or down.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "dependsOn": [
+    "nn.claim.number"
+  ],
+  "sourceNote": "Written for this project as what a weight does of the neuron lesson (ADR 0076). No outside text.",
+  "hash": "1e4411f5558e1b9d7d6a538b5586ba957759a6f6c008b5439da52ffc6ad482a1"
+}

@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { FakeAdapter, FixtureStore, Ledger, LlmClient, testConfig } from "@eve/adapters";
 import { wordsOf, type LessonBundle } from "@eve/schema";
+import { trackHash } from "@eve/voice";
 import { bundleIdFor } from "../lesson";
 import { assureLesson, buildLesson, lessonFolderName, reportOf, syntheticTracks, synthesizeLesson, writeLessonPackage, type Synthesizer } from "../build";
 import { REFERENCE_PLAN, REFERENCE_SCRIPT, SKILL, STORE, context } from "./fixtures";
@@ -95,7 +96,8 @@ describe("the whole build, with the model's answers scripted", () => {
     const out = await buildLesson({ client: client([wordy, scriptAnswer]).c, store: STORE, skillId: SKILL, voice: "synthetic", approvals, log: (l) => lines.push(l) });
     if (!out.ok) throw new Error("build failed");
     expect(lines.some((l) => /the scene of b1 is too short to read: one more transition/.test(l))).toBe(true);
-    expect(out.bundle.script.filter((s) => s.beatId === "b1").map((s) => s.role)).toEqual(["goal", "transition", "transition"]);
+    // the hook also draws the hops of its answer (ADR 0072), which takes longer to read: a scene needs a third transition
+    expect(out.bundle.script.filter((s) => s.beatId === "b1").map((s) => s.role)).toEqual(["goal", "transition", "transition", "transition"]);
     expect(out.assurance).toMatchObject({ passes: true, publishable: true, verified: true });
     expect(out.assurance.findings.filter((f) => f.code === "reading-time")).toEqual([]);
   }, 120_000);
@@ -212,9 +214,94 @@ describe("the voice step", () => {
     const dir = tmp("voice");
     const synth = standIn();
     await synthesizeLesson(bundle, dir, synth);
-    writeFileSync(join(dir, "s1.1.wav"), wav(77));
-    // the changed file no longer matches its recorded hash, so it is voiced again rather than trusted
+    const first = bundle.script[0]!.id;
+    const good = readFileSync(join(dir, `${first}.wav`));
+    writeFileSync(join(dir, `${first}.wav`), wav(77));
+    // the changed file is not trusted: the good voice of the same words is restored from the cache, nothing is voiced again
+    expect(await synthesizeLesson(bundle, dir, synth)).toMatchObject({ synthesized: 0, reused: bundle.script.length });
+    expect(readFileSync(join(dir, `${first}.wav`)).equals(good)).toBe(true);
+    // with the cached copy damaged as well, the sentence is voiced again
+    writeFileSync(join(dir, `${first}.wav`), wav(77));
+    for (const f of readdirSync(join(dir, ".voice-cache"))) if (f.endsWith(".wav")) writeFileSync(join(dir, ".voice-cache", f), wav(55));
     expect(await synthesizeLesson(bundle, dir, synth)).toMatchObject({ synthesized: 1, reused: bundle.script.length - 1 });
+  });
+
+  it("does not voice a sentence again when a build in between dropped it (the length fit's padding)", async () => {
+    const bundle = await lesson();
+    const dir = tmp("voice");
+    const padded = structuredClone(bundle);
+    padded.script.push({ ...structuredClone(bundle.script[0]!), id: "s9.1", text: "Now a short pause to think." });
+    await synthesizeLesson(padded, dir, standIn());
+    await synthesizeLesson(bundle, dir, standIn()); // the padding sentence is gone from the lesson and its file is deleted
+    expect(existsSync(join(dir, "s9.1.wav"))).toBe(false);
+    const log: string[] = [];
+    expect(await synthesizeLesson(padded, dir, standIn(log))).toMatchObject({ synthesized: 0, reused: padded.script.length });
+    expect(log).toEqual([]);
+    expect(existsSync(join(dir, "s9.1.wav"))).toBe(true);
+  });
+
+  it("keeps the track hashes and the manifest the same at any pool size, with tracks in script order", async () => {
+    const bundle = await lesson();
+    const results = [];
+    for (const jobs of [1, 2, 4, 16]) {
+      const dir = tmp("voice");
+      const out = await synthesizeLesson(bundle, dir, standIn(), { jobs });
+      results.push(out);
+      expect(out.tracks.map((t) => t.sentenceId)).toEqual(bundle.script.map((s) => s.id));
+    }
+    for (const r of results) expect(r.manifest).toEqual(results[0]!.manifest);
+    // the key of a sentence is what it always was: the hash of its words, the voice id and the model version
+    for (const t of results[0]!.manifest.tracks) expect(t.trackHash).toBe(trackHash(t.spokenText, "test:voice", "test-1"));
+  });
+
+  it("voices several sentences at once with a synthesizer that can, never more than the pool size, and voices equal sentences once", async () => {
+    const bundle = await lesson();
+    const twin = structuredClone(bundle);
+    twin.script.push({ ...structuredClone(bundle.script[0]!), id: "s9.2" }); // the same words as the first sentence
+    let running = 0;
+    let peak = 0;
+    const said: string[] = [];
+    const base = standIn();
+    const pooled: Synthesizer = {
+      voice: base.voice,
+      synthesize: () => {
+        throw new Error("the blocking path must not be used");
+      },
+      synthesizeAsync: async (spoken, outFile) => {
+        running++;
+        peak = Math.max(peak, running);
+        said.push(spoken);
+        await new Promise((r) => setTimeout(r, 15));
+        writeFileSync(outFile, wav(100 + spoken.length));
+        running--;
+      },
+    };
+    const out = await synthesizeLesson(twin, tmp("voice"), pooled, { jobs: 3 });
+    expect(peak).toBe(3);
+    expect(new Set(said).size).toBe(said.length);
+    expect(out.synthesized).toBe(said.length);
+    expect(out.tracks).toHaveLength(twin.script.length);
+    expect(out.tracks[0]!.durationMs).toBe(out.tracks[out.tracks.length - 1]!.durationMs);
+  });
+
+  it("stops on a failed sentence, keeps what was voiced, and leaves no half-written file", async () => {
+    const bundle = await lesson();
+    const dir = tmp("voice");
+    const base = standIn();
+    let n = 0;
+    const flaky: Synthesizer = {
+      voice: base.voice,
+      synthesize: () => {},
+      synthesizeAsync: async (_spoken, outFile) => {
+        if (++n === 4) throw new Error("piper failed: boom");
+        writeFileSync(outFile, wav(100));
+      },
+    };
+    await expect(synthesizeLesson(bundle, dir, flaky, { jobs: 1 })).rejects.toThrow("boom");
+    expect(readdirSync(join(dir, ".voice-cache")).filter((f) => f.endsWith(".part.wav"))).toEqual([]);
+    const log: string[] = [];
+    const out = await synthesizeLesson(bundle, dir, standIn(log), { jobs: 2 });
+    expect(out.synthesized).toBe(bundle.script.length - 3);
   });
 });
 

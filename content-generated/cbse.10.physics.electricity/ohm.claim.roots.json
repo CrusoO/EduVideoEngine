@@ -1,0 +1,24 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.claim.roots",
+  "kind": "conceptClaim",
+  "text": "The equation {expr:ohm.problem} has one root, and that root is the current.",
+  "expressions": {},
+  "claimMode": "computed",
+  "importance": "support",
+  "claim": {
+    "kind": "roots",
+    "equation": "ohm.problem",
+    "values": [
+      {
+        "op": "num",
+        "n": 3
+      }
+    ]
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the answer of the worked example, as a claim; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "8071f34449760a68d3c170e853866e1cd31cd72c70fa0ec502a55afd25578b2c"
+}

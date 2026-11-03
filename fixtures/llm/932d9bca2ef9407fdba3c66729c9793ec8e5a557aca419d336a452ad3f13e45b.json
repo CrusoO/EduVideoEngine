@@ -1,0 +1,18 @@
+{
+  "key": "932d9bca2ef9407fdba3c66729c9793ec8e5a557aca419d336a452ad3f13e45b",
+  "step": "planner",
+  "promptVersion": "planner.v4",
+  "model": "minimax/minimax-m3.1-flash:free",
+  "recordedAt": "2026-10-23T13:05:58.036Z",
+  "provenance": "authored-standin",
+  "response": {
+    "text": "{\"arcId\":\"problem_first\",\"prerequisites\":[],\"beats\":[{\"id\":\"b1\",\"slotId\":\"hook\",\"pattern\":\"circuit-scene\",\"title\":\"A simple circuit\",\"learningGoal\":\"Look at this circuit. What current will the meter show?\",\"sourceIds\":[\"ohm.circuit\"]},{\"id\":\"b2\",\"slotId\":\"concept\",\"pattern\":\"plot-and-mark-roots\",\"title\":\"The law on a graph\",\"learningGoal\":\"How are the three quantities tied together?\",\"sourceIds\":[\"ohm.graph\",\"ohm.steps\",\"ohm.claim.relation\",\"ohm.claim.roots\",\"ohm.claim.graph\"]},{\"id\":\"b3\",\"slotId\":\"worked_example\",\"pattern\":\"worked-sum-on-grid\",\"title\":\"A worked example\",\"learningGoal\":\"What current flows for these numbers?\",\"sourceIds\":[\"ohm.steps\",\"ohm.table\"]},{\"id\":\"b4\",\"slotId\":\"common_mistake_contrast\",\"pattern\":\"statement-card\",\"title\":\"Why it fails\",\"learningGoal\":\"Why can that not be right?\",\"sourceIds\":[\"ohm.claim.avoid\"]},{\"id\":\"b5\",\"slotId\":\"check\",\"pattern\":\"check-question\",\"title\":\"Your turn\",\"learningGoal\":\"What current flows?\",\"sourceIds\":[\"ohm.q.recall\"]}]}",
+    "usage": {
+      "inputTokens": 0,
+      "outputTokens": 0,
+      "thinkingTokens": 0
+    },
+    "model": "minimax/minimax-m3.1-flash:free",
+    "status": "completed"
+  }
+}

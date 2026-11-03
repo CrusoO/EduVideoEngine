@@ -1,0 +1,185 @@
+{
+  "concepts": [
+    {
+      "id": "alg.equation",
+      "label": "Algebraic equation",
+      "subject": "maths",
+      "level": "class-9",
+      "definition": "A statement that two expressions are equal, which may be true only for some values of the unknown.",
+      "prerequisites": []
+    },
+    {
+      "id": "quad.equation",
+      "label": "Quadratic equation",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "An equation that can be written as a x squared plus b x plus c equals zero, with a not equal to zero.",
+      "prerequisites": [
+        "alg.equation"
+      ]
+    },
+    {
+      "id": "quad.root",
+      "label": "Root of a quadratic equation",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "A value of the unknown that makes the equation true.",
+      "prerequisites": [
+        "quad.equation"
+      ]
+    },
+    {
+      "id": "quad.vieta",
+      "label": "Sum and product of roots",
+      "subject": "maths",
+      "level": "class-10",
+      "definition": "The sum of the roots of a x squared plus b x plus c is minus b over a, and their product is c over a.",
+      "prerequisites": [
+        "quad.root"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "kb.mock.maths10",
+      "title": "Mock reference notes, quadratic equations (written for testing the knowledge base)",
+      "rightsHolder": "LearningUplift project",
+      "licence": "owner-original",
+      "mock": true,
+      "passages": [
+        {
+          "id": "p1",
+          "loc": "notes 1",
+          "text": "An equation is a statement that two expressions are equal. Putting a value in place of the unknown either makes the statement true or false."
+        },
+        {
+          "id": "p2",
+          "loc": "notes 2",
+          "text": "A quadratic equation is an equation that can be written in the form a x squared plus b x plus c equals zero, where a, b and c are real numbers and a is not equal to zero."
+        },
+        {
+          "id": "p3",
+          "loc": "notes 3",
+          "text": "A root of a quadratic equation is a value of the unknown that makes the equation true. A quadratic equation has at most two roots. If a root is put back into the equation, both sides are equal."
+        },
+        {
+          "id": "p4",
+          "loc": "notes 4",
+          "text": "If the roots of a x squared plus b x plus c equals zero are p and q, then the sum of the roots p plus q equals minus b divided by a, and the product of the roots p times q equals c divided by a."
+        },
+        {
+          "id": "p5",
+          "loc": "notes 5",
+          "text": "A common slip is to write the sum of the roots as b divided by a. The sign matters: the sum is minus b divided by a."
+        }
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "m.eq.def",
+      "conceptId": "alg.equation",
+      "statement": "An equation is a statement that two expressions are equal, and a value of the unknown makes it true or false.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p1"
+        }
+      ]
+    },
+    {
+      "id": "m.quad.def",
+      "conceptId": "quad.equation",
+      "statement": "A quadratic equation can be written as a x squared plus b x plus c equals zero with a, b and c real numbers.",
+      "conditions": [
+        "a is not equal to zero"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p2"
+        }
+      ]
+    },
+    {
+      "id": "m.root.def",
+      "conceptId": "quad.root",
+      "statement": "A root of a quadratic equation is a value of the unknown that makes the equation true, and a quadratic equation has at most two roots.",
+      "conditions": [
+        "real roots, counted among the real numbers"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p3"
+        }
+      ]
+    },
+    {
+      "id": "m.root.check",
+      "conceptId": "quad.root",
+      "statement": "Putting a root back into the equation makes both sides equal.",
+      "conditions": [],
+      "unconditional": true,
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p3"
+        }
+      ]
+    },
+    {
+      "id": "m.vieta.sum",
+      "conceptId": "quad.vieta",
+      "statement": "If the roots of a x squared plus b x plus c equals zero are p and q, then p plus q equals minus b divided by a.",
+      "conditions": [
+        "a is not equal to zero",
+        "the equation has the roots p and q"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p4"
+        }
+      ]
+    },
+    {
+      "id": "m.vieta.product",
+      "conceptId": "quad.vieta",
+      "statement": "The product of the roots p times q equals c divided by a.",
+      "conditions": [
+        "a is not equal to zero",
+        "the equation has the roots p and q"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p4"
+        }
+      ]
+    },
+    {
+      "id": "m.vieta.sign",
+      "conceptId": "quad.vieta",
+      "statement": "A common slip is to write the sum of the roots as b divided by a; the sum is minus b divided by a.",
+      "conditions": [
+        "a x squared plus b x plus c equals zero with a not zero"
+      ],
+      "kind": "grounded",
+      "support": [
+        {
+          "sourceId": "kb.mock.maths10",
+          "passageId": "p5"
+        }
+      ]
+    }
+  ]
+}

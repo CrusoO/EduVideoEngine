@@ -42,6 +42,14 @@ export const ARCS = {
     id: "misconception_first",
     slots: [slot("hook"), slot("why_it_fails"), slot("concept"), slot("worked_example"), slot("check")],
   },
+  /**
+   * A story from first principles (ADR 0085): a hook, then four beats of the idea built up from what is simplest (what moves, what pushes, what holds back, what the measurements show,
+   * what the law says), a worked example, a mistake and a check. Written by a person (or later a model offered it by ADR): the planner is not offered it.
+   */
+  story_first: {
+    id: "story_first",
+    slots: [slot("hook"), slot("concept"), slot("concept"), slot("concept"), slot("concept"), slot("worked_example"), slot("common_mistake_contrast"), slot("check")],
+  },
 } as const satisfies Record<string, Arc>;
 export type ArcId = keyof typeof ARCS;
 export const ARC_IDS = Object.keys(ARCS) as ArcId[];

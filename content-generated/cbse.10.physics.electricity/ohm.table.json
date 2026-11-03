@@ -1,0 +1,37 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.table",
+  "kind": "passage",
+  "text": "The current grows in step with the potential difference.",
+  "expressions": {
+    "ohm.i1": {
+      "op": "num",
+      "n": 1
+    },
+    "ohm.i2": {
+      "op": "num",
+      "n": 2
+    },
+    "ohm.i3": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "grids": {
+    "products": {
+      "cols": 3,
+      "cells": [
+        "ohm.i1",
+        "ohm.i2",
+        "ohm.i3"
+      ],
+      "tint": "signed",
+      "label": "Current in amperes"
+    }
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as the table of the proportion; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "0ff5789837ad645d2a515f7683b25fed6b70dc633cb472af768c4b8efbbe178c"
+}

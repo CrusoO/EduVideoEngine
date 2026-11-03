@@ -36,7 +36,7 @@ describe("the seed records", () => {
   it("validate with the real verifier", async () => {
     const store = await checkStore(root);
     expect(store.problems).toEqual([]);
-    expect(store.records.length).toBe(14);
+    expect(store.records.length).toBe(24); // 14 of the algebra skills and 10 of the neuron skill (ADR 0076)
   }, 120_000);
   it("are retrievable in a fixed order with nothing unresolved", () => {
     const { records } = loadStore(root);

@@ -10,6 +10,9 @@ export const COMPONENT_NAMES = [
   "fractionBar",
   "areaModel",
   "table",
+  "circuit",
+  "magnetCoil",
+  "waterAnalogy",
   "stepList",
   "arrowCallout",
   "shape",
@@ -35,11 +38,16 @@ export const BEAT_KINDS = ["predict", "explore", "explain", "worked", "check"] a
 export const LEGACY_SPEC_VERSION = "1.0.0";
 export const SPEC_VERSION = "2.0.0";
 export const SPEC_VERSION_2_1 = "2.1.0";
-export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1] as const;
+/** Spec 2.2.0 is additive (ADR 0067): `carryFrom` on a component instance, an object that stays on screen from the previous scene. */
+export const SPEC_VERSION_2_2 = "2.2.0";
+/** Spec 2.3.0 is additive (ADR 0074): a `statement` claim may name the expressions its prose is about (`exprRefs`). */
+export const SPEC_VERSION_2_3 = "2.3.0";
+export const SPEC_VERSIONS = [LEGACY_SPEC_VERSION, SPEC_VERSION, SPEC_VERSION_2_1, SPEC_VERSION_2_2, SPEC_VERSION_2_3] as const;
 /** The claim kinds that exist from spec 2.1.0. A bundle of an earlier version may not carry them. */
 export const CLAIM_KINDS_FROM_2_1 = ["satisfied-by", "product-of-roots"] as const;
 /** What a recall practice question asks for, and so which claim the verifier proves (ADR 0042, 0053). */
-export const ANSWER_KINDS = ["sum-of-roots", "product-of-roots", "roots", "solution"] as const;
+/** `value` (ADR 0076): the answer equation is the problem worked out (z = 1 for a sum of products), proved as an `equivalent` claim. */
+export const ANSWER_KINDS = ["sum-of-roots", "product-of-roots", "roots", "solution", "value"] as const;
 
 /** What a beat does in the lesson (ADR 0028). Independent of how its claims are checked. */
 export const PEDAGOGY_BEAT_KINDS = ["hook", "prerequisite", "concept", "worked", "mistake", "check"] as const;
@@ -116,6 +124,8 @@ export const ComponentInstance = z
     /** Spec 2.0.0 only (ADR 0032): a static object is a text title or caption, with no digits and no placeholders. */
     role: z.literal("static").optional(),
     textRole: z.enum(TEXT_ROLES).optional(),
+    /** Spec 2.2.0 only (ADR 0067): this is the object `carryFrom` of the scene just before, kept on screen. */
+    carryFrom: id.optional(),
   })
   .strict();
 
@@ -132,7 +142,7 @@ const AnchorAt = z.union([z.literal("start"), z.literal("end"), z.object({ wordI
 
 /** A cue target: an object id, or `object#part` for a named part of it (the curve of a graph, one hop of a number line). */
 export const CueTarget = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*(#[A-Za-z0-9][A-Za-z0-9_.:-]*)?$/, "a cue target is an object id, or object#part");
-/** What a cue can do. Every action must show a change or direct attention (ADR 0020); morph is not built (ADR 0021). */
+/** What a cue can do. Every action must show a change or direct attention (ADR 0020). Only an equation draws `morph`, as a cross-fade (ADR 0068); `move` is not built. */
 export const CUE_ACTIONS = ["reveal", "highlight", "move", "morph", "dim", "draw", "pop"] as const;
 
 export const Cue = z
@@ -192,7 +202,8 @@ export const Claim = z.discriminatedUnion("kind", [
   /** Putting `value` (an exact number) in for the unknown of `equation` gives exactly the closed equation `instance`, and that equation is true: the check by substitution (spec 2.1.0, ADR 0053). */
   z.object({ id, beatId: id, kind: z.literal("satisfied-by"), equation: id, value: ExprSchema, instance: id, ...ClaimExtras }).strict(),
   /** A claim in prose with nothing for the verifier to prove (a definition, a misconception). Spec 2.0.0 only, and always `grounded`: a person approves it (AM-3, ADR 0031). */
-  z.object({ id, beatId: id, kind: z.literal("statement"), ...ClaimExtras }).strict(),
+  /** Prose a person approves. From spec 2.3.0 it may name the expressions the prose is about (`exprRefs`, ADR 0074), so a scene can show them and a sentence can use them. */
+  z.object({ id, beatId: id, kind: z.literal("statement"), exprRefs: z.array(id).min(1).optional(), ...ClaimExtras }).strict(),
 ]);
 export type Claim = z.infer<typeof Claim>;
 
@@ -216,6 +227,7 @@ export const ANSWER_KIND_CLAIM: Record<(typeof ANSWER_KINDS)[number], ClaimKind>
   "product-of-roots": "product-of-roots",
   roots: "roots",
   solution: "roots",
+  value: "equivalent",
 };
 // the list above and the zod union must name the same kinds: a kind added to one and not the other does not compile
 const _sameKinds: [ClaimKind] extends [Claim["kind"]] ? ([Claim["kind"]] extends [ClaimKind] ? true : never) : never = true;

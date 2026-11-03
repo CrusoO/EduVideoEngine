@@ -31,6 +31,8 @@ export function buildMathCache(bundle: Pick<LessonBundle, "scenes" | "script" | 
         const display = (o.props as { display?: boolean }).display ?? true;
         const focus = (o.props as { focus?: string[] }).focus;
         add(o.exprRef, display, focus);
+        const from = (o.props as { from?: string }).from;
+        if (from !== undefined) add(from, display); // the formula a morph starts from (ADR 0068)
         // A cue may dim or highlight a named term at any moment: typeset every combination of dimmed terms, so the player only looks them up.
         const cued = (scene.cues ?? []).some((c) => c.targetObject.startsWith(`${o.id}#`));
         const terms = cued ? [...termIds(bundle.expressions[o.exprRef]!)].sort() : [];

@@ -1,0 +1,17 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.claim.push",
+  "kind": "conceptClaim",
+  "text": "Potential difference between two points is the work done to move one unit of charge from one point to the other.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "support",
+  "dependsOn": [
+    "st.claim.analogy"
+  ],
+  "sourceNote": "Written for this project as claim c.pd.def of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "550afb9f6d662a97c3869862889bae50417e589c93724d8c34b9d2b74310275d"
+}

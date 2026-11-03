@@ -144,6 +144,71 @@ export const scriptOf = (beats: readonly ScriptBeat[]): LessonScript => Object.f
 const wordsIn = (text: string): number => wordsOf(text).length;
 
 /**
+ * The rules about one beat's script that code can check (the part of `checkScript` that looks at a single beat), as messages a model can be asked to repair. The
+ * per-beat scriptwriter (ADR 0087) asks for one beat at a time and uses this to judge each answer before the lesson is assembled.
+ */
+export function beatProblems(b: BeatBuild, sb: ScriptBeat): string[] {
+  const out: string[] = [];
+  const bad = (m: string) => out.push(m);
+  const at = `beat ${b.beat.id}`;
+  const claims = new Map(b.claims.map((c) => [c.id, c] as const));
+  const said = new Map<string, number>();
+  const introduced = new Set<string>();
+  const wordsOfClaim = new Map<string, number>();
+  sb.sentences.forEach((s, i) => {
+    const n = `${at}, sentence ${i + 1}`;
+    if ("claimId" in s) {
+      const claim = claims.get(s.claimId);
+      if (!claim) bad(`${n}: ${s.claimId} is not a claim of this beat (${[...claims.keys()].join(", ")})`);
+      else {
+        for (const ref of placeholdersOf(s.text)) if (!claimExpressions(claim).includes(ref)) bad(`${n}: {expr:${ref}} is not a placeholder of claim ${claim.id} (${claimExpressions(claim).join(", ") || "it has none"})`);
+        said.set(claim.id, (said.get(claim.id) ?? 0) + 1);
+        wordsOfClaim.set(claim.id, (wordsOfClaim.get(claim.id) ?? 0) + wordsIn(s.text));
+        introduced.add(claim.id);
+      }
+    } else {
+      const [x, y] = s.linkClaimIds;
+      const cx = claims.get(x);
+      const cy = claims.get(y);
+      if (!cx || !cy || x === y) bad(`${n}: a link sentence joins two different claims of this beat`);
+      else {
+        if (!(cx.dependsOn ?? []).includes(y) && !(cy.dependsOn ?? []).includes(x)) bad(`${n}: ${x} and ${y} are not joined by a dependency; only claims where one depends on the other can be linked`);
+        if (!introduced.has(x) || !introduced.has(y)) bad(`${n}: a link sentence comes after the sentences of both its claims`);
+        if (placeholdersOf(s.text).length > 0) bad(`${n}: a link sentence uses no placeholder`);
+      }
+    }
+    if (/\d/.test(s.text)) bad(`${n}: no digits; write a number as a word, and only a number of the claim`);
+    else if (containsLiteralMath(s.text)) bad(`${n}: no mathematical notation; use the placeholder of the claim`);
+    if (wordsIn(s.text) > SCRIPT_LIMITS.sentenceWords) bad(`${n}: ${wordsIn(s.text)} words, at most ${SCRIPT_LIMITS.sentenceWords}; split it`);
+  });
+  for (const c of b.claims) {
+    if (!said.has(c.id)) bad(`${at}: claim ${c.id} has no sentence`);
+    else if (c.importance === "core" && (wordsOfClaim.get(c.id) ?? 0) < SCRIPT_LIMITS.coreClaimWords) bad(`${at}: core claim ${c.id} has ${wordsOfClaim.get(c.id)} words, it needs at least ${SCRIPT_LIMITS.coreClaimWords} (say it in a second way, or say why it matters)`);
+  }
+  const pattern = LIBRARY.find((p) => p.id === b.beat.pattern)!;
+  const bearing = sb.sentences.length;
+  const needed = b.beat.pattern === "check-question" ? 1 : pattern.minSentences;
+  if (bearing < needed) bad(`${at}: pattern ${pattern.id} needs at least ${needed} sentence${needed === 1 ? "" : "s"} about the claims, there ${bearing === 1 ? "is" : "are"} ${bearing}`);
+  if (b.question) {
+    const first = sb.sentences[0];
+    const claim = first && "claimId" in first ? claims.get(first.claimId) : undefined;
+    if (!claim || !placeholdersOf(first!.text).some((p) => claimExpressions(claim).includes(p))) bad(`${at}: the question is asked first, so your first sentence must state the answer using the placeholder of the answer claim`);
+  }
+  const writes = writesOf(b);
+  if (writes.prompt) {
+    if (!sb.prompt) bad(`${at}: give a prompt, the question the student thinks about at the pause`);
+    else if (sb.prompt.length > SCRIPT_LIMITS.promptChars) bad(`${at}: the prompt is ${sb.prompt.length} characters, at most ${SCRIPT_LIMITS.promptChars}`);
+    else if (/\d|\{expr:/.test(sb.prompt) || containsLiteralMath(sb.prompt)) bad(`${at}: the prompt has no digit, notation or placeholder`);
+  } else if (sb.prompt !== undefined) bad(`${at}: this beat does not ask for a prompt; leave it out`);
+  if (writes.note) {
+    if (!sb.note) bad(`${at}: give a note, the fact in a few words for the card`);
+    else if (wordsIn(sb.note) > SCRIPT_LIMITS.noteWords || sb.note.length > SCRIPT_LIMITS.noteChars) bad(`${at}: the note has ${wordsIn(sb.note)} words and ${sb.note.length} characters, at most ${SCRIPT_LIMITS.noteWords} and ${SCRIPT_LIMITS.noteChars}`);
+    else if (/\d|\{expr:/.test(sb.note) || containsLiteralMath(sb.note)) bad(`${at}: the note has no digit or placeholder`);
+  } else if (sb.note !== undefined) bad(`${at}: this beat does not ask for a note; leave it out`);
+  return out;
+}
+
+/**
  * The rules about the script that code can check, as messages a model can be asked to repair (ADR 0061): every beat with claims has its entry; every claim has a
  * sentence; a sentence names a claim of its beat and uses only that claim's placeholders; no digit and no notation; no number word the claim does not hold is
  * left to the gate (G5 d) below; a core claim has the words it needs; the link sentences are well formed; the prompt and the note are there when the scene asks.
@@ -169,60 +234,7 @@ export function checkScript(ctx: LessonContext, plan: ArcPlan, builds: readonly 
       bad(`${at}: no entry; write its sentences`);
       continue;
     }
-    const claims = new Map(b.claims.map((c) => [c.id, c] as const));
-    const said = new Map<string, number>();
-    const introduced = new Set<string>();
-    const wordsOfClaim = new Map<string, number>();
-    sb.sentences.forEach((s, i) => {
-      const n = `${at}, sentence ${i + 1}`;
-      if ("claimId" in s) {
-        const claim = claims.get(s.claimId);
-        if (!claim) bad(`${n}: ${s.claimId} is not a claim of this beat (${[...claims.keys()].join(", ")})`);
-        else {
-          for (const ref of placeholdersOf(s.text)) if (!claimExpressions(claim).includes(ref)) bad(`${n}: {expr:${ref}} is not a placeholder of claim ${claim.id} (${claimExpressions(claim).join(", ") || "it has none"})`);
-          said.set(claim.id, (said.get(claim.id) ?? 0) + 1);
-          wordsOfClaim.set(claim.id, (wordsOfClaim.get(claim.id) ?? 0) + wordsIn(s.text));
-          introduced.add(claim.id);
-        }
-      } else {
-        const [x, y] = s.linkClaimIds;
-        const cx = claims.get(x);
-        const cy = claims.get(y);
-        if (!cx || !cy || x === y) bad(`${n}: a link sentence joins two different claims of this beat`);
-        else {
-          if (!(cx.dependsOn ?? []).includes(y) && !(cy.dependsOn ?? []).includes(x)) bad(`${n}: ${x} and ${y} are not joined by a dependency; only claims where one depends on the other can be linked`);
-          if (!introduced.has(x) || !introduced.has(y)) bad(`${n}: a link sentence comes after the sentences of both its claims`);
-          if (placeholdersOf(s.text).length > 0) bad(`${n}: a link sentence uses no placeholder`);
-        }
-      }
-      if (/\d/.test(s.text)) bad(`${n}: no digits; write a number as a word, and only a number of the claim`);
-      else if (containsLiteralMath(s.text)) bad(`${n}: no mathematical notation; use the placeholder of the claim`);
-      if (wordsIn(s.text) > SCRIPT_LIMITS.sentenceWords) bad(`${n}: ${wordsIn(s.text)} words, at most ${SCRIPT_LIMITS.sentenceWords}; split it`);
-    });
-    for (const c of b.claims) {
-      if (!said.has(c.id)) bad(`${at}: claim ${c.id} has no sentence`);
-      else if (c.importance === "core" && (wordsOfClaim.get(c.id) ?? 0) < SCRIPT_LIMITS.coreClaimWords) bad(`${at}: core claim ${c.id} has ${wordsOfClaim.get(c.id)} words, it needs at least ${SCRIPT_LIMITS.coreClaimWords} (say it in a second way, or say why it matters)`);
-    }
-    const pattern = LIBRARY.find((p) => p.id === b.beat.pattern)!;
-    const bearing = sb.sentences.length;
-    const needed = b.beat.pattern === "check-question" ? 1 : pattern.minSentences;
-    if (bearing < needed) bad(`${at}: pattern ${pattern.id} needs at least ${needed} sentence${needed === 1 ? "" : "s"} about the claims, there ${bearing === 1 ? "is" : "are"} ${bearing}`);
-    if (b.question) {
-      const first = sb.sentences[0];
-      const claim = first && "claimId" in first ? claims.get(first.claimId) : undefined;
-      if (!claim || !placeholdersOf(first!.text).some((p) => claimExpressions(claim).includes(p))) bad(`${at}: the question is asked first, so your first sentence must state the answer using the placeholder of the answer claim`);
-    }
-    const writes = writesOf(b);
-    if (writes.prompt) {
-      if (!sb.prompt) bad(`${at}: give a prompt, the question the student thinks about at the pause`);
-      else if (sb.prompt.length > SCRIPT_LIMITS.promptChars) bad(`${at}: the prompt is ${sb.prompt.length} characters, at most ${SCRIPT_LIMITS.promptChars}`);
-      else if (/\d|\{expr:/.test(sb.prompt) || containsLiteralMath(sb.prompt)) bad(`${at}: the prompt has no digit, notation or placeholder`);
-    } else if (sb.prompt !== undefined) bad(`${at}: this beat does not ask for a prompt; leave it out`);
-    if (writes.note) {
-      if (!sb.note) bad(`${at}: give a note, the fact in a few words for the card`);
-      else if (wordsIn(sb.note) > SCRIPT_LIMITS.noteWords || sb.note.length > SCRIPT_LIMITS.noteChars) bad(`${at}: the note has ${wordsIn(sb.note)} words and ${sb.note.length} characters, at most ${SCRIPT_LIMITS.noteWords} and ${SCRIPT_LIMITS.noteChars}`);
-      else if (/\d|\{expr:/.test(sb.note) || containsLiteralMath(sb.note)) bad(`${at}: the note has no digit or placeholder`);
-    } else if (sb.note !== undefined) bad(`${at}: this beat does not ask for a note; leave it out`);
+    out.push(...beatProblems(b, sb));
   }
   if (out.length > 0) return out;
 

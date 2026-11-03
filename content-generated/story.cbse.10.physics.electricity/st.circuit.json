@@ -1,0 +1,40 @@
+{
+  "skillId": "STORY.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "st.circuit",
+  "kind": "passage",
+  "text": "A battery, a resistor and a meter joined in one loop.",
+  "expressions": {
+    "st.c.v": {
+      "op": "num",
+      "n": 12
+    },
+    "st.c.r": {
+      "op": "num",
+      "n": 4
+    },
+    "st.c.i": {
+      "op": "num",
+      "n": 3
+    }
+  },
+  "circuit": {
+    "battery": {
+      "value": "st.c.v",
+      "unit": "V"
+    },
+    "resistor": {
+      "value": "st.c.r",
+      "unit": "Ω"
+    },
+    "meter": {
+      "value": "st.c.i",
+      "unit": "A",
+      "hidden": true
+    }
+  },
+  "sourceNote": "Written for this project as the circuit of the hook and of the first idea of the Ohm's law story (ADR 0085); its statements are claims of the knowledge base (mock content, ADR 0080).",
+  "hash": "246bbf150593aeaa2ebd9f28688a0522630edf84bfb9e3a48f785b409f992022"
+}

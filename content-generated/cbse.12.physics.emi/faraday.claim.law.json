@@ -1,0 +1,14 @@
+{
+  "skillId": "KB.CBSE_12_PHYSICS_EMI",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "faraday.claim.law",
+  "kind": "conceptClaim",
+  "text": "The emf induced in a loop equals the rate of change of the magnetic flux through the loop, and no emf is induced while the flux is constant.",
+  "expressions": {},
+  "claimMode": "grounded",
+  "importance": "core",
+  "sourceNote": "Compiled from the knowledge base (law.faraday, cbse.12.physics.emi) as the knowledge base claim e.faraday; the knowledge base is mock content written for testing (ADR 0083).",
+  "hash": "f088f15272952a1d2d65d4f33de8455b8d4c079de7deafec44bdfb08e70f4047"
+}

@@ -6,7 +6,19 @@ export const CALLOUT_WORDS = 8;
 
 export const SHAPE_HEIGHT = { s: 48, m: 96, l: 144 } as const;
 export const SHAPE_LINE_HEIGHT = 24;
+/** A table (ADR 0076): square cells of this many pixels, this far apart, and a label line of this height under the grid. */
+export const TABLE_CELL_PX = 44;
+export const TABLE_GAP_PX = 4;
+export const TABLE_LABEL_PX = 24;
 export const SHAPE_LABEL_WORDS = 4;
+/** A circuit (ADR 0082): its height in pixels on the design phone (the viewBox scaled to the 320 px content width). Here, not in the component, so that measuring a scene does not load it. */
+export const CIRCUIT_HEIGHT_PX = 200;
+/** The magnet and coil picture (ADR 0083), kept here for the same reason. */
+export const MAGNET_HEIGHT_PX = 210;
+/** The water analogy (ADR 0085), kept here for the same reason. */
+export const WATER_HEIGHT_PX = 210;
+/** The balance scale (ADR 0094): two pans on a beam for a linear equation, kept here for the same reason. */
+export const BALANCE_HEIGHT_PX = 80;
 
 /** The ring colour and the stage colour it must stand out from (WCAG 1.4.11: 3:1 for graphical objects). */
 export const HIGHLIGHT_COLOR = "#F5D547";

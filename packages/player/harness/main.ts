@@ -3,13 +3,14 @@ import "katex/dist/katex.min.css";
 import "../../components/src/styles.css";
 import "../src/player.css";
 import "../theme/controls.css";
+import "../theme/whiteboard.css";
 import { buildMathCache } from "../../components/src/build";
 import { cachedMath } from "@eve/components";
 import { resolve } from "@eve/resolver";
 import { hindiPreview, layoutStress, quadraticRootsV1, referenceLesson, wordsOf, type AudioTrack, type LessonBundle, type PausePoint } from "@eve/schema";
 import { FileVoiceAdapter } from "../../voice/src/adapter";
 import { loadBuffers } from "../../voice/src/browser";
-import { colorTheme } from "../theme/palette";
+import { colorTheme, type Theme } from "../theme/palette";
 import { AudioClock, Player, loadLessonComponents, mountControls, showQuestion } from "../src";
 
 /**
@@ -19,12 +20,29 @@ import { AudioClock, Player, loadLessonComponents, mountControls, showQuestion }
 const params = new URLSearchParams(location.search);
 const voice = params.get("voice") ?? "piper";
 const msPerWord = Number(params.get("mpw") ?? 300);
+/** ?theme=whiteboard draws the stage on a white board in marker colours (ADR 0082); the default is the dark stage. */
+const theme: Theme = params.get("theme") === "whiteboard" ? "whiteboard" : "dark";
 const lessons = { v1: quadraticRootsV1, hindi: hindiPreview, stress: layoutStress } as Record<string, LessonBundle>;
 /** ?lesson=generated plays a generated lesson package served at /generated (lesson.json and voice/); every other name is a bundled lesson, as before. */
 const generated = params.get("lesson") === "generated";
 const bundle = (generated ? await (await fetch("/generated/lesson.json")).json() : (lessons[params.get("lesson") ?? ""] ?? referenceLesson)) as LessonBundle;
 const voiceBase = generated ? "/generated/voice" : "/voice";
 document.getElementById("root")!.style.width = `${params.get("w") ?? 360}px`;
+if (theme === "whiteboard") document.getElementById("root")!.classList.add("eve-whiteboard");
+/**
+ * ?zoom=1.3 scales the whole player, so a lesson laid out for a phone fills a desktop window; ?zoom=fit scales it to the window (width and a design height of 720 px,
+ * kept as the window changes). A landscape layout is not built (ADR 0085).
+ */
+const zoomParam = params.get("zoom");
+const applyZoom = (): void => {
+  const width = Number(params.get("w") ?? 360);
+  const z = zoomParam === "fit" ? Math.min(innerWidth / width, innerHeight / 720) * 0.97 : Number(zoomParam ?? 1);
+  if (Number.isFinite(z) && z > 0) (document.body.style as CSSStyleDeclaration & { zoom: string }).zoom = String(z);
+};
+if (zoomParam !== null) {
+  applyZoom();
+  if (zoomParam === "fit") addEventListener("resize", applyZoom);
+}
 const ctx = new AudioContext();
 
 async function voiceTracks(): Promise<{ tracks: AudioTrack[]; buffers: Map<string, AudioBuffer>; credit: string }> {
@@ -64,10 +82,12 @@ async function main() {
   const root = document.getElementById("root")!;
   await loadLessonComponents(bundle);
   const player = new Player({
+    theme,
+    interactive: params.get("export") !== "1",
     root,
     bundle,
     timeline,
-    math: cachedMath(buildMathCache(bundle, undefined, colorTheme(bundle.termColors))),
+    math: cachedMath(buildMathCache(bundle, undefined, colorTheme(bundle.termColors, theme))),
     clock,
     credit,
     onFrame: (t) => frameHooks.forEach((h) => h(t)),

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { ANSWER_KINDS, CLAIM_MODES, COLOR_NAMES, ExprSchema, IDENTITIES, IMPORTANCES, STEP_KINDS, hashOf, type Claim, type Expr } from "@eve/schema";
 import config from "../../../config/content.json";
 import licences from "../../../config/licences.json";
+import sources from "../../../config/sources.json";
 
 /** Settings read from config/, never written in code (English only in Phase 1). */
 export const CONTENT_CONFIG = config as { locales: string[]; approvalStatuses: string[]; minimumApprovalStatus: string };
@@ -9,6 +10,31 @@ export const ALLOWED_LICENCES: readonly string[] = licences.allowed;
 
 const id = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]*$/, "ids are letters, digits and _ . : -");
 const hex64 = z.string().regex(/^[0-9a-f]{64}$/);
+
+/** Licences that need no source entry: the owner wrote it, or nobody holds rights in it. */
+export const NO_SOURCE_LICENCES: readonly string[] = ["owner-original", "CC0-1.0", "public-domain"];
+
+export const SourceEntry = z
+  .object({
+    id,
+    title: z.string().min(1),
+    rightsHolder: z.string().min(1),
+    licence: z.string(),
+    permittedUses: z.array(z.enum(["lesson-wording", "claim-check", "reference-only"])).min(1),
+    /** Required for CC-BY licences: the credit line shown where the content is used. */
+    attribution: z.string().min(1).optional(),
+    /** Where the licence text or the written permission is kept. */
+    evidence: z.string().min(1),
+    /** Last day of validity (YYYY-MM-DD), for permissions that run out. */
+    expires: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  })
+  .strict();
+export type SourceEntry = z.infer<typeof SourceEntry>;
+export const SOURCES: readonly SourceEntry[] = z.array(SourceEntry).parse(sources.sources);
+
+/** A sweep of a picture (ADR 0070, 0085): a factor from `from` to `to` that a morph cue moves and that the student may drag between `min` and `max` while the lesson is paused. */
+const SweepRecord = z.object({ from: z.number().positive(), to: z.number().positive(), min: z.number().positive().optional(), max: z.number().positive().optional(), readout: z.boolean().optional(), roundTrip: z.boolean().optional() }).strict();
+const PartRecord = z.object({ value: id, unit: z.string().min(1).max(3) }).strict();
 
 export const KINDS = ["passage", "solutionSteps", "misconception", "glossary", "skill", "conceptClaim", "practiceQuestion"] as const;
 /** The four kinds the planner request of prompt versions planner.v2 and planner.v3 may carry. The newer kinds are added by the next planner version (ADR 0039). */
@@ -65,6 +91,8 @@ export const ContentRecord = z
     sourceNote: z.string().min(1),
     /** Must be on the allow-list in config/licences.json. */
     licence: z.string(),
+    /** The entry of config/sources.json this record comes from (ADR 0078). Required unless the licence is owner-original, CC0-1.0 or public-domain. */
+    sourceId: id.optional(),
     approvalStatus: z.enum(APPROVAL_STATUSES),
     /** hashOf(the record without this field): changes whenever anything changes. */
     hash: hex64,
@@ -76,7 +104,18 @@ export const ContentRecord = z
     /** misconception: the mistaken statement and the correct one, as expressions. */
     contrast: z.object({ wrong: id, right: id }).strict().optional(),
     /** passage: a function to graph and the window to graph it in. The roots shown are computed from the expression, never stored. */
-    plot: z.object({ expr: id, xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number() }).strict().optional(),
+    plot: z.object({ expr: id, xMin: z.number(), xMax: z.number(), yMin: z.number(), yMax: z.number(), xLabel: z.string().min(1).max(40).optional(), yLabel: z.string().min(1).max(40).optional(), xName: z.string().min(1).max(4).optional() }).strict().optional(),
+    /**
+     * passage: grids of numbers for the `table` component (ADR 0076), by name. Each cell is the id of an expression that is a number; `pixels`, `weights` and `products`
+     * are the names the neuron patterns read. Cells are evaluated by code, so the numbers on screen are the numbers the verifier proves.
+     */
+    grids: z.record(z.object({ cols: z.number().int().min(1).max(3), cells: z.array(id).min(1).max(9), tint: z.enum(["brightness", "signed"]), label: z.string().min(1).optional() }).strict()).optional(),
+    /** passage: a one-loop circuit for the `circuit` component (ADR 0082). Each part names an expression that is a number, and the symbol of its unit. */
+    circuit: z.object({ battery: z.object({ value: id, unit: z.string().min(1).max(3) }).strict(), resistor: z.object({ value: id, unit: z.string().min(1).max(3) }).strict(), meter: z.object({ value: id, unit: z.string().min(1).max(3), hidden: z.boolean().optional() }).strict().optional(), sweep: SweepRecord.optional() }).strict().optional(),
+    /** passage: water in a pipe as a picture of current (ADR 0085): the push (a tank's level), the narrowness (the resistance), and the reading at the end of the pipe. */
+    water: z.object({ height: PartRecord, narrow: PartRecord, flow: z.object({ unit: z.string().min(1).max(3), hidden: z.boolean().optional() }).strict().optional(), full: z.number().positive().optional(), sweep: SweepRecord.optional() }).strict().optional(),
+    /** passage: a bar magnet and a coil of this many turns joined to a meter, for the `magnetCoil` component (ADR 0083). */
+    magnetCoil: z.object({ turns: z.number().int().min(2).max(6) }).strict().optional(),
     /** The colour of named terms (Expr.term) in this record's expressions, from the closed palette. */
     termColors: z.record(z.enum(COLOR_NAMES)).optional(),
 

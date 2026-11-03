@@ -89,8 +89,8 @@ describe("schema rules", () => {
     expect(validateBundle(b).ok).toBe(false);
   });
 
-  it("the registry has twelve components", () => {
-    expect(COMPONENT_NAMES).toHaveLength(12);
+  it("the registry has fifteen components (the circuit joined in ADR 0082, the magnet and coil in ADR 0083, the water analogy in ADR 0085)", () => {
+    expect(COMPONENT_NAMES).toHaveLength(15);
   });
 });
 

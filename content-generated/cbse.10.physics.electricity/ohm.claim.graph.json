@@ -1,0 +1,27 @@
+{
+  "skillId": "KB.CBSE_10_PHYSICS_ELECTRICITY",
+  "locale": "en-IN",
+  "licence": "owner-original",
+  "approvalStatus": "draft",
+  "id": "ohm.claim.graph",
+  "kind": "conceptClaim",
+  "text": "The line crosses zero where {expr:ohm.graphEq} holds.",
+  "expressions": {},
+  "claimMode": "computed",
+  "importance": "support",
+  "dependsOn": [
+    "ohm.claim.roots"
+  ],
+  "claim": {
+    "kind": "roots",
+    "equation": "ohm.graphEq",
+    "values": [
+      {
+        "op": "num",
+        "n": 3
+      }
+    ]
+  },
+  "sourceNote": "Compiled from the knowledge base (law.ohm, cbse.10.physics.electricity) as where the graph crosses zero, as a claim the plotted line can be tied to; the knowledge base is mock content written for testing (ADR 0081).",
+  "hash": "fb2b995796268427317815ed2dd47391d956c50b4ac9933bfa370252ed78ea58"
+}

@@ -1,0 +1,6 @@
+{
+  "nodes": [
+    { "id": "bt.10.physics.electricity", "board": "BHUTAN", "grade": 10, "subject": "physics", "unit": "Electricity", "topic": "Current, voltage, resistance and Ohm's law", "outcomes": ["Explain current, voltage and resistance", "Use Ohm's law to solve circuit problems"], "conceptIds": ["phys.current", "phys.pd", "phys.resistance", "phys.ohm"], "syllabus": { "title": "BCSE syllabus (mock entry, edition to be confirmed)", "edition": "unconfirmed" } },
+    { "id": "bt.12.physics.emi", "board": "BHUTAN", "grade": 12, "subject": "physics", "unit": "Electromagnetic induction", "topic": "Electromagnetic induction", "outcomes": ["Describe electromagnetic induction and state Faraday's and Lenz's laws", "Find the emf induced in a moving conductor"], "conceptIds": ["phys.mag.flux", "phys.emi.faraday", "phys.emi.lenz", "phys.emi.motional"], "syllabus": { "title": "BHSEC syllabus (mock entry, edition to be confirmed)", "edition": "unconfirmed" } }
+  ]
+}

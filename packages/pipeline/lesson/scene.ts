@@ -43,7 +43,7 @@ export function altTextFor(scene: SceneSpec, expressions: Readonly<Record<string
  *  3. the alt text is described from the scene.
  * `claims` are the claims of the lesson that this scene's beat makes.
  */
-export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentences: readonly NarrationSentence[], expressions: Readonly<Record<string, Expr>>, locale: string): SceneSpec {
+export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentences: readonly NarrationSentence[], expressions: Readonly<Record<string, Expr>>, locale: string, signalling = true): SceneSpec {
   const objects = scene.objects.map((o) => {
     const isTitle = o.component === "text" && (o.props as { role?: string }).role === "title" && canBeStatic((o.props as { text?: string }).text ?? "");
     return isTitle ? { ...o, role: "static" as const, textRole: "title" as const } : o;
@@ -79,7 +79,35 @@ export function finishScene(scene: SceneSpec, claims: readonly Claim[], sentence
     const chosen = pool.find((s) => position.get(s.id)! > last) ?? pool[0];
     if (!chosen) continue; // nothing can carry it: G3 reports the object
     const had = mine().length > 0;
-    cues.push({ targetObject: o.id, action: had ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: had ? 800 : 1500 });
+    // a carried object is on screen from the first moment (ADR 0067): it is pointed at, never revealed
+    const point = had || o.carryFrom !== undefined;
+    cues.push({ targetObject: o.id, action: point ? "highlight" : "reveal", anchor: { sentenceId: chosen.id, at: "start" }, minHoldMs: point ? 800 : 1500 });
   }
+  if (signalling) cues.push(...signallingCues(objects, cues, sentences, position));
   return { ...scene, objects, cues, a11y: { altText: altTextFor({ ...scene, objects }, expressions, locale) } };
+}
+
+/** How long the ring stays on an equation when a sentence speaks it (the resolver's own minimum for a highlight is 300 ms). */
+export const SIGNAL_HOLD_MS = 800;
+
+/**
+ * Signalling (ADR 0066): each time a sentence speaks an equation that is already on screen, the equation is highlighted at the start of that sentence, so what
+ * the narrator names is what the eye is drawn to. Only equations the sentence names with a placeholder, only after the equation has been revealed, and never on a
+ * sentence the object already has a cue on. Nothing here adds a fact: the cue targets an object the sentence already names.
+ */
+function signallingCues(objects: readonly SceneSpec["objects"][number][], cues: readonly Cue[], sentences: readonly NarrationSentence[], position: ReadonlyMap<string, number>): Cue[] {
+  const out: Cue[] = [];
+  for (const o of objects) {
+    if (o.role === "static" || o.component !== "equation" || o.exprRef === undefined) continue;
+    const mine = cues.filter((c) => c.targetObject === o.id);
+    // an object with no appearance cue is on screen from the start (objectStateAt), so it can be signalled from the first sentence on
+    const shown = mine.filter((c) => c.action === "reveal" || c.action === "draw" || c.action === "pop").map((c) => position.get(c.anchor.sentenceId) ?? Infinity);
+    const firstShown = shown.length === 0 ? -1 : Math.min(...shown);
+    for (const s of sentences) {
+      if (!s.exprRefs.includes(o.exprRef) || (position.get(s.id) ?? -1) <= firstShown) continue;
+      if (mine.some((c) => c.anchor.sentenceId === s.id)) continue;
+      out.push({ targetObject: o.id, action: "highlight", anchor: { sentenceId: s.id, at: "start" }, minHoldMs: SIGNAL_HOLD_MS });
+    }
+  }
+  return out;
 }
