@@ -7,6 +7,7 @@
  * nothing does), lay the voice on the timeline and encode story/lesson.mp4. No model is called and nothing is paid.
  */
 import { spawn } from "node:child_process";
+import { availableParallelism } from "node:os";
 import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -49,6 +50,8 @@ const isDevanagari = locale === "hi-IN" || locale === "ne-NP";
 const timelineFile = join(dir, "timeline.json");
 const pageFile = join(dir, "page.html");
 
+/** Pages that draw frames at once: 3 took 70 s for the 856 frames of a 105 s video, 5 took 63 s and 7 took 56 s on an 8-thread laptop; each page costs memory, so it stops at 6. */
+const RENDER_PAGES = Math.min(6, Math.max(3, availableParallelism() - 2));
 const FRAME_ATTEMPTS = 3;
 
 type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
@@ -92,12 +95,12 @@ async function build(): Promise<void> {
           const synth = j.pace ? marked.get(j.pace)! : normal[idx]!;
           const out = join(dir, j.file);
           await synth.synthesizeAsync!(speechText(j.text), out);
-          trimSilence(ffmpegPath as string, out);
-          // a pause is silence added to this sentence's length, so the next sentence starts later
-          durations[j.si]![j.i] = wavInfo(readFileSync(out)).durationMs + j.pauseMs;
         }
       };
       await Promise.all([0, 1, 2].map(worker));
+      trimSilence(ffmpegPath as string, jobs.map((j) => join(dir, j.file)));
+      // a pause is silence added to this sentence's length, so the next sentence starts later
+      for (const j of jobs) durations[j.si]![j.i] = wavInfo(readFileSync(join(dir, j.file))).durationMs + j.pauseMs;
     } finally {
       all.forEach((s) => s.dispose?.());
     }
@@ -149,6 +152,12 @@ async function build(): Promise<void> {
 }
 
 async function render(): Promise<void> {
+  let lapAt = Date.now();
+  const lap = (label: string): void => {
+    const now = Date.now();
+    console.log(`  ${label}: ${((now - lapAt) / 1000).toFixed(1)} s`);
+    lapAt = now;
+  };
   if (!ffmpegPath || !existsSync(ffmpegPath)) throw new Error("ffmpeg is not installed: run pnpm install");
   const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as Timeline;
   const fps = Math.min(30, Math.max(6, Number(option("fps", "24"))));
@@ -159,7 +168,7 @@ async function render(): Promise<void> {
   try {
     // one context per worker: a page behind another in the same context is a background tab, and the browser does not draw those
     const pages = await Promise.all(
-      Array.from({ length: 3 }, async () => {
+      Array.from({ length: RENDER_PAGES }, async () => {
         const context = await browser.newContext({ viewport: { width: FRAME.width, height: FRAME.height }, deviceScaleFactor: 1 });
         const page = await context.newPage();
         await page.goto(pathToFileURL(pageFile).href);
@@ -174,6 +183,7 @@ async function render(): Promise<void> {
         return page;
       }),
     );
+    lap("browser and pages ready");
     let next = 0;
     let done = 0;
     await Promise.all(
@@ -193,12 +203,14 @@ async function render(): Promise<void> {
         }
       }),
     );
+    lap(`${ticks.length} frames drawn`);
   } finally {
     await browser.close();
   }
   const secs = (ms: number): string => (ms / 1000).toFixed(3);
   // the voice: each sentence at its start, mixed and set to the speech loudness (scripts/voice-finish.ts)
   mixVoice(ffmpegPath as string, dir, timeline.audio, timeline.totalMs);
+  lap("voice finished");
   const list = ticks.map((tk, i) => `file 'frames/f${String(i).padStart(5, "0")}.jpg'\nduration ${secs(Math.max(30, tk.hold))}`);
   list.push(`file 'frames/f${String(ticks.length - 1).padStart(5, "0")}.jpg'`);
   writeFileSync(join(dir, "frames.txt"), list.join("\n") + "\n");
@@ -212,6 +224,7 @@ async function render(): Promise<void> {
     enc.stderr.on("data", (d: Buffer) => (err += d.toString()));
     enc.on("close", (code) => (code === 0 ? res() : rej(new Error(`ffmpeg failed: ${err}`))));
   });
+  lap("video encoded");
   rmSync(join(dir, "frames"), { recursive: true, force: true });
 }
 

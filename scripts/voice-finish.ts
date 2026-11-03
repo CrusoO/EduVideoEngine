@@ -9,12 +9,25 @@ import { loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, 
  */
 export type VoiceClip = { wav: string; startMs: number };
 
-/** Cuts the silence a voice leaves at the start and end of a sentence's file, so the pause between sentences is the one the story asks for. A file that would come out empty is left as it is. */
-export function trimSilence(ffmpeg: string, file: string): void {
-  const out = `${file}.trim.wav`;
-  const r = spawnSync(ffmpeg, ["-y", "-loglevel", "error", "-i", file, "-af", trimSilenceFilter(), out], { encoding: "utf8" });
-  if (r.status === 0 && existsSync(out) && statSync(out).size > 1000) renameSync(out, file);
-  else rmSync(out, { force: true });
+/** How many files one ffmpeg call trims, to keep its command line short. */
+const TRIM_BATCH = 30;
+
+/**
+ * Cuts the silence a voice leaves at the start and end of each sentence's file, so the pause between sentences is the one the story asks for. A file that would come out empty is left as it is.
+ * Files are trimmed together, many to a call: starting ffmpeg is slow on some machines (about 5 s measured on the development laptop), so one call per sentence cost more than the trimming.
+ */
+export function trimSilence(ffmpeg: string, files: string | readonly string[]): void {
+  const all = typeof files === "string" ? [files] : files;
+  for (let from = 0; from < all.length; from += TRIM_BATCH) {
+    const batch = all.slice(from, from + TRIM_BATCH);
+    const args = ["-y", "-loglevel", "error", ...batch.flatMap((f) => ["-i", f]), ...batch.flatMap((f, i) => ["-map", `${i}:a`, "-af", trimSilenceFilter(), `${f}.trim.wav`])];
+    spawnSync(ffmpeg, args, { encoding: "utf8" });
+    for (const f of batch) {
+      const out = `${f}.trim.wav`;
+      if (existsSync(out) && statSync(out).size > 1000) renameSync(out, f);
+      else rmSync(out, { force: true });
+    }
+  }
 }
 
 /**

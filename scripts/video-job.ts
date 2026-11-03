@@ -5,7 +5,9 @@
  * the package of the lesson, lesson.mp4, sources.json and result.json. Stages: request, retrieve (the place and what a lesson on it may say), ground (the knowledge base, its
  * rights and its book pointers are valid), build (plan, script, voice, gates, SymPy), render (MP4), qa (delivery checks). A stage whose inputs are unchanged and whose outputs
  * exist is skipped, so a retry resumes where the job stopped; the same idempotency key finds a finished job instead of making another (--fresh runs it again). SIGINT or SIGTERM
- * stops the child process and ends the job as cancelled. Replay mode only: no model is called and nothing is paid. Exit code: 0 done, 1 failed, 3 cancelled.
+ * stops the child process (and what it started) and ends the job as cancelled. A stage that runs past its time limit is stopped and ends the job as `timeout`; an error nobody
+ * expected ends it as `internal_error`, always with a result.json (ADR 0093). At most VIDEO_JOB_SLOTS (default 2) jobs build or render at once on a machine. Replay mode only:
+ * no model is called and nothing is paid. Exit code: 0 done, 1 failed, 3 cancelled.
  */
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -13,6 +15,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, 
 import { join, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv } from "../packages/adapters/src";
+import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
 import { LessonRequest, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
@@ -44,6 +47,7 @@ const emit = (stage: JobEvent["stage"], status: JobEvent["status"], extra: { cod
   console.log(JSON.stringify(e));
 };
 const finish = (code: ErrorCode | undefined, detail?: string): never => {
+  releaseSlot?.();
   const state = reduceJob(events);
   writeFileSync(join(jobDir, "result.json"), JSON.stringify({ requestId: safeId, status: code ? (code === "cancelled" ? "cancelled" : "failed") : "done", code, detail, state, files: files() }, null, 2) + "\n");
   process.exit(code === undefined ? 0 : code === "cancelled" ? 3 : 1);
@@ -65,14 +69,74 @@ const fail = (stage: JobStage, code: ErrorCode, detail: string): never => {
 
 let child: ReturnType<typeof spawn> | undefined;
 let current: JobStage | undefined;
+let releaseSlot: (() => void) | undefined;
 const cancel = (): void => {
-  child?.kill();
+  killTree(child?.pid);
   if (current) emit(current, "cancelled");
   emit("job", "cancelled");
   finish("cancelled", "stopped by the caller");
 };
 process.on("SIGINT", cancel);
 process.on("SIGTERM", cancel);
+// an error nobody expected still ends the job with an answer, never a job that looks "running" for ever
+let crashed = false;
+const crash = (e: unknown): void => {
+  if (crashed) process.exit(1);
+  crashed = true;
+  killTree(child?.pid);
+  try {
+    fail(current ?? "request", "internal_error", describeCrash(e));
+  } catch {
+    process.exit(1);
+  }
+};
+process.on("uncaughtException", crash);
+process.on("unhandledRejection", crash);
+
+/** A stage's time limit in milliseconds; VIDEO_JOB_STAGE_TIMEOUT_MS replaces all of them (for a machine slower than the measured one, and for tests). */
+const limitOf = (stage: JobStage): number => {
+  const forced = Number(process.env.VIDEO_JOB_STAGE_TIMEOUT_MS);
+  return Number.isFinite(forced) && forced > 0 ? forced : (STAGE_TIMEOUT_MS as Record<string, number>)[stage] ?? STAGE_TIMEOUT_MS.render;
+};
+
+/**
+ * Runs one script of this repository as a child process of the current stage. A child that outlives the stage's limit is stopped with everything it started and the job ends as
+ * `timeout`; a child that fails leaves the end of its error output in events.jsonl. Resolves with its exit code.
+ */
+const supervise = (script: string, scriptArgs: string[], env: Record<string, string>): Promise<number> =>
+  new Promise((done) => {
+    const stage = current;
+    child = spawn(process.execPath, ["--use-system-ca", join(REPO_ROOT, "node_modules", "vite-node", "vite-node.mjs"), join("scripts", script), ...scriptArgs], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv(env), detached: process.platform !== "win32" });
+    const limit = stage ? limitOf(stage) : STAGE_TIMEOUT_MS.render;
+    const timer = setTimeout(() => {
+      killTree(child?.pid);
+      fail(stage ?? "request", "timeout", `the ${stage ?? "job"} stage ran for more than ${Math.round(limit / 1000)} seconds and was stopped`);
+    }, limit);
+    let tail = "";
+    child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
+    child.on("exit", (c) => {
+      clearTimeout(timer);
+      child = undefined;
+      if (c !== 0 && tail.trim()) appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage, note: tail.trim() }) + "\n");
+      done(c ?? 1);
+    });
+  });
+
+/** Building and rendering use the whole machine, so at most VIDEO_JOB_SLOTS jobs do it at once; the others wait (VIDEO_JOB_SLOT_WAIT_MS, 30 minutes) and then end as `timeout`. */
+const takeSlot = async (stage: JobStage): Promise<void> => {
+  if (releaseSlot) return;
+  const max = Math.max(1, Number(process.env.VIDEO_JOB_SLOTS) || 2);
+  const given = process.env.VIDEO_JOB_SLOT_WAIT_MS;
+  const waitMs = given !== undefined && Number(given) >= 0 ? Number(given) : 30 * 60_000;
+  const dir = join(REPO_ROOT, "dist", "jobs", ".slots");
+  let release = await acquireSlot(dir, max, { waitMs: 0 });
+  if (!release) {
+    appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage, note: `waiting for a free slot (${max} job(s) are building or rendering)` }) + "\n");
+    release = await acquireSlot(dir, max, { waitMs });
+  }
+  if (!release) fail(stage, "timeout", `no free slot after ${Math.round(waitMs / 1000)} seconds: ${max} other job(s) are building or rendering`);
+  releaseSlot = release!;
+};
 
 // 1. the request
 current = "request";
@@ -130,18 +194,7 @@ emit("ground", "done", { detail: `${r.brief.concepts.filter((c) => c.taught).red
 
 // 4. build
 const packageDir = join(jobDir, "package");
-const viteNode = join(REPO_ROOT, "node_modules", "vite-node", "vite-node.mjs");
-const run = (script: string, extra: string[], env: Record<string, string>): Promise<number> =>
-  new Promise((done) => {
-    child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", script), ...extra], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv(env) });
-    let tail = "";
-    child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
-    child.on("exit", (c) => {
-      child = undefined;
-      if (c !== 0 && tail.trim()) appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage: current, note: tail.trim() }) + "\n");
-      done(c ?? 1);
-    });
-  });
+const run = supervise;
 const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
 const skillRecords = stores.records.filter((x) => x.skillId === r.skillId).map((x) => x.hash).sort();
 const bundleDir = join(packageDir, lessonFolderName(bundleIdFor(r.skillId, request.options.locale)));
@@ -151,6 +204,7 @@ const buildKey = stageKey("build", { skill: r.skillId, records: skillRecords, vo
 current = "build";
 if (keys.stages.build === buildKey && existsSync(join(bundleDir, "report.json"))) emit("build", "skipped", { detail: "same inputs as the last run" });
 else {
+  await takeSlot("build");
   emit("build", "started", { detail: `skill ${r.skillId}, voice ${voice}` });
   if (narration === "polish" && !args.includes("--allow-live")) fail("build", "live_not_allowed", "this request asks for a model to polish the narration, and this runner was not started with --allow-live");
   const live = narration === "polish";
@@ -217,26 +271,17 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   emit("retrieve", "done", { detail: kind === "story" ? `a story of ${story!.scenes.length} scene(s) from the host; it was not matched to the knowledge base${storyClean!.notes.length ? `; ${storyClean!.notes.length} shape(s) dropped` : ""}` : `a source of ${sourceText!.sections.length} section(s) from the host; it was not matched to the knowledge base` });
   current = "ground";
   emit("ground", "skipped", { detail: `a ${kind === "story" ? "story" : "draft explainer"} holds no claims of the knowledge base` });
-  const viteNode = join(REPO_ROOT, "node_modules", "vite-node", "vite-node.mjs");
   const dir = join(jobDir, kind);
   const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
   const storyOptions = resolveStoryOptions(request.options); // the explainer pattern for an animated story, the plain page otherwise (ADR 0099)
   const script = (stage: "build" | "render"): Promise<number> =>
-    new Promise((done) => {
-      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : [])], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
-      let tail = "";
-      child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
-      child.on("exit", (c) => {
-        child = undefined;
-        if (c !== 0 && tail.trim()) appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage: current, note: tail.trim() }) + "\n");
-        done(c ?? 1);
-      });
-    });
+    supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : [])], { LLM_MODE: "replay" });
   const timelineFile = join(dir, "timeline.json");
   const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, ...(kind === "story" ? { options: storyOutputOptions(request.options) } : {}), v: 3 });
   current = "build";
   if (keys.stages.build === buildKey && existsSync(timelineFile)) emit("build", "skipped", { detail: "same inputs as the last run" });
   else {
+    await takeSlot("build");
     emit("build", "started", { detail: kind === "story" ? `${story!.scenes.reduce((n, s) => n + s.sentences.length, 0)} sentences, ${story!.scenes.reduce((n, s) => n + s.visuals.length, 0)} shapes, voice ${voice}` : `${narrationOf(sourceText!).length} cards, voice ${voice}` });
     const code = await script("build");
     if (code !== 0 || !existsSync(timelineFile)) fail("build", "build_failed", `the voice and pictures stopped (exit ${code}); see events.jsonl`);

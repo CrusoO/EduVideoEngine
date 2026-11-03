@@ -53,12 +53,13 @@ async function build(): Promise<void> {
       const spoken = speechText(units[i]!.text);
       if (synth.synthesizeAsync) await synth.synthesizeAsync(spoken, file);
       else synth.synthesize(spoken, file);
-      trimSilence(ffmpegPath as string, file);
-      durations[i] = wavInfo(readFileSync(file)).durationMs;
     }
   };
   await Promise.all(Array.from({ length: voiceName === "kokoro" ? 1 : 3 }, worker));
   synth.dispose?.();
+  const files = units.map((u) => join(dir, "voice", `${u.id}.wav`));
+  trimSilence(ffmpegPath as string, files);
+  files.forEach((f, i) => { durations[i] = wavInfo(readFileSync(f)).durationMs; });
   const { placed, totalMs } = placeUnits(units, durations);
 
   const launch = {};

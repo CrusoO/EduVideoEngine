@@ -63,3 +63,21 @@ describe("mixVoice", { timeout: 180_000 }, () => {
     expect(Math.abs(level(0.05) - level(0.8))).toBeLessThan(1.5);
   });
 });
+
+describe("trimSilence, several files", { timeout: 120_000 }, () => {
+  it("trims every file in one go and leaves a file that would come out empty as it is", () => {
+    const dir = mkdtempSync(join(tmpdir(), "eve-vf-"));
+    const a = join(dir, "a.wav");
+    const b = join(dir, "b.wav");
+    const quiet = join(dir, "quiet.wav");
+    tone(a, 300, 1, 500, 500);
+    tone(b, 400, 2, 300, 300);
+    expect(spawnSync(ff, ["-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=22050:cl=mono", "-t", "1", quiet], { encoding: "utf8" }).status).toBe(0);
+    const before = ms(quiet);
+    trimSilence(ff, [a, b, quiet]);
+    expect(ms(a)).toBeLessThan(1200);
+    expect(ms(b)).toBeGreaterThan(2000);
+    expect(ms(b)).toBeLessThan(2200);
+    expect(ms(quiet)).toBe(before);
+  });
+});

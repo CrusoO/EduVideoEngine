@@ -106,7 +106,7 @@ export const JOB_STAGES = ["request", "retrieve", "ground", "build", "render", "
 export type JobStage = (typeof JOB_STAGES)[number];
 
 /** Why a job ended without a video. `no_curriculum_data` and `no_lesson_for_topic` are gaps in the content, not faults: the caller shows them as "not available yet". */
-export const ERROR_CODES = ["invalid_request", "live_not_allowed", "no_curriculum_data", "knowledge_base_invalid", "ungrounded_claims", "no_lesson_for_topic", "build_failed", "render_failed", "qa_failed", "cancelled"] as const;
+export const ERROR_CODES = ["invalid_request", "live_not_allowed", "no_curriculum_data", "knowledge_base_invalid", "ungrounded_claims", "no_lesson_for_topic", "build_failed", "render_failed", "qa_failed", "cancelled", "internal_error", "timeout"] as const;
 export type ErrorCode = (typeof ERROR_CODES)[number];
 
 export type JobEvent = { t: string; jobId: string; stage: JobStage | "job"; status: "started" | "done" | "skipped" | "failed" | "cancelled"; code?: ErrorCode; detail?: string };
