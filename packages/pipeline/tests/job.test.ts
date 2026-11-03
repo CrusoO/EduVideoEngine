@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolve } from "node:path";
 import { loadKb } from "@eve/content";
-import { LessonRequest, buildSources, matchPrompt, qaChecks, reduceJob, resolveRequest, stageKey, type JobEvent } from "../job/job";
+import { LessonRequest, buildSources, matchPrompt, qaChecks, reduceJob, resolveRequest, stageKey, storyOutputOptions, type JobEvent } from "../job/job";
 
 /** The video job (ADR 0086): the request, the stages' events, the resolution of a curriculum place, sources.json and the delivery checks. */
 const { kb } = loadKb(resolve(__dirname, "..", "..", "..", "knowledge"));
@@ -12,7 +12,7 @@ const ev = (stage: JobEvent["stage"], status: JobEvent["status"], extra: Partial
 
 describe("LessonRequest", () => {
   it("fills the options with their defaults", () => {
-    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard", narration: "auto", style: "technical", chrome: "full", captions: "sentence", font: "inter" });
+    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard", narration: "auto", style: "technical", captions: "sentence" });
   });
   it("takes an optional trace of the host app and environment, and refuses anything else in it", () => {
     expect(LessonRequest.safeParse({ ...req(), trace: { origin: "yourtutor-api", env: "qa" } }).success).toBe(true);
@@ -189,5 +189,27 @@ describe("a request in words (ADR 0089)", () => {
   it("ends a prompt with no match as no_curriculum_data", () => {
     const r = resolveRequest(kb, LessonRequest.parse({ requestId: "job-test-0005", idempotencyKey: "idem-test-0005", curriculum: where, prompt: "how do volcanoes erupt" }), SKILLS);
     expect(r).toMatchObject({ ok: false, code: "no_curriculum_data" });
+  });
+});
+
+describe("the build key of a story job (ADR 0099)", () => {
+  const options = (o: Record<string, unknown>) =>
+    LessonRequest.parse({ requestId: "request-0005", idempotencyKey: "request-0005", curriculum: { board: "CBSE", grade: 10, subject: "biology" }, story: { title: "A title", scenes: [{ heading: "h", sentences: ["One."], visuals: [] }] }, options: o }).options;
+  const key = (o: Record<string, unknown>) => stageKey("build", { options: storyOutputOptions(options(o)) });
+
+  it("is the same for the same options", () => {
+    expect(key({ style: "animated", chrome: "none" })).toBe(key({ style: "animated", chrome: "none" }));
+  });
+  it("changes with each option that changes the video, so a retry builds again instead of returning the old one", () => {
+    const base = key({ style: "animated" });
+    for (const changed of [{ style: "technical" }, { style: "animated", chrome: "full" }, { style: "animated", captions: "none" }, { style: "animated", font: "inter" }, { style: "animated", voiceName: "af_sarah" }, { style: "animated", voiceSpeed: 0.7 }, { style: "animated", locale: "hi-IN" }]) {
+      expect(key(changed), JSON.stringify(changed)).not.toBe(base);
+    }
+  });
+  it("is the same when a request spells out what the animated style would have chosen anyway", () => {
+    expect(key({ style: "animated" })).toBe(key({ style: "animated", chrome: "none", font: "atkinson", voiceName: "af_kore", voiceSpeed: 0.8 }));
+  });
+  it("leaves out the frame rate and theme, which the job's other key parts already hold", () => {
+    expect(Object.keys(storyOutputOptions(options({ fps: 24, theme: "dark" }))).sort()).toEqual(["captions", "chrome", "font", "locale", "style"]);
   });
 });

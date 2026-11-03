@@ -14,7 +14,7 @@ import { join, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv } from "../packages/adapters/src";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
-import { LessonRequest, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -220,9 +220,10 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   const viteNode = join(REPO_ROOT, "node_modules", "vite-node", "vite-node.mjs");
   const dir = join(jobDir, kind);
   const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
+  const storyOptions = resolveStoryOptions(request.options); // the explainer pattern for an animated story, the plain page otherwise (ADR 0099)
   const script = (stage: "build" | "render"): Promise<number> =>
     new Promise((done) => {
-      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", request.options.chrome, "--captions", request.options.captions, "--font", request.options.font, ...(request.options.voiceSpeed !== undefined ? ["--speed", String(request.options.voiceSpeed)] : []), ...(request.options.voiceName !== undefined ? ["--voice-name", request.options.voiceName] : [])], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
+      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : [])], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
       let tail = "";
       child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
       child.on("exit", (c) => {
@@ -232,7 +233,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
       });
     });
   const timelineFile = join(dir, "timeline.json");
-  const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, v: 2 });
+  const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, ...(kind === "story" ? { options: storyOutputOptions(request.options) } : {}), v: 3 });
   current = "build";
   if (keys.stages.build === buildKey && existsSync(timelineFile)) emit("build", "skipped", { detail: "same inputs as the last run" });
   else {

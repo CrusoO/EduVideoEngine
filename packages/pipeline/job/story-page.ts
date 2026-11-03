@@ -63,8 +63,9 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   const captionSize = isAnimated || clean ? "34px" : "40px";
   const captionWeight = font === "atkinson" ? "400" : "500";
   // animated: dark cinematic canvas — Kurzgesagt/Lamine-style deep background
-  const panelBg = clean ? p.panel : isAnimated ? p.bg : p.panel;
-  const pageBg = clean ? p.panel : p.bg;
+  // the clean frame is the theme's own panel colour (white for the whiteboard) in every style: the animated palette's cream is for its full frame, not for this one (ADR 0099)
+  const panelBg = clean ? baseP.panel : isAnimated ? p.bg : p.panel;
+  const pageBg = clean ? baseP.panel : p.bg;
   // animated: Montserrat gives the geometric, premium-studio feel the brief demands; Devanagari always uses Noto
   const animatedFontStack = '"Plus Jakarta Sans","Montserrat","Inter","Segoe UI",system-ui,sans-serif';
   const fontStack = isDevanagari

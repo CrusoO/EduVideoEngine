@@ -6,16 +6,17 @@
  * story/timeline.json). render: open that page in several browsers tabs, ask it for the picture at each time the frame plan names (faster where something moves, slower where
  * nothing does), lay the voice on the timeline and encode story/lesson.mp4. No model is called and nothing is paid.
  */
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
-import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, frameTicks, kokoroSynthesizer, kokoroTools, loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, storyPageHtml, storyQA, trimSilenceFilter, voicePrepChain, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
+import { mixVoice, trimSilence } from "./voice-finish";
 
 const args = process.argv.slice(2);
 const jobDir = resolve(args.find((a) => !a.startsWith("--")) ?? "");
@@ -38,10 +39,11 @@ const story = clean.story;
 const dir = join(jobDir, "story");
 const theme = option("theme", request.options.theme) === "dark" ? "dark" : "whiteboard";
 const visualStyle = (option("style", request.options.style ?? "technical") === "animated" ? "animated" : "technical") as "animated" | "technical";
-const chrome = option("chrome", request.options.chrome ?? "full") === "none" ? "none" : "full";
+const resolved = resolveStoryOptions(request.options); // the same defaults the job runner passes, so running this script by hand gives the same video
+const chrome = option("chrome", resolved.chrome) === "none" ? "none" : "full";
 const captions = option("captions", request.options.captions ?? "sentence") === "none" ? "none" : "sentence";
-const font = option("font", request.options.font ?? "inter") === "atkinson" ? "atkinson" : "inter";
-const speedOption = Number(option("speed", String(request.options.voiceSpeed ?? "")));
+const font = option("font", resolved.font) === "atkinson" ? "atkinson" : "inter";
+const speedOption = Number(option("speed", String(resolved.voiceSpeed ?? "")));
 const locale = request.options.locale ?? "en-IN";
 const isDevanagari = locale === "hi-IN" || locale === "ne-NP";
 const timelineFile = join(dir, "timeline.json");
@@ -50,14 +52,6 @@ const pageFile = join(dir, "page.html");
 const FRAME_ATTEMPTS = 3;
 
 type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
-
-/** Cuts the silence a voice leaves at the start and end of a sentence's file, so the pause between sentences is the one the story asks for. A file that would come out empty is left as it is. */
-function trimSilence(file: string): void {
-  const out = `${file}.trim.wav`;
-  const r = spawnSync(ffmpegPath as string, ["-y", "-loglevel", "error", "-i", file, "-af", trimSilenceFilter(), out], { encoding: "utf8" });
-  if (r.status === 0 && existsSync(out) && statSync(out).size > 1000) renameSync(out, file);
-  else rmSync(out, { force: true });
-}
 
 async function build(): Promise<void> {
   rmSync(dir, { recursive: true, force: true });
@@ -82,7 +76,7 @@ async function build(): Promise<void> {
     const base = kokCfg ?? LOCALE_KOKORO["en-IN"]!;
     const baseSpeed = Number.isFinite(speedOption) && speedOption >= 0.6 && speedOption <= 1 ? speedOption : base.speed;
     // a chosen voice is for English only (the Hindi voice is not interchangeable with an English one) and must be one that was measured
-    const picked = option("voice-name", request.options.voiceName ?? "");
+    const picked = option("voice-name", resolved.voiceName ?? "");
     const kokoroVoice = locale === "en-IN" && (KOKORO_VOICES as readonly string[]).includes(picked) ? picked : base.voice;
     const synthFor = (pace?: StorySentencePace) => kokoroSynthesizer(kokoroTools(REPO_ROOT), { voice: kokoroVoice, speed: speedFor(baseSpeed, pace) });
     // three instances for the ordinary pace (each serializes internally); one for each marked pace the story uses
@@ -98,7 +92,7 @@ async function build(): Promise<void> {
           const synth = j.pace ? marked.get(j.pace)! : normal[idx]!;
           const out = join(dir, j.file);
           await synth.synthesizeAsync!(speechText(j.text), out);
-          trimSilence(out);
+          trimSilence(ffmpegPath as string, out);
           // a pause is silence added to this sentence's length, so the next sentence starts later
           durations[j.si]![j.i] = wavInfo(readFileSync(out)).durationMs + j.pauseMs;
         }
@@ -203,19 +197,8 @@ async function render(): Promise<void> {
     await browser.close();
   }
   const secs = (ms: number): string => (ms / 1000).toFixed(3);
-  // the voice, each sentence at its start (paths relative to the folder keep the command line short)
-  const inputs = timeline.audio.flatMap((a) => ["-i", a.wav]);
-  const delays = timeline.audio.map((a, i) => `[${i}:a]adelay=${a.startMs}|${a.startMs}[a${i}]`).join(";");
-  const mix = `${delays};${timeline.audio.map((_a, i) => `[a${i}]`).join("")}amix=inputs=${timeline.audio.length}:normalize=0:dropout_transition=0,apad=whole_dur=${secs(timeline.totalMs)}${voicePrepChain()}[out]`;
-  const audio = spawnSync(ffmpegPath as string, ["-y", "-loglevel", "error", ...inputs, "-filter_complex", mix, "-map", "[out]", "-t", secs(timeline.totalMs), "-ar", "44100", "voice-prep.wav"], { cwd: dir, encoding: "utf8" });
-  if (audio.status !== 0) throw new Error(`ffmpeg could not mix the voice: ${audio.stderr}`);
-  // loudness in two passes (ADR 0097): measure the mix, then apply exactly the gain that reaches the target
-  const measure = spawnSync(ffmpegPath as string, ["-hide_banner", "-i", "voice-prep.wav", "-af", loudnormMeasureFilter(), "-f", "null", "-"], { cwd: dir, encoding: "utf8" });
-  const finish = spawnSync(ffmpegPath as string, ["-y", "-loglevel", "error", "-i", "voice-prep.wav", "-af", loudnormApplyFilter(parseLoudnorm(measure.stderr ?? "")), "-ar", "44100", "voice.wav"], { cwd: dir, encoding: "utf8" });
-  if (finish.status !== 0) throw new Error(`ffmpeg could not set the voice loudness: ${finish.stderr}`);
-  const check = spawnSync(ffmpegPath as string, ["-hide_banner", "-i", "voice.wav", "-af", "ebur128", "-f", "null", "-"], { cwd: dir, encoding: "utf8" });
-  const integrated = Number(/\n\s*I:\s*(-?[\d.]+) LUFS/.exec(check.stderr ?? "")?.[1]);
-  writeFileSync(join(dir, "loudness.json"), JSON.stringify({ integratedLufs: Number.isFinite(integrated) ? integrated : null, ok: Number.isFinite(integrated) ? loudnessOk(integrated) : null }) + "\n");
+  // the voice: each sentence at its start, mixed and set to the speech loudness (scripts/voice-finish.ts)
+  mixVoice(ffmpegPath as string, dir, timeline.audio, timeline.totalMs);
   const list = ticks.map((tk, i) => `file 'frames/f${String(i).padStart(5, "0")}.jpg'\nduration ${secs(Math.max(30, tk.hold))}`);
   list.push(`file 'frames/f${String(ticks.length - 1).padStart(5, "0")}.jpg'`);
   writeFileSync(join(dir, "frames.txt"), list.join("\n") + "\n");

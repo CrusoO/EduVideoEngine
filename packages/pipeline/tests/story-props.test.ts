@@ -87,3 +87,59 @@ describe("props in the page (ADR 0098)", () => {
     expect(r.labelY - r.fs / 2 - r.bottom).toBeCloseTo(16 / 16.8, 1);
   });
 });
+
+// The animated style takes the same pattern (ADR 0099): what resolveStoryOptions gives it is the clean frame and Atkinson, and it draws props and text where the story puts them.
+describe("the animated style with its default pattern", () => {
+  const animated = { visualStyle: "animated", chrome: "none", font: "atkinson" } as const;
+  const story = scene([
+    { kind: "prop", name: "plant", cx: 50, cy: 38, size: 12, in: { s: 0, off: 0 } },
+    { kind: "text", x: 50, y: 41, text: "NEAR THE BOTTOM", size: 2, in: { s: 0, off: 0 } },
+  ]);
+
+  it("stands a prop on its anchor, as the other styles do", async () => {
+    const { page, placed } = await openStory(browser, story, [2000, 2000], animated);
+    await drawAt(page, placed.scenes[0]!.visuals[0]!.inMs + 1500);
+    const b = await page.evaluate(() => {
+      const outer = document.querySelector("svg g g g[transform^='translate']")!.parentElement as unknown as SVGGElement;
+      const bb = outer.getBBox();
+      return { bottom: bb.y + bb.height, cx: bb.x + bb.width / 2 };
+    });
+    await page.close();
+    expect(b.bottom).toBeCloseTo(38, 1);
+    expect(b.cx).toBeCloseTo(50, 0);
+  });
+  it("keeps text where the story put it, not pulled up to make room for a caption band that is not there", async () => {
+    const { page, placed } = await openStory(browser, story, [2000, 2000], animated);
+    await drawAt(page, placed.scenes[0]!.visuals[1]!.inMs + 1500);
+    const y = await page.evaluate(() => Number((Array.from(document.querySelectorAll("text")).find((e) => e.textContent === "NEAR THE BOTTOM") as SVGTextElement).getAttribute("y")));
+    await page.close();
+    expect(y).toBe(41);
+  });
+  it("still stops text at the bottom of the stage", async () => {
+    const { page, placed } = await openStory(browser, scene([{ kind: "text", x: 50, y: 60, text: "TOO LOW", size: 2, in: { s: 0, off: 0 } }]), [2000, 2000], animated);
+    await drawAt(page, placed.scenes[0]!.visuals[0]!.inMs + 1500);
+    const y = await page.evaluate(() => Number((Array.from(document.querySelectorAll("text")).find((e) => e.textContent === "TOO LOW") as SVGTextElement).getAttribute("y")));
+    await page.close();
+    expect(y).toBe(43);
+  });
+  it("is plain white, as the clean frame is in every style", async () => {
+    const { page, placed } = await openStory(browser, story, [2000, 2000], animated);
+    await drawAt(page, placed.scenes[0]!.visuals[0]!.inMs + 500);
+    const bg = await page.evaluate(() => ({ panel: getComputedStyle(document.getElementById("panel")!).backgroundColor, page: getComputedStyle(document.body).backgroundColor }));
+    await page.close();
+    expect(bg).toEqual({ panel: "rgb(255, 255, 255)", page: "rgb(255, 255, 255)" });
+  });
+  it("shows no heading or counter and draws in Atkinson Hyperlegible", async () => {
+    const { page, placed } = await openStory(browser, story, [2000, 2000], animated);
+    await drawAt(page, placed.scenes[0]!.visuals[0]!.inMs + 500);
+    const r = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const t = Array.from(document.querySelectorAll("text")).find((e) => e.textContent === "NEAR THE BOTTOM") as SVGTextElement;
+      return { top: getComputedStyle(document.getElementById("top")!).display, family: getComputedStyle(t).fontFamily, loaded: document.fonts.check('400 16px "Atkinson Hyperlegible"') }; // the text is not bold, so the 400 face is the one in use
+    });
+    await page.close();
+    expect(r.top).toBe("none");
+    expect(r.family).toContain("Atkinson Hyperlegible");
+    expect(r.loaded).toBe(true);
+  });
+});

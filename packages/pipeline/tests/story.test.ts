@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { COLORS, LessonRequest, storyQA, PACE_FACTOR, PROPS, PROP_NAMES, PAUSE_MS, SPOKEN_TERMS, STORY_GAPS, STORY_STYLE, KOKORO_VOICES, VOICE_LOUDNESS, closedPath, loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, placedQA, speechText, speedFor, trimSilenceFilter, voicePrepChain, compileExpr, evalCompiled, frameTicks, placeStory, sanitizeStory, storyPageHtml, storySheet, type Story } from "../index";
+import { COLORS, EXPLAINER, LessonRequest, resolveStoryOptions, storyQA, PACE_FACTOR, PROPS, PROP_NAMES, PAUSE_MS, SPOKEN_TERMS, STORY_GAPS, STORY_STYLE, KOKORO_VOICES, VOICE_LOUDNESS, closedPath, loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, placedQA, speechText, speedFor, trimSilenceFilter, voicePrepChain, compileExpr, evalCompiled, frameTicks, placeStory, sanitizeStory, storyPageHtml, storySheet, type Story } from "../index";
 
 const ev = (src: string, env: { t?: number; x?: number; u?: number; p?: number } = {}): number => {
   const c = compileExpr(src);
@@ -486,7 +486,7 @@ describe("the clean frame and the voice speed option (ADR 0096)", () => {
   it("accepts chrome and voiceSpeed in a request, with bounds", () => {
     const base = { requestId: "request-0001", idempotencyKey: "request-0001", curriculum: { board: "CBSE", grade: 10, subject: "biology" }, story: { title: "A title", scenes: [{ heading: "h", sentences: ["One."], visuals: [] }] } };
     expect(LessonRequest.parse({ ...base, options: { chrome: "none", voiceSpeed: 0.82 } }).options).toMatchObject({ chrome: "none", voiceSpeed: 0.82 });
-    expect(LessonRequest.parse(base).options.chrome).toBe("full");
+    expect(LessonRequest.parse(base).options.chrome).toBeUndefined(); // resolveStoryOptions fills it in by style
     expect(LessonRequest.parse(base).options.voiceSpeed).toBeUndefined();
     expect(() => LessonRequest.parse({ ...base, options: { voiceSpeed: 0.3 } })).toThrow();
     expect(() => LessonRequest.parse({ ...base, options: { chrome: "tiny" } })).toThrow();
@@ -717,5 +717,30 @@ describe("props: drawn objects placed by name (ADR 0098)", () => {
       ] }).story!;
       expect(storyQA(story).filter((n) => n.kind === "noun_undrawn").map((n) => n.scene)).toEqual([1]);
     });
+  });
+});
+
+describe("the explainer pattern for the animated style (ADR 0099)", () => {
+  const options = (o: Record<string, unknown>) =>
+    LessonRequest.parse({ requestId: "request-0004", idempotencyKey: "request-0004", curriculum: { board: "CBSE", grade: 10, subject: "biology" }, story: { title: "A title", scenes: [{ heading: "h", sentences: ["One."], visuals: [] }] }, options: o }).options;
+
+  it("is the clean frame, Atkinson Hyperlegible, af_kore and a calm pace, as measured", () => {
+    expect(EXPLAINER).toEqual({ chrome: "none", font: "atkinson", voiceName: "af_kore", voiceSpeed: 0.8 });
+    expect(KOKORO_VOICES).toContain(EXPLAINER.voiceName);
+  });
+  it("is what an animated request gets when it names none of these options", () => {
+    expect(resolveStoryOptions(options({ style: "animated" }))).toEqual({ chrome: "none", font: "atkinson", voiceName: "af_kore", voiceSpeed: 0.8 });
+  });
+  it("is not applied to the technical style, which keeps the plain page, Inter and the language's own voice", () => {
+    expect(resolveStoryOptions(options({}))).toEqual({ chrome: "full", font: "inter" });
+    expect(resolveStoryOptions(options({ style: "technical" }))).toEqual({ chrome: "full", font: "inter" });
+  });
+  it("always lets the request win, one option at a time", () => {
+    expect(resolveStoryOptions(options({ style: "animated", chrome: "full", font: "inter", voiceName: "af_sarah", voiceSpeed: 0.9 }))).toEqual({ chrome: "full", font: "inter", voiceName: "af_sarah", voiceSpeed: 0.9 });
+    expect(resolveStoryOptions(options({ style: "animated", voiceSpeed: 0.7 }))).toMatchObject({ chrome: "none", voiceName: "af_kore", voiceSpeed: 0.7 });
+    expect(resolveStoryOptions(options({ voiceName: "af_sky" }))).toEqual({ chrome: "full", font: "inter", voiceName: "af_sky" });
+  });
+  it("leaves captions out of it: they stay on unless the request turns them off", () => {
+    expect(options({ style: "animated" }).captions).toBe("sentence");
   });
 });

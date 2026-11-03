@@ -526,8 +526,8 @@
       for (var i = 0; i < v.values.length; i++) s = s.split("{" + i + "}").join(val(v.values[i], env).toFixed(v.decimals));
       p.shape.setAttribute("x", num(val(v.x, env)));
       var ty = val(v.y, env);
-      // Clamp text to avoid the caption band at the bottom in animated style
-      if (DATA.visualStyle === "animated") ty = Math.min(36, ty);
+      // text stays inside the stage whatever the style (the caption band starts below it, at about y 44.9, even in the full-frame styles)
+      ty = Math.min(ST.textBottom, ty);
       p.shape.setAttribute("y", num(ty));
       if (p.shape.textContent !== s) p.shape.textContent = s;
     } else if (k === "math") {
@@ -840,9 +840,7 @@
     else if (v.labelPos === "right") { x = g.cx + g.hx + gap; anchor = "start"; }
     else if (v.labelPos === "center") { /* label stays at shape center */ }
     x = Math.max(2, Math.min(98, x));
-    // Cap at y=38 for animated style to stay clear of the bottom caption band (caption covers ~y40-45)
-    var yMax = DATA.visualStyle === "animated" ? 38 : 43;
-    y = Math.max(1.5, Math.min(yMax, y));
+    y = Math.max(1.5, Math.min(ST.textBottom, y));
     rec.lbl.setAttribute("x", num(x));
     rec.lbl.setAttribute("y", num(y));
     rec.lbl.setAttribute("text-anchor", anchor);

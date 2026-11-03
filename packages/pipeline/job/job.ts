@@ -44,12 +44,12 @@ export const LessonRequest = z
          * Has no effect on source or knowledge-base jobs. The style must be preserved from request through every pipeline stage.
          */
         style: z.enum(["technical", "animated"]).default("technical"),
-        /** Story jobs (ADR 0096): "none" draws the story on one full, plain white frame with no heading, scene counter or card border, only the stage and the caption. "full" is the page as before. */
-        chrome: z.enum(["full", "none"]).default("full"),
+        /** Story jobs (ADR 0096): left out, "full" for the technical style and "none" for the animated one (see resolveStoryOptions). "none" draws the story on one full, plain white frame with no heading, scene counter or card border, only the stage and the caption. "full" is the page as before. */
+        chrome: z.enum(["full", "none"]).optional(),
         /** Story jobs (ADR 0097): "sentence" prints each sentence under the picture while it is spoken; "none" shows no caption band. With none, the host should offer its own text alternative. */
         captions: z.enum(["sentence", "none"]).default("sentence"),
-        /** Story jobs (ADR 0098): the text face. "inter" (default) or "atkinson", Atkinson Hyperlegible, made so look-alike characters (the O in CO2 and a zero) can be told apart. */
-        font: z.enum(["inter", "atkinson"]).default("inter"),
+        /** Story jobs (ADR 0098): the text face; left out, "inter" for the technical style and "atkinson" for the animated one (see resolveStoryOptions). "inter" or "atkinson", Atkinson Hyperlegible, made so look-alike characters (the O in CO2 and a zero) can be told apart. */
+        font: z.enum(["inter", "atkinson"]).optional(),
         /** Story jobs, Kokoro voice (ADR 0096): the base speaking speed, 1 is the voice's normal pace. Left out, the engine uses its own speed for the language (0.92 for English); a sentence marked [slow] is said 13% slower than this. */
         voiceSpeed: z.number().min(0.6).max(1).optional(),
         /** Story jobs, English only (ADR 0097): which Kokoro voice, from the ones that were measured. Left out, af_heart. Other languages keep their own voice. */
@@ -73,6 +73,34 @@ export const LessonRequest = z
     }
   });
 export type LessonRequest = z.infer<typeof LessonRequest>;
+
+/**
+ * The explainer pattern (ADR 0099): what an animated story video looks and sounds like unless the request says otherwise. One clean white frame with no heading, counter or
+ * card; the Atkinson Hyperlegible face; the af_kore voice at a calm, easy pace. Captions are not part of it: they stay on unless asked off, since they are the text alternative.
+ * Every value here was measured against a narrated explainer (ADR 0097, 0098).
+ */
+export const EXPLAINER = { chrome: "none", font: "atkinson", voiceName: "af_kore", voiceSpeed: 0.8 } as const;
+
+/**
+ * Every option that changes what a story video looks or sounds like, with defaults resolved (ADR 0099). It goes into the build key, so a retry of the same job with a different
+ * style, frame, captions, font, voice or speed builds again instead of being told "same inputs as the last run" and handed the old video.
+ */
+export function storyOutputOptions(options: LessonRequest["options"]): Record<string, unknown> {
+  return { style: options.style, locale: options.locale, captions: options.captions, ...resolveStoryOptions(options) };
+}
+
+/** The story options with their defaults filled in: the explainer pattern for the animated style, the plain page and the language's own voice otherwise. A value in the request always wins. */
+export function resolveStoryOptions(options: LessonRequest["options"]): { chrome: "full" | "none"; font: "inter" | "atkinson"; voiceName?: (typeof KOKORO_VOICES)[number]; voiceSpeed?: number } {
+  const explainer = options.style === "animated";
+  const voiceName = options.voiceName ?? (explainer ? EXPLAINER.voiceName : undefined);
+  const voiceSpeed = options.voiceSpeed ?? (explainer ? EXPLAINER.voiceSpeed : undefined);
+  return {
+    chrome: options.chrome ?? (explainer ? EXPLAINER.chrome : "full"),
+    font: options.font ?? (explainer ? EXPLAINER.font : "inter"),
+    ...(voiceName ? { voiceName } : {}),
+    ...(voiceSpeed !== undefined ? { voiceSpeed } : {}),
+  };
+}
 
 export const JOB_STAGES = ["request", "retrieve", "ground", "build", "render", "qa"] as const;
 export type JobStage = (typeof JOB_STAGES)[number];

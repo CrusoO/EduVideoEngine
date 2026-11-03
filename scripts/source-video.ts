@@ -5,7 +5,7 @@
  * stages, so a retry resumes where it stopped. build: voice every sentence of the source and draw one card for it (dist/jobs/<id>/source/voice, frames, timeline.json).
  * render: lay the voice on the timeline and hold each card for as long as its sentence takes (source/lesson.mp4). No model is called and nothing is paid.
  */
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
@@ -13,6 +13,7 @@ import { chromium } from "@playwright/test";
 import { REPO_ROOT } from "../packages/adapters/src";
 import { CARD, LessonRequest, cardHtml, kokoroSynthesizer, kokoroTools, narrationOf, piperSynthesizer, piperTools, placeUnits, speechText, type Placed } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
+import { mixVoice, trimSilence } from "./voice-finish";
 
 const args = process.argv.slice(2);
 const jobDir = resolve(args.find((a) => !a.startsWith("--")) ?? "");
@@ -52,6 +53,7 @@ async function build(): Promise<void> {
       const spoken = speechText(units[i]!.text);
       if (synth.synthesizeAsync) await synth.synthesizeAsync(spoken, file);
       else synth.synthesize(spoken, file);
+      trimSilence(ffmpegPath as string, file);
       durations[i] = wavInfo(readFileSync(file)).durationMs;
     }
   };
@@ -80,12 +82,8 @@ function render(): Promise<void> {
   const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as Timeline;
   const fps = Number(option("fps", String(request.options.fps)));
   const secs = (ms: number): string => (ms / 1000).toFixed(3);
-  // the voice, each unit at the start the timeline gave it (paths are relative to the folder: a long command line stays short)
-  const inputs = timeline.units.flatMap((u) => ["-i", u.wav]);
-  const delays = timeline.units.map((u, i) => `[${i}:a]adelay=${u.startMs}|${u.startMs}[a${i}]`).join(";");
-  const mix = `${delays};${timeline.units.map((_u, i) => `[a${i}]`).join("")}amix=inputs=${timeline.units.length}:normalize=0:dropout_transition=0,apad=whole_dur=${secs(timeline.totalMs)}[out]`;
-  const audio = spawnSync(ffmpegPath as string, ["-y", "-loglevel", "error", ...inputs, "-filter_complex", mix, "-map", "[out]", "-t", secs(timeline.totalMs), "-ar", "44100", "voice.wav"], { cwd: dir, encoding: "utf8" });
-  if (audio.status !== 0) throw new Error(`ffmpeg could not mix the voice: ${audio.stderr}`);
+  // the voice: each unit at the start the timeline gave it, mixed and set to the speech loudness (scripts/voice-finish.ts)
+  mixVoice(ffmpegPath as string, dir, timeline.units.map((u) => ({ wav: u.wav, startMs: u.startMs })), timeline.totalMs);
   // the pictures: each card from the start of its unit to the start of the next
   const list = timeline.units.map((u, i) => {
     const from = i === 0 ? 0 : u.startMs;

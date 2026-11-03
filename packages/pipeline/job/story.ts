@@ -25,7 +25,7 @@ const FLOODABLE: ReadonlySet<string> = new Set(["circle", "rect", "polygon", "pa
 /** Stage pixels per unit on the 1920-wide page: the stage card is 1680 px for 100 units. Pixel values in the spec are turned into units with it, once, here (ADR 0096). */
 const PX_PER_UNIT = 16.8;
 /** One look for every video: the charcoal outline and its hairline width, the gap between a label and its badge, and where a flood hands over from outline to colour. */
-export const STORY_STYLE = { inkOutline: "#1A1A1A", outlineWidth: Math.round((1.5 / PX_PER_UNIT) * 1000) / 1000, labelGap: Math.round((16 / PX_PER_UNIT) * 1000) / 1000, floodSplit: 0.55 } as const;
+export const STORY_STYLE = { inkOutline: "#1A1A1A", outlineWidth: Math.round((1.5 / PX_PER_UNIT) * 1000) / 1000, labelGap: Math.round((16 / PX_PER_UNIT) * 1000) / 1000, floodSplit: 0.55, textBottom: 43 } as const;
 export const EASES = ["ease", "linear", "spring", "smooth", "ease_in", "ease_out", "ease_in_out_sine", "back", "elastic", "bounce", "there_and_back", "wiggle", "rush_into", "rush_from"] as const;
 export type StoryEase = (typeof EASES)[number];
 
