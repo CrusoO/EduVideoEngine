@@ -14,6 +14,9 @@ Measured on 2026-10-25: the job runner has no handler for an error nobody expect
    - Fuzz tests for `sanitizeStory`, `compileExpr` and the source request, once those modules are committed.
 3. **The fallback ladder** is the host's to run today (grounded lesson, then story, then text cards, then "not available yet"); making the engine run it as one job (an option `fallback: true`) is part of ADR 0100 F4.
 
+## Applied on 2026-11-04 (the runner part of item 2)
+`scripts/video-job.ts` now: ends an unexpected error as `internal_error` (`uncaughtException` and `unhandledRejection` handlers, `describeCrash`) with a result file; runs every child through one `supervise` function that stops it, and what it started, with `killTree` when the stage's `STAGE_TIMEOUT_MS` passes (the job ends as `timeout`) and on cancel; takes one of `VIDEO_JOB_SLOTS` (default 2) slots before a build, holds it to the end of the job, and ends as `timeout` after `VIDEO_JOB_SLOT_WAIT_MS` (30 minutes) if none comes free. `VIDEO_JOB_STAGE_TIMEOUT_MS` replaces the stage limits (a slower machine, tests). `ErrorCode` gained `internal_error` and `timeout`. Tests (`video-job-cli.test.ts`) run the real runner: a stage past its limit, a corrupt `state.json`, and every slot taken. `story-expr.ts` already looked its tables up with its own `own` check. Not done: the fuzz tests for `sanitizeStory`, `compileExpr` and the source request.
+
 ## What this does not do
 - It does not make a story's figures true (ADR 0100) or add an HTTP endpoint.
 - A job that outlives its time limit is stopped, not retried.
