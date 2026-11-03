@@ -18,6 +18,7 @@ export * from "./job/story";
 export * from "./job/story-qa";
 export * from "./job/story-expr";
 export * from "./job/story-page";
+export * from "./job/voice-mix";
 export * from "./bakeoff/bakeoff";
 export * from "./script/draft";
 export * from "./script/polish";

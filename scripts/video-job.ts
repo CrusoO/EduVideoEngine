@@ -222,7 +222,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
   const script = (stage: "build" | "render"): Promise<number> =>
     new Promise((done) => {
-      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
+      child = spawn(process.execPath, ["--use-system-ca", viteNode, join("scripts", `${kind}-video.ts`), jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", request.options.chrome, "--captions", request.options.captions, ...(request.options.voiceSpeed !== undefined ? ["--speed", String(request.options.voiceSpeed)] : []), ...(request.options.voiceName !== undefined ? ["--voice-name", request.options.voiceName] : [])], { cwd: REPO_ROOT, stdio: ["ignore", "ignore", "pipe"], env: childEnv({ LLM_MODE: "replay" }) });
       let tail = "";
       child.stderr?.on("data", (d: Buffer) => (tail = (tail + d.toString()).slice(-600)));
       child.on("exit", (c) => {
