@@ -2,6 +2,7 @@ import { findPersonalData, findSecrets } from "@eve/safety";
 import { compileExpr } from "./story-expr";
 import { cleanLine } from "./source";
 import { PROP_NAMES, type PropName } from "./story-props";
+import { WORD_CUE_LEAD_MS, findWord, wordStarts } from "./story-words";
 
 /**
  * A story lesson (ADR 0091): the host sends scenes of narration and the shapes to draw while it is said; the engine voices the narration and draws the shapes as an animation.
@@ -29,8 +30,8 @@ export const STORY_STYLE = { inkOutline: "#1A1A1A", outlineWidth: Math.round((1.
 export const EASES = ["ease", "linear", "spring", "smooth", "ease_in", "ease_out", "ease_in_out_sine", "back", "elastic", "bounce", "there_and_back", "wiggle", "rush_into", "rush_from"] as const;
 export type StoryEase = (typeof EASES)[number];
 
-/** When something happens: the sentence of the scene (0 is the first) and a delay in milliseconds after it starts. */
-export type StoryCue = { s: number; off: number };
+/** When something happens: the sentence of the scene (0 is the first), optionally a word of it (its text, or its position), and a delay in milliseconds after that word (or after the sentence starts). */
+export type StoryCue = { s: number; word?: string | number; off: number };
 /** A number, or an expression over time compiled to JavaScript (`t` is seconds since the shape appeared). */
 export type StoryNum = number | { src: string; js: string };
 export type StoryMove = { at: StoryCue; dur: number; dx: number; dy: number; rotate: number; scale: number; color?: StoryColor; opacity?: number; ease: StoryEase };
@@ -104,7 +105,12 @@ function numOf(v: unknown, lo: number, hi: number): StoryNum | null {
 }
 const plain = (v: unknown, lo: number, hi: number, def: number): number => (finite(v) ? clamp(v, lo, hi) : def);
 const colour = (v: unknown, def: StoryColor): StoryColor => (typeof v === "string" && (COLORS as readonly string[]).includes(v) ? (v as StoryColor) : def);
-const cue = (v: unknown, def: StoryCue): StoryCue => (isObj(v) ? { s: Math.round(plain(v.s, 0, 99, def.s)), off: Math.round(plain(v.off, 0, 30_000, 0)) } : def);
+const cueWord = (v: unknown): string | number | null => (typeof v === "string" && v.trim() !== "" && v.length <= 40 ? v.trim() : typeof v === "number" && Number.isInteger(v) && v >= 0 && v < 1000 ? v : null);
+const cue = (v: unknown, def: StoryCue): StoryCue => {
+  if (!isObj(v)) return def;
+  const word = cueWord(v.word);
+  return { s: Math.round(plain(v.s, 0, 99, def.s)), ...(word !== null ? { word } : {}), off: Math.round(plain(v.off, 0, 30_000, 0)) };
+};
 const expr = (v: unknown): { src: string; js: string } | null => {
   if (typeof v !== "string") return null;
   const c = compileExpr(v);
@@ -375,6 +381,10 @@ export function sanitizeStory(raw: unknown): Sanitized {
       }
       const floodFrom = typeof v.floodFrom === "string" && (FLOOD_FROMS as readonly string[]).includes(v.floodFrom) ? (v.floodFrom as FloodFrom) : null;
       if (how === "flood" && v.floodFrom !== undefined && floodFrom === null) notes.push(`scene ${si + 1}, shape ${vi + 1}: floodFrom must be bottom, top, left or right`);
+      for (const key of ["in", "out"] as const) {
+        const raw = v[key];
+        if (isObj(raw) && raw.word !== undefined && cueWord(raw.word) === null) notes.push(`scene ${si + 1}, shape ${vi + 1}: the word of ${key} must be a short text or a position`);
+      }
       visuals.push({
         id,
         ...(text(v.label, 40) ? { label: text(v.label, 40) } : {}),
@@ -445,7 +455,7 @@ export const APPEAR_MS: Record<StoryHow, number> = { fade: 250, write: 800, indi
 
 export type PlacedSentence = { text: string; startMs: number; durMs: number; pauseMs?: number; pace?: StorySentencePace };
 export type PlacedMove = Omit<StoryMove, "at"> & { atMs: number };
-export type PlacedVisual = Omit<StoryVisual, "in" | "out" | "moves"> & { inMs: number; inS: number; outMs: number | null; appearMs: number; moves: PlacedMove[] };
+export type PlacedVisual = Omit<StoryVisual, "in" | "out" | "moves"> & { inMs: number; inS: number; outMs: number | null; appearMs: number; moves: PlacedMove[]; missingWords?: string[] };
 export type PlacedScene = { role: StoryRole; heading: string; startMs: number; endMs: number; sentences: PlacedSentence[]; visuals: PlacedVisual[]; stagger_ms?: number; camera?: StoryCamera; bg?: SceneBg };
 export type PlacedStory = { title: string; color_map?: StoryColorMap; scenes: PlacedScene[]; totalMs: number };
 
@@ -464,10 +474,24 @@ export function placeStory(story: Story, durations: ReadonlyArray<ReadonlyArray<
     });
     const endMs = at - STORY_GAPS.sentence + STORY_GAPS.tail;
     t = endMs;
-    const cueMs = (c: StoryCue): number => sentences[Math.min(c.s, sentences.length - 1)]!.startMs + c.off;
+    let missing: string[] = [];
+    const cueMs = (c: StoryCue): number => {
+      const k = Math.min(c.s, sentences.length - 1);
+      const sentence = sentences[k]!;
+      if (c.word === undefined) return sentence.startMs + c.off;
+      const w = findWord(sentence.text, c.word);
+      if (w < 0) {
+        missing.push(String(c.word));
+        return sentence.startMs + c.off;
+      }
+      const starts = wordStarts(sentence.text, sentence.durMs - (sentence.pauseMs ?? 0));
+      return sentence.startMs + Math.max(0, starts[w]! - WORD_CUE_LEAD_MS) + c.off;
+    };
     const visuals = sc.visuals.map((v): PlacedVisual => {
       const { in: inCue, out: outCue, moves, ...rest } = v;
-      return { ...rest, inMs: cueMs(inCue), inS: Math.min(inCue.s, sentences.length - 1), outMs: outCue ? cueMs(outCue) : null, appearMs: APPEAR_MS[v.how], moves: moves.map(({ at: a, ...m }) => ({ ...m, atMs: cueMs(a) })) } as PlacedVisual;
+      missing = [];
+      const placed = { ...rest, inMs: cueMs(inCue), inS: Math.min(inCue.s, sentences.length - 1), outMs: outCue ? cueMs(outCue) : null, appearMs: APPEAR_MS[v.how], moves: moves.map(({ at: a, ...m }) => ({ ...m, atMs: cueMs(a) })) } as PlacedVisual;
+      return missing.length ? { ...placed, missingWords: missing } : placed;
     });
     // Stagger: shapes sharing the same sentence index appear offset by stagger_ms * rank
     if (sc.stagger_ms && sc.stagger_ms > 0) {

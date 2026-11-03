@@ -275,6 +275,7 @@ export function placedQA(placed: PlacedStory): QANote[] {
       const busiest = starts.reduce((most, from, k) => Math.max(most, starts.filter((t, j) => j >= k && t - from <= WINDOW_MS).length), 0);
       if (busiest > MOST_SHAPES_IN_A_WINDOW) notes.push({ scene: si, kind: "crowded_sentence", message: `sentence ${i + 1} starts ${busiest} shapes within ${WINDOW_MS / 1000} seconds` });
       for (const v of own) {
+        for (const w of v.missingWords ?? []) notes.push({ scene: si, kind: "cue_word_missing", message: `shape "${v.id}" names the word "${w}", which sentence ${i + 1} does not contain, so its time falls back to the offset` });
         if (v.inMs > end) notes.push({ scene: si, kind: "late_cue", message: `shape "${v.id}" appears ${Math.round(v.inMs - end)} ms after sentence ${i + 1} has ended` });
       }
       for (const m of s.text.match(ABBREVIATION) ?? []) {
