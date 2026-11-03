@@ -1,8 +1,9 @@
 import { findPersonalData, findSecrets } from "@eve/safety";
 import { compileExpr } from "./story-expr";
 import { cleanLine } from "./source";
-import { PROP_NAMES, type PropName } from "./story-props";
+import { PROPS, PROP_NAMES, type PropName } from "./story-props";
 import { WORD_CUE_LEAD_MS, findWord, wordStarts } from "./story-words";
+import { fillFromGrid, gridCells, gridName } from "./story-grid";
 
 /**
  * A story lesson (ADR 0091): the host sends scenes of narration and the shapes to draw while it is said; the engine voices the narration and draws the shapes as an animation.
@@ -38,7 +39,7 @@ export type StoryMove = { at: StoryCue; dur: number; dx: number; dy: number; rot
 
 export const LABEL_POSITIONS = ["above", "below", "left", "right", "center"] as const;
 export type LabelPosition = (typeof LABEL_POSITIONS)[number];
-export type StoryBase = { id: string; label?: string; labelPos: LabelPosition; in: StoryCue; out?: StoryCue; how: StoryHow; floodFrom?: FloodFrom; color: StoryColor; fill: StoryColor; fillOpacity: number; width: number; opacity: number; dash: boolean; focus: boolean; z: number; moves: StoryMove[]; signal?: boolean };
+export type StoryBase = { id: string; cells?: string; label?: string; labelPos: LabelPosition; in: StoryCue; out?: StoryCue; how: StoryHow; floodFrom?: FloodFrom; color: StoryColor; fill: StoryColor; fillOpacity: number; width: number; opacity: number; dash: boolean; focus: boolean; z: number; moves: StoryMove[]; signal?: boolean };
 export type StoryBox = { x: number; y: number; w: number; h: number };
 export type StoryWindow = { xmin: number; xmax: number; ymin: number; ymax: number };
 export type StoryShape =
@@ -354,7 +355,11 @@ export function sanitizeStory(raw: unknown): Sanitized {
     const ids = new Set<string>();
     for (const [vi, v] of (Array.isArray(sc.visuals) ? sc.visuals : []).slice(0, STORY_LIMITS.visuals).entries()) {
       if (!isObj(v)) continue;
-      const shape = shapeOf(v);
+      // a cell or an area of the grid (ADR 0102) fills the position the author left out; numbers the author wrote win
+      const named = v.area !== undefined ? v.area : v.cell;
+      const cells = named === undefined ? null : gridCells(named);
+      if (named !== undefined && cells === null) notes.push(`scene ${si + 1}, shape ${vi + 1}: "${String(named).slice(0, 12)}" is not a cell (A1 to F6) or an area (A1:C3)`);
+      const shape = shapeOf(cells ? fillFromGrid(v, cells, v.kind === "prop" && typeof v.name === "string" && (PROP_NAMES as readonly string[]).includes(v.name) ? PROPS[v.name as PropName] : undefined) : v);
       if (typeof shape === "string") {
         notes.push(`scene ${si + 1}, shape ${vi + 1} dropped: ${shape}`);
         continue;
@@ -387,6 +392,7 @@ export function sanitizeStory(raw: unknown): Sanitized {
       }
       visuals.push({
         id,
+        ...(cells ? { cells: gridName(cells) } : {}),
         ...(text(v.label, 40) ? { label: text(v.label, 40) } : {}),
         labelPos: typeof v.labelPos === "string" && (LABEL_POSITIONS as readonly string[]).includes(v.labelPos) ? (v.labelPos as LabelPosition) : "above",
         in: cue(v.in, { s: 0, off: 0 }),
