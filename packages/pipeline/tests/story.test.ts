@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { LessonRequest, PACE_FACTOR, PAUSE_MS, SPOKEN_TERMS, STORY_GAPS, STORY_STYLE, KOKORO_VOICES, VOICE_LOUDNESS, closedPath, loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, placedQA, speechText, speedFor, trimSilenceFilter, voicePrepChain, compileExpr, evalCompiled, frameTicks, placeStory, sanitizeStory, storyPageHtml, storySheet, type Story } from "../index";
+import { COLORS, LessonRequest, storyQA, PACE_FACTOR, PROPS, PROP_NAMES, PAUSE_MS, SPOKEN_TERMS, STORY_GAPS, STORY_STYLE, KOKORO_VOICES, VOICE_LOUDNESS, closedPath, loudnessOk, loudnormApplyFilter, loudnormMeasureFilter, parseLoudnorm, placedQA, speechText, speedFor, trimSilenceFilter, voicePrepChain, compileExpr, evalCompiled, frameTicks, placeStory, sanitizeStory, storyPageHtml, storySheet, type Story } from "../index";
 
 const ev = (src: string, env: { t?: number; x?: number; u?: number; p?: number } = {}): number => {
   const c = compileExpr(src);
@@ -632,6 +632,90 @@ describe("spoken delivery (ADR 0097)", () => {
       expect(LessonRequest.parse(base).options.captions).toBe("sentence");
       expect(LessonRequest.parse({ ...base, options: { captions: "none" } }).options.captions).toBe("none");
       expect(() => LessonRequest.parse({ ...base, options: { captions: "words" } })).toThrow();
+    });
+  });
+});
+
+describe("props: drawn objects placed by name (ADR 0098)", () => {
+  const one = (visual: Record<string, unknown>, sentences = ["One.", "Two."]) => sanitizeStory({ title: "A title", scenes: [{ heading: "h", sentences, visuals: [visual] }] });
+  const first = (visual: Record<string, unknown>) => one(visual).story!.scenes[0]!.visuals[0]! as unknown as Record<string, unknown>;
+
+  it("keeps a prop with its name, anchor point and size", () => {
+    expect(first({ kind: "prop", name: "plant", cx: 30, cy: 40, size: 12, how: "grow" })).toMatchObject({ kind: "prop", name: "plant", cx: 30, cy: 40, size: 12, how: "grow" });
+  });
+  it("gives a default size and keeps the size within the stage", () => {
+    expect(first({ kind: "prop", name: "wall", cx: 50, cy: 30 }).size).toBe(20);
+    expect(first({ kind: "prop", name: "wall", cx: 50, cy: 30, size: 9999 }).size).toBe(90);
+    expect(first({ kind: "prop", name: "wall", cx: 50, cy: 30, size: 0 }).size).toBe(2);
+  });
+  it("drops a prop with an unknown name or no position, with a note naming the choices", () => {
+    const r = one({ kind: "prop", name: "dragon", cx: 5, cy: 5 });
+    expect(r.story!.scenes[0]!.visuals).toHaveLength(0);
+    expect(r.notes.join(" ")).toMatch(/prop needs name \(plant, leaf, wall, door, sun, drop, battery\)/);
+    expect(one({ kind: "prop", name: "leaf" }).story!.scenes[0]!.visuals).toHaveLength(0);
+  });
+  it("turns draw and flood on a prop into fade, with a note, because a prop has no single outline to trace or fill", () => {
+    for (const how of ["draw", "flood"]) {
+      const r = one({ kind: "prop", name: "leaf", cx: 5, cy: 5, how });
+      expect(r.story!.scenes[0]!.visuals[0]!.how).toBe("fade");
+      expect(r.notes.join(" ")).toMatch(/prop/);
+    }
+  });
+  it("accepts grow on any shape", () => {
+    expect(first({ kind: "circle", cx: 5, cy: 5, r: 2, how: "grow" }).how).toBe("grow");
+  });
+
+  describe("the prop list", () => {
+    it("has every named prop with a box, an anchor and parts that use only palette colours", () => {
+      expect(Object.keys(PROPS).sort()).toEqual([...PROP_NAMES].sort());
+      for (const name of PROP_NAMES) {
+        const p = PROPS[name];
+        expect(p.w, name).toBeGreaterThan(0);
+        expect(p.h, name).toBeGreaterThan(0);
+        expect(["bottom", "center"]).toContain(p.anchor);
+        expect(p.parts.length, name).toBeGreaterThan(0);
+        for (const part of p.parts) {
+          for (const c of [part.fill, part.stroke]) if (c !== undefined) expect([...COLORS, "outline"], `${name} colour ${c}`).toContain(c);
+          if (part.stroke) expect(part.sw ?? 0, `${name} line width`).toBeGreaterThan(0);
+        }
+      }
+    });
+    it("makes a wall of bricks with a heavier border than the bricks, every row offset half a brick", () => {
+      const rects = PROPS.wall.parts.filter((x) => x.tag === "rect");
+      const [border, ...bricks] = rects;
+      expect(border!.sw).toBeGreaterThan(bricks[0]!.sw!);
+      expect(bricks.length).toBeGreaterThanOrEqual(20);
+      for (const b of bricks) expect(b.stroke).toBe("outline");
+      const rowStarts = (y: number) => bricks.filter((b) => b.tag === "rect" && b.y === y).map((b) => (b.tag === "rect" ? b.x : -1)).sort((a, c) => a - c);
+      expect(rowStarts(0)[1]).not.toBe(rowStarts(8)[1]);
+    });
+    it("anchors the things that stand on the ground at their base and the rest at their centre", () => {
+      expect(["plant", "leaf", "wall", "door"].map((n) => PROPS[n as keyof typeof PROPS].anchor)).toEqual(["bottom", "bottom", "bottom", "bottom"]);
+      expect(["sun", "drop", "battery"].map((n) => PROPS[n as keyof typeof PROPS].anchor)).toEqual(["center", "center", "center"]);
+    });
+  });
+
+  describe("naming a thing without drawing it", () => {
+    const qa = (visuals: unknown[], sentences: string[]) => storyQA(sanitizeStory({ title: "A title", scenes: [{ heading: "h", sentences, visuals }] }).story!).filter((n) => n.kind === "noun_undrawn");
+    it("is flagged when a sentence says wall and the scene has no wall", () => {
+      const n = qa([{ kind: "circle", cx: 5, cy: 5, r: 2 }], ["The skin is like a wall."]);
+      expect(n).toHaveLength(1);
+      expect(n[0]!.message).toContain("wall");
+    });
+    it("is not flagged when the scene holds that prop, or a shape labelled or written with the word", () => {
+      expect(qa([{ kind: "prop", name: "wall", cx: 50, cy: 30 }], ["The skin is like a wall."])).toEqual([]);
+      expect(qa([{ kind: "text", x: 5, y: 5, text: "WALL" }], ["The skin is like a wall."])).toEqual([]);
+      expect(qa([{ kind: "circle", cx: 5, cy: 5, r: 2, label: "wall" }], ["The skin is like a wall."])).toEqual([]);
+    });
+    it("matches whole words, so walled or sunny do not count", () => {
+      expect(qa([{ kind: "circle", cx: 5, cy: 5, r: 2 }], ["A walled garden on a sunny day."])).toEqual([]);
+    });
+    it("looks for each thing in its own scene only", () => {
+      const story = sanitizeStory({ title: "A title", scenes: [
+        { heading: "a", sentences: ["A wall."], visuals: [{ kind: "prop", name: "wall", cx: 50, cy: 30 }] },
+        { heading: "b", sentences: ["The wall again."], visuals: [{ kind: "circle", cx: 5, cy: 5, r: 2 }] },
+      ] }).story!;
+      expect(storyQA(story).filter((n) => n.kind === "noun_undrawn").map((n) => n.scene)).toEqual([1]);
     });
   });
 });

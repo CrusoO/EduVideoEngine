@@ -12,7 +12,7 @@ const ev = (stage: JobEvent["stage"], status: JobEvent["status"], extra: Partial
 
 describe("LessonRequest", () => {
   it("fills the options with their defaults", () => {
-    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard", narration: "auto", style: "technical", chrome: "full", captions: "sentence" });
+    expect(req().options).toEqual({ locale: "en-IN", voice: "auto", fps: 12, theme: "whiteboard", narration: "auto", style: "technical", chrome: "full", captions: "sentence", font: "inter" });
   });
   it("takes an optional trace of the host app and environment, and refuses anything else in it", () => {
     expect(LessonRequest.safeParse({ ...req(), trace: { origin: "yourtutor-api", env: "qa" } }).success).toBe(true);

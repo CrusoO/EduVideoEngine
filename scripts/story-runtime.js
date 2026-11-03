@@ -11,6 +11,7 @@
   var H = 45;
   var PAL = DATA.palette;
   var ST = DATA.style; // one outline colour and width, and the flood hand-over point, shared with story.ts (ADR 0096)
+  var PROPS = DATA.props; // the drawn objects (story-props.ts), the only copy of them
   var cache = {};
 
   function fn(js) {
@@ -70,6 +71,23 @@
   }
   function num(n) {
     return Math.round(n * 1000) / 1000;
+  }
+
+  /** 0 to 1 with a small overshoot and no dip below 0 (the "back" easing dips first, which would turn a growing shape upside down) */
+  function growScale(a) {
+    var c = 1.70158, k = clamp(a, 0, 1) - 1;
+    return 1 + (c + 1) * k * k * k + c * k * k;
+  }
+
+  /** one part of a prop: its colours are palette names ("outline" is the shared charcoal) and its line width is in stage units, so it is divided by the prop's scale */
+  function propPart(pt, k) {
+    var a = { fill: pt.fill ? col(pt.fill) : "none", stroke: pt.stroke ? (pt.stroke === "outline" ? ST.inkOutline : col(pt.stroke)) : "none", "stroke-width": num((pt.sw || 0) / k), "stroke-linecap": "round", "stroke-linejoin": "round" };
+    if (pt.fill && pt.fillOpacity !== undefined) a["fill-opacity"] = pt.fillOpacity;
+    if (pt.tag === "path") a.d = pt.d;
+    else if (pt.tag === "rect") { a.x = pt.x; a.y = pt.y; a.width = pt.w; a.height = pt.h; if (pt.rx) a.rx = pt.rx; }
+    else if (pt.tag === "circle") { a.cx = pt.cx; a.cy = pt.cy; a.r = pt.r; }
+    else { a.x1 = pt.x1; a.y1 = pt.y1; a.x2 = pt.x2; a.y2 = pt.y2; }
+    return el(pt.tag, a);
   }
 
   /* ---- flood: the outline traces, then colour pours in from one side (ADR 0096) ---- */
@@ -231,6 +249,13 @@
             rec.midLbl.textContent = v.midLabel;
           }
         } else if (k === "polygon") rec.parts.shape = el("polygon", {}, outer);
+        else if (k === "prop") {
+          // a prop is a group of simple parts in its own box; updateShape places and scales the group
+          rec.propDef = PROPS[v.name];
+          rec.parts.shape = el("g", {}, outer);
+          var propK = v.size / rec.propDef.w;
+          rec.propDef.parts.forEach(function (pt) { rec.parts.shape.appendChild(propPart(pt, propK)); });
+        }
         else if (k === "path") rec.parts.shape = el("path", { d: v.d }, outer);
         else if (k === "text") rec.parts.shape = el("text", { "font-size": v.size, "text-anchor": v.anchor, "font-weight": v.bold ? "700" : "400", "font-style": v.italic ? "italic" : "normal", "dominant-baseline": "central" }, outer);
         else if (k === "math") {
@@ -396,7 +421,7 @@
       s.setAttribute("fill", stroke);
       return;
     }
-    if (kind === "trace" || kind === "callout") return; // handled in updateShape
+    if (kind === "trace" || kind === "callout" || kind === "prop") return; // handled in updateShape (a prop colours its own parts)
     s.setAttribute("stroke", stroke);
     s.setAttribute("stroke-width", v.width);
     var fillColor = kind === "plot" || kind === "curve" || kind === "spring" || kind === "trace" || (kind === "path" && v.fill === "none") ? "none" : col(v.fill);
@@ -487,6 +512,15 @@
       }
     } else if (k === "polygon") {
       p.shape.setAttribute("points", v.points.map(function (q) { return num(val(q[0], env)) + "," + num(val(q[1], env)); }).join(" "));
+    } else if (k === "prop") {
+      // the group's box is placed so its anchor (bottom middle, or the centre) sits on (cx, cy); scaling it later is about that same point
+      var pd = rec.propDef;
+      var pk = v.size / pd.w;
+      var pcx = val(v.cx, env), pcy = val(v.cy, env);
+      var pox = pcx - (pd.w * pk) / 2;
+      var poy = pd.anchor === "bottom" ? pcy - pd.h * pk : pcy - (pd.h * pk) / 2;
+      p.shape.setAttribute("transform", "translate(" + num(pox) + " " + num(poy) + ") scale(" + num(pk) + ")");
+      rec.center = [pcx, pcy];
     } else if (k === "text") {
       var s = v.text;
       for (var i = 0; i < v.values.length; i++) s = s.split("{" + i + "}").join(val(v.values[i], env).toFixed(v.decimals));
@@ -790,9 +824,9 @@
   function placeLabel(rec, env) {
     var v = rec.v;
     var g = geomOf(v, env);
-    // a path has no centre or size in its numbers, so its label is anchored to the outline as drawn (ADR 0097)
-    if (v.kind === "path" && rec.parts.shape) {
-      var pb = rec.parts.shape.getBBox();
+    // a path or a prop has no centre or size in its numbers, so its label is anchored to what is drawn (ADR 0097, 0098)
+    if ((v.kind === "path" || v.kind === "prop") && rec.parts.shape) {
+      var pb = v.kind === "prop" ? rec.outer.getBBox() : rec.parts.shape.getBBox();
       g = { cx: pb.x + pb.width / 2, cy: pb.y + pb.height / 2, hx: pb.width / 2, hy: pb.height / 2 };
     }
     if (!g) return;
@@ -870,15 +904,16 @@
       }
     }
     var how = v.how;
-    var fade = how === "draw" || how === "arc" || how === "write" || how === "indicate" || how === "flood" ? 1 : EASE.ease(a);
+    var fade = how === "draw" || how === "arc" || how === "write" || how === "indicate" || how === "flood" || how === "grow" ? 1 : EASE.ease(a);
     // animated style: squash+stretch pop — overshoots to ~1.18x then settles (Kurzgesagt character principle)
     if (how === "pop") sc *= a < 1 ? (DATA.visualStyle === "animated" ? EASE.back(a) : 0.55 + 0.45 * (1 - Math.pow(1 - a, 3)) + 0.12 * Math.sin(a * Math.PI)) : 1;
     if (how === "slide") ty += (1 - EASE.ease(a)) * 3;
+    if (how === "grow") sc *= growScale(a); // from nothing, a little past its size, then settled, about its anchor
     if (how === "indicate") sc *= 1 + 0.2 * EASE.there_and_back(clamp(a, 0, 1));
     if (how === "write" && rec.writeRect) rec.writeRect.setAttribute("width", num(100 * EASE.ease_in_out_sine(a)));
     // Animated style: spring pop for shapes using plain fade-in; per-sentence emphasis pulse
     if (DATA.visualStyle === "animated") {
-      if (a < 1 && how !== "draw" && how !== "write" && how !== "arc" && how !== "indicate" && how !== "pop" && how !== "flood") {
+      if (a < 1 && how !== "draw" && how !== "write" && how !== "arc" && how !== "indicate" && how !== "pop" && how !== "flood" && how !== "grow") {
         sc *= 0.55 + 0.45 * EASE.spring(a);
       }
       if (a >= 1 && v.inS === activeSIdx && T >= emphasisStartMs) {

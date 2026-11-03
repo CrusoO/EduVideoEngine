@@ -40,11 +40,14 @@ const theme = option("theme", request.options.theme) === "dark" ? "dark" : "whit
 const visualStyle = (option("style", request.options.style ?? "technical") === "animated" ? "animated" : "technical") as "animated" | "technical";
 const chrome = option("chrome", request.options.chrome ?? "full") === "none" ? "none" : "full";
 const captions = option("captions", request.options.captions ?? "sentence") === "none" ? "none" : "sentence";
+const font = option("font", request.options.font ?? "inter") === "atkinson" ? "atkinson" : "inter";
 const speedOption = Number(option("speed", String(request.options.voiceSpeed ?? "")));
 const locale = request.options.locale ?? "en-IN";
 const isDevanagari = locale === "hi-IN" || locale === "ne-NP";
 const timelineFile = join(dir, "timeline.json");
 const pageFile = join(dir, "page.html");
+
+const FRAME_ATTEMPTS = 3;
 
 type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
 
@@ -142,7 +145,7 @@ async function build(): Promise<void> {
   );
   const cssPath = createRequire(join(katexRoot, "package.json")).resolve("katex/dist/katex.min.css");
   const runtime = readFileSync(join(REPO_ROOT, "scripts", "story-runtime.js"), "utf8");
-  writeFileSync(pageFile, storyPageHtml(placed, theme, math, runtime, pathToFileURL(cssPath).href, { visualStyle, locale, chrome, captions }));
+  writeFileSync(pageFile, storyPageHtml(placed, theme, math, runtime, pathToFileURL(cssPath).href, { visualStyle, locale, chrome, captions, font }));
   const audio = jobs.map((j) => ({ wav: j.file, startMs: placed.scenes[j.si]!.sentences[j.i]!.startMs }));
   // soft checks on the story and on how it was timed: notes for the host, never a failure
   const qa = { story: storyQA(story), timing: placedQA(placed) };
@@ -182,8 +185,16 @@ async function render(): Promise<void> {
     await Promise.all(
       pages.map(async (page) => {
         for (let i = next++; i < ticks.length; i = next++) {
-          await page.evaluate((t) => (window as unknown as { __draw(t: number): void }).__draw(t), ticks[i]!.t);
-          await page.screenshot({ path: join(dir, "frames", `f${String(i).padStart(5, "0")}.jpg`), type: "jpeg", quality: 95 });
+          // a frame is a pure function of its time, so one that stalls (a busy machine can make a screenshot time out) is simply drawn again, a few times, before the job fails
+          for (let attempt = 1; ; attempt++) {
+            try {
+              await page.evaluate((t) => (window as unknown as { __draw(t: number): void }).__draw(t), ticks[i]!.t);
+              await page.screenshot({ path: join(dir, "frames", `f${String(i).padStart(5, "0")}.jpg`), type: "jpeg", quality: 95, timeout: 60_000 });
+              break;
+            } catch (e) {
+              if (attempt >= FRAME_ATTEMPTS) throw e;
+            }
+          }
           if (++done % 200 === 0) console.log(`  ${Math.round((100 * done) / ticks.length)}%`);
         }
       }),

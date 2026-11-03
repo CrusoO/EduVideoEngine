@@ -8,6 +8,7 @@
  */
 import { STAGE, type PlacedStory, type Story, type StoryVisual, type StoryNum } from "./story";
 import { SPOKEN_TERMS } from "./source";
+import { PROP_NAMES, PROP_WORDS } from "./story-props";
 
 export type QANote = { scene: number; kind: string; message: string };
 
@@ -231,6 +232,24 @@ export function storyQA(story: Story): QANote[] {
     }
   }
 
+  notes.push(...undrawnNouns(story));
+  return notes;
+}
+
+/**
+ * When a sentence names something that has a drawn prop (a wall, a plant, a leaf) the scene should show it: a narrator saying "wall" over a picture with no wall leaves the
+ * viewer to imagine it. A scene counts as showing the thing if it holds that prop, or any shape whose label or text uses the word.
+ */
+function undrawnNouns(story: Story): QANote[] {
+  const notes: QANote[] = [];
+  for (const [si, sc] of story.scenes.entries()) {
+    const shown = (name: (typeof PROP_NAMES)[number]): boolean =>
+      sc.visuals.some((v) => (v.kind === "prop" && v.name === name) || PROP_WORDS[name].test(v.label ?? "") || (v.kind === "text" && PROP_WORDS[name].test(v.text)));
+    for (const name of PROP_NAMES) {
+      const first = sc.sentences.findIndex((s) => PROP_WORDS[name].test(s.text));
+      if (first >= 0 && !shown(name)) notes.push({ scene: si, kind: "noun_undrawn", message: `sentence ${first + 1} names a ${name} but the scene draws none (prop: "${name}")` });
+    }
+  }
   return notes;
 }
 

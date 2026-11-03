@@ -4,7 +4,7 @@ Status: accepted by the owner on 2026-11-03 (asked for these fixes after a measu
 
 ## Context
 Measured on 2026-11-03, quantum.mp4 against the story video v23 (Whisper small.en with word timestamps, ffmpeg `ebur128`, the job's own `timeline.json`):
-- **Pronunciation.** `speechText` only rewrites maths signs, so abbreviations reach the voice raw. In a test with the real voice (Kokoro `af_heart`, speed 0.84, heard back by Whisper): `NADPH` was heard as "NADF", `RuBisCO` as "Rubus CO", and `A T P` (spaced) as "a TP". Heard right in a test sentence: `A-T-P`, `Rubisco`, `roo bisco`, and for NADPH `nad-pee-aitch` and `N-A-D-P-H` (`N A D P H` with spaces was right alone but came out "N, a DPH" in a full sentence, so it was dropped).
+- **Pronunciation.** `speechText` only rewrites maths signs, so abbreviations reach the voice raw. Played to the real voices and heard back by Whisper: plain `NADPH` came out "NADF", plain `RuBisCO` "Rubus CO", `A T P` (spaced) "a TP", and `A-T-P` "A, T, pie" for af_kore at speed 0.75 (right at 0.84). Dotted initials, `A.T.P.`, were heard as ATP in all 18 combinations of voice and speed tried; `N.A.D.P.H.` had every letter said in all of them, but some voices pause after the N.
 - **Loudness.** The mix ends in `loudnorm=I=-19`. v23 measured -19.9 LUFS; quantum -14.6 LUFS. On a phone speaker v23 is about 5 dB quieter.
 - **Delivery.** v23 had 22 silences of 0.3 s or more inside sentences (13 of them 0.5 s or more) against 5 in quantum, from ellipses and commas. The voice stops at each one, so the delivery is choppy. Em and en dashes also make the voice stutter.
 - **Pace control.** `[slow]` and `[pause]` work (ADR 0092) but only one marker can end a sentence, the pause is always 600 ms, and `[fast]` is parsed and then ignored by `scripts/story-video.ts`. Speed is not the main gap: v23's ordinary sentences measure about 154 words a minute, quantum's about 155.
@@ -18,13 +18,11 @@ Measured on 2026-11-03, quantum.mp4 against the story video v23 (Whisper small.e
 5. **Captions.** `options.captions` is `"sentence"` (default, as before) or `"none"`. `none` hides the caption band; with `chrome:"none"` the page then holds only the picture. Captions off removes the text alternative for deaf and hard-of-hearing viewers, so a host that turns them off is responsible for another one.
 6. **One options object for the page.** `storyPageHtml` took four positional options after `katexCss`; it now takes `{ visualStyle, locale, chrome, captions }`, all optional, so the next option does not add a fifth position.
 
-## As built and measured (2026-11-03, story video v26 against v23 and quantum.mp4)
-- Built: items 1 to 6. `pnpm test` for `packages/pipeline`: everything passes except the 3 neuron-lesson tests, which need a recorded model answer and were failing before. `tsc` is clean.
-- Loudness: -17.1 LUFS (v23 -19.9, quantum -14.6), true peak -1.4 dBFS. The target is -16; the single-pass `loudnorm` lands about 1 LU under it. A two-pass measure-then-set would hit the target exactly; it is not built.
-- Pronunciation: Whisper hears photosynthesis, stomata, chloroplasts, ATP and NADPH correctly in v26.
-- Silences of 0.3 s or more inside a sentence: 15 (v23 22, quantum 5); of 0.5 s or more: 7 (v23 13). Ellipses no longer cause them; commas still do, so delivery is less choppy but not yet as smooth as a person's.
-- Pace: ordinary sentences 159 words a minute, `[slow]` sentences 118 (quantum about 155). Overall 126 including pauses.
-- Pitch range (10th to 90th percentile) is 7.5 semitones against quantum's 11.1: the voice model's limit.
+## As built and measured (2026-11-03, final story video v31 against quantum.mp4)
+- Built: items 1 to 6, then the second round below. `packages/pipeline` tests pass except the 3 neuron-lesson tests, which need a recorded model answer and were failing before; `tsc` is clean.
+- Loudness: -16.0 LUFS (v23 -19.9, quantum -14.6), set by the two-pass measure and apply; `loudness.json` is written beside the video.
+- Voice (af_kore at 0.75, uncompressed), quantum in brackets: pitch spread 4.02 semitones (4.00); loudness spread 8.9 dB (9.2) and 23.5 dB between the quietest and loudest tenth (23.3); ordinary sentences 154 words a minute (about 155); silences of 0.3 s or more inside a sentence 6 (5). Pitch movement is 20.0 semitones a second (24.7): the voice's remaining flat spot, and a limit of the model (af_sarah moves 25.0 but has a narrower pitch spread and loudness range, so it was not chosen).
+- Pronunciation: Whisper hears photosynthesis, stomata, chloroplasts, ATP and NADPH correctly in the final audio.
 - A bug the first tests missed: the rule hiding the caption band sat before the main `#caption` rule, so the later `display:flex` won and captions stayed on. The string test passed; a real-browser test (`story-flood.test.ts`) now measures the computed display of the caption, heading, bar and panel.
 
 ## Second round (2026-11-03): what the research found, and what was built for any story
@@ -36,6 +34,10 @@ Built:
 - Each sentence's file is trimmed to 30 ms of silence at each end (`trimSilenceFilter`), so the pause between sentences is the gap plus the pause the story asks for, and no more.
 - Labels sit one gap (16 px) outside a shape's drawn outline. A path has no size in its numbers, so its label is anchored to its bounding box in the page; before, a labelled path put its label near the middle of the stage. Tested in a browser for a circle, a rect and a path, above and below.
 - `placedQA` runs after the sentences are timed and its notes go into `timeline.json` (`qa`), together with `storyQA`, which had not been called by any job: shapes that appear after their sentence has ended (`late_cue`), sentences that start nothing (`dead_air`), more than 8 shapes at once (`crowded_sentence`), and capital-letter abbreviations not in the pronunciation table (`abbreviation_unheard`). They are notes for the host, never a failure.
+
+### Voice naturalness (owner: "a little less robotic")
+Measured on the same sentences, mixed four ways, then through the real two-pass loudness step. The old mix compressed the voice 4 to 1 above -20 dB: its loudness spread was 7.8 dB and 19.5 dB between the quietest and loudest tenth, against 9.2 and 23.3 for the person narrating. Without compression the same sentences measure 9.0 and 23.3. Uncompressed audio peaks slightly over 0 dBTP, so a peak limiter (`alimiter`, limit 0.8, 5 ms attack, 60 ms release) stops only the highest peaks, and the loudness step can then reach -16 LUFS with a straight gain. `voicePrepChain` is now the rumble filter and that limiter; the compressor is gone.
+The voice was chosen on three measures together (pitch spread, pitch movement, loudness range), each with the limiter: af_kore matched the narrator on pitch spread (4.02 against 4.00) and loudness range, af_sarah on pitch movement only. Speed was set so ordinary sentences run at about 155 words a minute, quantum's pace: 0.75 for af_kore (0.84 gave 177, which was fast; 0.72 for af_sarah).
 
 ## What this does not do
 - A pause in the middle of a sentence (`[pause 0.4s]` inside the text) is not built. Ellipses becoming commas removes the long silences it was wanted for; a split-and-join of audio segments can be added if listening shows it is still needed.

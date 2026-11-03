@@ -48,6 +48,8 @@ export const LessonRequest = z
         chrome: z.enum(["full", "none"]).default("full"),
         /** Story jobs (ADR 0097): "sentence" prints each sentence under the picture while it is spoken; "none" shows no caption band. With none, the host should offer its own text alternative. */
         captions: z.enum(["sentence", "none"]).default("sentence"),
+        /** Story jobs (ADR 0098): the text face. "inter" (default) or "atkinson", Atkinson Hyperlegible, made so look-alike characters (the O in CO2 and a zero) can be told apart. */
+        font: z.enum(["inter", "atkinson"]).default("inter"),
         /** Story jobs, Kokoro voice (ADR 0096): the base speaking speed, 1 is the voice's normal pace. Left out, the engine uses its own speed for the language (0.92 for English); a sentence marked [slow] is said 13% slower than this. */
         voiceSpeed: z.number().min(0.6).max(1).optional(),
         /** Story jobs, English only (ADR 0097): which Kokoro voice, from the ones that were measured. Left out, af_heart. Other languages keep their own voice. */

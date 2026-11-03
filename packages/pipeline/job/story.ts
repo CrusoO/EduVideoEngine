@@ -1,6 +1,7 @@
 import { findPersonalData, findSecrets } from "@eve/safety";
 import { compileExpr } from "./story-expr";
 import { cleanLine } from "./source";
+import { PROP_NAMES, type PropName } from "./story-props";
 
 /**
  * A story lesson (ADR 0091): the host sends scenes of narration and the shapes to draw while it is said; the engine voices the narration and draws the shapes as an animation.
@@ -14,7 +15,7 @@ export const STAGE = { w: 100, h: 45 } as const;
 export const STORY_LIMITS = { scenes: 10, sentences: 16, totalSentences: 100, sentenceChars: 300, visuals: 28, heading: 80, title: 120, text: 160, latex: 140, path: 600, moves: 8, points: 16, bytes: 120_000 } as const;
 export const COLORS = ["ink", "soft", "blue", "red", "green", "yellow", "orange", "purple", "teal", "pink", "none"] as const;
 export type StoryColor = (typeof COLORS)[number];
-export const HOWS = ["fade", "write", "indicate", "draw", "pop", "slide", "arc", "flood"] as const;
+export const HOWS = ["fade", "write", "indicate", "draw", "pop", "slide", "arc", "flood", "grow"] as const;
 export type StoryHow = (typeof HOWS)[number];
 /** Which way a flooded shape fills: the colour rises from the bottom, falls from the top, or sweeps from the left or right (ADR 0096). */
 export const FLOOD_FROMS = ["bottom", "top", "left", "right"] as const;
@@ -45,6 +46,7 @@ export type StoryShape =
   | { kind: "line"; x1: StoryNum; y1: StoryNum; x2: StoryNum; y2: StoryNum }
   | { kind: "arrow"; x1: StoryNum; y1: StoryNum; x2: StoryNum; y2: StoryNum; toId?: string; midLabel?: string }
   | { kind: "polygon"; points: Array<[StoryNum, StoryNum]> }
+  | { kind: "prop"; name: PropName; cx: StoryNum; cy: StoryNum; size: number }
   | { kind: "path"; d: string; cx?: StoryNum; cy?: StoryNum }
   | { kind: "text"; x: StoryNum; y: StoryNum; text: string; values: StoryNum[]; decimals: number; size: number; anchor: "start" | "middle" | "end"; bold: boolean; italic: boolean }
   | { kind: "math"; x: StoryNum; y: StoryNum; latex: string; size: number; anchor: "start" | "middle" | "end"; display: boolean }
@@ -155,6 +157,12 @@ function shapeOf(v: Record<string, unknown>): StoryShape | string {
       if (!g) return "arrow needs x1, y1, x2 and y2 (or toId to track another shape)";
       const midLabel = text(v.midLabel, 24) || undefined;
       return { kind: "arrow", x1: g.x1!, y1: g.y1!, x2: g.x2 ?? 50, y2: g.y2 ?? 22, ...(toId ? { toId } : {}), ...(midLabel ? { midLabel } : {}) };
+    }
+    case "prop": {
+      const name = typeof v.name === "string" && (PROP_NAMES as readonly string[]).includes(v.name) ? (v.name as PropName) : null;
+      const cx = n("cx");
+      const cy = n("cy");
+      return name && cx !== null && cy !== null ? { kind: "prop", name, cx, cy, size: plain(v.size, 2, 90, 20) } : `prop needs name (${PROP_NAMES.join(", ")}), cx and cy`;
     }
     case "polygon": {
       if (!Array.isArray(v.points)) return "polygon needs points";
@@ -353,6 +361,10 @@ export function sanitizeStory(raw: unknown): Sanitized {
         how = shape.kind === "line" || shape.kind === "arrow" ? "draw" : "fade";
         notes.push(`scene ${si + 1}, shape ${vi + 1}: a ${shape.kind} has no inside to fill, so flood became ${how}`);
       }
+      if (how === "draw" && shape.kind === "prop") {
+        how = "fade";
+        notes.push(`scene ${si + 1}, shape ${vi + 1}: a prop is not traced line by line, so draw became fade`);
+      }
       const fill = colour(v.fill, "none");
       if (shape.kind === "path" && (fill !== "none" || how === "flood")) {
         const d = closedPath(shape.d);
@@ -429,7 +441,7 @@ export function sanitizeStory(raw: unknown): Sanitized {
 
 /** Pauses (milliseconds): before the first sentence of a scene, after each sentence, and after the last one. */
 export const STORY_GAPS = { lead: 350, sentence: 320, tail: 800 } as const;
-export const APPEAR_MS: Record<StoryHow, number> = { fade: 250, write: 800, indicate: 500, draw: 900, pop: 200, slide: 500, arc: 700, flood: 2200 };
+export const APPEAR_MS: Record<StoryHow, number> = { fade: 250, write: 800, indicate: 500, draw: 900, pop: 200, slide: 500, arc: 700, flood: 2200, grow: 2200 };
 
 export type PlacedSentence = { text: string; startMs: number; durMs: number; pauseMs?: number; pace?: StorySentencePace };
 export type PlacedMove = Omit<StoryMove, "at"> & { atMs: number };
