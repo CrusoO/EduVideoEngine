@@ -17,7 +17,7 @@ export type PropPart = { fill?: StoryColor; fillOpacity?: number; stroke?: Story
 );
 export type PropDef = { w: number; h: number; anchor: "bottom" | "center"; parts: PropPart[] };
 
-export const PROP_NAMES = ["plant", "leaf", "wall", "door", "sun", "drop", "battery"] as const;
+export const PROP_NAMES = ["plant", "leaf", "wall", "door", "sun", "drop", "battery", "cloud", "tree", "flame", "bulb", "heart", "cell", "mountain", "house"] as const;
 export type PropName = (typeof PROP_NAMES)[number];
 
 const line = (x1: number, y1: number, x2: number, y2: number, stroke: StoryColor | "outline", sw: number): PropPart => ({ tag: "line", x1, y1, x2, y2, stroke, sw });
@@ -91,6 +91,66 @@ export const PROPS: Readonly<Record<PropName, PropDef>> = {
       { tag: "rect", x: 21.5, y: 5.5, w: 8.5, h: 9, fill: "green", fillOpacity: 0.85 },
     ],
   },
+  cloud: {
+    w: 60, h: 36, anchor: "center",
+    parts: [{ tag: "path", d: "M 14,32 C 3,32 1,19 12,17 C 12,6 28,2 34,11 C 40,5 55,9 52,19 C 60,21 58,32 48,32 Z", fill: "blue", fillOpacity: 0.28, stroke: "outline", sw: 0.12 }],
+  },
+  tree: {
+    w: 50, h: 80, anchor: "bottom",
+    parts: [
+      { tag: "path", d: "M 21,80 L 22,54 L 28,54 L 29,80 Z", fill: "orange", fillOpacity: 0.55, stroke: "outline", sw: 0.12 },
+      { tag: "path", d: "M 25,3 C 40,3 48,18 42,31 C 50,40 44,55 30,52 L 20,52 C 6,55 0,40 8,31 C 2,18 10,3 25,3 Z", fill: "green", fillOpacity: 0.85, stroke: "outline", sw: 0.14 },
+    ],
+  },
+  flame: {
+    w: 30, h: 44, anchor: "bottom",
+    parts: [
+      { tag: "path", d: "M 15,2 C 18,14 28,20 28,32 C 28,40 22,43 15,43 C 8,43 2,40 2,32 C 2,22 10,16 15,2 Z", fill: "orange", fillOpacity: 0.9, stroke: "outline", sw: 0.12 },
+      { tag: "path", d: "M 15,20 C 17,27 22,30 22,35 C 22,39 19,41 15,41 C 11,41 8,39 8,35 C 8,30 13,27 15,20 Z", fill: "yellow", fillOpacity: 0.95, stroke: "outline", sw: 0.07 },
+    ],
+  },
+  bulb: {
+    w: 30, h: 44, anchor: "center",
+    parts: [
+      { tag: "path", d: "M 15,2 C 25,2 29,10 27,18 C 26,23 21,25 20,31 L 10,31 C 9,25 4,23 3,18 C 1,10 5,2 15,2 Z", fill: "yellow", fillOpacity: 0.7, stroke: "outline", sw: 0.12 },
+      { tag: "rect", x: 10, y: 31, w: 10, h: 9, rx: 1.5, fill: "soft", fillOpacity: 0.5, stroke: "outline", sw: 0.1 },
+      { tag: "path", d: "M 11,23 L 13,14 L 15,21 L 17,14 L 19,23", stroke: "outline", sw: 0.09 },
+      line(11, 35, 19, 35, "outline", 0.07),
+    ],
+  },
+  heart: {
+    w: 40, h: 36, anchor: "center",
+    parts: [{ tag: "path", d: "M 20,34 C 4,22 2,12 8,7 C 14,2 20,6 20,11 C 20,6 26,2 32,7 C 38,12 36,22 20,34 Z", fill: "red", fillOpacity: 0.8, stroke: "outline", sw: 0.12 }],
+  },
+  cell: {
+    w: 50, h: 40, anchor: "center",
+    parts: [
+      { tag: "path", d: "M 25,2 C 42,2 48,12 47,22 C 46,33 36,38 24,38 C 10,38 3,30 3,20 C 3,9 12,2 25,2 Z", fill: "green", fillOpacity: 0.2, stroke: "outline", sw: 0.14 },
+      { tag: "circle", cx: 26, cy: 20, r: 8, fill: "purple", fillOpacity: 0.4, stroke: "outline", sw: 0.1 },
+      { tag: "circle", cx: 28, cy: 18, r: 3, fill: "purple", fillOpacity: 0.8 },
+      { tag: "circle", cx: 12, cy: 13, r: 2.4, fill: "orange", fillOpacity: 0.7, stroke: "outline", sw: 0.06 },
+      { tag: "circle", cx: 39, cy: 28, r: 2.4, fill: "orange", fillOpacity: 0.7, stroke: "outline", sw: 0.06 },
+      { tag: "circle", cx: 14, cy: 29, r: 2.4, fill: "orange", fillOpacity: 0.7, stroke: "outline", sw: 0.06 },
+    ],
+  },
+  mountain: {
+    w: 60, h: 36, anchor: "bottom",
+    parts: [
+      { tag: "path", d: "M 2,36 L 22,6 L 32,20 L 40,10 L 58,36 Z", fill: "soft", fillOpacity: 0.4, stroke: "outline", sw: 0.14 },
+      { tag: "path", d: "M 22,6 L 27,13 L 22,11 L 17,14 Z", fill: "blue", fillOpacity: 0.25, stroke: "outline", sw: 0.07 },
+    ],
+  },
+  house: {
+    w: 50, h: 42, anchor: "bottom",
+    parts: [
+      { tag: "rect", x: 6, y: 20, w: 38, h: 22, fill: "yellow", fillOpacity: 0.4, stroke: "outline", sw: 0.12 },
+      { tag: "path", d: "M 2,20 L 25,3 L 48,20 Z", fill: "red", fillOpacity: 0.55, stroke: "outline", sw: 0.14 },
+      { tag: "rect", x: 21, y: 28, w: 9, h: 14, fill: "orange", fillOpacity: 0.6, stroke: "outline", sw: 0.08 },
+      { tag: "rect", x: 10, y: 26, w: 8, h: 8, fill: "blue", fillOpacity: 0.35, stroke: "outline", sw: 0.08 },
+      line(14, 26, 14, 34, "outline", 0.06),
+      line(10, 30, 18, 30, "outline", 0.06),
+    ],
+  },
 };
 
 /** The words a narrator uses for each prop, so a sentence that names one can be checked against the picture. */
@@ -102,4 +162,12 @@ export const PROP_WORDS: Readonly<Record<PropName, RegExp>> = {
   sun: /\b(sun|sunlight)\b/i,
   drop: /\bdrops?\b/i,
   battery: /\b(batter(y|ies)|power banks?)\b/i,
+  cloud: /\bclouds?\b/i,
+  tree: /\btrees?\b/i,
+  flame: /\b(flames?|fire)\b/i,
+  bulb: /\b(bulbs?|lamps?)\b/i,
+  heart: /\bhearts?\b/i,
+  cell: /\bcells?\b/i,
+  mountain: /\b(mountains?|hills?)\b/i,
+  house: /\b(houses?|homes?)\b/i,
 };
