@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sanitizeStory, storyQA, type Story } from "../index";
+import { placeStory, placedQA, sanitizeStory, storyQA, type Story } from "../index";
 
 function make(overrides: Record<string, unknown>): Story {
   const base = {
@@ -343,5 +343,42 @@ describe("storyQA composition_clustered check", () => {
       { role: "wrap", heading: "W", sentences: ["Done.", "Done."], visuals: [] },
     ]});
     expect(storyQA(story).some((n) => n.kind === "composition_clustered")).toBe(false);
+  });
+});
+
+describe("notes a host can act on (ADR 0102)", () => {
+  const placedFrom = (visuals: unknown[], sentences: string[] = ["One sentence here.", "Another sentence here."]) =>
+    placeStory(sanitizeStory({ title: "A title", scenes: [{ heading: "h", role: "hook", sentences, visuals }] }).story!, [sentences.map(() => 2000)]);
+
+  it("says which shape and which sentence a late cue is about", () => {
+    const note = placedQA(placedFrom([{ kind: "circle", cx: 20, cy: 10, r: 3, id: "dot", in: { s: 0, off: 5000 } }])).find((n) => n.kind === "late_cue")!;
+    expect(note).toMatchObject({ shape: "dot", sentence: 0 });
+  });
+  it("says which sentence starts no shape, and which shape names a missing word", () => {
+    const notes = placedQA(placedFrom([{ kind: "circle", cx: 20, cy: 10, r: 3, id: "dot", in: { s: 0, word: "volcano" } }]));
+    expect(notes.find((n) => n.kind === "dead_air")).toMatchObject({ sentence: 1 });
+    expect(notes.find((n) => n.kind === "cue_word_missing")).toMatchObject({ shape: "dot", sentence: 0 });
+  });
+  it("says which shape a storyQA note is about", () => {
+    const story = sanitizeStory({ title: "A title", scenes: [{ heading: "h", role: "hook", sentences: ["What is this?"], visuals: [{ kind: "circle", cx: 20, cy: 10, r: 3, id: "ball", label: "Ball", fill: "none", in: { s: 0 } }] }] }).story!;
+    expect(storyQA(story).find((n) => n.kind === "shapes_unfilled")).toMatchObject({ shape: "ball" });
+  });
+  describe("cell_conflict", () => {
+    const circle = (id: string, cell: string, extra: Record<string, unknown> = {}) => ({ kind: "circle", id, cell, in: { s: 0 }, ...extra });
+    it("names two shapes in the same cell on screen together", () => {
+      const notes = placedQA(placedFrom([circle("a", "B2"), circle("b", "B2")])).filter((n) => n.kind === "cell_conflict");
+      expect(notes).toHaveLength(1);
+      expect(notes[0]).toMatchObject({ shape: "b" });
+      expect(notes[0]!.message).toContain('"a"');
+    });
+    it("names overlapping areas", () => {
+      expect(placedQA(placedFrom([circle("a", "A1:B2"), circle("b", "B2:C3")])).some((n) => n.kind === "cell_conflict")).toBe(true);
+    });
+    it("is quiet for different cells, shapes without cells, and a shape that has left before the other arrives", () => {
+      expect(placedQA(placedFrom([circle("a", "A1"), circle("b", "B1")])).some((n) => n.kind === "cell_conflict")).toBe(false);
+      expect(placedQA(placedFrom([{ kind: "circle", id: "a", cx: 20, cy: 10, r: 3, in: { s: 0 } }, { kind: "circle", id: "b", cx: 20, cy: 10, r: 3, in: { s: 0 } }])).some((n) => n.kind === "cell_conflict")).toBe(false);
+      const sequential = placedFrom([circle("a", "B2", { out: { s: 0, off: 500 } }), circle("b", "B2", { in: { s: 1 } })]);
+      expect(placedQA(sequential).some((n) => n.kind === "cell_conflict")).toBe(false);
+    });
   });
 });

@@ -8,9 +8,11 @@
  */
 import { STAGE, type PlacedStory, type Story, type StoryVisual, type StoryNum } from "./story";
 import { SPOKEN_TERMS } from "./source";
+import { gridCells, gridOverlap } from "./story-grid";
 import { PROP_NAMES, PROP_WORDS } from "./story-props";
 
-export type QANote = { scene: number; kind: string; message: string };
+/** A soft note: what is wrong, in which scene, and where when the engine knows: the id of the shape and the position (from 0) of the sentence, so a host can ask for a targeted repair without reading the message. */
+export type QANote = { scene: number; kind: string; message: string; shape?: string; sentence?: number };
 
 const COVARIATION_WORDS = /\b(increases?|decreases?|grows?|falls?|rises?|oscillates?|speeds?\s+up|slows?\s+down|changes?|varies?)\b/i;
 
@@ -54,7 +56,7 @@ export function storyQA(story: Story): QANote[] {
         if (v.label) {
           const key = Object.keys(story.color_map).find((k) => v.label!.toLowerCase().includes(k.toLowerCase()));
           if (key && story.color_map[key] !== v.color && v.color !== "none" && v.color !== "soft") {
-            notes.push({ scene: si, kind: "no_color_map", message: `shape "${v.id}" color "${v.color}" does not match color_map entry "${key}" → "${story.color_map[key]}"` });
+            notes.push({ scene: si, kind: "no_color_map", shape: v.id, message: `shape "${v.id}" color "${v.color}" does not match color_map entry "${key}" → "${story.color_map[key]}"` });
           }
         }
       }
@@ -73,7 +75,7 @@ export function storyQA(story: Story): QANote[] {
     // covariation: sentence with increase/decrease word must have a t-expression somewhere in the scene
     for (const [qi, s] of sc.sentences.entries()) {
       if (COVARIATION_WORDS.test(s.text) && !hasAnimation(sc.visuals)) {
-        notes.push({ scene: si, kind: "covariation_static", message: `sentence ${qi + 1} uses a change word but no t-expression is visible in the scene` });
+        notes.push({ scene: si, kind: "covariation_static", sentence: qi, message: `sentence ${qi + 1} uses a change word but no t-expression is visible in the scene` });
         break;
       }
     }
@@ -84,7 +86,7 @@ export function storyQA(story: Story): QANote[] {
       if (v.label) {
         const word = v.label.split(/\s+/)[0]?.toLowerCase() ?? "";
         if (word && !allText.includes(word)) {
-          notes.push({ scene: si, kind: "anchor_missing", message: `shape "${v.id}" has label "${v.label}" but its first word does not appear in any sentence` });
+          notes.push({ scene: si, kind: "anchor_missing", shape: v.id, message: `shape "${v.id}" has label "${v.label}" but its first word does not appear in any sentence` });
         }
       }
     }
@@ -98,10 +100,10 @@ export function storyQA(story: Story): QANote[] {
     const ids = new Set(sc.visuals.map((v) => v.id));
     for (const v of sc.visuals) {
       if (v.kind === "callout" && !ids.has(v.target)) {
-        notes.push({ scene: si, kind: "callout_orphaned", message: `callout target "${v.target}" not found in scene` });
+        notes.push({ scene: si, kind: "callout_orphaned", shape: v.id, message: `callout target "${v.target}" not found in scene` });
       }
       if (v.kind === "trace" && !ids.has(v.sourceId)) {
-        notes.push({ scene: si, kind: "trace_orphaned", message: `trace sourceId "${v.sourceId}" not found in scene` });
+        notes.push({ scene: si, kind: "trace_orphaned", shape: v.id, message: `trace sourceId "${v.sourceId}" not found in scene` });
       }
     }
 
@@ -117,7 +119,7 @@ export function storyQA(story: Story): QANote[] {
     for (const v of sc.visuals) {
       const c = centre(v);
       if (c && (c.x < 4 || c.x > STAGE.w - 4 || c.y < 3 || c.y > STAGE.h - 2)) {
-        notes.push({ scene: si, kind: "shape_in_margin", message: `shape "${v.id}" centre (${c.x.toFixed(1)}, ${c.y.toFixed(1)}) is in the margin` });
+        notes.push({ scene: si, kind: "shape_in_margin", shape: v.id, message: `shape "${v.id}" centre (${c.x.toFixed(1)}, ${c.y.toFixed(1)}) is in the margin` });
       }
     }
 
@@ -133,7 +135,7 @@ export function storyQA(story: Story): QANote[] {
         const dy = centres[a]!.y - centres[b]!.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < 6) {
-          notes.push({ scene: si, kind: "shapes_too_close", message: `"${centres[a]!.id}" and "${centres[b]!.id}" are ${dist.toFixed(1)} units apart (min 8 recommended)` });
+          notes.push({ scene: si, kind: "shapes_too_close", shape: centres[a]!.id, message: `"${centres[a]!.id}" and "${centres[b]!.id}" are ${dist.toFixed(1)} units apart (min 8 recommended)` });
         }
       }
     }
@@ -149,7 +151,7 @@ export function storyQA(story: Story): QANote[] {
         const dx = ca.x - cb.x;
         const dy = ca.y - cb.y;
         if (Math.sqrt(dx * dx + dy * dy) < 12) {
-          notes.push({ scene: si, kind: "labels_same_side", message: `"${labeled[a]!.id}" and "${labeled[b]!.id}" both use labelPos "${labeled[a]!.labelPos}" and are close together` });
+          notes.push({ scene: si, kind: "labels_same_side", shape: labeled[a]!.id, message: `"${labeled[a]!.id}" and "${labeled[b]!.id}" both use labelPos "${labeled[a]!.labelPos}" and are close together` });
         }
       }
     }
@@ -158,7 +160,7 @@ export function storyQA(story: Story): QANote[] {
     for (const v of sc.visuals) {
       for (const m of v.moves) {
         if (m.ease === "linear") {
-          notes.push({ scene: si, kind: "linear_ease_on_move", message: `shape "${v.id}" has a move with ease: "linear" — use "ease" or "smooth" instead` });
+          notes.push({ scene: si, kind: "linear_ease_on_move", shape: v.id, message: `shape "${v.id}" has a move with ease: "linear" — use "ease" or "smooth" instead` });
           break;
         }
       }
@@ -167,7 +169,7 @@ export function storyQA(story: Story): QANote[] {
     // shapes_unfilled: circle or rect representing a physical object has fill "none"
     for (const v of sc.visuals) {
       if ((v.kind === "circle" || v.kind === "rect") && v.fill === "none" && v.label) {
-        notes.push({ scene: si, kind: "shapes_unfilled", message: `shape "${v.id}" (${v.kind}) has a label but fill "none" — physical objects should have a fill color` });
+        notes.push({ scene: si, kind: "shapes_unfilled", shape: v.id, message: `shape "${v.id}" (${v.kind}) has a label but fill "none" — physical objects should have a fill color` });
       }
     }
 
@@ -201,7 +203,7 @@ export function storyQA(story: Story): QANote[] {
           if (pw > 0 && ph > 0) dim = Math.max(pw, ph) / 2;
         }
         if (dim !== null && median > 0 && dim > 3 * median) {
-          notes.push({ scene: si, kind: "scale_imbalance", message: `shape "${v.id}" size ${dim.toFixed(1)} is > 3× the scene median ${median.toFixed(1)} — creates visual imbalance` });
+          notes.push({ scene: si, kind: "scale_imbalance", shape: v.id, message: `shape "${v.id}" size ${dim.toFixed(1)} is > 3× the scene median ${median.toFixed(1)} — creates visual imbalance` });
         }
       }
     }
@@ -212,7 +214,7 @@ export function storyQA(story: Story): QANote[] {
         for (const pt of (v as any).points) {
           if (Array.isArray(pt) && typeof pt[0] === "number" && typeof pt[1] === "number") {
             if (pt[0] < 0 || pt[0] > 100 || pt[1] < 0 || pt[1] > 45) {
-              notes.push({ scene: si, kind: "shape_overflows", message: `polygon "${v.id}" vertex (${pt[0]}, ${pt[1]}) is outside stage bounds (0–100 × 0–45)` });
+              notes.push({ scene: si, kind: "shape_overflows", shape: v.id, message: `polygon "${v.id}" vertex (${pt[0]}, ${pt[1]}) is outside stage bounds (0–100 × 0–45)` });
               break;
             }
           }
@@ -247,7 +249,7 @@ function undrawnNouns(story: Story): QANote[] {
       sc.visuals.some((v) => (v.kind === "prop" && v.name === name) || PROP_WORDS[name].test(v.label ?? "") || (v.kind === "text" && PROP_WORDS[name].test(v.text)));
     for (const name of PROP_NAMES) {
       const first = sc.sentences.findIndex((s) => PROP_WORDS[name].test(s.text));
-      if (first >= 0 && !shown(name)) notes.push({ scene: si, kind: "noun_undrawn", message: `sentence ${first + 1} names a ${name} but the scene draws none (prop: "${name}")` });
+      if (first >= 0 && !shown(name)) notes.push({ scene: si, kind: "noun_undrawn", sentence: first, message: `sentence ${first + 1} names a ${name} but the scene draws none (prop: "${name}")` });
     }
   }
   return notes;
@@ -270,18 +272,30 @@ export function placedQA(placed: PlacedStory): QANote[] {
     for (const [i, s] of sc.sentences.entries()) {
       const end = s.startMs + s.durMs - (s.pauseMs ?? 0);
       const own = sc.visuals.filter((v) => v.inS === i);
-      if (own.length === 0) notes.push({ scene: si, kind: "dead_air", message: `sentence ${i + 1} ("${s.text.slice(0, 40)}") starts no shape, so the picture does not change while it is said` });
+      if (own.length === 0) notes.push({ scene: si, kind: "dead_air", sentence: i, message: `sentence ${i + 1} ("${s.text.slice(0, 40)}") starts no shape, so the picture does not change while it is said` });
       const starts = own.map((v) => v.inMs).sort((a, b) => a - b);
       const busiest = starts.reduce((most, from, k) => Math.max(most, starts.filter((t, j) => j >= k && t - from <= WINDOW_MS).length), 0);
-      if (busiest > MOST_SHAPES_IN_A_WINDOW) notes.push({ scene: si, kind: "crowded_sentence", message: `sentence ${i + 1} starts ${busiest} shapes within ${WINDOW_MS / 1000} seconds` });
+      if (busiest > MOST_SHAPES_IN_A_WINDOW) notes.push({ scene: si, kind: "crowded_sentence", sentence: i, message: `sentence ${i + 1} starts ${busiest} shapes within ${WINDOW_MS / 1000} seconds` });
       for (const v of own) {
-        for (const w of v.missingWords ?? []) notes.push({ scene: si, kind: "cue_word_missing", message: `shape "${v.id}" names the word "${w}", which sentence ${i + 1} does not contain, so its time falls back to the offset` });
-        if (v.inMs > end) notes.push({ scene: si, kind: "late_cue", message: `shape "${v.id}" appears ${Math.round(v.inMs - end)} ms after sentence ${i + 1} has ended` });
+        for (const w of v.missingWords ?? []) notes.push({ scene: si, kind: "cue_word_missing", shape: v.id, sentence: i, message: `shape "${v.id}" names the word "${w}", which sentence ${i + 1} does not contain, so its time falls back to the offset` });
+        if (v.inMs > end) notes.push({ scene: si, kind: "late_cue", shape: v.id, sentence: i, message: `shape "${v.id}" appears ${Math.round(v.inMs - end)} ms after sentence ${i + 1} has ended` });
       }
       for (const m of s.text.match(ABBREVIATION) ?? []) {
         if (!(m in SPOKEN_TERMS) && !flagged.has(m)) {
           flagged.add(m);
-          notes.push({ scene: si, kind: "abbreviation_unheard", message: `"${m}" is not in the pronunciation table: listen to how it is said, and add it (SPOKEN_TERMS) if it is wrong` });
+          notes.push({ scene: si, kind: "abbreviation_unheard", sentence: i, message: `"${m}" is not in the pronunciation table: listen to how it is said, and add it (SPOKEN_TERMS) if it is wrong` });
+        }
+      }
+    }
+    // two shapes that claim the same cell while both are on screen sit on top of each other (ADR 0102)
+    const gridded = sc.visuals.flatMap((v) => {
+      const cells = v.cells ? gridCells(v.cells) : null;
+      return cells ? [{ v, cells, from: v.inMs, to: v.outMs ?? sc.endMs }] : [];
+    });
+    for (const [a, x] of gridded.entries()) {
+      for (const y of gridded.slice(a + 1)) {
+        if (gridOverlap(x.cells, y.cells) && x.from < y.to && y.from < x.to) {
+          notes.push({ scene: si, kind: "cell_conflict", shape: y.v.id, message: `shapes "${x.v.id}" and "${y.v.id}" are both in ${x.v.cells === y.v.cells ? `cell ${x.v.cells}` : `cells ${x.v.cells} and ${y.v.cells}, which overlap`} while both are on screen` });
         }
       }
     }

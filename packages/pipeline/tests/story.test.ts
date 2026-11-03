@@ -651,7 +651,7 @@ describe("props: drawn objects placed by name (ADR 0098)", () => {
   it("drops a prop with an unknown name or no position, with a note naming the choices", () => {
     const r = one({ kind: "prop", name: "dragon", cx: 5, cy: 5 });
     expect(r.story!.scenes[0]!.visuals).toHaveLength(0);
-    expect(r.notes.join(" ")).toMatch(/prop needs name \(plant, leaf, wall, door, sun, drop, battery\)/);
+    expect(r.notes.join(" ")).toMatch(/prop needs name \(plant, leaf, wall, door, sun, drop, battery, cloud, tree, flame, bulb, heart, cell, mountain, house\)/);
     expect(one({ kind: "prop", name: "leaf" }).story!.scenes[0]!.visuals).toHaveLength(0);
   });
   it("turns draw and flood on a prop into fade, with a note, because a prop has no single outline to trace or fill", () => {
