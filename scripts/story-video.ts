@@ -54,9 +54,18 @@ const pageFile = join(dir, "page.html");
 const RENDER_PAGES = Math.min(6, Math.max(3, availableParallelism() - 2));
 const FRAME_ATTEMPTS = 3;
 
+/** Prints the time since the last lap, so a stage's phases can be compared (measurement only: nothing else depends on it). */
+let lapAt = Date.now();
+const lap = (label: string): void => {
+  const now = Date.now();
+  console.log(`  ${label}: ${((now - lapAt) / 1000).toFixed(1)} s`);
+  lapAt = now;
+};
+
 type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
 
 async function build(): Promise<void> {
+  lapAt = Date.now();
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(join(dir, "voice"), { recursive: true });
   // Locale-aware voice routing: hi-IN uses Kokoro Hindi voice; ne-NP uses Piper with Chitwan model
@@ -98,8 +107,10 @@ async function build(): Promise<void> {
         }
       };
       await Promise.all([0, 1, 2].map(worker));
+      lap("voice synthesised");
       trimSilence(ffmpegPath as string, jobs.map((j) => join(dir, j.file)));
       // a pause is silence added to this sentence's length, so the next sentence starts later
+      lap("silence trimmed");
       for (const j of jobs) durations[j.si]![j.i] = wavInfo(readFileSync(join(dir, j.file))).durationMs + j.pauseMs;
     } finally {
       all.forEach((s) => s.dispose?.());
@@ -148,16 +159,12 @@ async function build(): Promise<void> {
   const qa = { story: storyQA(story), timing: placedQA(placed) };
   const timeline: Timeline = { totalMs: placed.totalMs, voice: { id: synthVoice.id, status: synthVoice.status }, placed, audio, dropped: clean.notes, qa };
   writeFileSync(timelineFile, JSON.stringify(timeline, null, 2) + "\n");
+  lap("page, notes and timeline written");
   console.log(`voiced ${jobs.length} sentences in ${story.scenes.length} scenes, ${(placed.totalMs / 1000).toFixed(1)} s${clean.notes.length ? `; ${clean.notes.length} shape(s) dropped` : ""}${qa.timing.length ? `; ${qa.timing.length} timing note(s)` : ""}`);
 }
 
 async function render(): Promise<void> {
-  let lapAt = Date.now();
-  const lap = (label: string): void => {
-    const now = Date.now();
-    console.log(`  ${label}: ${((now - lapAt) / 1000).toFixed(1)} s`);
-    lapAt = now;
-  };
+  lapAt = Date.now();
   if (!ffmpegPath || !existsSync(ffmpegPath)) throw new Error("ffmpeg is not installed: run pnpm install");
   const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as Timeline;
   const fps = Math.min(30, Math.max(6, Number(option("fps", "24"))));
