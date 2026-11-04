@@ -20,6 +20,7 @@ export * from "./job/story-expr";
 export * from "./job/story-page";
 export * from "./job/story-props";
 export * from "./job/story-words";
+export * from "./job/story-grid";
 export * from "./job/voice-mix";
 export * from "./bakeoff/bakeoff";
 export * from "./script/draft";
