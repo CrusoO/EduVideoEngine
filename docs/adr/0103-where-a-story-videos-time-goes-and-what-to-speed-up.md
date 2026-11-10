@@ -71,3 +71,22 @@ Do **3a, the sentence audio cache**, and do the worker and thread measurement as
 ## Consequences
 - If accepted, iterating on a story and rebuilding after a failed render stop paying for sentences that did not change.
 - First builds are as slow as they are now, and the owner is told so.
+
+
+## Measurement, 2026-11-10 (step 1, measure only)
+`pnpm voice:bench --tools-root ../EduVideoEngine --workers 1,2,3 --threads default,2 --runs 3`. Intel Core i5-1035G1 (8 threads), the engine's Python 3.12.10, `kokoro-onnx` 0.6.1, `onnxruntime` 1.31.0, 8 original sentences (25.6 s of audio), machine otherwise idle. Median of 3.
+
+| Setting | Load s | Voice s | Total s | x real time | Samples == baseline |
+|---|---|---|---|---|---|
+| 1 worker, default threads (baseline) | 4.4 | 22.6 | 27.0 | 1.13 | 8/8 |
+| 1 worker, 2 threads | 5.0 | 25.0 | 30.1 | 1.02 | 8/8 |
+| 2 workers, default threads | 6.0 | 21.0 | 27.0 | 1.22 | 8/8 |
+| 2 workers, 2 threads | 6.3 | 22.1 | 28.4 | 1.16 | 8/8 |
+| 3 workers, default threads | 7.1 | 19.4 | 26.5 | 1.32 | 8/8 |
+| 3 workers, 2 threads | 6.4 | 21.1 | 27.4 | 1.21 | 8/8 |
+
+- Worker count and thread setting do not change the total: 26.5 to 30.1 s, with run-to-run spread (about 3 s inside one setting) as large as the differences. Three workers voice 14% faster but each load adds about 1 to 3 s, so the total is within 2% of one worker. Not a lever.
+- Every setting produced samples identical to the baseline, so none needs an owner decision on output.
+- `OMP_NUM_THREADS` made no clear difference; whether onnxruntime honours it here is not shown. Setting it in `kokoro_worker.py` is a code change and was not tried.
+- This differs from the 2026-11-04 probe (17 s load per worker, 2.6 times slower with three workers): here load is 4 to 7 s and one worker runs at about 1.1 times real time. The probe ran outside the engine in the development environment; this run used the engine's own Python. Open: the build calls `synthesizeAsync` per sentence pace from one worker each; where the ADR's "3 workers" came from is not found in `packages/pipeline/build` or `scripts/story-video.ts`.
+- Consequence: worker and thread tuning is dropped. Step 2 (the sentence audio cache) is the voice lever left, and it helps rebuilds, not a first build.
