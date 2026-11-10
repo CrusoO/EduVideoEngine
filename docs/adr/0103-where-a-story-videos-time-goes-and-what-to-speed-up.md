@@ -1,6 +1,6 @@
 # ADR 0103: Where a story video's time goes, and what to speed up
 
-Status: proposed, 2026-11-04. Waiting for the owner's decision. Builds on ADR 0086 (job runner), ADR 0093 (job safety), ADR 0097 (spoken delivery) and ADR 0099 (animated pattern).
+Status: accepted in part, 2026-11-10, by the owner: step 1 (measure-only test of Kokoro worker and thread counts) and step 2 (a sentence audio cache keyed by content, built only after step 1 is reported). Not accepted, deferred: option 1 (warm Chromium), option 2 (frame cache), the encoder preset (3c) and fewer ffmpeg launches (3b). Proposed 2026-11-04. Builds on ADR 0086 (job runner), ADR 0093 (job safety), ADR 0097 (spoken delivery) and ADR 0099 (animated pattern).
 
 ## Context
 A story video takes minutes to make. The owner asked what to speed up, and asked that nothing be decided before the time was measured. This record holds the measurement and the options; nothing in it is built.
