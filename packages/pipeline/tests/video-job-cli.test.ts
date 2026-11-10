@@ -1,6 +1,7 @@
 import { afterAll, describe, expect, it } from "vitest";
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { acquireSlot } from "../job/guard";
 import { join, resolve } from "node:path";
 import { childEnv } from "@eve/adapters";
@@ -8,24 +9,23 @@ import { reduceJob, type JobEvent } from "../job/job";
 
 /** The job runner's failure paths, run as the host would run it (ADR 0086): a bad request or a missing topic ends with a code and a result file, before anything is built. */
 const ROOT = resolve(__dirname, "..", "..", "..");
-const TMP = join(ROOT, "dist", "job-tests");
-const IDS = ["job-cli-badplace-1", "job-cli-nolesson-1", "job-cli-mismatch-1", "job-cli-extrafield-1", "job-cli-noprompt-1", "job-cli-pii-1", "job-cli-live-1", "job-cli-timeout-1", "job-cli-crash-1", "job-cli-slot-1"];
+/** Hermetic: the request files and every job folder live in a temporary folder (VIDEO_JOBS_DIR moves the runner's jobs folder), so this file never touches the real dist/jobs or its slots. */
+const TMP = mkdtempSync(join(tmpdir(), "eve-job-cli-"));
+const JOBS = join(TMP, "jobs");
 afterAll(() => {
   rmSync(TMP, { recursive: true, force: true });
-  for (const id of IDS) rmSync(join(ROOT, "dist", "jobs", id), { recursive: true, force: true });
-  rmSync(join(ROOT, "dist", "jobs", "invalid-request"), { recursive: true, force: true });
 });
 
 const run = (name: string, body: unknown, env: Record<string, string> = {}) => {
   mkdirSync(TMP, { recursive: true });
   const file = join(TMP, `${name}.json`);
   writeFileSync(file, typeof body === "string" ? body : JSON.stringify(body));
-  const p = spawnSync(process.execPath, [join(ROOT, "node_modules", "vite-node", "vite-node.mjs"), "scripts/video-job.ts", file], { cwd: ROOT, encoding: "utf8", env: childEnv({ LLM_MODE: "replay", ...env }) });
+  const p = spawnSync(process.execPath, [join(ROOT, "node_modules", "vite-node", "vite-node.mjs"), "scripts/video-job.ts", file], { cwd: ROOT, encoding: "utf8", env: childEnv({ LLM_MODE: "replay", VIDEO_JOBS_DIR: JOBS, ...env }) });
   const events = p.stdout.split("\n").filter((l) => l.startsWith("{")).map((l) => JSON.parse(l) as JobEvent);
   return { status: p.status, events, state: reduceJob(events) };
 };
 const request = (requestId: string, nodeId: string, over: Record<string, unknown> = {}) => ({ requestId, idempotencyKey: `${requestId}-key`, curriculum: { board: "CBSE", grade: 10, subject: "maths", nodeId }, ...over });
-const result = (id: string) => JSON.parse(readFileSync(join(ROOT, "dist", "jobs", id, "result.json"), "utf8")) as { status: string; code: string };
+const result = (id: string) => JSON.parse(readFileSync(join(JOBS, id, "result.json"), "utf8")) as { status: string; code: string };
 
 describe("pnpm video:job, the failure paths", () => {
   it("a place the knowledge base does not hold ends as no_curriculum_data at the retrieve stage, exit 1", () => {
@@ -77,7 +77,7 @@ describe("pnpm video:job, the failure paths", () => {
     expect(result("job-cli-timeout-1")).toMatchObject({ status: "failed", code: "timeout" });
   }, 90_000);
   it("an error nobody expected ends as internal_error, with a short message and no path, instead of a job that looks running", () => {
-    const dir = join(ROOT, "dist", "jobs", "job-cli-crash-1");
+    const dir = join(JOBS, "job-cli-crash-1");
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "state.json"), "{ this is not json");
     const r = run("crash", story("job-cli-crash-1"));
@@ -88,7 +88,7 @@ describe("pnpm video:job, the failure paths", () => {
     expect(out.detail).not.toMatch(/[A-Za-z]:[\/]/);
   }, 60_000);
   it("when every slot is taken the job waits and then ends as timeout, without starting the build", async () => {
-    const slots = join(ROOT, "dist", "jobs", ".slots");
+    const slots = join(JOBS, ".slots");
     const give = await acquireSlot(slots, 1, { waitMs: 0 });
     expect(give).not.toBeNull();
     try {

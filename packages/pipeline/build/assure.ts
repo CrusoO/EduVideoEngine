@@ -2,6 +2,7 @@ import { checkApprovals, runGates, type Approval } from "@eve/gates";
 import { assureLayout } from "@eve/layout";
 import { assureTimeline, resolve } from "@eve/resolver";
 import { validateBundle, type AudioTrack, type LessonBundle, type Timeline } from "@eve/schema";
+import { readEnv } from "@eve/adapters";
 import { VerifierUnavailable, verifyBundle } from "@eve/verify";
 import type { LessonContext } from "../lesson/context";
 import { gateContext } from "../lesson/gates";
@@ -36,6 +37,8 @@ export type AssureInput = {
   verify?: boolean;
   /** The Python command the verifier runs with (the default is found from the environment). */
   python?: string;
+  /** Judge as a production build (gate G2 findings fail). Left out, it follows APP_ENV in the host environment; tests give it explicitly. */
+  production?: boolean;
 };
 
 /**
@@ -53,7 +56,7 @@ export async function assureLesson(input: AssureInput): Promise<Assurance> {
   for (const w of valid.warnings) add("validator", "warn", w.path, w.message);
 
   const durations = Object.fromEntries(tracks.map((t) => [t.sentenceId, t.durationMs]));
-  const production = process.env["APP_ENV"] === "production";
+  const production = input.production ?? readEnv()["APP_ENV"] === "production";
   for (const f of runGates(gateContext(ctx, bundle, durations))) {
     const level = production && f.gate === "G2" ? "fail" : f.level;
     add("gate", level, `${f.gate} ${f.code}`, f.message);

@@ -332,3 +332,14 @@ describe("the lesson package", () => {
     expect(syntheticTracks(out.bundle)).toHaveLength(out.bundle.script.length);
   });
 });
+
+describe("the production switch of the assurance report", () => {
+  it("fails a short core-claim narration (G2) only when the caller says production, whatever APP_ENV holds", async () => {
+    const out = await buildLesson({ client: client([REFERENCE_PLAN, scriptAnswer]).c, store: STORE, skillId: SKILL, voice: "synthetic", approvals, verify: false });
+    if (!out.ok) throw new Error("build failed");
+    const short = out.tracks.map((t) => ({ ...t, durationMs: 200 }));
+    const g2 = async (production: boolean) => (await assureLesson({ ctx, bundle: out.bundle, tracks: short, approvals, verify: false, production })).findings.find((f) => f.code.startsWith("G2 core-claim-too-short"));
+    expect((await g2(false))?.level).toBe("warn");
+    expect((await g2(true))?.level).toBe("fail");
+  }, 120_000);
+});
