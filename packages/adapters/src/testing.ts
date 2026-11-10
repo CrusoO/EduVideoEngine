@@ -1,15 +1,14 @@
 import { Secret, type LlmConfig } from "./env";
-import { PROFILES, type ModelProfile } from "./profiles";
+import { PROFILES, profileFor, type ModelProfile } from "./profiles";
 
 /**
  * A configuration for tests: the profile of the chosen model with generous limits, a made-up key and the given mode, so tests exercise the client without a .env file.
  * (Production configuration only comes from `loadLlmConfig`.)
  */
 export function testConfig(over: Partial<Omit<LlmConfig, "profile">> & { profile?: Partial<ModelProfile>; limits?: Partial<ModelProfile["limits"]> } = {}): LlmConfig {
-  const provider = over.provider ?? "gemini";
-  const entry = (PROFILES as unknown as Record<string, { defaultModel: string; models: Record<string, ModelProfile> }>)[provider] ?? PROFILES.gemini;
-  const model = over.model ?? entry.defaultModel;
-  const base = entry.models[model] ?? PROFILES.gemini.models["gemini-3.8-flash"]!;
+  const provider = over.provider ?? "anthropic";
+  const model = over.model ?? PROFILES.anthropic.defaultModel;
+  const base = profileFor(provider, model) ?? PROFILES.anthropic.models[PROFILES.anthropic.defaultModel]!;
   const { profile, limits, ...rest } = over;
   return {
     provider,

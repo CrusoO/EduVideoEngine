@@ -1,10 +1,10 @@
 import { readFileSync } from "node:fs";
 import { z } from "zod";
-import { PROFILES, PROVIDERS, profileFor, type ModelProfile, type ProfileFile } from "./profiles";
+import { PROFILES, PROVIDERS, STEP_MODELS, profileFor, type ModelProfile, type ProfileFile } from "./profiles";
 
 /**
  * The ONLY source file under packages (in each src folder) that reads process.env (a test greps for it). Everything about the model is configured here, from the environment alone:
- * LLM_PROVIDER, LLM_MODEL, LLM_MODE, LLM_TEMPERATURE, GEMINI_API_KEY, GROQ_API_KEY. Limits and model quirks live in model-profiles.json, not in variables.
+ * LLM_PROVIDER, LLM_MODEL, LLM_MODE, LLM_TEMPERATURE, ANTHROPIC_API_KEY. Limits and model quirks live in model-profiles.json, not in variables.
  */
 
 /** A key that cannot be printed by accident: String(), JSON.stringify, template literals and console.log all show "[redacted]". */
@@ -31,21 +31,23 @@ const blankToUndefined = (v: unknown) => (typeof v === "string" && v.trim() === 
 const optionalText = z.preprocess(blankToUndefined, z.string().trim().min(1).optional());
 
 const EnvSchema = z.object({
-  LLM_PROVIDER: z.preprocess(blankToUndefined, z.enum(PROVIDERS).default("gemini")),
+  LLM_PROVIDER: z.preprocess(blankToUndefined, z.enum(PROVIDERS).default("anthropic")),
   LLM_MODEL: optionalText,
   LLM_MODE: z.preprocess(blankToUndefined, z.enum(["replay", "record", "live"]).default("replay")),
   LLM_TEMPERATURE: z.preprocess(blankToUndefined, z.coerce.number().min(0).max(1).default(0.2)),
-  GEMINI_API_KEY: optionalText,
-  GROQ_API_KEY: optionalText,
-  OPENROUTER_API_KEY: optionalText,
+  ANTHROPIC_API_KEY: optionalText,
   CI: optionalText,
 });
 
-const KEY_VAR = { gemini: "GEMINI_API_KEY", groq: "GROQ_API_KEY", openrouter: "OPENROUTER_API_KEY" } as const;
+const KEY_VAR = { anthropic: "ANTHROPIC_API_KEY" } as const;
 
 export interface LlmConfig {
   provider: string;
+  /** The model every pass uses, unless stepModels names another for that pass. */
   model: string;
+  /** Pass name (the CallSpec step) to model id. Empty when LLM_MODEL pins one model for all passes. */
+  stepModels?: Readonly<Record<string, string>>;
+  /** The profile of `model`. A pass in stepModels takes its own model's profile. */
   profile: ModelProfile;
   mode: "replay" | "record" | "live";
   temperature: number;
@@ -94,16 +96,22 @@ export function loadLlmConfig(env: EnvLike = readEnv(), profiles: ProfileFile = 
   const e = parsed.data;
   const provider = e.LLM_PROVIDER;
   const model = e.LLM_MODEL ?? profiles[provider].defaultModel;
+  const stepModels = e.LLM_MODEL ? {} : STEP_MODELS;
   const profile = profileFor(provider, model, profiles);
   if (!profile) throw new ConfigError(`Model "${model}" has no profile for ${provider}. Add it to packages/adapters/model-profiles.json (and check it with pnpm llm:models).`);
   const key = e[KEY_VAR[provider]];
   if (e.LLM_MODE !== "replay") {
+    for (const m of Object.values(stepModels)) {
+      const p = profileFor(provider, m, profiles);
+      if (!p) throw new ConfigError(`Model "${m}" (STEP_MODELS in packages/adapters/src/profiles.ts) has no profile for ${provider}.`);
+      if (p.limits.rpm === null || p.limits.rpd === null) throw new ConfigError(`Limits for ${provider}/${m} are not filled in model-profiles.json (rpm and rpd are null). Fill them from the provider's official page first.`);
+    }
     if (!key) throw new ConfigError(`${KEY_VAR[provider]} is not set (required in ${e.LLM_MODE} mode).`);
     if (profile.limits.rpm === null || profile.limits.rpd === null) {
       throw new ConfigError(`Limits for ${provider}/${model} are not filled in model-profiles.json (rpm and rpd are null). Fill them from the provider's official page first.`);
     }
   }
-  return { provider, model, profile, mode: e.LLM_MODE, temperature: e.LLM_TEMPERATURE, apiKey: key ? new Secret(key) : null, ci: e.CI === "true" || e.CI === "1" };
+  return { provider, model, stepModels, profile, mode: e.LLM_MODE, temperature: e.LLM_TEMPERATURE, apiKey: key ? new Secret(key) : null, ci: e.CI === "true" || e.CI === "1" };
 }
 
 /** The model the read-only Bedrock recordings were made with. */

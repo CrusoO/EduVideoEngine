@@ -43,7 +43,7 @@ describe("record and replay", () => {
   it("replay needs no key, and live mode with no adapter and no key refuses", async () => {
     const { client } = setup({ mode: "replay", apiKey: null });
     await expect(client.generate(spec)).rejects.toThrow(/no recorded answer/);
-    await expect(setup({ mode: "live", apiKey: null }).client.generate(spec)).rejects.toThrow(/no API key for gemini/);
+    await expect(setup({ mode: "live", apiKey: null }).client.generate(spec)).rejects.toThrow(/no API key for anthropic/);
   });
 
   it("record calls once, saves the fixture, and the next run replays it without spending a request", async () => {
@@ -106,7 +106,7 @@ describe("resumable: a daily cap never loses work", () => {
     await first.client.generate({ ...spec, input: "one" });
     const stopped = await first.client.generate({ ...spec, input: "two" }).catch((x) => x);
     expect(stopped).toBeInstanceOf(LlmRefused);
-    expect(stopped.message).toMatch(/daily request cap reached for gemini\/.*1 of 1 requests used today[\s\S]*makes only the calls that are still missing/);
+    expect(stopped.message).toMatch(/daily request cap reached for anthropic\/.*1 of 1 requests used today[\s\S]*makes only the calls that are still missing/);
     // next day: a fresh process, same fixtures and ledger: "one" is replayed (no request), only "two" is sent
     const next = new FakeAdapter(["{\"n\":2}"]);
     const second = run(next, fakeClock(Date.parse("2026-10-15T20:00:00Z")));
@@ -115,7 +115,7 @@ describe("resumable: a daily cap never loses work", () => {
     expect(next.requests).toHaveLength(1);
     expect(second.client.stats).toMatchObject({ replayed: 1, sent: 1 });
   });
-  it("the day is the provider's reset day: Gemini Pacific, Groq UTC", () => {
+  it("the day is a reset day in the profile's time zone (Anthropic: UTC)", () => {
     expect(dayIn("America/Los_Angeles", Date.parse("2026-10-15T06:59:00Z"))).toBe("2026-10-14");
     expect(dayIn("America/Los_Angeles", Date.parse("2026-10-15T07:01:00Z"))).toBe("2026-10-15");
     expect(dayIn("UTC", Date.parse("2026-10-15T06:59:00Z"))).toBe("2026-10-15");
@@ -217,7 +217,7 @@ describe("the ledger", () => {
     const fake = new FakeAdapter([{ text: "{}", usage: { inputTokens: 100, outputTokens: 20, thinkingTokens: 300 } }]);
     const { client, ledger } = setup({ mode: "live" }, fake);
     await client.generate(spec);
-    expect(ledger.entries()[0]).toMatchObject({ provider: "gemini", model: client.model, step: "planner", promptVersion: "planner.v2", kind: "call", inputTokens: 100, outputTokens: 20, thinkingTokens: 300, mode: "live" });
+    expect(ledger.entries()[0]).toMatchObject({ provider: "anthropic", model: client.model, step: "planner", promptVersion: "planner.v2", kind: "call", inputTokens: 100, outputTokens: 20, thinkingTokens: 300, mode: "live" });
     expect(summarise(ledger.entries())[0]).toMatchObject({ requests: 1, inputTokens: 100, outputTokens: 20, thinkingTokens: 300 });
     expect(readFileSync(ledger.path, "utf8")).not.toContain("test-key-not-real");
   });

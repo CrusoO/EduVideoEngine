@@ -7,7 +7,7 @@ import { dirname } from "node:path";
  */
 export type LedgerEntry = {
   at: string;
-  /** The calendar day in the provider's reset time zone (Gemini: Pacific, midnight Pacific; the profile file says which). */
+  /** The calendar day in the provider's reset time zone (the profile file says which; Anthropic: UTC). */
   day: string;
   step: string;
   promptVersion: string;

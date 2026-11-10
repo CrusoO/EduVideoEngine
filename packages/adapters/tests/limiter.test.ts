@@ -15,7 +15,7 @@ function fakeClock(start = 1_000_000) {
   };
   return clock;
 }
-const limiter = (clock: Clock, rpm: number, tpm: number | null) => new RateLimiter(clock, "gemini/test", { rpm, tpm });
+const limiter = (clock: Clock, rpm: number, tpm: number | null) => new RateLimiter(clock, "anthropic/test", { rpm, tpm });
 
 describe("token estimates", () => {
   it("count three characters to a token, rounded up", () => {

@@ -1,6 +1,6 @@
 import { LlmHttpError, LlmRateLimited } from "./types";
 
-const KEY_PATTERNS: RegExp[] = [/AIza[0-9A-Za-z_-]{35}/g, /gsk_[0-9A-Za-z]{20,}/g, /AKIA[0-9A-Z]{16}/g, /(?:Bearer\s+)[A-Za-z0-9._~+/=-]{20,}/gi];
+const KEY_PATTERNS: RegExp[] = [/sk-ant-[0-9A-Za-z_-]{20,}/g, /AIza[0-9A-Za-z_-]{35}/g, /gsk_[0-9A-Za-z]{20,}/g, /AKIA[0-9A-Z]{16}/g, /(?:Bearer\s+)[A-Za-z0-9._~+/=-]{20,}/gi];
 
 /** Takes anything shaped like a key out of text before it reaches a log, an error or a file. Patterns, so it works on text the program has never seen. */
 export const sanitize = (s: string, ...known: string[]): string => {
