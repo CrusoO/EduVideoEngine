@@ -99,6 +99,7 @@ export function kokoroSynthesizer(tools: KokoroTools, opts: KokoroOptions = {}):
   };
 
   return {
+    cacheParts: { engine: "kokoro-onnx", version, voice, speed, lang, modelSha, voicesSha, workerSha },
     voice: {
       id: `kokoro:${voice}`,
       provider: "kokoro",

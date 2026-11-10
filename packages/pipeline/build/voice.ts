@@ -14,6 +14,8 @@ export interface Synthesizer {
   synthesizeAsync?(spoken: string, outFile: string): Promise<void>;
   /** Ends what the synthesizer started (a worker process). Called by the tool that built it, when the build is over. */
   dispose?(): void;
+  /** Everything that decides the samples of a sentence (voice, speed, language, model and worker hashes, engine version). Present only on a synthesizer whose output is a pure function of these and the text: the sentence cache (ADR 0103) is used only with it. */
+  readonly cacheParts?: Readonly<Record<string, string | number>>;
 }
 
 export type PiperTools = { exe: string; model: string; config: string; archive: string };

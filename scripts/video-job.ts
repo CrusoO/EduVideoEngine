@@ -1,5 +1,5 @@
 /**
- * pnpm video:job <request.json> [--fresh]
+ * pnpm video:job <request.json> [--fresh] [--sentence-cache]
  *
  * The job runner (ADR 0086): one request for a lesson video on a curriculum place in, a folder dist/jobs/<requestId>/ out, with events as JSON lines (stdout and events.jsonl),
  * the package of the lesson, lesson.mp4, sources.json and result.json. Stages: request, retrieve (the place and what a lesson on it may say), ground (the knowledge base, its
@@ -17,12 +17,12 @@ import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
-import { LessonRequest, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
 if (!file) {
-  console.error("usage: pnpm video:job <request.json> [--fresh]");
+  console.error("usage: pnpm video:job <request.json> [--fresh] [--sentence-cache]");
   process.exit(2);
 }
 const sha = (path: string): string => createHash("sha256").update(readFileSync(path)).digest("hex");
@@ -278,7 +278,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
   const storyOptions = resolveStoryOptions(request.options); // the explainer pattern for an animated story, the plain page otherwise (ADR 0099)
   const script = (stage: "build" | "render"): Promise<number> =>
-    supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : [])], { LLM_MODE: "replay" });
+    supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : []), ...sentenceCacheArgs(request, args.includes(SENTENCE_CACHE_OPT_IN))], { LLM_MODE: "replay" });
   const timelineFile = join(dir, "timeline.json");
   const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, ...(kind === "story" ? { options: storyOutputOptions(request.options) } : {}), v: 3 });
   current = "build";

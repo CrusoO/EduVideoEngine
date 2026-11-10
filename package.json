@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "mutate": "stryker run && vite-node scripts/mutation-floor.ts",
     "voice:generate": "vite-node scripts/voice/generate.ts",
+    "voice:bench": "vite-node scripts/voice-bench.ts",
     "reference:build": "vite-node scripts/reference-lesson.ts",
     "harness:hashes": "vite-node scripts/harness-hashes.ts",
     "gen:ops": "vite-node scripts/gen-ops.ts",
