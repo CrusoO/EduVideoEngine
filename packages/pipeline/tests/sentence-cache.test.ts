@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdtempSync, readFileSync, readdirSync, statSync, truncateSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { DEFAULT_SENTENCE_CACHE_BYTES, isWholeWav, pruneSentenceCache, sentenceCacheKey, withSentenceCache, type Synthesizer } from "../build";
+import { DEFAULT_SENTENCE_CACHE_BYTES, NO_SENTENCE_CACHE, SENTENCE_CACHE_OPT_IN, isWholeWav, pruneSentenceCache, sentenceCacheArgs, sentenceCacheEnabled, sentenceCacheKey, withSentenceCache, type Synthesizer } from "../build";
 
 /** The sentence cache (ADR 0103 step 2), tested with a stand-in synthesizer: no Kokoro, no model, no network, no key. */
 const tmp = (name: string) => mkdtempSync(join(tmpdir(), `eve-${name}-`));
@@ -241,14 +241,82 @@ describe("sentence cache: --fresh and the off switch", () => {
     expect(DEFAULT_SENTENCE_CACHE_BYTES).toBe(512 * 1024 ** 2);
   });
 
-  it("story-video.ts reads the cache under --fresh and turns it off only with --no-sentence-cache", () => {
+  it("story-video.ts uses the cache unless it is given --no-sentence-cache, whatever else it is given", () => {
+    expect(sentenceCacheEnabled(["dist/jobs/a", "--stage", "build"])).toBe(true);
+    expect(sentenceCacheEnabled(["dist/jobs/a", "--stage", "build", "--fresh"])).toBe(true);
+    expect(sentenceCacheEnabled(["dist/jobs/a", "--stage", "build", NO_SENTENCE_CACHE])).toBe(false);
     const script = readFileSync(join(__dirname, "..", "..", "..", "scripts", "story-video.ts"), "utf8");
-    expect(script).toContain('enabled: !args.includes("--no-sentence-cache")');
+    expect(script).toContain("enabled: sentenceCacheEnabled(args)");
     expect(script).toContain('join(REPO_ROOT, "dist", "sentence-audio")');
-    // --fresh belongs to video-job.ts: it clears the job's stage keys so the stages run again. The stage script reads the cache either way, and the job runner never passes the off flag.
+  });
+});
+
+describe("sentence cache: the job runner and a learner's words", () => {
+  const LEARNER = "why did Asha Verma lose marks on her quadratic homework";
+
+  /** What the runner's arguments do to a story script run: the same switch the script reads, then a build through a cache folder. */
+  async function runThrough(args: string[], dir: string, spoken: string[]) {
+    const f = fake();
+    const synth = withSentenceCache(f.synth, { dir, enabled: sentenceCacheEnabled(args) });
+    for (const [i, s] of spoken.entries()) await synth.synthesizeAsync!(s, join(tmp("w"), `s${i}.wav`));
+    return f;
+  }
+
+  it("a job started by the runner passes the off switch unless the operator opted in", () => {
+    expect(sentenceCacheArgs({}, false)).toEqual([NO_SENTENCE_CACHE]);
+    expect(sentenceCacheArgs({}, true)).toEqual([]);
+  });
+
+  it("a prompt-driven job never uses the cache, even when the operator opted in", () => {
+    expect(sentenceCacheArgs({ prompt: LEARNER }, true)).toEqual([NO_SENTENCE_CACHE]);
+    expect(sentenceCacheArgs({ prompt: LEARNER }, false)).toEqual([NO_SENTENCE_CACHE]);
+  });
+
+  it("a prompt-driven job neither reads nor writes the cache folder, run twice", async () => {
+    const dir = tmp("cache");
+    const spoken = [`You asked: ${LEARNER}.`, "Here is the idea."];
+    for (let run = 0; run < 2; run++) {
+      const f = await runThrough(sentenceCacheArgs({ prompt: LEARNER }, true), dir, spoken);
+      expect(f.calls).toEqual(spoken); // spoken every time
+    }
+    expect(readdirSync(dir)).toEqual([]); // nothing written
+  });
+
+  it("an authored job that the operator opted in still reads from the cache on its second build", async () => {
+    const dir = tmp("cache");
+    const spoken = ["Two plus two is four.", "x is nine."];
+    const first = await runThrough(sentenceCacheArgs({}, true), dir, spoken);
+    const second = await runThrough(sentenceCacheArgs({}, true), dir, spoken);
+    expect(first.calls).toEqual(spoken);
+    expect(second.calls).toEqual([]);
+  });
+
+  it("the explicit off flag still works on an authored job that opted in", async () => {
+    const dir = tmp("cache");
+    const f = await runThrough([...sentenceCacheArgs({}, true), NO_SENTENCE_CACHE], dir, ["A.", "A."]);
+    expect(f.calls).toEqual(["A.", "A."]);
+    expect(readdirSync(dir)).toEqual([]);
+  });
+
+  it("scanning every cache key, file name and entry finds none of the learner's words", async () => {
+    const dir = tmp("cache");
+    // an authored job writes the cache; a prompt-driven job that echoes the learner runs beside it
+    await runThrough(sentenceCacheArgs({}, true), dir, ["Take the same step on both sides.", "x is nine."]);
+    await runThrough(sentenceCacheArgs({ prompt: LEARNER }, true), dir, [`So, ${LEARNER}?`]);
+    const words = LEARNER.split(" ").filter((w) => w.length >= 4);
+    const keys = ["Take the same step on both sides.", "x is nine."].map((s) => sentenceCacheKey(PARTS, s));
+    expect(readdirSync(dir).sort()).toEqual(keys.map((k) => `${k}.wav`).sort()); // only the authored two
+    for (const name of readdirSync(dir)) {
+      const hay = `${name}\u0000${readFileSync(join(dir, name)).toString("latin1")}`.toLowerCase();
+      for (const w of words) expect(hay, w).not.toContain(w.toLowerCase());
+    }
+  });
+
+  it("video-job.ts hands the story script exactly these arguments and has its own opt-in flag", () => {
     const job = readFileSync(join(__dirname, "..", "..", "..", "scripts", "video-job.ts"), "utf8");
-    expect(job).toContain('args.includes("--fresh")');
-    expect(job).not.toContain("no-sentence-cache");
+    expect(job).toContain("...sentenceCacheArgs(request, args.includes(SENTENCE_CACHE_OPT_IN))");
+    expect(job).toContain('args.includes("--fresh")'); // --fresh is about the job's stages, not the cache
+    expect(SENTENCE_CACHE_OPT_IN).toBe("--sentence-cache");
   });
 });
 

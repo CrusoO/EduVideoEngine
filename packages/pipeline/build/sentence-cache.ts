@@ -31,6 +31,23 @@ export type SentenceCacheOptions = {
 
 export type SentenceCacheStats = { hits: number; misses: number };
 
+/** The switch of the story script that turns the cache off (a hand run leaves the cache on). */
+export const NO_SENTENCE_CACHE = "--no-sentence-cache";
+/** The switch of the job runner that turns the cache on for one run (an operator running authored or approved content). */
+export const SENTENCE_CACHE_OPT_IN = "--sentence-cache";
+
+/** Whether a story script run (its arguments) uses the cache. */
+export const sentenceCacheEnabled = (argv: readonly string[]): boolean => !argv.includes(NO_SENTENCE_CACHE);
+
+/**
+ * The arguments the job runner adds to the story script. The cache holds narration, and narration can echo a learner's question (ED7: no personal data in a cache), so a job started
+ * by the runner does not use it unless the operator opted in for this run with `--sentence-cache` (authored or approved content), and a job driven by a learner's typed `prompt`
+ * never does, opt-in or not.
+ */
+export function sentenceCacheArgs(request: { prompt?: string | undefined }, optedIn: boolean): string[] {
+  return optedIn && request.prompt === undefined ? [] : [NO_SENTENCE_CACHE];
+}
+
 /** Hash of the text as spoken plus every part the synthesizer names. The order of the parts does not matter. */
 export function sentenceCacheKey(parts: Readonly<Record<string, string | number>>, spoken: string): string {
   const body = Object.keys(parts)

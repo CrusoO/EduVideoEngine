@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -93,7 +93,7 @@ async function build(): Promise<void> {
     // a sentence heard before is read from dist/sentence-audio instead of spoken again (ADR 0103); --no-sentence-cache turns it off, --fresh does not (it is about the job, not the voice)
     const cacheDir = join(REPO_ROOT, "dist", "sentence-audio");
     const synthFor = (pace?: StorySentencePace) =>
-      withSentenceCache(kokoroSynthesizer(kokoroTools(REPO_ROOT), { voice: kokoroVoice, speed: speedFor(baseSpeed, pace) }), { dir: cacheDir, enabled: !args.includes("--no-sentence-cache") });
+      withSentenceCache(kokoroSynthesizer(kokoroTools(REPO_ROOT), { voice: kokoroVoice, speed: speedFor(baseSpeed, pace) }), { dir: cacheDir, enabled: sentenceCacheEnabled(args) });
     // three instances for the ordinary pace (each serializes internally); one for each marked pace the story uses
     const normal = Array.from({ length: 3 }, () => synthFor());
     const marked = new Map<StorySentencePace, ReturnType<typeof synthFor>>();
