@@ -74,13 +74,13 @@ describe("the arcs", () => {
   });
 });
 
-describe("the library of seventeen patterns", () => {
+describe("the library of eighteen patterns", () => {
   it("has the six the planner knows, in their old order, plus recap card, check question, statement card and the three neuron patterns (ADR 0076)", () => {
-    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question", "statement-card", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
-    expect(LIBRARY).toHaveLength(17);
+    expect(LIBRARY_IDS).toEqual([...PATTERN_IDS, "recap-card", "check-question", "statement-card", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene", "balance-scale-worked"]);
+    expect(LIBRARY).toHaveLength(18);
     expect(usablePatterns(r)).toEqual(PATTERN_IDS); // the list planner.v2 and v3 choose from does not grow
   });
-  it("gives all seventeen a text-heavy flag, derived from the components", () => {
+  it("gives all eighteen a text-heavy flag, derived from the components", () => {
     const flags = Object.fromEntries(libraryCatalogue().map((c) => [c.id, c.textHeavy]));
     expect(flags).toEqual({
       "colour-bound-terms": true,
@@ -100,9 +100,10 @@ describe("the library of seventeen patterns", () => {
       "water-scene": false,
       "paired-tables": false,
       "circuit-law-scene": false,
+      "balance-scale-worked": false,
     });
     for (const p of LIBRARY) expect(p.beatKinds.length, p.id).toBeGreaterThan(0);
-    expect(LIBRARY.filter((p) => !isTextHeavy(p)).map((p) => p.id)).toEqual(["hops-on-number-line", "plot-and-mark-roots", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
+    expect(LIBRARY.filter((p) => !isTextHeavy(p)).map((p) => p.id)).toEqual(["hops-on-number-line", "plot-and-mark-roots", "patch-hook", "weights-on-pixels", "worked-sum-on-grid", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene", "balance-scale-worked"]);
   });
 });
 
@@ -202,10 +203,10 @@ describe("the variety rule (ADR 0043): five or more beats need two pictures and 
       "story_first/without/8/6/2",
     ]);
   });
-  it("is tight: pictures exist only for hook, concept and worked beats (the hook one, the neuron patterns, arrived with ADR 0076)", () => {
+  it("is tight: pictures exist only for hook, concept and worked beats (the hook one, the neuron patterns, arrived with ADR 0076; the balance scale with ADR 0094)", () => {
     expect(patternsForSlot("hook").picture).toEqual(["patch-hook", "circuit-scene", "magnet-coil-scene"]);
     expect(patternsForSlot("concept").picture).toEqual(["plot-and-mark-roots", "weights-on-pixels", "circuit-scene", "magnet-coil-scene", "water-scene", "paired-tables", "circuit-law-scene"]);
-    expect(patternsForSlot("worked_example").picture).toEqual(["hops-on-number-line", "worked-sum-on-grid"]);
+    expect(patternsForSlot("worked_example").picture).toEqual(["hops-on-number-line", "worked-sum-on-grid", "balance-scale-worked"]);
     for (const slot of ["prerequisite_activation", "common_mistake_contrast", "why_it_fails", "check"] as const) expect(patternsForSlot(slot).picture, slot).toEqual([]);
   });
 });

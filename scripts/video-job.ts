@@ -14,7 +14,7 @@ import { createHash } from "node:crypto";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import ffmpegPath from "ffmpeg-static";
-import { REPO_ROOT, childEnv } from "../packages/adapters/src";
+import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
 import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
@@ -36,7 +36,10 @@ const raw = (() => {
 })();
 const rawId = typeof (raw as { requestId?: unknown } | undefined)?.requestId === "string" ? (raw as { requestId: string }).requestId : "";
 const safeId = /^[A-Za-z0-9][A-Za-z0-9_.:-]{5,47}$/.test(rawId) ? rawId : "invalid-request";
-const jobDir = join(REPO_ROOT, "dist", "jobs", safeId.replace(/:/g, "_"));
+/** The one place the runner reads the host environment (ADR 0086). VIDEO_JOBS_DIR moves the whole jobs folder (default dist/jobs), so a test can run jobs in a temporary folder. */
+const hostEnv = readEnv();
+const JOBS_ROOT = resolve(hostEnv.VIDEO_JOBS_DIR || join(REPO_ROOT, "dist", "jobs"));
+const jobDir = join(JOBS_ROOT, safeId.replace(/:/g, "_"));
 mkdirSync(jobDir, { recursive: true });
 const eventsFile = join(jobDir, "events.jsonl");
 const events: JobEvent[] = [];
@@ -95,7 +98,7 @@ process.on("unhandledRejection", crash);
 
 /** A stage's time limit in milliseconds; VIDEO_JOB_STAGE_TIMEOUT_MS replaces all of them (for a machine slower than the measured one, and for tests). */
 const limitOf = (stage: JobStage): number => {
-  const forced = Number(process.env.VIDEO_JOB_STAGE_TIMEOUT_MS);
+  const forced = Number(hostEnv.VIDEO_JOB_STAGE_TIMEOUT_MS);
   return Number.isFinite(forced) && forced > 0 ? forced : (STAGE_TIMEOUT_MS as Record<string, number>)[stage] ?? STAGE_TIMEOUT_MS.render;
 };
 
@@ -125,10 +128,10 @@ const supervise = (script: string, scriptArgs: string[], env: Record<string, str
 /** Building and rendering use the whole machine, so at most VIDEO_JOB_SLOTS jobs do it at once; the others wait (VIDEO_JOB_SLOT_WAIT_MS, 30 minutes) and then end as `timeout`. */
 const takeSlot = async (stage: JobStage): Promise<void> => {
   if (releaseSlot) return;
-  const max = Math.max(1, Number(process.env.VIDEO_JOB_SLOTS) || 2);
-  const given = process.env.VIDEO_JOB_SLOT_WAIT_MS;
+  const max = Math.max(1, Number(hostEnv.VIDEO_JOB_SLOTS) || 2);
+  const given = hostEnv.VIDEO_JOB_SLOT_WAIT_MS;
   const waitMs = given !== undefined && Number(given) >= 0 ? Number(given) : 30 * 60_000;
-  const dir = join(REPO_ROOT, "dist", "jobs", ".slots");
+  const dir = join(JOBS_ROOT, ".slots");
   let release = await acquireSlot(dir, max, { waitMs: 0 });
   if (!release) {
     appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage, note: `waiting for a free slot (${max} job(s) are building or rendering)` }) + "\n");
