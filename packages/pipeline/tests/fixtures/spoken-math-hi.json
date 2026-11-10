@@ -1,0 +1,1709 @@
+{
+ "note": "Hindi expected outputs, reviewed by an engineer, NOT yet by a native speaker. Nepali uses the same inputs and is asserted structurally only (see spoken-math.test.ts).",
+ "cases": [
+  {
+   "cat": "numbers",
+   "input": "0",
+   "hinglish": "zero",
+   "ncert": "शून्य"
+  },
+  {
+   "cat": "numbers",
+   "input": "1",
+   "hinglish": "one",
+   "ncert": "एक"
+  },
+  {
+   "cat": "numbers",
+   "input": "2",
+   "hinglish": "two",
+   "ncert": "दो"
+  },
+  {
+   "cat": "numbers",
+   "input": "7",
+   "hinglish": "seven",
+   "ncert": "सात"
+  },
+  {
+   "cat": "numbers",
+   "input": "10",
+   "hinglish": "ten",
+   "ncert": "दस"
+  },
+  {
+   "cat": "numbers",
+   "input": "11",
+   "hinglish": "eleven",
+   "ncert": "ग्यारह"
+  },
+  {
+   "cat": "numbers",
+   "input": "12",
+   "hinglish": "twelve",
+   "ncert": "बारह"
+  },
+  {
+   "cat": "numbers",
+   "input": "19",
+   "hinglish": "nineteen",
+   "ncert": "उन्नीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "20",
+   "hinglish": "twenty",
+   "ncert": "बीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "21",
+   "hinglish": "twenty one",
+   "ncert": "इक्कीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "29",
+   "hinglish": "twenty nine",
+   "ncert": "उनतीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "35",
+   "hinglish": "thirty five",
+   "ncert": "पैंतीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "40",
+   "hinglish": "forty",
+   "ncert": "चालीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "47",
+   "hinglish": "forty seven",
+   "ncert": "सैंतालीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "58",
+   "hinglish": "fifty eight",
+   "ncert": "अट्ठावन"
+  },
+  {
+   "cat": "numbers",
+   "input": "63",
+   "hinglish": "sixty three",
+   "ncert": "तिरसठ"
+  },
+  {
+   "cat": "numbers",
+   "input": "71",
+   "hinglish": "seventy one",
+   "ncert": "इकहत्तर"
+  },
+  {
+   "cat": "numbers",
+   "input": "86",
+   "hinglish": "eighty six",
+   "ncert": "छियासी"
+  },
+  {
+   "cat": "numbers",
+   "input": "90",
+   "hinglish": "ninety",
+   "ncert": "नब्बे"
+  },
+  {
+   "cat": "numbers",
+   "input": "99",
+   "hinglish": "ninety nine",
+   "ncert": "निन्यानवे"
+  },
+  {
+   "cat": "numbers",
+   "input": "100",
+   "hinglish": "one hundred",
+   "ncert": "एक सौ"
+  },
+  {
+   "cat": "numbers",
+   "input": "101",
+   "hinglish": "one hundred one",
+   "ncert": "एक सौ एक"
+  },
+  {
+   "cat": "numbers",
+   "input": "115",
+   "hinglish": "one hundred fifteen",
+   "ncert": "एक सौ पंद्रह"
+  },
+  {
+   "cat": "numbers",
+   "input": "250",
+   "hinglish": "two hundred fifty",
+   "ncert": "दो सौ पचास"
+  },
+  {
+   "cat": "numbers",
+   "input": "999",
+   "hinglish": "nine hundred ninety nine",
+   "ncert": "नौ सौ निन्यानवे"
+  },
+  {
+   "cat": "numbers",
+   "input": "1000",
+   "hinglish": "one thousand",
+   "ncert": "एक हज़ार"
+  },
+  {
+   "cat": "numbers",
+   "input": "1005",
+   "hinglish": "one thousand five",
+   "ncert": "एक हज़ार पाँच"
+  },
+  {
+   "cat": "numbers",
+   "input": "1234",
+   "hinglish": "one thousand two hundred thirty four",
+   "ncert": "एक हज़ार दो सौ चौंतीस"
+  },
+  {
+   "cat": "numbers",
+   "input": "9999",
+   "hinglish": "nine thousand nine hundred ninety nine",
+   "ncert": "नौ हज़ार नौ सौ निन्यानवे"
+  },
+  {
+   "cat": "numbers",
+   "input": "10000",
+   "hinglish": "ten thousand",
+   "ncert": "दस हज़ार"
+  },
+  {
+   "cat": "numbers",
+   "input": "25000",
+   "hinglish": "twenty five thousand",
+   "ncert": "पच्चीस हज़ार"
+  },
+  {
+   "cat": "numbers",
+   "input": "100000",
+   "hinglish": "one lakh",
+   "ncert": "एक लाख"
+  },
+  {
+   "cat": "numbers",
+   "input": "123456",
+   "hinglish": "one lakh twenty three thousand four hundred fifty six",
+   "ncert": "एक लाख तेईस हज़ार चार सौ छप्पन"
+  },
+  {
+   "cat": "numbers",
+   "input": "1000000",
+   "hinglish": "ten lakh",
+   "ncert": "दस लाख"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "मेरे पास 5 किताबें हैं।",
+   "hinglish": "मेरे पास five किताबें हैं।",
+   "ncert": "मेरे पास पाँच किताबें हैं।"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "कक्षा 10 में 45 विद्यार्थी हैं।",
+   "hinglish": "कक्षा ten में forty five विद्यार्थी हैं।",
+   "ncert": "कक्षा दस में पैंतालीस विद्यार्थी हैं।"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "उसने 1,00,000 रुपये बचाए।",
+   "hinglish": "उसने one lakh रुपये बचाए।",
+   "ncert": "उसने एक लाख रुपये बचाए।"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "शहर की जनसंख्या 2,50,000 है।",
+   "hinglish": "शहर की जनसंख्या two lakh fifty thousand है।",
+   "ncert": "शहर की जनसंख्या दो लाख पचास हज़ार है।"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "1,000 में कितने शून्य हैं?",
+   "hinglish": "one thousand में कितने शून्य हैं?",
+   "ncert": "एक हज़ार में कितने शून्य हैं?"
+  },
+  {
+   "cat": "numbers-prose",
+   "input": "संख्या 007 को अंक-अंक पढ़ें।",
+   "hinglish": "संख्या zero zero seven को अंक-अंक पढ़ें।",
+   "ncert": "संख्या शून्य शून्य सात को अंक-अंक पढ़ें।"
+  },
+  {
+   "cat": "fractions",
+   "input": "1/2",
+   "hinglish": "one by two",
+   "ncert": "एक बटा दो"
+  },
+  {
+   "cat": "fractions",
+   "input": "3/4",
+   "hinglish": "three by four",
+   "ncert": "तीन बटा चार"
+  },
+  {
+   "cat": "fractions",
+   "input": "2/3",
+   "hinglish": "two by three",
+   "ncert": "दो बटा तीन"
+  },
+  {
+   "cat": "fractions",
+   "input": "5/8",
+   "hinglish": "five by eight",
+   "ncert": "पाँच बटा आठ"
+  },
+  {
+   "cat": "fractions",
+   "input": "7/10",
+   "hinglish": "seven by ten",
+   "ncert": "सात बटा दस"
+  },
+  {
+   "cat": "fractions",
+   "input": "1/100",
+   "hinglish": "one by one hundred",
+   "ncert": "एक बटा एक सौ"
+  },
+  {
+   "cat": "fractions",
+   "input": "12/25",
+   "hinglish": "twelve by twenty five",
+   "ncert": "बारह बटा पच्चीस"
+  },
+  {
+   "cat": "fractions",
+   "input": "3/4 + 1/4 = 1",
+   "hinglish": "three by four plus one by four equals one [pause 0.6s]",
+   "ncert": "तीन बटा चार धन एक बटा चार बराबर एक [pause 0.6s]"
+  },
+  {
+   "cat": "fractions",
+   "input": "1/2 × 4 = 2",
+   "hinglish": "one by two into four equals two [pause 0.6s]",
+   "ncert": "एक बटा दो गुणा चार बराबर दो [pause 0.6s]"
+  },
+  {
+   "cat": "fractions",
+   "input": "2/5 ÷ 1/5 = 2",
+   "hinglish": "two by five divided by one by five equals two [pause 0.6s]",
+   "ncert": "दो बटा पाँच भाग एक बटा पाँच बराबर दो [pause 0.6s]"
+  },
+  {
+   "cat": "fractions",
+   "input": "½",
+   "hinglish": "one by two",
+   "ncert": "एक बटा दो"
+  },
+  {
+   "cat": "fractions",
+   "input": "¾",
+   "hinglish": "three by four",
+   "ncert": "तीन बटा चार"
+  },
+  {
+   "cat": "fractions",
+   "input": "⅓ और ⅔",
+   "hinglish": "one by three और two by three",
+   "ncert": "एक बटा तीन और दो बटा तीन"
+  },
+  {
+   "cat": "fractions",
+   "input": "हम 3/4 भाग रंगते हैं।",
+   "hinglish": "हम three by four भाग रंगते हैं।",
+   "ncert": "हम तीन बटा चार भाग रंगते हैं।"
+  },
+  {
+   "cat": "fractions",
+   "input": "a/b",
+   "hinglish": "a by b",
+   "ncert": "a बटा b"
+  },
+  {
+   "cat": "fractions",
+   "input": "x/2 = 5",
+   "hinglish": "x by two equals five [pause 0.6s]",
+   "ncert": "x बटा दो बराबर पाँच [pause 0.6s]"
+  },
+  {
+   "cat": "mixed",
+   "input": "2 3/4",
+   "hinglish": "two and three by four",
+   "ncert": "दो पूर्ण तीन बटा चार"
+  },
+  {
+   "cat": "mixed",
+   "input": "1 1/2",
+   "hinglish": "one and one by two",
+   "ncert": "एक पूर्ण एक बटा दो"
+  },
+  {
+   "cat": "mixed",
+   "input": "5 2/3",
+   "hinglish": "five and two by three",
+   "ncert": "पाँच पूर्ण दो बटा तीन"
+  },
+  {
+   "cat": "mixed",
+   "input": "10 1/4",
+   "hinglish": "ten and one by four",
+   "ncert": "दस पूर्ण एक बटा चार"
+  },
+  {
+   "cat": "mixed",
+   "input": "3½",
+   "hinglish": "three and one by two",
+   "ncert": "तीन पूर्ण एक बटा दो"
+  },
+  {
+   "cat": "mixed",
+   "input": "2¾ मीटर",
+   "hinglish": "two and three by four मीटर",
+   "ncert": "दो पूर्ण तीन बटा चार मीटर"
+  },
+  {
+   "cat": "mixed",
+   "input": "मिश्र संख्या 4 1/5 है।",
+   "hinglish": "मिश्र संख्या four and one by five है।",
+   "ncert": "मिश्र संख्या चार पूर्ण एक बटा पाँच है।"
+  },
+  {
+   "cat": "mixed",
+   "input": "7 1/8 kg",
+   "hinglish": "seven and one by eight किलोग्राम",
+   "ncert": "सात पूर्ण एक बटा आठ किलोग्राम"
+  },
+  {
+   "cat": "negatives",
+   "input": "-5",
+   "hinglish": "minus five",
+   "ncert": "ऋण पाँच"
+  },
+  {
+   "cat": "negatives",
+   "input": "-12",
+   "hinglish": "minus twelve",
+   "ncert": "ऋण बारह"
+  },
+  {
+   "cat": "negatives",
+   "input": "-100",
+   "hinglish": "minus one hundred",
+   "ncert": "ऋण एक सौ"
+  },
+  {
+   "cat": "negatives",
+   "input": "तापमान -5 °C है",
+   "hinglish": "तापमान minus five डिग्री सेल्सियस है",
+   "ncert": "तापमान ऋण पाँच डिग्री सेल्सियस है"
+  },
+  {
+   "cat": "negatives",
+   "input": "-3 + 8 = 5",
+   "hinglish": "minus three plus eight equals five [pause 0.6s]",
+   "ncert": "ऋण तीन धन आठ बराबर पाँच [pause 0.6s]"
+  },
+  {
+   "cat": "negatives",
+   "input": "-x",
+   "hinglish": "minus x",
+   "ncert": "ऋण x"
+  },
+  {
+   "cat": "negatives",
+   "input": "-2x + 4 = 0",
+   "hinglish": "minus two x plus four equals zero [pause 0.6s]",
+   "ncert": "ऋण दो x धन चार बराबर शून्य [pause 0.6s]"
+  },
+  {
+   "cat": "negatives",
+   "input": "(-4) × (-5) = 20",
+   "hinglish": "bracket open minus four bracket close into bracket open minus five bracket close equals twenty [pause 0.6s]",
+   "ncert": "कोष्ठक शुरू ऋण चार कोष्ठक समाप्त गुणा कोष्ठक शुरू ऋण पाँच कोष्ठक समाप्त बराबर बीस [pause 0.6s]"
+  },
+  {
+   "cat": "negatives",
+   "input": "5 - (-3) = 8",
+   "hinglish": "five minus bracket open minus three bracket close equals eight [pause 0.6s]",
+   "ncert": "पाँच ऋण कोष्ठक शुरू ऋण तीन कोष्ठक समाप्त बराबर आठ [pause 0.6s]"
+  },
+  {
+   "cat": "negatives",
+   "input": "+7",
+   "hinglish": "plus seven",
+   "ncert": "धन सात"
+  },
+  {
+   "cat": "negatives",
+   "input": "x = -3",
+   "hinglish": "x equals minus three [pause 0.6s]",
+   "ncert": "x बराबर ऋण तीन [pause 0.6s]"
+  },
+  {
+   "cat": "negatives",
+   "input": "a - b",
+   "hinglish": "a minus b",
+   "ncert": "a ऋण b"
+  },
+  {
+   "cat": "decimals",
+   "input": "0.5",
+   "hinglish": "zero point five",
+   "ncert": "शून्य दशमलव पाँच"
+  },
+  {
+   "cat": "decimals",
+   "input": "2.5",
+   "hinglish": "two point five",
+   "ncert": "दो दशमलव पाँच"
+  },
+  {
+   "cat": "decimals",
+   "input": "3.14",
+   "hinglish": "three point one four",
+   "ncert": "तीन दशमलव एक चार"
+  },
+  {
+   "cat": "decimals",
+   "input": "0.07",
+   "hinglish": "zero point zero seven",
+   "ncert": "शून्य दशमलव शून्य सात"
+  },
+  {
+   "cat": "decimals",
+   "input": "12.75",
+   "hinglish": "twelve point seven five",
+   "ncert": "बारह दशमलव सात पाँच"
+  },
+  {
+   "cat": "decimals",
+   "input": "100.001",
+   "hinglish": "one hundred point zero zero one",
+   "ncert": "एक सौ दशमलव शून्य शून्य एक"
+  },
+  {
+   "cat": "decimals",
+   "input": "9.99",
+   "hinglish": "nine point nine nine",
+   "ncert": "नौ दशमलव नौ नौ"
+  },
+  {
+   "cat": "decimals",
+   "input": "0.333",
+   "hinglish": "zero point three three three",
+   "ncert": "शून्य दशमलव तीन तीन तीन"
+  },
+  {
+   "cat": "decimals",
+   "input": "7.0",
+   "hinglish": "seven point zero",
+   "ncert": "सात दशमलव शून्य"
+  },
+  {
+   "cat": "decimals",
+   "input": "1.5 + 2.5 = 4",
+   "hinglish": "one point five plus two point five equals four [pause 0.6s]",
+   "ncert": "एक दशमलव पाँच धन दो दशमलव पाँच बराबर चार [pause 0.6s]"
+  },
+  {
+   "cat": "decimals",
+   "input": "0.1 × 0.1 = 0.01",
+   "hinglish": "zero point one into zero point one equals zero point zero one [pause 0.6s]",
+   "ncert": "शून्य दशमलव एक गुणा शून्य दशमलव एक बराबर शून्य दशमलव शून्य एक [pause 0.6s]"
+  },
+  {
+   "cat": "decimals",
+   "input": "1,234.56",
+   "hinglish": "one thousand two hundred thirty four point five six",
+   "ncert": "एक हज़ार दो सौ चौंतीस दशमलव पाँच छह"
+  },
+  {
+   "cat": "decimals",
+   "input": "लंबाई 2.5 m है।",
+   "hinglish": "लंबाई two point five मीटर है।",
+   "ncert": "लंबाई दो दशमलव पाँच मीटर है।"
+  },
+  {
+   "cat": "decimals",
+   "input": "π ≈ 3.14",
+   "hinglish": "पाई is approximately equal to three point one four [pause 0.6s]",
+   "ncert": "पाई लगभग बराबर तीन दशमलव एक चार [pause 0.6s]"
+  },
+  {
+   "cat": "decimals",
+   "input": "6.02",
+   "hinglish": "six point zero two",
+   "ncert": "छह दशमलव शून्य दो"
+  },
+  {
+   "cat": "decimals",
+   "input": "0.001 kg",
+   "hinglish": "zero point zero zero one किलोग्राम",
+   "ncert": "शून्य दशमलव शून्य शून्य एक किलोग्राम"
+  },
+  {
+   "cat": "powers",
+   "input": "x^2",
+   "hinglish": "x square",
+   "ncert": "x का वर्ग"
+  },
+  {
+   "cat": "powers",
+   "input": "x²",
+   "hinglish": "x square",
+   "ncert": "x का वर्ग"
+  },
+  {
+   "cat": "powers",
+   "input": "x^3",
+   "hinglish": "x cube",
+   "ncert": "x का घन"
+  },
+  {
+   "cat": "powers",
+   "input": "x³",
+   "hinglish": "x cube",
+   "ncert": "x का घन"
+  },
+  {
+   "cat": "powers",
+   "input": "a^n",
+   "hinglish": "a to the power n",
+   "ncert": "a की घात n"
+  },
+  {
+   "cat": "powers",
+   "input": "2^10",
+   "hinglish": "two to the power ten",
+   "ncert": "दो की घात दस"
+  },
+  {
+   "cat": "powers",
+   "input": "10^5",
+   "hinglish": "ten to the power five",
+   "ncert": "दस की घात पाँच"
+  },
+  {
+   "cat": "powers",
+   "input": "5^2 = 25",
+   "hinglish": "five square equals twenty five [pause 0.6s]",
+   "ncert": "पाँच का वर्ग बराबर पच्चीस [pause 0.6s]"
+  },
+  {
+   "cat": "powers",
+   "input": "y^-1",
+   "hinglish": "y to the power minus one",
+   "ncert": "y की घात ऋण एक"
+  },
+  {
+   "cat": "powers",
+   "input": "x^(n+1)",
+   "hinglish": "x to the power n plus one",
+   "ncert": "x की घात n धन एक"
+  },
+  {
+   "cat": "powers",
+   "input": "(a+b)^2",
+   "hinglish": "bracket open a plus b bracket close square",
+   "ncert": "कोष्ठक शुरू a धन b कोष्ठक समाप्त का वर्ग"
+  },
+  {
+   "cat": "powers",
+   "input": "(x-1)^3",
+   "hinglish": "bracket open x minus one bracket close cube",
+   "ncert": "कोष्ठक शुरू x ऋण एक कोष्ठक समाप्त का घन"
+  },
+  {
+   "cat": "powers",
+   "input": "a^2 + b^2 = c^2",
+   "hinglish": "a square plus b square equals c square [pause 0.6s]",
+   "ncert": "a का वर्ग धन b का वर्ग बराबर c का वर्ग [pause 0.6s]"
+  },
+  {
+   "cat": "powers",
+   "input": "x^2 + 2x + 1",
+   "hinglish": "x square plus two x plus one",
+   "ncert": "x का वर्ग धन दो x धन एक"
+  },
+  {
+   "cat": "powers",
+   "input": "3x^2",
+   "hinglish": "three x square",
+   "ncert": "तीन x का वर्ग"
+  },
+  {
+   "cat": "powers",
+   "input": "4y^3",
+   "hinglish": "four y cube",
+   "ncert": "चार y का घन"
+  },
+  {
+   "cat": "powers",
+   "input": "e^x",
+   "hinglish": "e to the power x",
+   "ncert": "e की घात x"
+  },
+  {
+   "cat": "powers",
+   "input": "10^-3",
+   "hinglish": "ten to the power minus three",
+   "ncert": "दस की घात ऋण तीन"
+  },
+  {
+   "cat": "powers",
+   "input": "2^n - 1",
+   "hinglish": "two to the power n minus one",
+   "ncert": "दो की घात n ऋण एक"
+  },
+  {
+   "cat": "powers",
+   "input": "10^6",
+   "hinglish": "ten to the power six",
+   "ncert": "दस की घात छह"
+  },
+  {
+   "cat": "roots",
+   "input": "√16",
+   "hinglish": "square root of sixteen",
+   "ncert": "सोलह का वर्गमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "√2",
+   "hinglish": "square root of two",
+   "ncert": "दो का वर्गमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "√x",
+   "hinglish": "square root of x",
+   "ncert": "x का वर्गमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "√(x+1)",
+   "hinglish": "square root of bracket open x plus one bracket close",
+   "ncert": "कोष्ठक शुरू x धन एक कोष्ठक समाप्त का वर्गमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "√144 = 12",
+   "hinglish": "square root of one hundred forty four equals twelve [pause 0.6s]",
+   "ncert": "एक सौ चौवालीस का वर्गमूल बराबर बारह [pause 0.6s]"
+  },
+  {
+   "cat": "roots",
+   "input": "∛27",
+   "hinglish": "cube root of twenty seven",
+   "ncert": "सत्ताईस का घनमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "∛8 = 2",
+   "hinglish": "cube root of eight equals two [pause 0.6s]",
+   "ncert": "आठ का घनमूल बराबर दो [pause 0.6s]"
+  },
+  {
+   "cat": "roots",
+   "input": "sqrt(25)",
+   "hinglish": "square root of bracket open twenty five bracket close",
+   "ncert": "कोष्ठक शुरू पच्चीस कोष्ठक समाप्त का वर्गमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "cbrt(64)",
+   "hinglish": "cube root of bracket open sixty four bracket close",
+   "ncert": "कोष्ठक शुरू चौंसठ कोष्ठक समाप्त का घनमूल"
+  },
+  {
+   "cat": "roots",
+   "input": "x = √(b^2 - 4ac)",
+   "hinglish": "x equals square root of bracket open b square minus four a c bracket close [pause 0.6s]",
+   "ncert": "x बराबर कोष्ठक शुरू b का वर्ग ऋण चार a c कोष्ठक समाप्त का वर्गमूल [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x = 5",
+   "hinglish": "x equals five [pause 0.6s]",
+   "ncert": "x बराबर पाँच [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x + 3 = 7",
+   "hinglish": "x plus three equals seven [pause 0.6s]",
+   "ncert": "x धन तीन बराबर सात [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "2x + 3 = 7",
+   "hinglish": "two x plus three equals seven [pause 0.6s]",
+   "ncert": "दो x धन तीन बराबर सात [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "3x - 5 = 10",
+   "hinglish": "three x minus five equals ten [pause 0.6s]",
+   "ncert": "तीन x ऋण पाँच बराबर दस [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x^2 - 5x + 6 = 0",
+   "hinglish": "x square minus five x plus six equals zero [pause 0.6s]",
+   "ncert": "x का वर्ग ऋण पाँच x धन छह बराबर शून्य [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x^2 = 16",
+   "hinglish": "x square equals sixteen [pause 0.6s]",
+   "ncert": "x का वर्ग बराबर सोलह [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "y = 2x + 1",
+   "hinglish": "y equals two x plus one [pause 0.6s]",
+   "ncert": "y बराबर दो x धन एक [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "a + b = c",
+   "hinglish": "a plus b equals c [pause 0.6s]",
+   "ncert": "a धन b बराबर c [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "7 × 8 = 56",
+   "hinglish": "seven into eight equals fifty six [pause 0.6s]",
+   "ncert": "सात गुणा आठ बराबर छप्पन [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "56 ÷ 8 = 7",
+   "hinglish": "fifty six divided by eight equals seven [pause 0.6s]",
+   "ncert": "छप्पन भाग आठ बराबर सात [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "12 + 15 = 27",
+   "hinglish": "twelve plus fifteen equals twenty seven [pause 0.6s]",
+   "ncert": "बारह धन पंद्रह बराबर सत्ताईस [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "100 - 37 = 63",
+   "hinglish": "one hundred minus thirty seven equals sixty three [pause 0.6s]",
+   "ncert": "एक सौ ऋण सैंतीस बराबर तिरसठ [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "5 * 6 = 30",
+   "hinglish": "five into six equals thirty [pause 0.6s]",
+   "ncert": "पाँच गुणा छह बराबर तीस [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x^2 + y^2 = r^2",
+   "hinglish": "x square plus y square equals r square [pause 0.6s]",
+   "ncert": "x का वर्ग धन y का वर्ग बराबर r का वर्ग [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "ax^2 + bx + c = 0",
+   "hinglish": "a x square plus b x plus c equals zero [pause 0.6s]",
+   "ncert": "a x का वर्ग धन b x धन c बराबर शून्य [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x = (-b ± √(b^2 - 4ac)) / 2a",
+   "hinglish": "x equals bracket open minus b plus or minus square root of bracket open b square minus four a c bracket close bracket close by two a [pause 0.6s]",
+   "ncert": "x बराबर कोष्ठक शुरू ऋण b धन या ऋण कोष्ठक शुरू b का वर्ग ऋण चार a c कोष्ठक समाप्त का वर्गमूल कोष्ठक समाप्त बटा दो a [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "2x + 3y = 12",
+   "hinglish": "two x plus three y equals twelve [pause 0.6s]",
+   "ncert": "दो x धन तीन y बराबर बारह [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x ≠ 0",
+   "hinglish": "x is not equal to zero [pause 0.6s]",
+   "ncert": "x बराबर नहीं शून्य [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x < 5",
+   "hinglish": "x is less than five [pause 0.6s]",
+   "ncert": "x से छोटा पाँच [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x > -2",
+   "hinglish": "x is greater than minus two [pause 0.6s]",
+   "ncert": "x से बड़ा ऋण दो [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x ≤ 10",
+   "hinglish": "x is less than or equal to ten [pause 0.6s]",
+   "ncert": "x से छोटा या बराबर दस [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x ≥ 3",
+   "hinglish": "x is greater than or equal to three [pause 0.6s]",
+   "ncert": "x से बड़ा या बराबर तीन [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "x ≈ 3.14",
+   "hinglish": "x is approximately equal to three point one four [pause 0.6s]",
+   "ncert": "x लगभग बराबर तीन दशमलव एक चार [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "a = 1, b = -5, c = 6",
+   "hinglish": "a equals one [pause 0.6s], b equals minus five [pause 0.6s], c equals six [pause 0.6s]",
+   "ncert": "a बराबर एक [pause 0.6s], b बराबर ऋण पाँच [pause 0.6s], c बराबर छह [pause 0.6s]"
+  },
+  {
+   "cat": "equations",
+   "input": "समीकरण 2x + 3 = 7 को हल करें।",
+   "hinglish": "समीकरण two x plus three equals seven [pause 0.6s] को हल करें।",
+   "ncert": "समीकरण दो x धन तीन बराबर सात [pause 0.6s] को हल करें।"
+  },
+  {
+   "cat": "units",
+   "input": "5 km",
+   "hinglish": "five किलोमीटर",
+   "ncert": "पाँच किलोमीटर"
+  },
+  {
+   "cat": "units",
+   "input": "10 m",
+   "hinglish": "ten मीटर",
+   "ncert": "दस मीटर"
+  },
+  {
+   "cat": "units",
+   "input": "3.5 cm",
+   "hinglish": "three point five सेंटीमीटर",
+   "ncert": "तीन दशमलव पाँच सेंटीमीटर"
+  },
+  {
+   "cat": "units",
+   "input": "250 mm",
+   "hinglish": "two hundred fifty मिलीमीटर",
+   "ncert": "दो सौ पचास मिलीमीटर"
+  },
+  {
+   "cat": "units",
+   "input": "60 kg",
+   "hinglish": "sixty किलोग्राम",
+   "ncert": "साठ किलोग्राम"
+  },
+  {
+   "cat": "units",
+   "input": "500 g",
+   "hinglish": "five hundred ग्राम",
+   "ncert": "पाँच सौ ग्राम"
+  },
+  {
+   "cat": "units",
+   "input": "20 mg",
+   "hinglish": "twenty मिलीग्राम",
+   "ncert": "बीस मिलीग्राम"
+  },
+  {
+   "cat": "units",
+   "input": "10 s",
+   "hinglish": "ten सेकंड",
+   "ncert": "दस सेकंड"
+  },
+  {
+   "cat": "units",
+   "input": "200 ms",
+   "hinglish": "two hundred मिलीसेकंड",
+   "ncert": "दो सौ मिलीसेकंड"
+  },
+  {
+   "cat": "units",
+   "input": "15 min",
+   "hinglish": "fifteen मिनट",
+   "ncert": "पंद्रह मिनट"
+  },
+  {
+   "cat": "units",
+   "input": "2 h",
+   "hinglish": "two घंटा",
+   "ncert": "दो घंटा"
+  },
+  {
+   "cat": "units",
+   "input": "1 L",
+   "hinglish": "one लीटर",
+   "ncert": "एक लीटर"
+  },
+  {
+   "cat": "units",
+   "input": "250 mL",
+   "hinglish": "two hundred fifty मिलीलीटर",
+   "ncert": "दो सौ पचास मिलीलीटर"
+  },
+  {
+   "cat": "units",
+   "input": "9.8 m/s²",
+   "hinglish": "nine point eight मीटर पर वर्ग सेकंड",
+   "ncert": "नौ दशमलव आठ मीटर पर वर्ग सेकंड"
+  },
+  {
+   "cat": "units",
+   "input": "20 m/s",
+   "hinglish": "twenty मीटर पर सेकंड",
+   "ncert": "बीस मीटर पर सेकंड"
+  },
+  {
+   "cat": "units",
+   "input": "60 km/h",
+   "hinglish": "sixty किलोमीटर पर घंटा",
+   "ncert": "साठ किलोमीटर पर घंटा"
+  },
+  {
+   "cat": "units",
+   "input": "5 N",
+   "hinglish": "five न्यूटन",
+   "ncert": "पाँच न्यूटन"
+  },
+  {
+   "cat": "units",
+   "input": "100 J",
+   "hinglish": "one hundred जूल",
+   "ncert": "एक सौ जूल"
+  },
+  {
+   "cat": "units",
+   "input": "40 W",
+   "hinglish": "forty वाट",
+   "ncert": "चालीस वाट"
+  },
+  {
+   "cat": "units",
+   "input": "101325 Pa",
+   "hinglish": "one lakh one thousand three hundred twenty five पास्कल",
+   "ncert": "एक लाख एक हज़ार तीन सौ पच्चीस पास्कल"
+  },
+  {
+   "cat": "units",
+   "input": "50 Hz",
+   "hinglish": "fifty हर्ट्ज़",
+   "ncert": "पचास हर्ट्ज़"
+  },
+  {
+   "cat": "units",
+   "input": "220 V",
+   "hinglish": "two hundred twenty वोल्ट",
+   "ncert": "दो सौ बीस वोल्ट"
+  },
+  {
+   "cat": "units",
+   "input": "2 A",
+   "hinglish": "two एम्पियर",
+   "ncert": "दो एम्पियर"
+  },
+  {
+   "cat": "units",
+   "input": "10 Ω",
+   "hinglish": "ten ओम",
+   "ncert": "दस ओम"
+  },
+  {
+   "cat": "units",
+   "input": "0.5 mol",
+   "hinglish": "zero point five मोल",
+   "ncert": "शून्य दशमलव पाँच मोल"
+  },
+  {
+   "cat": "units",
+   "input": "300 K",
+   "hinglish": "three hundred केल्विन",
+   "ncert": "तीन सौ केल्विन"
+  },
+  {
+   "cat": "units",
+   "input": "25 °C",
+   "hinglish": "twenty five डिग्री सेल्सियस",
+   "ncert": "पच्चीस डिग्री सेल्सियस"
+  },
+  {
+   "cat": "units",
+   "input": "98.6 °F",
+   "hinglish": "ninety eight point six डिग्री फ़ारेनहाइट",
+   "ncert": "अट्ठानवे दशमलव छह डिग्री फ़ारेनहाइट"
+  },
+  {
+   "cat": "units",
+   "input": "-10 °C",
+   "hinglish": "minus ten डिग्री सेल्सियस",
+   "ncert": "ऋण दस डिग्री सेल्सियस"
+  },
+  {
+   "cat": "units",
+   "input": "3 m^2",
+   "hinglish": "three वर्ग मीटर",
+   "ncert": "तीन वर्ग मीटर"
+  },
+  {
+   "cat": "units",
+   "input": "8 m³",
+   "hinglish": "eight घन मीटर",
+   "ncert": "आठ घन मीटर"
+  },
+  {
+   "cat": "units",
+   "input": "1 g/cm^3",
+   "hinglish": "one ग्राम पर घन सेंटीमीटर",
+   "ncert": "एक ग्राम पर घन सेंटीमीटर"
+  },
+  {
+   "cat": "units",
+   "input": "₹500",
+   "hinglish": "five hundred रुपये",
+   "ncert": "पाँच सौ रुपये"
+  },
+  {
+   "cat": "units",
+   "input": "₹2,50,000",
+   "hinglish": "two lakh fifty thousand रुपये",
+   "ncert": "दो लाख पचास हज़ार रुपये"
+  },
+  {
+   "cat": "units",
+   "input": "गाड़ी 60 km/h से चल रही है।",
+   "hinglish": "गाड़ी sixty किलोमीटर पर घंटा से चल रही है।",
+   "ncert": "गाड़ी साठ किलोमीटर पर घंटा से चल रही है।"
+  },
+  {
+   "cat": "percent",
+   "input": "50%",
+   "hinglish": "fifty percent",
+   "ncert": "पचास प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "100%",
+   "hinglish": "one hundred percent",
+   "ncert": "एक सौ प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "12.5%",
+   "hinglish": "twelve point five percent",
+   "ncert": "बारह दशमलव पाँच प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "0.5%",
+   "hinglish": "zero point five percent",
+   "ncert": "शून्य दशमलव पाँच प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "25 %",
+   "hinglish": "twenty five percent",
+   "ncert": "पच्चीस प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "पास होने वाले 85% थे।",
+   "hinglish": "पास होने वाले eighty five percent थे।",
+   "ncert": "पास होने वाले पचासी प्रतिशत थे।"
+  },
+  {
+   "cat": "percent",
+   "input": "छूट 20% है।",
+   "hinglish": "छूट twenty percent है।",
+   "ncert": "छूट बीस प्रतिशत है।"
+  },
+  {
+   "cat": "percent",
+   "input": "x का 15% निकालें।",
+   "hinglish": "x का fifteen percent निकालें।",
+   "ncert": "x का पंद्रह प्रतिशत निकालें।"
+  },
+  {
+   "cat": "percent",
+   "input": "10-20%",
+   "hinglish": "ten to twenty percent",
+   "ncert": "दस से बीस प्रतिशत"
+  },
+  {
+   "cat": "percent",
+   "input": "99.9%",
+   "hinglish": "ninety nine point nine percent",
+   "ncert": "निन्यानवे दशमलव नौ प्रतिशत"
+  },
+  {
+   "cat": "chemistry",
+   "input": "H2O",
+   "hinglish": "एच टू ओ",
+   "ncert": "एच टू ओ"
+  },
+  {
+   "cat": "chemistry",
+   "input": "CO2",
+   "hinglish": "सी ओ टू",
+   "ncert": "सी ओ टू"
+  },
+  {
+   "cat": "chemistry",
+   "input": "O2",
+   "hinglish": "ओ टू",
+   "ncert": "ओ टू"
+  },
+  {
+   "cat": "chemistry",
+   "input": "H2SO4",
+   "hinglish": "एच टू एस ओ फ़ोर",
+   "ncert": "एच टू एस ओ फ़ोर"
+  },
+  {
+   "cat": "chemistry",
+   "input": "NaCl",
+   "hinglish": "एन ए सी एल",
+   "ncert": "एन ए सी एल"
+  },
+  {
+   "cat": "chemistry",
+   "input": "HCl",
+   "hinglish": "एच सी एल",
+   "ncert": "एच सी एल"
+  },
+  {
+   "cat": "chemistry",
+   "input": "NaOH",
+   "hinglish": "एन ए ओ एच",
+   "ncert": "एन ए ओ एच"
+  },
+  {
+   "cat": "chemistry",
+   "input": "CH4",
+   "hinglish": "सी एच फ़ोर",
+   "ncert": "सी एच फ़ोर"
+  },
+  {
+   "cat": "chemistry",
+   "input": "NH3",
+   "hinglish": "एन एच थ्री",
+   "ncert": "एन एच थ्री"
+  },
+  {
+   "cat": "chemistry",
+   "input": "C6H12O6",
+   "hinglish": "सी सिक्स एच ट्वेल्व ओ सिक्स",
+   "ncert": "सी सिक्स एच ट्वेल्व ओ सिक्स"
+  },
+  {
+   "cat": "chemistry",
+   "input": "CaCO3",
+   "hinglish": "सी ए सी ओ थ्री",
+   "ncert": "सी ए सी ओ थ्री"
+  },
+  {
+   "cat": "chemistry",
+   "input": "H₂O",
+   "hinglish": "एच टू ओ",
+   "ncert": "एच टू ओ"
+  },
+  {
+   "cat": "chemistry",
+   "input": "2H2 + O2 → 2H2O",
+   "hinglish": "two एच टू plus ओ टू gives two एच टू ओ",
+   "ncert": "दो एच टू धन ओ टू देता है दो एच टू ओ"
+  },
+  {
+   "cat": "chemistry",
+   "input": "पानी का सूत्र H2O है।",
+   "hinglish": "पानी का सूत्र एच टू ओ है।",
+   "ncert": "पानी का सूत्र एच टू ओ है।"
+  },
+  {
+   "cat": "chemistry",
+   "input": "कार्बन डाइऑक्साइड CO2 है।",
+   "hinglish": "कार्बन डाइऑक्साइड सी ओ टू है।",
+   "ncert": "कार्बन डाइऑक्साइड सी ओ टू है।"
+  },
+  {
+   "cat": "chemistry",
+   "input": "N2 और O2",
+   "hinglish": "एन टू और ओ टू",
+   "ncert": "एन टू और ओ टू"
+  },
+  {
+   "cat": "ranges",
+   "input": "5-10",
+   "hinglish": "five to ten",
+   "ncert": "पाँच से दस"
+  },
+  {
+   "cat": "ranges",
+   "input": "10–20",
+   "hinglish": "ten to twenty",
+   "ncert": "दस से बीस"
+  },
+  {
+   "cat": "ranges",
+   "input": "1-100",
+   "hinglish": "one to one hundred",
+   "ncert": "एक से एक सौ"
+  },
+  {
+   "cat": "ranges",
+   "input": "पृष्ठ 12-15",
+   "hinglish": "पृष्ठ twelve to fifteen",
+   "ncert": "पृष्ठ बारह से पंद्रह"
+  },
+  {
+   "cat": "ranges",
+   "input": "3-5 किलो",
+   "hinglish": "three to five किलो",
+   "ncert": "तीन से पाँच किलो"
+  },
+  {
+   "cat": "ranges",
+   "input": "0-1",
+   "hinglish": "zero to one",
+   "ncert": "शून्य से एक"
+  },
+  {
+   "cat": "ranges",
+   "input": "2000-2010",
+   "hinglish": "two thousand to two thousand ten",
+   "ncert": "दो हज़ार से दो हज़ार दस"
+  },
+  {
+   "cat": "ranges",
+   "input": "कक्षा 6-8",
+   "hinglish": "कक्षा six to eight",
+   "ncert": "कक्षा छह से आठ"
+  },
+  {
+   "cat": "ranges",
+   "input": "20-30 °C",
+   "hinglish": "twenty to thirty डिग्री सेल्सियस",
+   "ncert": "बीस से तीस डिग्री सेल्सियस"
+  },
+  {
+   "cat": "ranges",
+   "input": "9-12 m",
+   "hinglish": "nine to twelve मीटर",
+   "ncert": "नौ से बारह मीटर"
+  },
+  {
+   "cat": "ordinals",
+   "input": "1st",
+   "hinglish": "first",
+   "ncert": "पहला"
+  },
+  {
+   "cat": "ordinals",
+   "input": "2nd",
+   "hinglish": "second",
+   "ncert": "दूसरा"
+  },
+  {
+   "cat": "ordinals",
+   "input": "3rd",
+   "hinglish": "third",
+   "ncert": "तीसरा"
+  },
+  {
+   "cat": "ordinals",
+   "input": "4th",
+   "hinglish": "fourth",
+   "ncert": "चौथा"
+  },
+  {
+   "cat": "ordinals",
+   "input": "5th",
+   "hinglish": "fifth",
+   "ncert": "पाँचवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "6th",
+   "hinglish": "sixth",
+   "ncert": "छठा"
+  },
+  {
+   "cat": "ordinals",
+   "input": "10th",
+   "hinglish": "tenth",
+   "ncert": "दसवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "11th",
+   "hinglish": "eleventh",
+   "ncert": "ग्यारहवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "21st",
+   "hinglish": "twenty first",
+   "ncert": "इक्कीसवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "42nd",
+   "hinglish": "forty second",
+   "ncert": "बयालीसवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "100th",
+   "hinglish": "one hundredth",
+   "ncert": "एक सौवाँ"
+  },
+  {
+   "cat": "ordinals",
+   "input": "पाठ 1st और 2nd",
+   "hinglish": "पाठ first और second",
+   "ncert": "पाठ पहला और दूसरा"
+  },
+  {
+   "cat": "ordinals",
+   "input": "चैप्टर 3rd",
+   "hinglish": "चैप्टर third",
+   "ncert": "चैप्टर तीसरा"
+  },
+  {
+   "cat": "dates",
+   "input": "15/08/1947",
+   "hinglish": "fifteen August nineteen forty seven",
+   "ncert": "पंद्रह अगस्त उन्नीस सौ सैंतालीस"
+  },
+  {
+   "cat": "dates",
+   "input": "26/01/1950",
+   "hinglish": "twenty six January nineteen fifty",
+   "ncert": "छब्बीस जनवरी उन्नीस सौ पचास"
+  },
+  {
+   "cat": "dates",
+   "input": "2/10/1869",
+   "hinglish": "two October eighteen sixty nine",
+   "ncert": "दो अक्टूबर अठारह सौ उनहत्तर"
+  },
+  {
+   "cat": "dates",
+   "input": "01-01-2000",
+   "hinglish": "one January two thousand",
+   "ncert": "एक जनवरी दो हज़ार"
+  },
+  {
+   "cat": "dates",
+   "input": "2024-11-11",
+   "hinglish": "eleven November two thousand twenty four",
+   "ncert": "ग्यारह नवंबर दो हज़ार चौबीस"
+  },
+  {
+   "cat": "dates",
+   "input": "15 August 1947",
+   "hinglish": "fifteen August nineteen forty seven",
+   "ncert": "पंद्रह August उन्नीस सौ सैंतालीस"
+  },
+  {
+   "cat": "dates",
+   "input": "in 1947",
+   "hinglish": "in nineteen forty seven",
+   "ncert": "in उन्नीस सौ सैंतालीस"
+  },
+  {
+   "cat": "dates",
+   "input": "सन् 1857",
+   "hinglish": "सन् eighteen fifty seven",
+   "ncert": "सन् अठारह सौ सत्तावन"
+  },
+  {
+   "cat": "dates",
+   "input": "जनवरी 2024",
+   "hinglish": "जनवरी two thousand twenty four",
+   "ncert": "जनवरी दो हज़ार चौबीस"
+  },
+  {
+   "cat": "dates",
+   "input": "मई 2020 में",
+   "hinglish": "मई two thousand twenty में",
+   "ncert": "मई दो हज़ार बीस में"
+  },
+  {
+   "cat": "dates",
+   "input": "1947 में भारत आज़ाद हुआ।",
+   "hinglish": "nineteen forty seven में भारत आज़ाद हुआ।",
+   "ncert": "उन्नीस सौ सैंतालीस में भारत आज़ाद हुआ।"
+  },
+  {
+   "cat": "dates",
+   "input": "साल 2024",
+   "hinglish": "साल two thousand twenty four",
+   "ncert": "साल दो हज़ार चौबीस"
+  },
+  {
+   "cat": "dates",
+   "input": "1999",
+   "hinglish": "one thousand nine hundred ninety nine",
+   "ncert": "एक हज़ार नौ सौ निन्यानवे"
+  },
+  {
+   "cat": "dates",
+   "input": "2000",
+   "hinglish": "two thousand",
+   "ncert": "दो हज़ार"
+  },
+  {
+   "cat": "dates",
+   "input": "2009",
+   "hinglish": "two thousand nine",
+   "ncert": "दो हज़ार नौ"
+  },
+  {
+   "cat": "dates",
+   "input": "2010",
+   "hinglish": "two thousand ten",
+   "ncert": "दो हज़ार दस"
+  },
+  {
+   "cat": "dates",
+   "input": "1900",
+   "hinglish": "one thousand nine hundred",
+   "ncert": "एक हज़ार नौ सौ"
+  },
+  {
+   "cat": "dates",
+   "input": "31/12/2023",
+   "hinglish": "thirty one December two thousand twenty three",
+   "ncert": "इकतीस दिसंबर दो हज़ार तेईस"
+  },
+  {
+   "cat": "terms",
+   "input": "quadratic equation",
+   "hinglish": "quadratic equation",
+   "ncert": "द्विघात समीकरण"
+  },
+  {
+   "cat": "terms",
+   "input": "The discriminant",
+   "hinglish": "The discriminant",
+   "ncert": "The विविक्तकर"
+  },
+  {
+   "cat": "terms",
+   "input": "Newton का नियम",
+   "hinglish": "Newton का नियम",
+   "ncert": "न्यूटन का नियम"
+  },
+  {
+   "cat": "terms",
+   "input": "velocity और acceleration",
+   "hinglish": "velocity और acceleration",
+   "ncert": "वेग और त्वरण"
+  },
+  {
+   "cat": "terms",
+   "input": "ATP क्या है?",
+   "hinglish": "ATP क्या है?",
+   "ncert": "ए टी पी क्या है?"
+  },
+  {
+   "cat": "terms",
+   "input": "photosynthesis",
+   "hinglish": "photosynthesis",
+   "ncert": "प्रकाश संश्लेषण"
+  },
+  {
+   "cat": "terms",
+   "input": "Pythagoras theorem",
+   "hinglish": "Pythagoras theorem",
+   "ncert": "पाइथागोरस प्रमेय"
+  },
+  {
+   "cat": "terms",
+   "input": "pH 7",
+   "hinglish": "pH seven",
+   "ncert": "पी एच सात"
+  },
+  {
+   "cat": "terms",
+   "input": "DNA",
+   "hinglish": "DNA",
+   "ncert": "डी एन ए"
+  },
+  {
+   "cat": "terms",
+   "input": "parabola का graph",
+   "hinglish": "parabola का graph",
+   "ncert": "परवलय का आलेख"
+  },
+  {
+   "cat": "terms",
+   "input": "formula",
+   "hinglish": "formula",
+   "ncert": "सूत्र"
+  },
+  {
+   "cat": "terms",
+   "input": "polynomial के roots",
+   "hinglish": "polynomial के roots",
+   "ncert": "बहुपद के मूल"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "यदि x = 3 तो x^2 = 9 होगा।",
+   "hinglish": "यदि x equals three [pause 0.6s] तो x square equals nine [pause 0.6s] होगा।",
+   "ncert": "यदि x बराबर तीन [pause 0.6s] तो x का वर्ग बराबर नौ [pause 0.6s] होगा।"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "x = 2, y = 5",
+   "hinglish": "x equals two [pause 0.6s], y equals five [pause 0.6s]",
+   "ncert": "x बराबर दो [pause 0.6s], y बराबर पाँच [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "a = 1, b = 2",
+   "hinglish": "a equals one [pause 0.6s], b equals two [pause 0.6s]",
+   "ncert": "a बराबर एक [pause 0.6s], b बराबर दो [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "पहले 3 + 4 = 7 निकालें, फिर आगे बढ़ें।",
+   "hinglish": "पहले three plus four equals seven [pause 0.6s] निकालें, फिर आगे बढ़ें।",
+   "ncert": "पहले तीन धन चार बराबर सात [pause 0.6s] निकालें, फिर आगे बढ़ें।"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "(2 + 3) × 4 = 20",
+   "hinglish": "bracket open two plus three bracket close into four equals twenty [pause 0.6s]",
+   "ncert": "कोष्ठक शुरू दो धन तीन कोष्ठक समाप्त गुणा चार बराबर बीस [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "2(x + 1) = 8",
+   "hinglish": "two bracket open x plus one bracket close equals eight [pause 0.6s]",
+   "ncert": "दो कोष्ठक शुरू x धन एक कोष्ठक समाप्त बराबर आठ [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "कुल 5 × 12 = 60 रुपये",
+   "hinglish": "कुल five into twelve equals sixty [pause 0.6s] रुपये",
+   "ncert": "कुल पाँच गुणा बारह बराबर साठ [pause 0.6s] रुपये"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "चाल = 100 m / 20 s = 5 m/s",
+   "hinglish": "चाल equals one hundred मीटर by twenty सेकंड equals five मीटर पर सेकंड [pause 0.6s]",
+   "ncert": "चाल बराबर एक सौ मीटर बटा बीस सेकंड बराबर पाँच मीटर पर सेकंड [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "बल F = m × a",
+   "hinglish": "बल F equals m into a [pause 0.6s]",
+   "ncert": "बल F बराबर m गुणा a [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "क्षेत्रफल = π r^2",
+   "hinglish": "क्षेत्रफल equals पाई r square [pause 0.6s]",
+   "ncert": "क्षेत्रफल बराबर पाई r का वर्ग [pause 0.6s]"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "a + b + c",
+   "hinglish": "a plus b plus c",
+   "ncert": "a धन b धन c"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "10 बजे",
+   "hinglish": "ten बजे",
+   "ncert": "दस बजे"
+  },
+  {
+   "cat": "mixed-prose",
+   "input": "2 + 2 = 4। 3 + 3 = 6।",
+   "hinglish": "two plus two equals four [pause 0.6s]। three plus three equals six [pause 0.6s]।",
+   "ncert": "दो धन दो बराबर चार [pause 0.6s]। तीन धन तीन बराबर छह [pause 0.6s]।"
+  },
+  {
+   "cat": "operators",
+   "input": "+",
+   "hinglish": "plus",
+   "ncert": "धन"
+  },
+  {
+   "cat": "operators",
+   "input": "=",
+   "hinglish": "equals [pause 0.6s]",
+   "ncert": "बराबर [pause 0.6s]"
+  },
+  {
+   "cat": "operators",
+   "input": "a × b",
+   "hinglish": "a into b",
+   "ncert": "a गुणा b"
+  },
+  {
+   "cat": "operators",
+   "input": "a ÷ b",
+   "hinglish": "a divided by b",
+   "ncert": "a भाग b"
+  },
+  {
+   "cat": "operators",
+   "input": "a · b",
+   "hinglish": "a into b",
+   "ncert": "a गुणा b"
+  },
+  {
+   "cat": "operators",
+   "input": "a / b",
+   "hinglish": "a by b",
+   "ncert": "a बटा b"
+  },
+  {
+   "cat": "operators",
+   "input": "a ± b",
+   "hinglish": "a plus or minus b",
+   "ncert": "a धन या ऋण b"
+  },
+  {
+   "cat": "operators",
+   "input": "(x)",
+   "hinglish": "(x)",
+   "ncert": "(x)"
+  },
+  {
+   "cat": "operators",
+   "input": "और/या",
+   "hinglish": "और या",
+   "ncert": "और या"
+  },
+  {
+   "cat": "operators",
+   "input": "3 + 4 × 2",
+   "hinglish": "three plus four into two",
+   "ncert": "तीन धन चार गुणा दो"
+  }
+ ]
+}
