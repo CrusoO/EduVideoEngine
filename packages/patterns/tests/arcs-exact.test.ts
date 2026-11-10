@@ -92,10 +92,12 @@ describe("patterns for each slot", () => {
             "hops-on-number-line",
             "step-by-step-worked-example",
             "worked-sum-on-grid",
+            "balance-scale-worked",
           ],
           "picture": [
             "hops-on-number-line",
             "worked-sum-on-grid",
+            "balance-scale-worked",
           ],
           "textHeavy": [
             "step-by-step-worked-example",
@@ -117,10 +119,12 @@ describe("patterns for each slot", () => {
             "hops-on-number-line",
             "step-by-step-worked-example",
             "worked-sum-on-grid",
+            "balance-scale-worked",
           ],
           "picture": [
             "hops-on-number-line",
             "worked-sum-on-grid",
+            "balance-scale-worked",
           ],
           "textHeavy": [
             "step-by-step-worked-example",
