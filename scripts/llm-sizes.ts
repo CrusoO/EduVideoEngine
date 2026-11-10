@@ -28,9 +28,8 @@ const reqs: Req[] = [
 
 console.log("estimated tokens per request (input = characters/3; output = expected reply; reasoning = the profile's allowance)\n");
 let anyFail = false;
-for (const provider of ["gemini", "groq", "openrouter"] as const) {
+for (const provider of ["anthropic"] as const) {
   for (const [model, p] of Object.entries(PROFILES[provider].models)) {
-    if (provider === "gemini" ? model === "gemini-3.5-flash-lite" || model === "gemini-2.5-flash" : provider === "groq" ? model !== "openai/gpt-oss-120b" : false) continue;
     const reasoning = p.reasoning ? (p.expectedReasoningTokens ?? 0) : 0;
     console.log(`${provider}/${model}   limits rpm ${p.limits.rpm ?? "null"}, tpm ${p.limits.tpm ?? "null"}, rpd ${p.limits.rpd ?? "null"}, tpd ${p.limits.tpd ?? "null"}   verified ${p.verified}`);
     let perLessonTokens = 0;

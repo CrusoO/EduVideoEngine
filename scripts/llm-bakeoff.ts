@@ -6,12 +6,12 @@
  * each model's daily cap) and sends NOTHING. With --go it calls the models, in record mode: every answer is saved under dist/bakeoff/<run>/fixtures/<model>, so running the
  * same command again with --run <id> replays what was done and asks only for what is missing (a stopped run loses nothing). The daily caps use the shared ledger.
  * --plan recorded (the default) gives every model the same arc plan, taken from the recorded planner answer, so only the scriptwriter is compared and a small token limit
- * (Groq's 8,000 a minute) does not stop the planner request; --plan model lets each model plan too. A skill with no recorded plan needs --plan model.
+ * does not stop the planner request; --plan model lets each model plan too. A skill with no recorded plan needs --plan model.
  * --dry builds the default lesson once from the recorded answers, offline, to check the harness itself.
  * strategies: whole = one request for the whole script (scriptwriter.v1); beat = one request per beat (v2); beat3 = three candidates per beat, the best kept;
  * draft = code writes the narration, no model (the floor, run once); polish = code drafts and the model says it better, a beat at a time, with the draft as the fallback (ADR 0088).
  * --plan code makes the plan with the deterministic planner (no request, the same rules); the default recorded plan and --plan model are as before.
- * Models are written provider/model, for example gemini/gemini-3.8-flash or groq/openai/gpt-oss-120b; a model needs an entry in packages/adapters/model-profiles.json.
+ * Models are written provider/model, for example anthropic/claude-haiku-5-5 or anthropic/claude-sonnet-5-5; a model needs an entry in packages/adapters/model-profiles.json.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -70,7 +70,7 @@ const specs: Spec[] = dry
         }
       });
 if (specs.length === 0) {
-  console.error("usage: pnpm llm:bakeoff --models gemini/gemini-3.8-flash,groq/openai/gpt-oss-120b [--go]   (see the top of scripts/llm-bakeoff.ts)");
+  console.error("usage: pnpm llm:bakeoff --models anthropic/claude-haiku-5-5,anthropic/claude-sonnet-5-5 [--go]   (see the top of scripts/llm-bakeoff.ts)");
   process.exit(2);
 }
 

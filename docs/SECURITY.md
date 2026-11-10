@@ -1,23 +1,23 @@
 # Security: keys, prompts and data
 
 ## Keys
-* **One key per provider, per project.** Gemini keys are created in Google AI Studio for one project; the Groq key in the Groq console. Limits apply to the project or organisation, not to the key, so a second key buys nothing.
+* **One key, per project.** The Anthropic key is created in the Anthropic console for one workspace. Limits apply to the organisation or workspace, not to the key, so a second key buys nothing.
 * **Least privilege.** The keys are for generating text only. Do not reuse a key that can do anything else (billing, other products).
-* **Where they live.** Only in `.env` (ignored by git) or the real environment: `GEMINI_API_KEY`, `GROQ_API_KEY`. They are never committed, logged, written into a fixture or an ADR, or typed into a chat. The code reads them in one file (`packages/adapters/src/env.ts`) and wraps them so they print as `[redacted]`.
+* **Where it lives.** Only in `.env` (ignored by git) or the real environment: `ANTHROPIC_API_KEY`. It is never committed, logged, written into a fixture or an ADR, or typed into a chat. The code reads them in one file (`packages/adapters/src/env.ts`) and wraps them so they print as `[redacted]`.
 * **If a key ever appears in output, a log, a file or a chat: stop and rotate it.** Rotation: create a new key in the provider's console, put it in `.env`, delete the old key in the console, then run `pnpm secrets:check`. Do not wait.
 * **Reporting.** Tools and reports say "key present: yes/no" per provider, never a value or a length.
 
 ## What may be sent to a model
-The free tiers may use prompts to improve the provider's products, and people may read them (ADR 0022). So a prompt holds only content the owner wrote or that is openly licensed (the licence allow-list in `config/licences.json`). No student data, no personal data, no copied textbook text.
+Prompts leave the machine for a third party, and people may read them (ADR 0022). So a prompt holds only content the owner wrote or that is openly licensed (the licence allow-list in `config/licences.json`). No student data, no personal data, no copied textbook text.
 Before every live call the client scans the system prompt and the request for email addresses, phone numbers and key shapes and refuses to send if it finds one.
 
 ## Network filters and key transport
-* **Never bypass a network filter.** A corporate filter currently returns 403 to Node for `api.groq.com` while `curl` gets 200. That is a control. Groq stays unrun until IT allows it for `node.exe` or the step is run elsewhere (ADR 0040).
+* **Never bypass a network filter.** If a filter blocks Node from the provider while `curl` works, that is a control: stop and ask (ADR 0040).
 * If a curl transport is ever approved, the key travels by file or standard input, never as a command-line argument (other programs can read arguments). It sits behind the same adapter and needs an ADR.
-* Provider terms: Gemini free-tier prompts may be read by humans; Groq may log inference for up to 30 days. Only own or openly licensed content goes into prompts.
+* Provider terms: check Anthropic's current data-use terms for the plan in use before sending anything. Only own or openly licensed content goes into prompts.
 
 ## Checks
-* `pnpm secrets:check` scans every file git knows about that is not ignored (tracked and untracked), the `fixtures/` folder, and the added lines of the last 200 commits, for Google, Groq and AWS key shapes and for any `.env` file in git. It runs in the pre-commit hook (staged files).
+* `pnpm secrets:check` scans every file git knows about that is not ignored (tracked and untracked), the `fixtures/` folder, and the added lines of the last 200 commits, for Google, Groq, Anthropic (`sk-`) and AWS key shapes and for any `.env` file in git. It runs in the pre-commit hook (staged files).
   A key found in history is reported with its commit. The tool never rewrites history: that needs the owner's decision.
 * Tests: replay needs no keys and no network; live mode with a missing key throws without printing a value; blank `.env` lines are unset; `JSON.stringify` and `console.log` of the configuration never show a key; only `env.ts` reads `process.env`.
 

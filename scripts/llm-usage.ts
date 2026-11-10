@@ -10,7 +10,7 @@ const entries = ledger.entries().map((e) => (e.provider === "bedrock" ? { ...e, 
 const pad = (v: string | number, n: number) => String(v).padStart(n);
 console.log(`ledger: ${LEDGER_PATH}  (${entries.length} request(s) in all)`);
 
-for (const provider of Object.keys(PROFILES).filter((k) => k !== "_note")) {
+for (const provider of [...new Set(["anthropic", ...entries.map((e) => e.provider)])]) {
   const mine = entries.filter((e) => e.provider === provider);
   const today = dayIn(resetTimeZone(provider), Date.now());
   console.log(`\n=== ${provider}${provider === "reference" ? " (read-only Bedrock recordings; these were paid requests)" : ""}   day ${today} (${resetTimeZone(provider)})`);

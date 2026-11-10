@@ -1,5 +1,5 @@
 /**
- * pnpm llm:smoke [gemini|groq]   ONE call per provider whose key is present, through the system prompt and the envelope with a trivial schema. Prints the model id, the status,
+ * pnpm llm:smoke [anthropic]   ONE call per provider whose key is present, through the system prompt and the envelope with a trivial schema. Prints the model id, the status,
  * the latency and the token counts, then replays the recorded fixture to show that no live call is made. No retry loop: a failure is shown with its HTTP status,
  * retry-after and sanitised body. Keys are never printed.
  */
@@ -35,7 +35,7 @@ const only = process.argv[2];
 let failures = 0;
 for (const provider of PROVIDERS) {
   if (only && only !== provider) continue;
-  const present = Boolean(env[provider === "gemini" ? "GEMINI_API_KEY" : "GROQ_API_KEY"]);
+  const present = Boolean(env.ANTHROPIC_API_KEY);
   console.log(`\n== ${provider}: key present: ${present ? "yes" : "no"}`);
   if (!present) continue;
   let config;
