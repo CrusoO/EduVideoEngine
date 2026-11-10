@@ -508,12 +508,20 @@ class Speaker {
   }
 }
 
-/** Pieces to one string: maths pieces get a space either side, the rest is kept, spaces are tidied around punctuation. */
+/** Pieces to one string: a maths piece gets a space either side unless a quote, bracket or punctuation of the sentence already touches it; spaces are tidied around punctuation. */
 function join(toks: readonly Tok[]): string {
-  return toks
-    .map((t) => (t.math ? ` ${t.s} ` : t.s))
-    .join("")
-    .replace(/[ \t]+/g, " ")
+  let out = "";
+  toks.forEach((t, k) => {
+    if (!t.math) {
+      out += t.s;
+      return;
+    }
+    const before = out.slice(-1);
+    const after = toks[k + 1]?.s.slice(0, 1) ?? "";
+    out += (before === "" || /[\s("“‘[]/.test(before) ? "" : " ") + t.s + (after === "" || /[\s)"”’\],.;:!?।]/.test(after) ? "" : " ");
+  });
+  return out
+    .replace(/[ 	]+/g, " ")
     .replace(/ ([,.;:!?।)])/g, "$1")
     .replace(/\( /g, "(")
     .trim();
