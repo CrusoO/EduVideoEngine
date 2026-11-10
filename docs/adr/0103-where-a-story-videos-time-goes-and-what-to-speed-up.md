@@ -90,3 +90,23 @@ Do **3a, the sentence audio cache**, and do the worker and thread measurement as
 - `OMP_NUM_THREADS` made no clear difference; whether onnxruntime honours it here is not shown. Setting it in `kokoro_worker.py` is a code change and was not tried.
 - This differs from the 2026-11-04 probe (17 s load per worker, 2.6 times slower with three workers): here load is 4 to 7 s and one worker runs at about 1.1 times real time. The probe ran outside the engine in the development environment; this run used the engine's own Python. Open: the build calls `synthesizeAsync` per sentence pace from one worker each; where the ADR's "3 workers" came from is not found in `packages/pipeline/build` or `scripts/story-video.ts`.
 - Consequence: worker and thread tuning is dropped. Step 2 (the sentence audio cache) is the voice lever left, and it helps rebuilds, not a first build.
+
+## As built, 2026-11-10 (step 2, the sentence audio cache)
+Built in `packages/pipeline/build/sentence-cache.ts` and hooked in `scripts/story-video.ts` (Kokoro path only). Behaviour is in `docs/ENGINE_ARCHITECTURE.md` section 8. Decisions made while building:
+- **What is cached:** the voice's raw WAV, before silence trimming. Trimming runs afterwards on the copy, on a hit as on a miss, so the trimming filter is not in the key and a change to it needs no miss.
+- **Key:** the text as spoken plus the synthesizer's `cacheParts` (engine, version, voice, speed, language, model hash, voices hash, worker script hash). A synthesizer without `cacheParts` (Piper) is not cached.
+- **`--fresh`** (a `video:job` flag that clears the job's stage keys) does not bypass the cache. `node scripts/story-video.ts ... --no-sentence-cache` turns it off. The job runner never passes that flag.
+- **Bound:** 512 MiB under `dist/sentence-audio/`, entries used longest ago deleted first (the oldest-first rule of ADR 0093's job folder); a build that died while writing leaves a temporary file that is removed after an hour.
+- **Tests:** `packages/pipeline/tests/sentence-cache.test.ts`, 18 tests: byte-identical to a cache-off build, one input changed at a time misses (voice, speed, language, model, voices, engine version, worker, text), a cut-short, empty or non-WAV entry is ignored, two writers leave one whole file, `--fresh` and the off flag, the size bound, hash-only file names.
+
+Real check, same machine as the measurement above (Intel Core i5-1035G1, idle), `LLM_MODE=replay`, `scripts/story-video.ts <job folder> --stage build` on a 14-sentence animated story (96.8 s of narration), the job folder holding one `request.json`:
+
+| Build | Sentence cache | Voice phase |
+|---|---|---|
+| 1, empty cache | 0 read, 14 spoken | 80.4 s |
+| 2, same story again | 14 read, 0 spoken | 2.8 s |
+| 3, `--no-sentence-cache` | off | 79.2 s |
+
+All 14 sentence WAVs were byte-identical across the three builds. The second build saved 77.6 s of the voice phase (the worker, and so the model load, is never started when every sentence is cached). A first build is as slow as before, as this ADR said. Whole-stage times were not recorded; the 2.8 s is the cache reading and copying 14 files.
+
+Not done: the cache is not used by the lesson path (`scripts/build-lesson.ts`) or by `source-video.ts`. Whether prompt-driven jobs (narration that may echo a learner's question) should skip the cache is an open question for the owner (ED7).
