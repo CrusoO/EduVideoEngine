@@ -39,9 +39,9 @@ type Entry = { id: string; category: string; written: string; hinglish: string; 
 type IndicTable = { needsNativeCheck: boolean; ones: string[]; hundred: string; thousand: string; lakh: string; crore: string };
 type Lexicon = {
   numbers: { hi: IndicTable; ne: IndicTable; en: { ones: string[]; tens: string[]; hundred: string; thousand: string; lakh: string; crore: string } };
-  ordinals: { hi: { first: string[]; suffix: string }; ne: { first: string[]; suffix: string } };
-  months: { en: string[]; hi: { names: string[] }; ne: { names: string[] } };
-  letters: { hi: { names: Record<string, string> }; ne: { names: Record<string, string> } };
+  ordinals: { hi: { needsNativeCheck: boolean; first: string[]; suffix: string }; ne: { needsNativeCheck: boolean; first: string[]; suffix: string } };
+  months: { en: string[]; hi: { needsNativeCheck: boolean; names: string[] }; ne: { needsNativeCheck: boolean; names: string[] } };
+  letters: { hi: { needsNativeCheck: boolean; names: Record<string, string> }; ne: { needsNativeCheck: boolean; names: Record<string, string> } };
   chemistry: { elements: string[]; knownWithoutDigits: string[]; knownSingleElementWithDigits: string[] };
   translit: { words: Record<string, string> };
   entries: Entry[];
