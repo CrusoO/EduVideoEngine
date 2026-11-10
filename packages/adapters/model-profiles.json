@@ -10,12 +10,12 @@
         "reasoning": false,
         "maxOutputTokens": 8192,
         "limits": {
-          "rpm": 50,
-          "tpm": 100000,
+          "rpm": 1000,
+          "tpm": 580000,
           "rpd": 5000
         },
-        "verified": false,
-        "note": "limits are local safety caps, not read from the Anthropic console; replace them with the account limits."
+        "verified": true,
+        "note": "rpm and tpm observed in the response headers on 2026-11-11 (1000 and 580000); rpd 5000 is a local safety cap."
       },
       "claude-sonnet-5-5": {
         "jsonMode": false,

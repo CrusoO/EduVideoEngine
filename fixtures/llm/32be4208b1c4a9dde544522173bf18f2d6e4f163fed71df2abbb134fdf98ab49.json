@@ -1,0 +1,17 @@
+{
+  "key": "32be4208b1c4a9dde544522173bf18f2d6e4f163fed71df2abbb134fdf98ab49",
+  "step": "smoke",
+  "promptVersion": "smoke.v1",
+  "model": "claude-haiku-5-5",
+  "recordedAt": "2026-11-10T19:04:48.872Z",
+  "response": {
+    "text": "{\"ok\":true,\"echo\":\"lantern\"}",
+    "model": "claude-haiku-5-5",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 1685,
+      "outputTokens": 19,
+      "thinkingTokens": 0
+    }
+  }
+}
