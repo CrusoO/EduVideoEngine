@@ -1,0 +1,17 @@
+{
+  "key": "9add739a0228061829adda93429d4231fd23ca9b8cdc1d078a0bc9ddeb2c1c58",
+  "step": "scriptwriter",
+  "promptVersion": "scriptwriter.v1",
+  "model": "claude-sonnet-5-5",
+  "recordedAt": "2026-11-10T19:07:18.656Z",
+  "response": {
+    "text": "{\"beats\":[{\"beatId\":\"b2\",\"sentences\":[{\"claimId\":\"nn.claim.number\",\"text\":\"A neuron holds a number, and that number is called its activation.\"},{\"claimId\":\"nn.claim.weight\",\"text\":\"Each pixel has a weight.\"},{\"claimId\":\"nn.claim.weight\",\"text\":\"The weight tells you how strongly that pixel pushes the neuron up or down.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"The neuron multiplies every pixel by its weight.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"Then it adds up all those products.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"After that, it adds its bias to the sum.\"},{\"claimId\":\"nn.claim.sum\",\"text\":\"Each pixel is weighed first, and that is why the weights matter so much.\"}]},{\"beatId\":\"b3\",\"prompt\":\"Why does rewriting an equation in a new way never change its total?\",\"sentences\":[{\"claimId\":\"c.nn.steps.equivalent.1\",\"text\":\"Look at {expr:nn.problem} and then at {expr:nn.written}.\"},{\"claimId\":\"c.nn.steps.equivalent.1\",\"text\":\"They are the same equation, just written in two different ways.\"},{\"claimId\":\"c.nn.steps.equivalent.1\",\"text\":\"Both forms say exactly the same thing, so the neuron's total stays the same.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"Now put {expr:nn.written} beside {expr:nn.total}.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"These are again the same equation written in two ways.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"The shorter form just states the total directly.\"},{\"claimId\":\"c.nn.steps.equivalent.2\",\"text\":\"Nothing is lost in moving between them, so both tell you the same total.\"}]},{\"beatId\":\"b4\",\"note\":\"Pixels alone miss the weights\",\"sentences\":[{\"claimId\":\"nn.claim.mistake\",\"text\":\"Adding the pixels alone, as in {expr:nn.wrong}, does not give what the neuron adds up.\"},{\"claimId\":\"nn.claim.mistake\",\"text\":\"The weights are missing, so the result is not the neuron's sum.\"}]},{\"beatId\":\"b5\",\"prompt\":\"Which products did you work out before adding to get your total?\",\"sentences\":[{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"The neuron's total is {expr:nn.q.answer}.\"},{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"The equation on screen is {expr:nn.q.eq}.\"},{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"These are the same equation written in two ways.\"},{\"claimId\":\"nn.q.recall.answer.b5\",\"text\":\"Both forms give the same total, whichever one you look at.\"}]}]}",
+    "model": "claude-sonnet-5-5",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 5387,
+      "outputTokens": 3429,
+      "thinkingTokens": 0
+    }
+  }
+}

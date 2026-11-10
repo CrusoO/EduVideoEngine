@@ -1,8 +1,40 @@
 {
-  "_note": "One entry per provider and model. Model ids come from the owner's ranking and must be checked against each provider's list-models endpoint (pnpm llm:models). Limits stay null until filled from the provider's official page or observed in its response headers; in record or live mode the loader refuses to run while rpm or rpd is null. verified is true only when the numbers were read from an official page for the plan in use, or observed in the provider's own rate-limit headers for this account.",
-  "gemini": {
-    "defaultModel": "gemini-3.8-flash",
-    "resetTimeZone": "America/Los_Angeles",
+  "_note": "One entry per provider and model. Anthropic (Claude) is the only live provider (ADR 0105). Limits are the local safety caps the client enforces (the provider publishes its own, per account tier): raise them from the Anthropic console for the plan in use. verified is true only when the numbers were read from an official page or observed in the provider response headers for this account.",
+  "anthropic": {
+    "_note": "The only selectable provider. Which model a pass uses is chosen in STEP_MODELS in src/profiles.ts; LLM_MODEL overrides it for every pass. Current Claude models take no temperature, top_p, top_k or assistant prefill; the adapter sends none.",
+    "defaultModel": "claude-haiku-5-5",
+    "resetTimeZone": "UTC",
+    "models": {
+      "claude-haiku-5-5": {
+        "jsonMode": false,
+        "reasoning": false,
+        "maxOutputTokens": 8192,
+        "limits": {
+          "rpm": 1000,
+          "tpm": 580000,
+          "rpd": 5000
+        },
+        "verified": true,
+        "note": "rpm and tpm observed in the response headers on 2026-11-11 (1000 and 580000); rpd 5000 is a local safety cap."
+      },
+      "claude-sonnet-5-5": {
+        "jsonMode": false,
+        "reasoning": false,
+        "maxOutputTokens": 16384,
+        "limits": {
+          "rpm": 50,
+          "tpm": 100000,
+          "rpd": 5000
+        },
+        "verified": false,
+        "note": "limits are local safety caps, not read from the Anthropic console; replace them with the account limits."
+      }
+    }
+  },
+  "recorded": {
+    "_note": "Read-only. Profiles for models whose recorded answers (fixtures/llm/, keyed by model id) still replay: Gemini, Groq and OpenRouter models from the earlier work. No adapter exists for them and they cannot be selected with LLM_PROVIDER; replay needs only the profile.",
+    "defaultModel": "minimax/minimax-m3.1-flash:free",
+    "resetTimeZone": "UTC",
     "models": {
       "gemini-3.8-flash": {
         "jsonMode": true,
@@ -42,13 +74,7 @@
         },
         "verified": false,
         "note": "Limits estimated from Google AI Studio free tier; verify from the rate-limits page for the plan in use."
-      }
-    }
-  },
-  "groq": {
-    "defaultModel": "openai/gpt-oss-120b",
-    "resetTimeZone": "UTC",
-    "models": {
+      },
       "openai/gpt-oss-120b": {
         "jsonMode": true,
         "reasoning": true,
@@ -94,13 +120,7 @@
           "tpd": 200000
         },
         "verified": false
-      }
-    }
-  },
-  "openrouter": {
-    "defaultModel": "google/gemma-4-31b-it:free",
-    "resetTimeZone": "UTC",
-    "models": {
+      },
       "google/gemma-4-31b-it:free": {
         "jsonMode": true,
         "reasoning": false,

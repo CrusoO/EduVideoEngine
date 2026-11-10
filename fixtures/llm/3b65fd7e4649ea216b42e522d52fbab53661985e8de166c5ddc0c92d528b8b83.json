@@ -1,0 +1,17 @@
+{
+  "key": "3b65fd7e4649ea216b42e522d52fbab53661985e8de166c5ddc0c92d528b8b83",
+  "step": "planner",
+  "promptVersion": "planner.v4",
+  "model": "claude-haiku-5-5",
+  "recordedAt": "2026-11-10T19:06:53.873Z",
+  "response": {
+    "text": "{\"arcId\":\"problem_first\",\"prerequisites\":[],\"beats\":[{\"id\":\"b1\",\"slotId\":\"hook\",\"pattern\":\"patch-hook\",\"title\":\"Guess the neuron's total\",\"learningGoal\":\"What total would a neuron get from this strip of pixels?\",\"sourceIds\":[\"nn.patch\"]},{\"id\":\"b2\",\"slotId\":\"concept\",\"pattern\":\"weights-on-pixels\",\"title\":\"How a neuron adds up\",\"learningGoal\":\"What does a neuron do with each pixel and its weight before adding the bias?\",\"sourceIds\":[\"nn.patch\",\"nn.claim.number\",\"nn.claim.weight\",\"nn.claim.sum\"]},{\"id\":\"b3\",\"slotId\":\"worked_example\",\"pattern\":\"balance-scale-worked\",\"title\":\"Work the balance scale\",\"learningGoal\":\"What are the steps to find the neuron's total?\",\"sourceIds\":[\"nn.steps\"]},{\"id\":\"b4\",\"slotId\":\"common_mistake_contrast\",\"pattern\":\"statement-card\",\"title\":\"Adding pixels without weights\",\"learningGoal\":\"Why is adding the pixel values alone not what the neuron adds up?\",\"sourceIds\":[\"nn.claim.mistake\"]},{\"id\":\"b5\",\"slotId\":\"check\",\"pattern\":\"check-question\",\"title\":\"Check your total\",\"learningGoal\":\"Can you work out the neuron's total from its pixels, weights and bias?\",\"sourceIds\":[\"nn.q.recall\"]}]}",
+    "model": "claude-haiku-5-5",
+    "status": "completed",
+    "usage": {
+      "inputTokens": 7029,
+      "outputTokens": 4333,
+      "thinkingTokens": 0
+    }
+  }
+}

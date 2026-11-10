@@ -12,47 +12,50 @@ const GROQ = "gsk" + "_" + "testvalue0123456789abcdefghij";
 describe("configuration comes from the environment alone", () => {
   it("replay needs no keys: nothing set gives the defaults", () => {
     const c = loadLlmConfig({});
-    expect(c).toMatchObject({ provider: "gemini", model: "gemini-3.8-flash", mode: "replay", temperature: 0.2, apiKey: null, ci: false });
+    expect(c).toMatchObject({ provider: "anthropic", model: "claude-haiku-5-5", mode: "replay", temperature: 0.2, apiKey: null, ci: false });
   });
   it("blank lines are treated as unset", () => {
-    const c = loadLlmConfig({ LLM_PROVIDER: "", LLM_MODEL: "  ", LLM_MODE: "", LLM_TEMPERATURE: "", GEMINI_API_KEY: "", GROQ_API_KEY: "" });
-    expect(c).toMatchObject({ provider: "gemini", model: "gemini-3.8-flash", mode: "replay", temperature: 0.2, apiKey: null });
+    const c = loadLlmConfig({ LLM_PROVIDER: "", LLM_MODEL: "  ", LLM_MODE: "", LLM_TEMPERATURE: "", ANTHROPIC_API_KEY: "" });
+    expect(c).toMatchObject({ provider: "anthropic", model: "claude-haiku-5-5", mode: "replay", temperature: 0.2, apiKey: null });
   });
   it("blank model means the provider's default from the profile file", () => {
-    expect(loadLlmConfig({ LLM_PROVIDER: "groq" }).model).toBe("openai/gpt-oss-120b");
+    expect(loadLlmConfig({ LLM_PROVIDER: "anthropic" }).model).toBe("claude-haiku-5-5");
+    expect(loadLlmConfig({}).stepModels).toEqual({ scriptwriter: "claude-sonnet-5-5" });
+    expect(loadLlmConfig({ LLM_MODEL: "claude-sonnet-5-5" }).stepModels).toEqual({});
   });
   it("an unknown provider, mode, model or temperature is rejected with a message", () => {
-    expect(() => loadLlmConfig({ LLM_PROVIDER: "bedrock" })).toThrow(ConfigError);
+    expect(() => loadLlmConfig({ LLM_PROVIDER: "gemini" })).toThrow(ConfigError);
     expect(() => loadLlmConfig({ LLM_PROVIDER: "reference" })).toThrow(/LLM_PROVIDER/);
     expect(() => loadLlmConfig({ LLM_MODE: "yolo" })).toThrow(/LLM_MODE/);
-    expect(() => loadLlmConfig({ LLM_MODEL: "gemini-9-flash" })).toThrow(/no profile for gemini/);
+    expect(() => loadLlmConfig({ LLM_MODEL: "claude-9" })).toThrow(/no profile for anthropic/);
     expect(() => loadLlmConfig({ LLM_TEMPERATURE: "3" })).toThrow(/LLM_TEMPERATURE/);
-    expect(() => loadLlmConfig({ LLM_PROVIDER: "groq", LLM_MODEL: "gemini-3.8-flash" })).toThrow(/no profile for groq/);
+    for (const gone of ["groq", "openrouter"]) expect(() => loadLlmConfig({ LLM_PROVIDER: gone })).toThrow(/LLM_PROVIDER/);
   });
   it("record or live without the provider's key throws, and the message holds no value", () => {
     for (const mode of ["record", "live"]) {
       const e = (() => {
         try {
-          loadLlmConfig({ LLM_MODE: mode, LLM_PROVIDER: "groq", GEMINI_API_KEY: KEY });
+          loadLlmConfig({ LLM_MODE: mode });
         } catch (x) {
           return x as Error;
         }
       })()!;
-      expect(e.message).toContain("GROQ_API_KEY is not set");
+      expect(e.message).toContain("ANTHROPIC_API_KEY is not set");
       expect(e.message).not.toContain(KEY);
     }
   });
   it("record or live refuses to run while rpm or rpd is null in the profile file", () => {
-    expect(() => loadLlmConfig({ LLM_MODE: "record", LLM_MODEL: "gemini-3.5-flash-lite", GEMINI_API_KEY: KEY })).toThrow(/Limits for gemini\/gemini-3\.5-flash-lite are not filled/);
-    const filled = loadLlmConfig({ LLM_MODE: "record", LLM_PROVIDER: "groq", GROQ_API_KEY: GROQ });
-    expect(filled.profile.limits).toMatchObject({ rpm: 30, rpd: 1000 });
+    expect(() => loadLlmConfig({ LLM_MODE: "record", LLM_MODEL: "gemini-3.5-flash-lite", ANTHROPIC_API_KEY: KEY })).toThrow(/Limits for anthropic\/gemini-3\.5-flash-lite are not filled/);
+    const filled = loadLlmConfig({ LLM_MODE: "record", ANTHROPIC_API_KEY: GROQ });
+    expect(filled.profile.limits.rpm).not.toBeNull();
+    expect(filled.profile.limits.rpd).not.toBeNull();
   });
-  it("replay with a null-limit profile is fine", () => expect(loadLlmConfig({ LLM_MODE: "replay", LLM_MODEL: "gemini-3.5-flash-lite" }).profile.limits.rpm).toBeNull());
+  it("a recorded model of an earlier provider still has a replay profile", () => expect(loadLlmConfig({ LLM_MODE: "replay", LLM_MODEL: "gemini-3.5-flash-lite" }).profile.limits.rpm).toBeNull());
   it("CI is read as a flag", () => expect(loadLlmConfig({ CI: "true" }).ci).toBe(true));
 });
 
 describe("a key cannot be printed by accident", () => {
-  const c = loadLlmConfig({ LLM_MODE: "record", LLM_PROVIDER: "groq", GROQ_API_KEY: GROQ });
+  const c = loadLlmConfig({ LLM_MODE: "record", ANTHROPIC_API_KEY: GROQ });
   it("JSON.stringify, String, a template, util.inspect and console.log show [redacted]", () => {
     expect(c.apiKey).toBeInstanceOf(Secret);
     for (const shown of [JSON.stringify(c), String(c.apiKey), `${c.apiKey}`, inspect(c, { depth: 5 }), inspect(c.apiKey), JSON.stringify({ k: c.apiKey })]) {
@@ -82,9 +85,9 @@ describe("a key cannot be printed by accident", () => {
 describe("readEnv", () => {
   it("reads a .env file under the real environment, ignoring blanks and comments", () => {
     const dir = mkdtempSync(join(tmpdir(), "eve-env-"));
-    writeFileSync(join(dir, ".env"), "# comment\nLLM_MODEL=from-file\nLLM_MODE=            # replay, record or live\nLLM_PROVIDER='groq'\nGROQ_API_KEY=\nLLM_TEMPERATURE=0.3        # low\n");
+    writeFileSync(join(dir, ".env"), "# comment\nLLM_MODEL=from-file\nLLM_MODE=            # replay, record or live\nLLM_PROVIDER='anthropic'\nANTHROPIC_API_KEY=\nLLM_TEMPERATURE=0.3        # low\n");
     const env = readEnv(join(dir, ".env"));
-    expect(env).toMatchObject({ LLM_MODEL: "from-file", LLM_PROVIDER: "groq", LLM_TEMPERATURE: "0.3" });
+    expect(env).toMatchObject({ LLM_MODEL: "from-file", LLM_PROVIDER: "anthropic", LLM_TEMPERATURE: "0.3" });
     expect("LLM_MODE" in env && env.LLM_MODE === "").toBe(false);
     expect(readEnv(join(dir, "missing"))).toBeDefined();
   });

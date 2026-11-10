@@ -132,7 +132,7 @@ describe("loadLlmConfig edges", () => {
     expect(() => loadLlmConfig({ LLM_TEMPERATURE: "warm" })).toThrow(/LLM_TEMPERATURE/);
   });
   it("accepts exactly the three modes, and a blank mode is replay", () => {
-    for (const mode of ["replay", "record", "live"]) expect(loadLlmConfig({ LLM_MODE: mode, GEMINI_API_KEY: KEY }).mode).toBe(mode);
+    for (const mode of ["replay", "record", "live"]) expect(loadLlmConfig({ LLM_MODE: mode, ANTHROPIC_API_KEY: KEY }).mode).toBe(mode);
     expect(loadLlmConfig({ LLM_MODE: "" }).mode).toBe("replay");
     expect(() => loadLlmConfig({ LLM_MODE: "" + "Replay" })).toThrow(/LLM_MODE/);
   });
@@ -147,31 +147,32 @@ describe("loadLlmConfig edges", () => {
     expect(message).not.toContain("yolo-secret-value");
   });
   it("trims a model name, and a model of only spaces is the default", () => {
-    expect(loadLlmConfig({ LLM_MODEL: "  gemini-2.5-flash " }).model).toBe("gemini-2.5-flash");
-    expect(loadLlmConfig({ LLM_MODEL: "   " }).model).toBe("gemini-3.8-flash");
+    expect(loadLlmConfig({ LLM_MODEL: "  claude-sonnet-5-5 " }).model).toBe("claude-sonnet-5-5");
+    expect(loadLlmConfig({ LLM_MODEL: "   " }).model).toBe("claude-haiku-5-5");
   });
   it("an unknown model is reported with the provider and where to add it", () => {
-    expect(() => loadLlmConfig({ LLM_MODEL: "nope" })).toThrow(/Model "nope" has no profile for gemini\. Add it to packages\/adapters\/model-profiles\.json/);
+    expect(() => loadLlmConfig({ LLM_MODEL: "nope" })).toThrow(/Model "nope" has no profile for anthropic\. Add it to packages\/adapters\/model-profiles\.json/);
   });
   it("record and live need the key of the chosen provider, and say which", () => {
-    expect(() => loadLlmConfig({ LLM_MODE: "record" })).toThrow(/GEMINI_API_KEY is not set \(required in record mode\)/);
-    expect(() => loadLlmConfig({ LLM_MODE: "live", LLM_PROVIDER: "groq", GEMINI_API_KEY: KEY })).toThrow(/GROQ_API_KEY is not set \(required in live mode\)/);
-    expect(loadLlmConfig({ LLM_MODE: "record", GEMINI_API_KEY: KEY }).apiKey?.reveal()).toBe(KEY);
+    expect(() => loadLlmConfig({ LLM_MODE: "record" })).toThrow(/ANTHROPIC_API_KEY is not set \(required in record mode\)/);
+    expect(() => loadLlmConfig({ LLM_MODE: "live" })).toThrow(/ANTHROPIC_API_KEY is not set \(required in live mode\)/);
+    expect(() => loadLlmConfig({ LLM_MODE: "live", LLM_PROVIDER: "groq", ANTHROPIC_API_KEY: KEY })).toThrow(/LLM_PROVIDER/);
+    expect(loadLlmConfig({ LLM_MODE: "record", ANTHROPIC_API_KEY: KEY }).apiKey?.reveal()).toBe(KEY);
   });
   it("replay keeps a key if one is given, wrapped, and none otherwise", () => {
-    expect(loadLlmConfig({ GEMINI_API_KEY: KEY }).apiKey).toBeInstanceOf(Secret);
+    expect(loadLlmConfig({ ANTHROPIC_API_KEY: KEY }).apiKey).toBeInstanceOf(Secret);
     expect(loadLlmConfig({}).apiKey).toBeNull();
   });
   it("refuses record when only one of rpm and rpd is null, and says what to fill", () => {
     const profiles = (rpm: number | null, rpd: number | null): ProfileFile => {
       const base = loadLlmConfig({}).profile;
-      return { gemini: { defaultModel: "m", resetTimeZone: "UTC", models: { m: { ...base, limits: { rpm, tpm: null, rpd } } } }, groq: { defaultModel: "g", resetTimeZone: "UTC", models: {} }, reference: { defaultModel: "r", resetTimeZone: "UTC", models: {} } } as unknown as ProfileFile;
+      return { anthropic: { defaultModel: "m", resetTimeZone: "UTC", models: { m: { ...base, limits: { rpm, tpm: null, rpd } } } }, recorded: { defaultModel: "g", resetTimeZone: "UTC", models: {} }, reference: { defaultModel: "r", resetTimeZone: "UTC", models: {} } } as unknown as ProfileFile;
     };
-    const env = { LLM_MODE: "record", GEMINI_API_KEY: KEY };
-    expect(() => loadLlmConfig(env, profiles(null, 20))).toThrow(/Limits for gemini\/m are not filled.*rpm and rpd are null/);
-    expect(() => loadLlmConfig(env, profiles(5, null))).toThrow(/Limits for gemini\/m are not filled/);
+    const env = { LLM_MODE: "record", ANTHROPIC_API_KEY: KEY, LLM_MODEL: "m" };
+    expect(() => loadLlmConfig(env, profiles(null, 20))).toThrow(/Limits for anthropic\/m are not filled.*rpm and rpd are null/);
+    expect(() => loadLlmConfig(env, profiles(5, null))).toThrow(/Limits for anthropic\/m are not filled/);
     expect(loadLlmConfig(env, profiles(5, 20)).mode).toBe("record");
-    expect(() => loadLlmConfig({ GEMINI_API_KEY: KEY }, profiles(null, null))).not.toThrow(); // replay is fine
+    expect(() => loadLlmConfig({ ANTHROPIC_API_KEY: KEY, LLM_MODEL: "m" }, profiles(null, null))).not.toThrow(); // replay is fine
   });
   it("CI is on for true and 1 only", () => {
     expect(loadLlmConfig({ CI: "true" }).ci).toBe(true);

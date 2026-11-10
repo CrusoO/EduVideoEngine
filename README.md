@@ -34,28 +34,24 @@ pnpm 12 blocks dependency build scripts unless they are allowed. The only one al
 Golden frames of the components: `pnpm --filter @eve/components golden` (regenerate with `golden:update`).
 
 ## Configuration (language model)
-Copy `.env.example` to `.env` (git ignores it) and fill in what you use. Six variables, nothing else:
+Copy `.env.example` to `.env` (git ignores it) and fill in what you use. Five variables, nothing else:
 
 | Variable | Meaning |
 |---|---|
-| `LLM_PROVIDER` | `gemini` (main), `groq` (backup) or `openrouter` (free models; the default model is `minimax/minimax-m3.1-flash:free`) |
-| `LLM_MODEL` | blank means the provider's default in `packages/adapters/model-profiles.json` |
+| `LLM_PROVIDER` | `anthropic` (the only live provider; ADR 0105) |
+| `LLM_MODEL` | blank means each pass uses its model from `STEP_MODELS` in `packages/adapters/src/profiles.ts` (Haiku 5.5; Sonnet 5.5 for the scriptwriter); a value sends every pass to that one model |
 | `LLM_MODE` | `replay` (default: recorded answers only, no key, no network), `record` (call once and save) or `live` |
-| `LLM_TEMPERATURE` | 0 to 1, default 0.2 |
-| `GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` | one key per provider; leave blank if unused |
+| `LLM_TEMPERATURE` | 0 to 1, default 0.2; not sent to Claude (current models take no sampling parameters), only part of the fixture key |
+| `ANTHROPIC_API_KEY` | the Anthropic key; leave blank for replay |
 
 Limits and model quirks are in `model-profiles.json`, not in variables. In `record` or `live` mode the loader refuses to run while a model's `rpm` or `rpd` is `null`: fill them from the provider's official page. A key is never printed, logged or committed.
 Useful commands: `pnpm llm:models` (which profile ids exist for your key), `pnpm llm:smoke`, `pnpm llm:probes` (probes 1 to 8; `--co2` for probes 9 to 13), `pnpm plan:lesson <skillId>`, `pnpm llm:usage`, `pnpm llm:sizes`.
 
-### Provider status (2026-10-20)
+### Provider status (2026-11-11)
 | Provider / model | Limits | Verified | State |
 |---|---|---|---|
-| OpenRouter `minimax/minimax-m3.1-flash:free` (default for OpenRouter; ADR 0060) | 20 RPM, 50 RPD without credit (1,000 with 10 credits), account-wide; no published token limit (the 200K TPM is a local cap) | yes (OpenRouter's limits page and models list) | probes 1 to 8 and 9 to 13 pass; planner.v4 and scriptwriter.v1 recorded; a generated lesson passes every gate. A reasoning model: its `maxOutputTokens` is 32,768 because reasoning shares it |
-| OpenRouter `google/gemma-4-31b-it:free`, `nvidia/nemotron-3-super-120b-a12b:free` | as above | yes | answered upstream 429 and 404 on 2026-10-20 (the providers behind them, not this machine); not used |
-| Gemini `gemini-3.8-flash` | 5 RPM, 250K TPM, 20 RPD | yes (AI Studio, free tier) | one smoke recorded; often answers 503 "high demand"; probes not run |
-| Gemini `gemini-2.5-flash`, `gemini-3.5-flash-lite` | unknown | no | live calls refused until limits are filled |
-| Groq `openai/gpt-oss-120b` (optional backup) | 30 RPM, 8K TPM, 1000 RPD, 200K TPD | no (Developer-plan table) | blocked: a network filter returns 403 to Node (ADR 0040) |
-| Sonnet 4.6 (reference) | n/a | n/a | read-only recordings, replay only |
+| Anthropic `claude-haiku-5-5` (planner and other passes), `claude-sonnet-5-5` (scriptwriter) | local safety caps in `model-profiles.json` (50 RPM, 100K TPM, 5,000 RPD); replace with the account's limits | no | adapter built and tested with a fake HTTP client; no live call has been made yet (ADR 0105) |
+| Earlier recordings (OpenRouter minimax, Gemini, Groq models) and Sonnet 4.6 (reference) | n/a | n/a | read-only: their fixtures in `fixtures/llm/` still replay (profiles under `recorded` and `reference`); there is no adapter for them |
 
 ## Known limits
 A function graph counts toward gate G3(c) through the claimCode checks structure and every number on screen, not teaching quality. It cannot check that a sentence paraphrases its claim faithfully, or that an author-declared step link is the best one to teach; only direct prerequisites are checked. Nothing is called "reviewed" until a sentence-level approval gate exists.
