@@ -14,3 +14,4 @@ export * from "./coverage";
 export * from "./seam";
 export * from "./physics";
 export * from "./chemistry";
+export * from "./biology";

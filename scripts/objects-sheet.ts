@@ -1,5 +1,5 @@
 /**
- * pnpm vite-node scripts/objects-sheet.ts <out folder> (--samples [--chemistry] [name ...] | --story <request.json> ...)   (ADR 0108, 0110)
+ * pnpm vite-node scripts/objects-sheet.ts <out folder> (--samples [--chemistry|--biology] [name ...] | --story <request.json> ...)   (ADR 0108, 0110)
  * A contact sheet of drawn objects, to look at before a reviewer does: with --samples, every figure of fixtures/objects/physics-wave1-samples.json and physics-wave2-samples.json (or chemistry-wave3-samples.json with --chemistry; or only the named ones) is drawn on a
  * scene of its own; with --story, the scenes of each story request are drawn at the end of the scene. It opens the same page the story video opens, in Chromium, and photographs it, so a
  * picture here is what the video draws. No voice, no model, no network; the drawers run with ENGINE_OBJECTS_V2 and ENGINE_OBJECTS_ALLOW_UNREVIEWED on, because it is a development tool.
@@ -20,7 +20,8 @@ if (!args[0] || (mode !== "--samples" && mode !== "--story")) {
   process.exit(2);
 }
 const chemistry = args.includes("--chemistry"); // draw the samples of wave 3 (chemistry) instead of those of wave 1
-const rest = args.slice(2).filter((a) => a !== "--chemistry");
+const biology = args.includes("--biology"); // draw the samples of wave 4 (biology)
+const rest = args.slice(2).filter((a) => a !== "--chemistry" && a !== "--biology");
 mkdirSync(out, { recursive: true });
 const root = mkdtempSync(join(tmpdir(), "eve-sheet-"));
 const env = { ENGINE_OBJECTS_V2: "1", ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1" };
@@ -32,7 +33,7 @@ type Job = { name: string; story: unknown };
 const jobs: Job[] = [];
 if (mode === "--samples") {
   const all: Record<string, Record<string, unknown>> = {};
-  for (const f of chemistry ? ["chemistry-wave3-samples.json"] : ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
+  for (const f of biology ? ["biology-wave4-samples.json"] : chemistry ? ["chemistry-wave3-samples.json"] : ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
   for (const name of rest.length ? rest : Object.keys(all)) jobs.push({ name, story: { title: name, scenes: [{ heading: name, sentences: ["A figure.", "Another sentence.", "A third sentence."], visuals: [], objects: [all[name]] }] } });
 } else {
   for (const f of rest) jobs.push({ name: f.replace(/^.*[\\/]/, "").replace(/\.request\.json$/, ""), story: (JSON.parse(readFileSync(resolve(f), "utf8")) as { story: unknown }).story });

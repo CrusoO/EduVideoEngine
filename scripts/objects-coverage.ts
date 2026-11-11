@@ -17,5 +17,6 @@ console.log(formatCoverage(coverage(rows, registry), arg ? path : `${path} (the 
 const rep = coverage(rows, registry);
 const w = (k: string): string => (rep.byWave[k] ? `${rep.byWave[k]!.registered}/${rep.byWave[k]!.pairs}` : "n/a");
 console.log(`\nPhysics waves (registered pairs / pairs): wave 1 ${w("1")}, wave 2 ${w("2")}. Counted by object name: a drawer that covers only part of an object (the microscope of "Human eye, microscope, telescope ray paths", the reactor schematic, the transistor circuit, the B field of an EM wave) is listed in ADR 0108 and ADR 0109 under what is not drawn, not here. The plan's own figures after W1 and W2 (20.3% and 30.1% strict) add the pairs it grades as drawn today; this report does not, so the two are not the same number.`);
+console.log(`Biology wave 4 (registered pairs / pairs): ${w("4")}. Counted by object name, as above: a drawer that covers an object only in part (the key tree of "Classification hierarchy / key tree", the cycle graph of the reproduction object, the brain, the fruit, replication, the fermentor) is listed in ADR 0111 under what is not drawn, not here. All biology drawers are registered reviewed: false, so "reviewed" stays 0 for them.`);
 if (gaps) console.log(`
 ${formatGaps(uncovered(rows, registry))}`);

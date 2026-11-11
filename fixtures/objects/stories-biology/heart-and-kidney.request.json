@@ -1,0 +1,124 @@
+{
+ "requestId": "w4-heart-and-kidney",
+ "idempotencyKey": "w4-heart-and-kidney-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "The heart and the kidney",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Blood goes round twice",
+    "sentences": [
+     "Blood passes through the heart twice on every trip round the body."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Blood goes round twice",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Double circulation",
+    "sentences": [
+     "Oxygen-poor blood goes from the right side to the lungs.",
+     "Oxygen-rich blood returns to the left side and goes to the body."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "heart",
+      "name": "Heart and double circulation",
+      "figure": "b_heart",
+      "params": {},
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The nephron",
+    "sentences": [
+     "The kidney filters 180 litres of blood plasma in a day.",
+     "Only 1.50 litres leave as urine, so 99.2 per cent is taken back."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "nephron",
+      "name": "The nephron",
+      "figure": "b_nephron",
+      "params": {},
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The food that feeds it",
+    "sentences": [
+     "Digestion makes the glucose that the blood carries."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "system_digestion",
+      "name": "Human digestive system",
+      "figure": "b_system",
+      "params": {
+       "system": "digestion"
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Transport and clean up",
+    "sentences": [
+     "The heart moves it and the kidney cleans it."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Move and clean",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
