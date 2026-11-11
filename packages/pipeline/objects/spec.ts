@@ -20,14 +20,18 @@ export type ObjectKind = (typeof OBJECT_KINDS)[number];
 export const SUBJECTS = ["maths", "physics", "chemistry", "biology"] as const;
 export type Subject = (typeof SUBJECTS)[number];
 
-/** Letters, digits, spaces and the few marks a science label needs. No @, no URL punctuation, no control characters. */
-export const SAFE_LABEL = /^[A-Za-z0-9][A-Za-z0-9 .,()'/+=^_%:-]{0,59}$/;
+/**
+ * Letters, digits, spaces and the few marks a science label needs. No @, no URL punctuation, no control characters. A label may start with a minus sign (the hyphen-minus or the
+ * Unicode minus U+2212) only when a digit follows it at once, so a tick label such as -2 is allowed and a leading dash on a word is not; the Unicode minus is also allowed inside a label.
+ * 1 to 60 characters in all (ADR 0113).
+ */
+export const SAFE_LABEL = /^(?=.{1,60}$)(?:[-\u2212](?=[0-9]))?[A-Za-z0-9][A-Za-z0-9 .,()'/+=^_%:\u2212-]*$/;
 const ID = /^[a-z][a-z0-9_]{0,39}$/;
 const num = z.number().finite().min(-1e6).max(1e6);
 
 const label = z
   .string()
-  .regex(SAFE_LABEL, "a label is 1 to 60 characters: letters, digits, spaces and . , ( ) ' / + = ^ _ % : -")
+  .regex(SAFE_LABEL, "a label is 1 to 60 characters: letters, digits, spaces and . , ( ) ' / + = ^ _ % : - and the minus sign (a leading one only before a digit)")
   .superRefine((v, ctx) => {
     if (findBannedPositioning(v).length > 0) ctx.addIssue({ code: "custom", message: "the label uses a banned positioning phrase" });
     if (findPrivacyProblems(v).length > 0) ctx.addIssue({ code: "custom", message: "the label holds personal data or a secret" });
