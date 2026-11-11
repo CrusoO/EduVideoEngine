@@ -1,4 +1,4 @@
-# ADR 0106: Engine V2: Classes 8 to 12 in four subjects, and a staged object layer
+# ADR 0107: Engine V2: Classes 8 to 12 in four subjects, and a staged object layer
 
 Status: accepted by owner decision on 2026-11-11. Supersedes the Phase-1 scope limit (English and algebra only) in `docs/ENGINE_ARCHITECTURE.md` sections 1, 13 and the Phase-3 gate wording, for object drawing only; supersedes nothing else. Builds on ADR 0091, 0098, 0100 (proposed, still proposed) and 0102. Touches no frozen file and none of the items of section 15 of the architecture.
 
