@@ -18,6 +18,7 @@ How work on the engine is organised. Every agent session reads this file first. 
 | `docs/FONT_BUDGET.md` | Font files and size budgets, referenced by tests; changes by ADR | current |
 | `docs/change-orders/CO-2.md` | The change order text | frozen |
 | `docs/change-orders/AM-1-to-21.md` | The amendments to CO-2 | frozen; later amendments go in a new file, AM-22 onwards |
+| `docs/features/engine-objects-motion.md` | The Feature Card for Engine V2 objects and motion: approved scope 2026-11-11, staged with STOP gates | current |
 | `docs/adr/NNNN-title.md` | One file per decision, numbered, with a Status line | append-only |
 | `docs/gate-reports/` | One dated report per gate or conformance check (`phase-0.md`, `co-2-conformance.md`) | immutable once accepted |
 | `docs/measurements/` | Raw sync measurement JSON that a gate report cites | generated |

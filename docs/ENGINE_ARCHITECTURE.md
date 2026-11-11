@@ -257,6 +257,14 @@ No subject is added until Phase 3 shows a reasoning gain. Geometry and trigonome
 
 **Cost.** These phases will likely exceed the current $1,000 (reviewers and licensed visuals per subject). Decide funding at the Phase 3 gate and set a go or no-go reviewer-minutes-per-lesson threshold before any grounded pilot.
 
+### Object layer (Engine V2, wave 0, behind `ENGINE_OBJECTS_V2`, off by default)
+
+ADR 0107 extends object drawing to Classes 8 to 12 in four subjects, in staged waves. Wave 0 is the foundation and draws nothing new. Code is in `packages/pipeline/objects/`.
+- A scene of a story may carry `objects`: typed requests (`spec.ts`, a strict discriminated union, no coordinates, no free text). With the flag off the story is passed through untouched, so the output is byte-identical; with it on, `seam.ts` routes each object and adds the resulting shapes to the scene's `visuals`, which the existing sanitiser and page draw.
+- `router.ts` implements the 16-outcome decision tree: reuse the cache, draw with a registered drawer, draw with a wrapper of the existing prop or shape path, show a label card and queue it for review, or refuse with a reason. Drawers are a registry (`registry.ts`); wave 0 registers the label card and two wrappers only. A drawer cannot register unless its source ids are in the source register (`config/art-sources.json`, `sources.ts`) and allowed.
+- Every drawn object has a provenance record; the object cache (`cache.ts`, `dist/objects-cache`) is keyed by spec, drawer version and tool versions and scanned for personal data before it is written; unresolved objects become a label card and a line in `dist/objects-review-queue.jsonl`. Both are git-ignored.
+- Checks: `qa.ts` (Q4 read-back harness, Q8 positioning, Q9 privacy); `pnpm objects:coverage [inventory.csv]` prints coverage per subject and class from the registry; `scripts/objects-speed.ts` measures Q10.
+
 ## 14. Interface with YourTutor
 
 **Hosts** (ADR 0055). The web app comes first (responsive, installable as a PWA). The phone application comes later as a Capacitor wrapper around the same web app, with the same engine package. Lessons are never rebuilt as native screens, because the player uses the DOM, SVG and Web Audio.
