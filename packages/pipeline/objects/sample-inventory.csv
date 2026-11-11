@@ -4,3 +4,7 @@ class,subject,chapter,object,drawer_type,priority,today,wave,tag
 10,Chemistry,"Invented chapter B","Molecule from a name",d,H,no,3,SAMPLE
 10,Biology,"Invented chapter C","Plant cell",e,H,no,4,SAMPLE
 8,Mathematics,"Invented chapter D","Number line",b,L,yes,5,SAMPLE
+11,Physics,"Invented chapter E","Projectile path with apex, range, vectors",f,M,partial,1,SAMPLE
+9,Physics,"Invented chapter F","Heating curve / change of state",b,M,partial,1,SAMPLE
+10,Physics,"Invented chapter G","Ray diagrams: plane/concave/convex mirror",c,M,no,2,SAMPLE
+11,Physics,"Invented chapter H","Simple pendulum, energy exchange",f,L,no,1,SAMPLE

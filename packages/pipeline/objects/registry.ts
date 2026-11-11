@@ -22,6 +22,8 @@ export interface Drawer<K extends ObjectKind = ObjectKind> {
   toolVersions?: Record<string, string>;
   /** Object names (the `object` column of the inventory) this drawer can draw with meaning intact: what the coverage report counts. */
   covers?: string[];
+  /** False until the owner records a subject teacher's review of this drawer (ADR 0108). A drawer without the field is reviewed (wave 0's wrappers). The router refuses to ship an unreviewed drawer unless the switch allows it. */
+  reviewed?: boolean;
   /** "existing" marks a wrapper that calls the engine's own prop or shape path, so existing behaviour is unchanged. */
   wraps?: "existing";
   accepts?(spec: ObjectSpecOf<K>): boolean;
@@ -94,4 +96,5 @@ export const makeProvenance = (d: Drawer, spec: ObjectSpec, date: string): Prove
   licence: d.license,
   toolVersions: { ...(d.toolVersions ?? {}) },
   date,
+  ...(d.reviewed === false ? { reviewed: false } : {}),
 });

@@ -2,6 +2,7 @@ import { DrawerRegistry, type Drawer, type DrawResult, type RawShape } from "./r
 import type { ObjectSpec, ObjectSpecOf } from "./spec";
 import { findBannedPositioning } from "./qa-text";
 import { loadSourceRegister, type SourceRegister } from "./sources";
+import { physicsDrawers } from "./physics";
 
 /**
  * The drawers wave 0 registers (ADR 0107): the label card, and wrappers that call the engine's existing prop and shape path. None of them draws anything new. A wrapper returns a story
@@ -82,7 +83,14 @@ export const primitiveWrapper: Drawer<"primitive"> = {
   },
 };
 
-/** The registry wave 0 ships: the label card and the two wrappers of the existing path. Nothing else is registered until a wave adds a drawer behind its reviewer. */
-export function defaultRegistry(sources: SourceRegister = loadSourceRegister()): DrawerRegistry {
+/** The registry of wave 0: the label card and the two wrappers of the existing path. It adds no drawable coverage. Kept so that wave 0's own invariants stay testable. */
+export function wave0Registry(sources: SourceRegister = loadSourceRegister()): DrawerRegistry {
   return new DrawerRegistry(sources).register(labelCardDrawer).register(propWrapper).register(primitiveWrapper);
+}
+
+/** The registry: wave 0's drawers, then the physics drawers of wave 1 (ADR 0108), each `reviewed: false`, which the router will not ship unless the owner allows it. A later wave adds its drawers here. */
+export function defaultRegistry(sources: SourceRegister = loadSourceRegister()): DrawerRegistry {
+  const reg = wave0Registry(sources);
+  for (const d of physicsDrawers) reg.register(d);
+  return reg;
 }

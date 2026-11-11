@@ -56,40 +56,45 @@ export function parseInventory(text: string): InventoryRow[] {
   });
 }
 
-export type Cell = { pairs: number; registered: number; todayYes: number; todayPartial: number };
-export type CoverageReport = { total: Cell; bySubject: Record<string, Cell>; byClass: Record<string, Cell>; bySubjectClass: Record<string, Cell>; registeredObjects: string[] };
+export type Cell = { pairs: number; registered: number; /** of the registered pairs, those whose drawer a subject teacher has reviewed (a drawer registered `reviewed: false` counts as registered and not as reviewed, ADR 0108) */ reviewed: number; todayYes: number; todayPartial: number };
+export type CoverageReport = { total: Cell; bySubject: Record<string, Cell>; byClass: Record<string, Cell>; bySubjectClass: Record<string, Cell>; byWave: Record<string, Cell>; registeredObjects: string[]; unreviewedObjects: string[] };
 
-const empty = (): Cell => ({ pairs: 0, registered: 0, todayYes: 0, todayPartial: 0 });
-const add = (c: Cell, drawable: boolean, today: string): void => {
+const empty = (): Cell => ({ pairs: 0, registered: 0, reviewed: 0, todayYes: 0, todayPartial: 0 });
+const add = (c: Cell, drawable: boolean, reviewed: boolean, today: string): void => {
   c.pairs++;
   if (drawable) c.registered++;
+  if (drawable && reviewed) c.reviewed++;
   if (today === "yes") c.todayYes++;
   else if (today === "partial") c.todayPartial++;
 };
 
 export function coverage(rows: InventoryRow[], registry: DrawerRegistry): CoverageReport {
-  const covered = new Set(registry.all().flatMap((d) => d.covers ?? []));
-  const rep: CoverageReport = { total: empty(), bySubject: {}, byClass: {}, bySubjectClass: {}, registeredObjects: [...covered].sort() };
+  // an object is reviewed when some drawer that covers it is not registered `reviewed: false`
+  const covered = new Map<string, boolean>();
+  for (const d of registry.all()) for (const o of d.covers ?? []) covered.set(o, (covered.get(o) ?? false) || d.reviewed !== false);
+  const rep: CoverageReport = { total: empty(), bySubject: {}, byClass: {}, bySubjectClass: {}, byWave: {}, registeredObjects: [...covered.keys()].sort(), unreviewedObjects: [...covered].filter(([, r]) => !r).map(([o]) => o).sort() };
   for (const r of rows) {
     const drawable = covered.has(r.object);
-    add(rep.total, drawable, r.today);
-    add((rep.bySubject[r.subject] ??= empty()), drawable, r.today);
-    add((rep.byClass[String(r.class)] ??= empty()), drawable, r.today);
-    add((rep.bySubjectClass[`${r.subject} ${r.class}`] ??= empty()), drawable, r.today);
+    const reviewed = covered.get(r.object) === true;
+    add(rep.total, drawable, reviewed, r.today);
+    add((rep.bySubject[r.subject] ??= empty()), drawable, reviewed, r.today);
+    add((rep.byClass[String(r.class)] ??= empty()), drawable, reviewed, r.today);
+    add((rep.bySubjectClass[`${r.subject} ${r.class}`] ??= empty()), drawable, reviewed, r.today);
+    add((rep.byWave[r.wave] ??= empty()), drawable, reviewed, r.today);
   }
   return rep;
 }
 
 const pct = (n: number, d: number): string => (d === 0 ? "n/a" : `${((100 * n) / d).toFixed(1)}%`);
-const line = (name: string, c: Cell): string => `${name.padEnd(18)} ${String(c.pairs).padStart(5)}  ${String(c.registered).padStart(10)}  ${pct(c.registered, c.pairs).padStart(8)}   ${String(c.todayYes).padStart(5)}  ${String(c.todayPartial).padStart(7)}`;
+const line = (name: string, c: Cell): string => `${name.padEnd(18)} ${String(c.pairs).padStart(5)}  ${String(c.registered).padStart(10)}  ${pct(c.registered, c.pairs).padStart(8)}  ${String(c.reviewed).padStart(8)}   ${String(c.todayYes).padStart(5)}  ${String(c.todayPartial).padStart(7)}`;
 
 export function formatCoverage(rep: CoverageReport, source: string): string {
-  const head = `${"".padEnd(18)} ${"pairs".padStart(5)}  ${"registered".padStart(10)}  ${"strict %".padStart(8)}   ${"yes".padStart(5)}  ${"partial".padStart(7)}`;
+  const head = `${"".padEnd(18)} ${"pairs".padStart(5)}  ${"registered".padStart(10)}  ${"strict %".padStart(8)}  ${"reviewed".padStart(8)}   ${"yes".padStart(5)}  ${"partial".padStart(7)}`;
   const subjects = [...SUBJECTS, ...Object.keys(rep.bySubject).filter((s) => !(SUBJECTS as readonly string[]).includes(s))].filter((s) => rep.bySubject[s]);
   const classes = Object.keys(rep.byClass).sort((a, b) => Number(a) - Number(b));
   const out = [
     `Object coverage from ${source}`,
-    "registered = pairs whose object a registered drawer covers (computed from the code); yes and partial = the inventory's own `today` grade (context, not coverage).",
+    "registered = pairs whose object a registered drawer covers (computed from the code); reviewed = of those, pairs whose drawer a subject teacher has reviewed (a drawer is registered `reviewed: false` until the owner records the review); yes and partial = the inventory's own `today` grade (context, not coverage).",
     "",
     head,
     line("All", rep.total),
@@ -100,10 +105,13 @@ export function formatCoverage(rep: CoverageReport, source: string): string {
     "Per class",
     ...classes.map((c) => line(`class ${c}`, rep.byClass[c]!)),
     "",
+    "Per wave (the inventory's wave column)",
+    ...Object.keys(rep.byWave).sort().map((w) => line(`wave ${w}`, rep.byWave[w]!)),
+    "",
     "Per subject and class",
     ...subjects.flatMap((s) => classes.filter((c) => rep.bySubjectClass[`${s} ${c}`]).map((c) => line(`${s} ${c}`, rep.bySubjectClass[`${s} ${c}`]!))),
     "",
-    rep.registeredObjects.length === 0 ? "No registered drawer covers an inventory object yet (wave 0 adds no coverage)." : `Objects covered by registered drawers: ${rep.registeredObjects.length}`,
+    rep.registeredObjects.length === 0 ? "No registered drawer covers an inventory object yet (wave 0 adds no coverage)." : `Objects covered by registered drawers: ${rep.registeredObjects.length} (${rep.unreviewedObjects.length} of them not yet reviewed)`,
   ];
   return out.join("\n");
 }

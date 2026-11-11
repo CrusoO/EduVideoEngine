@@ -2,6 +2,8 @@ import { z } from "zod";
 import { gridCells } from "../job/story-grid";
 import { PROP_NAMES } from "../job/story-props";
 import { findBannedPositioning, findPrivacyProblems } from "./qa-text";
+import { PHYSICS_FIGURES, parsePhysicsParams } from "./physics/params";
+import { areaTooSmall, MIN_AREA } from "./physics/area";
 
 /**
  * The typed object request (ADR 0107). A host or a planner names WHICH object it wants and fills the typed fields; code computes and draws it. Nothing here is a coordinate: a place is a
@@ -10,7 +12,7 @@ import { findBannedPositioning, findPrivacyProblems } from "./qa-text";
  *
  * Wave 0 defines the fields each drawer will need; it registers no drawer for any of them except the label card and the wrappers of the existing props and shapes.
  */
-export const OBJECT_KINDS = ["prop", "primitive", "label_card", "figure", "circuit", "ray_diagram", "free_body", "molecule", "plot", "geometry", "icon", "simulation"] as const;
+export const OBJECT_KINDS = ["prop", "primitive", "label_card", "figure", "circuit", "ray_diagram", "free_body", "molecule", "plot", "geometry", "icon", "simulation", "physics"] as const;
 export type ObjectKind = (typeof OBJECT_KINDS)[number];
 export const SUBJECTS = ["maths", "physics", "chemistry", "biology"] as const;
 export type Subject = (typeof SUBJECTS)[number];
@@ -97,6 +99,8 @@ export const ObjectSpec = z.discriminatedUnion("kind", [
     seed: z.number().int().min(0).max(2 ** 31 - 1).default(0),
     durationS: z.number().min(0.5).max(60).default(6),
   }),
+  // a wave-1 physics figure (ADR 0108): which figure, and its inputs in SI units, checked per figure by parsePhysicsParams (the inputs are numbers and closed lists, never text)
+  base("physics", { figure: z.enum(PHYSICS_FIGURES), params: z.record(idField, z.union([z.number(), z.boolean(), z.string().max(24)])).default({}), lang: z.enum(["en"]).default("en") }),
 ]);
 export type ObjectSpec = z.infer<typeof ObjectSpec>;
 export type ObjectSpecOf<K extends ObjectKind> = Extract<ObjectSpec, { kind: K }>;
@@ -120,6 +124,12 @@ export function parseObjectRequest(raw: unknown): ParsedObject {
     // zod echoes the value or the key it was given in some messages; a refusal states the rule only
     const reason = i.code === "invalid_enum_value" ? `must be one of ${i.options.join(", ")}` : i.code === "unrecognized_keys" ? "has a field that this kind does not have" : i.code === "invalid_literal" ? "has the wrong value" : i.message;
     return { ok: false, refusal: { code: "invalid_spec", reason, path: i.path.join(".") || undefined } };
+  }
+  if (r.data.kind === "physics") {
+    const p = parsePhysicsParams(r.data.figure, r.data.params);
+    if (!p.ok) return { ok: false, refusal: { code: "invalid_spec", reason: p.reason, path: p.path } };
+    if (areaTooSmall(r.data)) return { ok: false, refusal: { code: "invalid_spec", reason: `a physics figure needs an area of at least ${Math.ceil(MIN_AREA.w / 15.33)} columns by ${Math.ceil(MIN_AREA.h / 6.83)} rows (for example A1:D3), so nothing is drawn too small to read`, path: r.data.area !== undefined ? "area" : "cell" } };
+    r.data.params = p.params as never;
   }
   if (r.data.cell !== undefined && r.data.area !== undefined) return { ok: false, refusal: { code: "area_and_cell", reason: "give a cell or an area, not both", path: "area" } };
   return { ok: true, spec: r.data };
