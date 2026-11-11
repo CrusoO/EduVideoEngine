@@ -1,0 +1,144 @@
+{
+ "requestId": "w5-distance-midpoint-section",
+ "idempotencyKey": "w5-distance-midpoint-section-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Distance, midpoint and section on a grid",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Two towns",
+    "sentences": [
+     "Two towns sit on a map grid.",
+     "How far apart are they?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How far apart?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The distance",
+    "sentences": [
+     "The x difference is 6 and the y difference is 4.",
+     "So the distance AB is 7.21 on the grid."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "dist",
+      "name": "Distance between two points",
+      "figure": "m_coord",
+      "params": {
+       "mode": "distance",
+       "ax": -2,
+       "ay": 3,
+       "bx": 4,
+       "by": -1
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The midpoint",
+    "sentences": [
+     "A midpoint is the average of the coordinates.",
+     "Here it is the point M at (5, -1)."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "mid",
+      "name": "Midpoint of a segment",
+      "figure": "m_coord",
+      "params": {
+       "mode": "midpoint",
+       "ax": 2,
+       "ay": 3,
+       "bx": 8,
+       "by": -5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Dividing in a ratio",
+    "sentences": [
+     "Divide AB in the ratio 2 to 1 from A.",
+     "The point P is at (3, 3)."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "sec",
+      "name": "Section point 2 to 1",
+      "figure": "m_coord",
+      "params": {
+       "mode": "section",
+       "ax": -3,
+       "ay": -1,
+       "bx": 6,
+       "by": 5,
+       "m": 2,
+       "n": 1
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Coordinates give lengths",
+    "sentences": [
+     "A grid turns shapes into numbers."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Grids give numbers",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

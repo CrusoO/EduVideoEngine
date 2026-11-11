@@ -1,0 +1,151 @@
+{
+ "requestId": "w5-moving-a-triangle",
+ "idempotencyKey": "w5-moving-a-triangle-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Reflecting, turning and enlarging a triangle",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Same shape, new place",
+    "sentences": [
+     "A triangle can move without changing size.",
+     "It can also grow."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Same shape, new place",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A reflection",
+    "sentences": [
+     "Reflect the triangle in the y axis.",
+     "Every point goes to the other side at the same distance."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "rf",
+      "name": "Reflection in the y axis",
+      "figure": "m_transform",
+      "params": {
+       "kind": "reflect",
+       "ax": 1,
+       "ay": 1,
+       "bx": 4,
+       "by": 1,
+       "cx": 2,
+       "cy": 3,
+       "axis": "y_axis"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A quarter turn",
+    "sentences": [
+     "Turn it 90 degrees about the origin.",
+     "Distances and angles are kept."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "rt",
+      "name": "Quarter turn about the origin",
+      "figure": "m_transform",
+      "params": {
+       "kind": "rotate",
+       "ax": 1,
+       "ay": 1,
+       "bx": 4,
+       "by": 1,
+       "cx": 2,
+       "cy": 3,
+       "angle": 90
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "An enlargement",
+    "sentences": [
+     "Enlarge it by a scale factor of 1.5 from the origin.",
+     "Every length is 1.5 times as long, so the area is 2.25 times as large."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "dl",
+      "name": "Enlargement by 1.5",
+      "figure": "m_transform",
+      "params": {
+       "kind": "dilate",
+       "ax": 1,
+       "ay": 1,
+       "bx": 4,
+       "by": 1,
+       "cx": 2,
+       "cy": 3,
+       "k": 1.5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Moves with rules",
+    "sentences": [
+     "Each move has a rule you can check."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Moves with rules",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

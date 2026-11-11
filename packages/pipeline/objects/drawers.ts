@@ -5,6 +5,7 @@ import { loadSourceRegister, type SourceRegister } from "./sources";
 import { physicsDrawers } from "./physics";
 import { chemistryDrawers } from "./chemistry";
 import { biologyDrawers } from "./biology";
+import { mathsDrawers } from "./maths";
 
 /**
  * The drawers wave 0 registers (ADR 0107): the label card, and wrappers that call the engine's existing prop and shape path. None of them draws anything new. A wrapper returns a story
@@ -96,5 +97,6 @@ export function defaultRegistry(sources: SourceRegister = loadSourceRegister()):
   for (const d of physicsDrawers) reg.register(d);
   for (const d of chemistryDrawers) reg.register(d);
   for (const d of biologyDrawers) reg.register(d);
+  for (const d of mathsDrawers) reg.register(d);
   return reg;
 }

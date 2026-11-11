@@ -94,7 +94,7 @@ describe("the Objects section of the inspector: data assembly", () => {
   it("lists the sample story requests and summarises their scenes", () => {
     const stories = loadStories(fixtures);
     expect(stories.length).toBeGreaterThanOrEqual(20);
-    expect(new Set(stories.map((s) => s.folder))).toEqual(new Set(["stories", "stories-biology", "stories-chemistry"]));
+    expect(new Set(stories.map((s) => s.folder))).toEqual(new Set(["stories", "stories-biology", "stories-chemistry", "stories-maths"]));
     const s = sceneSummaries(stories[0]!.story);
     expect(s.length).toBeGreaterThan(1);
     expect(s.every((x) => x.heading !== "" && x.sentences.length > 0)).toBe(true);
