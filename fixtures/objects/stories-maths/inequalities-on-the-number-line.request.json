@@ -1,0 +1,142 @@
+{
+ "requestId": "w5-inequalities-on-the-number-line",
+ "idempotencyKey": "w5-inequalities-on-the-number-line-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Inequalities on the number line",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Which numbers work?",
+    "sentences": [
+     "An equation names a number.",
+     "An inequality names a whole stretch of them."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Which numbers work?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Dividing by a negative",
+    "sentences": [
+     "Solve minus 4x plus 3 is at least minus 6.",
+     "The boundary is 2.25, and dividing by a negative turns the inequality round."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "ng",
+      "name": "Inequality with a negative",
+      "figure": "m_numline",
+      "params": {
+       "mode": "solve",
+       "a": -4,
+       "b": 3,
+       "op": "ge",
+       "c": -6
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Between two ends",
+    "sentences": [
+     "A closed end counts and an open end does not.",
+     "This interval starts at minus 2, which counts, and stops short of 5."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "bt",
+      "name": "An interval",
+      "figure": "m_numline",
+      "params": {
+       "mode": "between",
+       "lo": -2,
+       "hi": 5,
+       "lo_closed": true,
+       "hi_closed": false
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Marks on the line",
+    "sentences": [
+     "Marks sit exactly where their numbers are.",
+     "Mark 2 sits at 0.5, between 0 and 1."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "mk",
+      "name": "Marks on a number line",
+      "figure": "m_numline",
+      "params": {
+       "mode": "marks",
+       "v1": -3,
+       "v2": 0.5,
+       "v3": 2,
+       "v4": 7
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Open or closed",
+    "sentences": [
+     "The circle tells whether the end counts."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Open or closed",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

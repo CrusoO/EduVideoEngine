@@ -18,6 +18,7 @@ const valid: Record<string, unknown> = {
   physics: { kind: "physics", ...common, figure: "p_projectile", params: { speed: 20, angle_deg: 30 }, area: "A1:D3" },
   chemistry: { kind: "chemistry", ...common, figure: "c_atom_shells", params: { z: 11 }, area: "A1:F6" },
   biology: { kind: "biology", ...common, figure: "b_heart", params: {}, area: "A1:F6" },
+  maths: { kind: "maths", ...common, figure: "m_triangle", params: { mode: "sss", a: 3, b: 4, c: 5 }, area: "A1:F6" },
 };
 
 describe("the typed object spec (ADR 0107)", () => {

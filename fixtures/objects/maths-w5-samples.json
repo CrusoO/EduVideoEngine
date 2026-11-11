@@ -1,0 +1,1851 @@
+{
+ "coord_points_quadrants": {
+  "kind": "maths",
+  "id": "coord_points_quadrants",
+  "name": "Sample coord points quadrants",
+  "figure": "m_coord",
+  "params": {
+   "mode": "points",
+   "ax": 3,
+   "ay": 2,
+   "bx": -4,
+   "by": 3,
+   "cx": -2,
+   "cy": -5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_points_axes": {
+  "kind": "maths",
+  "id": "coord_points_axes",
+  "name": "Sample coord points axes",
+  "figure": "m_coord",
+  "params": {
+   "mode": "points",
+   "ax": 0,
+   "ay": 4,
+   "bx": 5,
+   "by": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_distance_345": {
+  "kind": "maths",
+  "id": "coord_distance_345",
+  "name": "Sample coord distance 345",
+  "figure": "m_coord",
+  "params": {
+   "mode": "distance",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_distance_surd": {
+  "kind": "maths",
+  "id": "coord_distance_surd",
+  "name": "Sample coord distance surd",
+  "figure": "m_coord",
+  "params": {
+   "mode": "distance",
+   "ax": -2,
+   "ay": 3,
+   "bx": 4,
+   "by": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_midpoint": {
+  "kind": "maths",
+  "id": "coord_midpoint",
+  "name": "Sample coord midpoint",
+  "figure": "m_coord",
+  "params": {
+   "mode": "midpoint",
+   "ax": 2,
+   "ay": 3,
+   "bx": 8,
+   "by": -5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_section_21": {
+  "kind": "maths",
+  "id": "coord_section_21",
+  "name": "Sample coord section 21",
+  "figure": "m_coord",
+  "params": {
+   "mode": "section",
+   "ax": -3,
+   "ay": -1,
+   "bx": 6,
+   "by": 5,
+   "m": 2,
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_section_13": {
+  "kind": "maths",
+  "id": "coord_section_13",
+  "name": "Sample coord section 13",
+  "figure": "m_coord",
+  "params": {
+   "mode": "section",
+   "ax": 1,
+   "ay": 2,
+   "bx": 9,
+   "by": 10,
+   "m": 1,
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_area": {
+  "kind": "maths",
+  "id": "coord_area",
+  "name": "Sample coord area",
+  "figure": "m_coord",
+  "params": {
+   "mode": "area",
+   "ax": 1,
+   "ay": 1,
+   "bx": 7,
+   "by": 1,
+   "cx": 3,
+   "cy": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "coord_area_neg": {
+  "kind": "maths",
+  "id": "coord_area_neg",
+  "name": "Sample coord area neg",
+  "figure": "m_coord",
+  "params": {
+   "mode": "area",
+   "ax": -4,
+   "ay": 2,
+   "bx": 3,
+   "by": -3,
+   "cx": 5,
+   "cy": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_slope_pos": {
+  "kind": "maths",
+  "id": "line_slope_pos",
+  "name": "Sample line slope pos",
+  "figure": "m_line",
+  "params": {
+   "mode": "slope",
+   "m": 2,
+   "c": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_slope_neg": {
+  "kind": "maths",
+  "id": "line_slope_neg",
+  "name": "Sample line slope neg",
+  "figure": "m_line",
+  "params": {
+   "mode": "slope",
+   "m": -0.5,
+   "c": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_slope_zero": {
+  "kind": "maths",
+  "id": "line_slope_zero",
+  "name": "Sample line slope zero",
+  "figure": "m_line",
+  "params": {
+   "mode": "slope",
+   "m": 0,
+   "c": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_two_points": {
+  "kind": "maths",
+  "id": "line_two_points",
+  "name": "Sample line two points",
+  "figure": "m_line",
+  "params": {
+   "mode": "points",
+   "x1": 1,
+   "y1": 2,
+   "x2": 4,
+   "y2": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_intercepts": {
+  "kind": "maths",
+  "id": "line_intercepts",
+  "name": "Sample line intercepts",
+  "figure": "m_line",
+  "params": {
+   "mode": "intercepts",
+   "a": 4,
+   "b": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_pair_meet": {
+  "kind": "maths",
+  "id": "line_pair_meet",
+  "name": "Sample line pair meet",
+  "figure": "m_line",
+  "params": {
+   "mode": "pair",
+   "m1": 1,
+   "c1": 1,
+   "m2": -1,
+   "c2": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_pair_parallel": {
+  "kind": "maths",
+  "id": "line_pair_parallel",
+  "name": "Sample line pair parallel",
+  "figure": "m_line",
+  "params": {
+   "mode": "pair",
+   "m1": 2,
+   "c1": 1,
+   "m2": 2,
+   "c2": -4,
+   "claim": "parallel"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "line_pair_same": {
+  "kind": "maths",
+  "id": "line_pair_same",
+  "name": "Sample line pair same",
+  "figure": "m_line",
+  "params": {
+   "mode": "pair",
+   "m1": 2,
+   "c1": 1,
+   "m2": 2,
+   "c2": 1,
+   "claim": "coincide"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_quad_two_roots": {
+  "kind": "maths",
+  "id": "fn_quad_two_roots",
+  "name": "Sample fn quad two roots",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "quad",
+   "a": 1,
+   "b": -5,
+   "c": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_quad_one_root": {
+  "kind": "maths",
+  "id": "fn_quad_one_root",
+  "name": "Sample fn quad one root",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "quad",
+   "a": 1,
+   "b": -4,
+   "c": 4,
+   "claim": "one_root"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_quad_no_roots": {
+  "kind": "maths",
+  "id": "fn_quad_no_roots",
+  "name": "Sample fn quad no roots",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "quad",
+   "a": 1,
+   "b": 0,
+   "c": 2,
+   "claim": "no_roots"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_quad_opens_down": {
+  "kind": "maths",
+  "id": "fn_quad_opens_down",
+  "name": "Sample fn quad opens down",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "quad",
+   "a": -2,
+   "b": 4,
+   "c": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_cubic": {
+  "kind": "maths",
+  "id": "fn_cubic",
+  "name": "Sample fn cubic",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "cubic",
+   "a": 1,
+   "r1": -2,
+   "r2": 1,
+   "r3": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_cubic_double_root": {
+  "kind": "maths",
+  "id": "fn_cubic_double_root",
+  "name": "Sample fn cubic double root",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "cubic",
+   "a": -1,
+   "r1": -1,
+   "r2": -1,
+   "r3": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_exp_growth": {
+  "kind": "maths",
+  "id": "fn_exp_growth",
+  "name": "Sample fn exp growth",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "exp",
+   "base": 2,
+   "a": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_exp_decay": {
+  "kind": "maths",
+  "id": "fn_exp_decay",
+  "name": "Sample fn exp decay",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "exp",
+   "base": 0.5,
+   "a": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_log_base2": {
+  "kind": "maths",
+  "id": "fn_log_base2",
+  "name": "Sample fn log base2",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "log",
+   "base": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_log_base_half": {
+  "kind": "maths",
+  "id": "fn_log_base_half",
+  "name": "Sample fn log base half",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "log",
+   "base": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_rational": {
+  "kind": "maths",
+  "id": "fn_rational",
+  "name": "Sample fn rational",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "rational",
+   "k": 2,
+   "h": 1,
+   "v": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fn_rational_negative": {
+  "kind": "maths",
+  "id": "fn_rational_negative",
+  "name": "Sample fn rational negative",
+  "figure": "m_fnplot",
+  "params": {
+   "mode": "rational",
+   "k": -3,
+   "h": -2,
+   "v": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_sin": {
+  "kind": "maths",
+  "id": "trig_sin",
+  "name": "Sample trig sin",
+  "figure": "m_trig",
+  "params": {
+   "fn": "sin",
+   "amp": 1,
+   "b": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_sin_amp2_b2": {
+  "kind": "maths",
+  "id": "trig_sin_amp2_b2",
+  "name": "Sample trig sin amp2 b2",
+  "figure": "m_trig",
+  "params": {
+   "fn": "sin",
+   "amp": 2,
+   "b": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_cos": {
+  "kind": "maths",
+  "id": "trig_cos",
+  "name": "Sample trig cos",
+  "figure": "m_trig",
+  "params": {
+   "fn": "cos",
+   "amp": 1,
+   "b": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_cos_b3": {
+  "kind": "maths",
+  "id": "trig_cos_b3",
+  "name": "Sample trig cos b3",
+  "figure": "m_trig",
+  "params": {
+   "fn": "cos",
+   "amp": 1.5,
+   "b": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_tan": {
+  "kind": "maths",
+  "id": "trig_tan",
+  "name": "Sample trig tan",
+  "figure": "m_trig",
+  "params": {
+   "fn": "tan",
+   "amp": 1,
+   "b": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trig_tan_b2": {
+  "kind": "maths",
+  "id": "trig_tan_b2",
+  "name": "Sample trig tan b2",
+  "figure": "m_trig",
+  "params": {
+   "fn": "tan",
+   "amp": 1,
+   "b": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_0": {
+  "kind": "maths",
+  "id": "unit_circle_0",
+  "name": "Sample unit circle 0",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_30": {
+  "kind": "maths",
+  "id": "unit_circle_30",
+  "name": "Sample unit circle 30",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_90": {
+  "kind": "maths",
+  "id": "unit_circle_90",
+  "name": "Sample unit circle 90",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_150": {
+  "kind": "maths",
+  "id": "unit_circle_150",
+  "name": "Sample unit circle 150",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 150
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_225": {
+  "kind": "maths",
+  "id": "unit_circle_225",
+  "name": "Sample unit circle 225",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 225
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "unit_circle_300": {
+  "kind": "maths",
+  "id": "unit_circle_300",
+  "name": "Sample unit circle 300",
+  "figure": "m_unitcircle",
+  "params": {
+   "deg": 300
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_solve_lt": {
+  "kind": "maths",
+  "id": "numline_solve_lt",
+  "name": "Sample numline solve lt",
+  "figure": "m_numline",
+  "params": {
+   "mode": "solve",
+   "a": 2,
+   "b": 3,
+   "op": "lt",
+   "c": 11
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_solve_flip_ge": {
+  "kind": "maths",
+  "id": "numline_solve_flip_ge",
+  "name": "Sample numline solve flip ge",
+  "figure": "m_numline",
+  "params": {
+   "mode": "solve",
+   "a": -3,
+   "b": 1,
+   "op": "ge",
+   "c": -8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_solve_flip_gt": {
+  "kind": "maths",
+  "id": "numline_solve_flip_gt",
+  "name": "Sample numline solve flip gt",
+  "figure": "m_numline",
+  "params": {
+   "mode": "solve",
+   "a": -2,
+   "b": 5,
+   "op": "gt",
+   "c": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_between_half_open": {
+  "kind": "maths",
+  "id": "numline_between_half_open",
+  "name": "Sample numline between half open",
+  "figure": "m_numline",
+  "params": {
+   "mode": "between",
+   "lo": -2,
+   "hi": 5,
+   "lo_closed": true,
+   "hi_closed": false
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_between_closed": {
+  "kind": "maths",
+  "id": "numline_between_closed",
+  "name": "Sample numline between closed",
+  "figure": "m_numline",
+  "params": {
+   "mode": "between",
+   "lo": 1,
+   "hi": 4,
+   "lo_closed": true,
+   "hi_closed": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "numline_marks": {
+  "kind": "maths",
+  "id": "numline_marks",
+  "name": "Sample numline marks",
+  "figure": "m_numline",
+  "params": {
+   "mode": "marks",
+   "v1": -3,
+   "v2": 0.5,
+   "v3": 2,
+   "v4": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_sss_scalene": {
+  "kind": "maths",
+  "id": "triangle_sss_scalene",
+  "name": "Sample triangle sss scalene",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "sss",
+   "a": 7,
+   "b": 5,
+   "c": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_345_circumcentre": {
+  "kind": "maths",
+  "id": "triangle_345_circumcentre",
+  "name": "Sample triangle 345 circumcentre",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "sss",
+   "a": 3,
+   "b": 4,
+   "c": 5,
+   "centre": "circumcentre"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_isosceles_incentre": {
+  "kind": "maths",
+  "id": "triangle_isosceles_incentre",
+  "name": "Sample triangle isosceles incentre",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "sss",
+   "a": 5,
+   "b": 5,
+   "c": 6,
+   "centre": "incentre"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_sas_centroid": {
+  "kind": "maths",
+  "id": "triangle_sas_centroid",
+  "name": "Sample triangle sas centroid",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "sas",
+   "a": 6,
+   "b": 8,
+   "angle": 60,
+   "centre": "centroid"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_asa_orthocentre": {
+  "kind": "maths",
+  "id": "triangle_asa_orthocentre",
+  "name": "Sample triangle asa orthocentre",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "asa",
+   "ang_a": 50,
+   "ang_b": 60,
+   "c": 9,
+   "centre": "orthocentre"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "triangle_obtuse_orthocentre": {
+  "kind": "maths",
+  "id": "triangle_obtuse_orthocentre",
+  "name": "Sample triangle obtuse orthocentre",
+  "figure": "m_triangle",
+  "params": {
+   "mode": "sss",
+   "a": 4,
+   "b": 3,
+   "c": 6,
+   "centre": "orthocentre"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "right_legs_34": {
+  "kind": "maths",
+  "id": "right_legs_34",
+  "name": "Sample right legs 34",
+  "figure": "m_right",
+  "params": {
+   "mode": "legs",
+   "a": 3,
+   "b": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "right_legs_squares": {
+  "kind": "maths",
+  "id": "right_legs_squares",
+  "name": "Sample right legs squares",
+  "figure": "m_right",
+  "params": {
+   "mode": "legs",
+   "a": 3,
+   "b": 4,
+   "squares": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "right_hyp_leg": {
+  "kind": "maths",
+  "id": "right_hyp_leg",
+  "name": "Sample right hyp leg",
+  "figure": "m_right",
+  "params": {
+   "mode": "hyp_leg",
+   "c": 13,
+   "a": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "right_angle_leg": {
+  "kind": "maths",
+  "id": "right_angle_leg",
+  "name": "Sample right angle leg",
+  "figure": "m_right",
+  "params": {
+   "mode": "angle_leg",
+   "angle": 30,
+   "a": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "similar_scale_2": {
+  "kind": "maths",
+  "id": "similar_scale_2",
+  "name": "Sample similar scale 2",
+  "figure": "m_congsim",
+  "params": {
+   "mode": "similar",
+   "a": 3,
+   "b": 4,
+   "c": 5,
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "similar_scale_half": {
+  "kind": "maths",
+  "id": "similar_scale_half",
+  "name": "Sample similar scale half",
+  "figure": "m_congsim",
+  "params": {
+   "mode": "similar",
+   "a": 6,
+   "b": 5,
+   "c": 7,
+   "k": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "congruent_sss": {
+  "kind": "maths",
+  "id": "congruent_sss",
+  "name": "Sample congruent sss",
+  "figure": "m_congsim",
+  "params": {
+   "mode": "congruent",
+   "a": 5,
+   "b": 6,
+   "c": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bpt_ratio_1": {
+  "kind": "maths",
+  "id": "bpt_ratio_1",
+  "name": "Sample bpt ratio 1",
+  "figure": "m_congsim",
+  "params": {
+   "mode": "bpt",
+   "a": 8,
+   "b": 7,
+   "c": 6,
+   "t": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bpt_ratio_2": {
+  "kind": "maths",
+  "id": "bpt_ratio_2",
+  "name": "Sample bpt ratio 2",
+  "figure": "m_congsim",
+  "params": {
+   "mode": "bpt",
+   "a": 9,
+   "b": 6,
+   "c": 7,
+   "t": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_chord": {
+  "kind": "maths",
+  "id": "circle_chord",
+  "name": "Sample circle chord",
+  "figure": "m_circle",
+  "params": {
+   "mode": "chord",
+   "r": 5,
+   "d": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_chord_diameter": {
+  "kind": "maths",
+  "id": "circle_chord_diameter",
+  "name": "Sample circle chord diameter",
+  "figure": "m_circle",
+  "params": {
+   "mode": "chord",
+   "r": 6,
+   "d": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_tangent": {
+  "kind": "maths",
+  "id": "circle_tangent",
+  "name": "Sample circle tangent",
+  "figure": "m_circle",
+  "params": {
+   "mode": "tangent",
+   "r": 3,
+   "d": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_tangent_far": {
+  "kind": "maths",
+  "id": "circle_tangent_far",
+  "name": "Sample circle tangent far",
+  "figure": "m_circle",
+  "params": {
+   "mode": "tangent",
+   "r": 4,
+   "d": 10
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_inscribed_80": {
+  "kind": "maths",
+  "id": "circle_inscribed_80",
+  "name": "Sample circle inscribed 80",
+  "figure": "m_circle",
+  "params": {
+   "mode": "inscribed",
+   "arc": 80
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_inscribed_220": {
+  "kind": "maths",
+  "id": "circle_inscribed_220",
+  "name": "Sample circle inscribed 220",
+  "figure": "m_circle",
+  "params": {
+   "mode": "inscribed",
+   "arc": 220
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_cyclic": {
+  "kind": "maths",
+  "id": "circle_cyclic",
+  "name": "Sample circle cyclic",
+  "figure": "m_circle",
+  "params": {
+   "mode": "cyclic",
+   "a": 70,
+   "b": 100
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circle_cyclic_equal": {
+  "kind": "maths",
+  "id": "circle_cyclic_equal",
+  "name": "Sample circle cyclic equal",
+  "figure": "m_circle",
+  "params": {
+   "mode": "cyclic",
+   "a": 85,
+   "b": 85
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_parallelogram": {
+  "kind": "maths",
+  "id": "quad_parallelogram",
+  "name": "Sample quad parallelogram",
+  "figure": "m_quad",
+  "params": {
+   "kind": "parallelogram",
+   "a": 6,
+   "b": 4,
+   "angle": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_rectangle": {
+  "kind": "maths",
+  "id": "quad_rectangle",
+  "name": "Sample quad rectangle",
+  "figure": "m_quad",
+  "params": {
+   "kind": "rectangle",
+   "a": 8,
+   "b": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_rhombus": {
+  "kind": "maths",
+  "id": "quad_rhombus",
+  "name": "Sample quad rhombus",
+  "figure": "m_quad",
+  "params": {
+   "kind": "rhombus",
+   "a": 5,
+   "angle": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_square": {
+  "kind": "maths",
+  "id": "quad_square",
+  "name": "Sample quad square",
+  "figure": "m_quad",
+  "params": {
+   "kind": "square",
+   "a": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_trapezium": {
+  "kind": "maths",
+  "id": "quad_trapezium",
+  "name": "Sample quad trapezium",
+  "figure": "m_quad",
+  "params": {
+   "kind": "trapezium",
+   "a": 10,
+   "b": 6,
+   "h": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "quad_kite": {
+  "kind": "maths",
+  "id": "quad_kite",
+  "name": "Sample quad kite",
+  "figure": "m_quad",
+  "params": {
+   "kind": "kite",
+   "a": 8,
+   "b": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "polygon_pentagon_symmetry": {
+  "kind": "maths",
+  "id": "polygon_pentagon_symmetry",
+  "name": "Sample polygon pentagon symmetry",
+  "figure": "m_polygon",
+  "params": {
+   "n": 5,
+   "s": 6,
+   "symmetry": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "polygon_hexagon": {
+  "kind": "maths",
+  "id": "polygon_hexagon",
+  "name": "Sample polygon hexagon",
+  "figure": "m_polygon",
+  "params": {
+   "n": 6,
+   "s": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "polygon_triangle_symmetry": {
+  "kind": "maths",
+  "id": "polygon_triangle_symmetry",
+  "name": "Sample polygon triangle symmetry",
+  "figure": "m_polygon",
+  "params": {
+   "n": 3,
+   "s": 6,
+   "symmetry": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "polygon_octagon_symmetry": {
+  "kind": "maths",
+  "id": "polygon_octagon_symmetry",
+  "name": "Sample polygon octagon symmetry",
+  "figure": "m_polygon",
+  "params": {
+   "n": 8,
+   "s": 3,
+   "symmetry": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_corresponding": {
+  "kind": "maths",
+  "id": "angles_corresponding",
+  "name": "Sample angles corresponding",
+  "figure": "m_angles",
+  "params": {
+   "mode": "transversal",
+   "theta": 65,
+   "pair": "corresponding"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_alternate": {
+  "kind": "maths",
+  "id": "angles_alternate",
+  "name": "Sample angles alternate",
+  "figure": "m_angles",
+  "params": {
+   "mode": "transversal",
+   "theta": 55,
+   "pair": "alternate"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_co_interior": {
+  "kind": "maths",
+  "id": "angles_co_interior",
+  "name": "Sample angles co interior",
+  "figure": "m_angles",
+  "params": {
+   "mode": "transversal",
+   "theta": 70,
+   "pair": "co_interior"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_vertical": {
+  "kind": "maths",
+  "id": "angles_vertical",
+  "name": "Sample angles vertical",
+  "figure": "m_angles",
+  "params": {
+   "mode": "transversal",
+   "theta": 120,
+   "pair": "vertical"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_triangle_sum": {
+  "kind": "maths",
+  "id": "angles_triangle_sum",
+  "name": "Sample angles triangle sum",
+  "figure": "m_angles",
+  "params": {
+   "mode": "triangle",
+   "a": 50,
+   "b": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_triangle_given_third": {
+  "kind": "maths",
+  "id": "angles_triangle_given_third",
+  "name": "Sample angles triangle given third",
+  "figure": "m_angles",
+  "params": {
+   "mode": "triangle",
+   "a": 40,
+   "b": 70,
+   "c": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "angles_exterior": {
+  "kind": "maths",
+  "id": "angles_exterior",
+  "name": "Sample angles exterior",
+  "figure": "m_angles",
+  "params": {
+   "mode": "exterior",
+   "a": 45,
+   "b": 55
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sector_60": {
+  "kind": "maths",
+  "id": "sector_60",
+  "name": "Sample sector 60",
+  "figure": "m_sector",
+  "params": {
+   "mode": "sector",
+   "r": 6,
+   "theta": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sector_240": {
+  "kind": "maths",
+  "id": "sector_240",
+  "name": "Sample sector 240",
+  "figure": "m_sector",
+  "params": {
+   "mode": "sector",
+   "r": 5,
+   "theta": 240
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "segment_90": {
+  "kind": "maths",
+  "id": "segment_90",
+  "name": "Sample segment 90",
+  "figure": "m_sector",
+  "params": {
+   "mode": "segment",
+   "r": 8,
+   "theta": 90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "segment_200": {
+  "kind": "maths",
+  "id": "segment_200",
+  "name": "Sample segment 200",
+  "figure": "m_sector",
+  "params": {
+   "mode": "segment",
+   "r": 6,
+   "theta": 200
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "construct_perp_bisector": {
+  "kind": "maths",
+  "id": "construct_perp_bisector",
+  "name": "Sample construct perp bisector",
+  "figure": "m_construct",
+  "params": {
+   "kind": "perp_bisector",
+   "len": 10
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "construct_angle_bisector": {
+  "kind": "maths",
+  "id": "construct_angle_bisector",
+  "name": "Sample construct angle bisector",
+  "figure": "m_construct",
+  "params": {
+   "kind": "angle_bisector",
+   "angle": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "construct_equilateral": {
+  "kind": "maths",
+  "id": "construct_equilateral",
+  "name": "Sample construct equilateral",
+  "figure": "m_construct",
+  "params": {
+   "kind": "equilateral",
+   "len": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "elevation_tower_eye": {
+  "kind": "maths",
+  "id": "elevation_tower_eye",
+  "name": "Sample elevation tower eye",
+  "figure": "m_elevation",
+  "params": {
+   "mode": "elevation",
+   "angle": 30,
+   "d": 50,
+   "eye": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "elevation_tower_ground": {
+  "kind": "maths",
+  "id": "elevation_tower_ground",
+  "name": "Sample elevation tower ground",
+  "figure": "m_elevation",
+  "params": {
+   "mode": "elevation",
+   "angle": 45,
+   "d": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "depression_building": {
+  "kind": "maths",
+  "id": "depression_building",
+  "name": "Sample depression building",
+  "figure": "m_elevation",
+  "params": {
+   "mode": "depression",
+   "height": 60,
+   "d": 80
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_cuboid": {
+  "kind": "maths",
+  "id": "solid_cuboid",
+  "name": "Sample solid cuboid",
+  "figure": "m_solid",
+  "params": {
+   "kind": "cuboid",
+   "l": 5,
+   "b": 4,
+   "h": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_cylinder": {
+  "kind": "maths",
+  "id": "solid_cylinder",
+  "name": "Sample solid cylinder",
+  "figure": "m_solid",
+  "params": {
+   "kind": "cylinder",
+   "r": 3,
+   "h": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_cone": {
+  "kind": "maths",
+  "id": "solid_cone",
+  "name": "Sample solid cone",
+  "figure": "m_solid",
+  "params": {
+   "kind": "cone",
+   "r": 4,
+   "h": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_sphere": {
+  "kind": "maths",
+  "id": "solid_sphere",
+  "name": "Sample solid sphere",
+  "figure": "m_solid",
+  "params": {
+   "kind": "sphere",
+   "r": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_hemisphere": {
+  "kind": "maths",
+  "id": "solid_hemisphere",
+  "name": "Sample solid hemisphere",
+  "figure": "m_solid",
+  "params": {
+   "kind": "hemisphere",
+   "r": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "solid_frustum": {
+  "kind": "maths",
+  "id": "solid_frustum",
+  "name": "Sample solid frustum",
+  "figure": "m_solid",
+  "params": {
+   "kind": "frustum",
+   "r1": 6,
+   "r2": 3,
+   "h": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "net_cuboid": {
+  "kind": "maths",
+  "id": "net_cuboid",
+  "name": "Sample net cuboid",
+  "figure": "m_net",
+  "params": {
+   "kind": "cuboid",
+   "l": 6,
+   "b": 4,
+   "h": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "net_cylinder": {
+  "kind": "maths",
+  "id": "net_cylinder",
+  "name": "Sample net cylinder",
+  "figure": "m_net",
+  "params": {
+   "kind": "cylinder",
+   "r": 3,
+   "h": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "net_cone": {
+  "kind": "maths",
+  "id": "net_cone",
+  "name": "Sample net cone",
+  "figure": "m_net",
+  "params": {
+   "kind": "cone",
+   "r": 3,
+   "h": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "net_cone_wide": {
+  "kind": "maths",
+  "id": "net_cone_wide",
+  "name": "Sample net cone wide",
+  "figure": "m_net",
+  "params": {
+   "kind": "cone",
+   "r": 4,
+   "h": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "section_sphere": {
+  "kind": "maths",
+  "id": "section_sphere",
+  "name": "Sample section sphere",
+  "figure": "m_section",
+  "params": {
+   "kind": "sphere",
+   "r": 5,
+   "d": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "section_cone": {
+  "kind": "maths",
+  "id": "section_cone",
+  "name": "Sample section cone",
+  "figure": "m_section",
+  "params": {
+   "kind": "cone",
+   "r": 6,
+   "h": 9,
+   "t": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "section_cylinder": {
+  "kind": "maths",
+  "id": "section_cylinder",
+  "name": "Sample section cylinder",
+  "figure": "m_section",
+  "params": {
+   "kind": "cylinder",
+   "r": 5,
+   "h": 8,
+   "d": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "space_point": {
+  "kind": "maths",
+  "id": "space_point",
+  "name": "Sample space point",
+  "figure": "m_space",
+  "params": {
+   "mode": "point",
+   "x": 2,
+   "y": 3,
+   "z": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "space_point_negative": {
+  "kind": "maths",
+  "id": "space_point_negative",
+  "name": "Sample space point negative",
+  "figure": "m_space",
+  "params": {
+   "mode": "point",
+   "x": -2,
+   "y": 3,
+   "z": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "space_distance": {
+  "kind": "maths",
+  "id": "space_distance",
+  "name": "Sample space distance",
+  "figure": "m_space",
+  "params": {
+   "mode": "distance",
+   "x1": 1,
+   "y1": 2,
+   "z1": 3,
+   "x2": 4,
+   "y2": 6,
+   "z2": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_reflect_x_axis": {
+  "kind": "maths",
+  "id": "transform_reflect_x_axis",
+  "name": "Sample transform reflect x axis",
+  "figure": "m_transform",
+  "params": {
+   "kind": "reflect",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "axis": "x_axis"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_reflect_y_axis": {
+  "kind": "maths",
+  "id": "transform_reflect_y_axis",
+  "name": "Sample transform reflect y axis",
+  "figure": "m_transform",
+  "params": {
+   "kind": "reflect",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "axis": "y_axis"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_reflect_y_eq_x": {
+  "kind": "maths",
+  "id": "transform_reflect_y_eq_x",
+  "name": "Sample transform reflect y eq x",
+  "figure": "m_transform",
+  "params": {
+   "kind": "reflect",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "axis": "y_eq_x"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_reflect_x_eq_k": {
+  "kind": "maths",
+  "id": "transform_reflect_x_eq_k",
+  "name": "Sample transform reflect x eq k",
+  "figure": "m_transform",
+  "params": {
+   "kind": "reflect",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "axis": "x_eq_k",
+   "k": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_rotate_90": {
+  "kind": "maths",
+  "id": "transform_rotate_90",
+  "name": "Sample transform rotate 90",
+  "figure": "m_transform",
+  "params": {
+   "kind": "rotate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "angle": 90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_rotate_180_about_point": {
+  "kind": "maths",
+  "id": "transform_rotate_180_about_point",
+  "name": "Sample transform rotate 180 about point",
+  "figure": "m_transform",
+  "params": {
+   "kind": "rotate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "angle": 180,
+   "ox": 0,
+   "oy": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_rotate_minus_90": {
+  "kind": "maths",
+  "id": "transform_rotate_minus_90",
+  "name": "Sample transform rotate minus 90",
+  "figure": "m_transform",
+  "params": {
+   "kind": "rotate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "angle": -90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_translate": {
+  "kind": "maths",
+  "id": "transform_translate",
+  "name": "Sample transform translate",
+  "figure": "m_transform",
+  "params": {
+   "kind": "translate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "dx": 3,
+   "dy": -4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_dilate_2": {
+  "kind": "maths",
+  "id": "transform_dilate_2",
+  "name": "Sample transform dilate 2",
+  "figure": "m_transform",
+  "params": {
+   "kind": "dilate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_dilate_half_about_point": {
+  "kind": "maths",
+  "id": "transform_dilate_half_about_point",
+  "name": "Sample transform dilate half about point",
+  "figure": "m_transform",
+  "params": {
+   "kind": "dilate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "k": 0.5,
+   "ox": -1,
+   "oy": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "transform_dilate_negative": {
+  "kind": "maths",
+  "id": "transform_dilate_negative",
+  "name": "Sample transform dilate negative",
+  "figure": "m_transform",
+  "params": {
+   "kind": "dilate",
+   "ax": 1,
+   "ay": 1,
+   "bx": 4,
+   "by": 1,
+   "cx": 2,
+   "cy": 3,
+   "k": -2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_add": {
+  "kind": "maths",
+  "id": "vector_add",
+  "name": "Sample vector add",
+  "figure": "m_vector",
+  "params": {
+   "mode": "add",
+   "ax": 3,
+   "ay": 1,
+   "bx": 1,
+   "by": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_add_mixed": {
+  "kind": "maths",
+  "id": "vector_add_mixed",
+  "name": "Sample vector add mixed",
+  "figure": "m_vector",
+  "params": {
+   "mode": "add",
+   "ax": 4,
+   "ay": -2,
+   "bx": -1,
+   "by": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_components_30": {
+  "kind": "maths",
+  "id": "vector_components_30",
+  "name": "Sample vector components 30",
+  "figure": "m_vector",
+  "params": {
+   "mode": "components",
+   "mag": 10,
+   "angle": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_components_120": {
+  "kind": "maths",
+  "id": "vector_components_120",
+  "name": "Sample vector components 120",
+  "figure": "m_vector",
+  "params": {
+   "mode": "components",
+   "mag": 8,
+   "angle": 120
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_dot_acute": {
+  "kind": "maths",
+  "id": "vector_dot_acute",
+  "name": "Sample vector dot acute",
+  "figure": "m_vector",
+  "params": {
+   "mode": "dot",
+   "ax": 3,
+   "ay": 1,
+   "bx": 2,
+   "by": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_dot_perpendicular": {
+  "kind": "maths",
+  "id": "vector_dot_perpendicular",
+  "name": "Sample vector dot perpendicular",
+  "figure": "m_vector",
+  "params": {
+   "mode": "dot",
+   "ax": 2,
+   "ay": 3,
+   "bx": -3,
+   "by": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_dot_obtuse": {
+  "kind": "maths",
+  "id": "vector_dot_obtuse",
+  "name": "Sample vector dot obtuse",
+  "figure": "m_vector",
+  "params": {
+   "mode": "dot",
+   "ax": 3,
+   "ay": 1,
+   "bx": -2,
+   "by": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}

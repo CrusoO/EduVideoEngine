@@ -1,0 +1,135 @@
+{
+ "requestId": "w5-tangent-chord-and-angles-in-a-circle",
+ "idempotencyKey": "w5-tangent-chord-and-angles-in-a-circle-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Tangents, chords and angles in a circle",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Touching a circle",
+    "sentences": [
+     "A line can miss a circle, cut it or just touch it.",
+     "Touching gives the neatest facts."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Touching a circle",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A tangent",
+    "sentences": [
+     "From a point 5 away from the centre of a circle of radius 3, draw a tangent.",
+     "Its length is 4 and the two tangents meet at 73.7 degrees."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "tg",
+      "name": "Tangents from a point",
+      "figure": "m_circle",
+      "params": {
+       "mode": "tangent",
+       "r": 3,
+       "d": 5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A chord",
+    "sentences": [
+     "A chord 3 from the centre of a circle of radius 5 is 8 long.",
+     "Half of it, 4, and the distance 3 make the radius 5."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "ch",
+      "name": "Chord at a distance",
+      "figure": "m_circle",
+      "params": {
+       "mode": "chord",
+       "r": 5,
+       "d": 3
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The angle on the circle",
+    "sentences": [
+     "An arc of 80 degrees at the centre shows as 40.0 degrees on the circle.",
+     "The angle at the centre is twice the angle on the circle."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "in",
+      "name": "Angle at the centre and on the circle",
+      "figure": "m_circle",
+      "params": {
+       "mode": "inscribed",
+       "arc": 80
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Circles keep their rules",
+    "sentences": [
+     "Radius, tangent and chord are tied together."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Circle rules",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

@@ -1,0 +1,138 @@
+{
+ "requestId": "w5-right-triangles-and-heights",
+ "idempotencyKey": "w5-right-triangles-and-heights-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Right triangles and how tall is the tower",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How tall is it?",
+    "sentences": [
+     "You cannot climb the tower to measure it.",
+     "A right triangle can do it from the ground."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How tall is it?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Pythagoras",
+    "sentences": [
+     "A right triangle has legs 3 and 5.",
+     "The hypotenuse is 5.83.",
+     "The sine of A is 0.514 and the cosine is 0.857."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "rt",
+      "name": "Right triangle with legs 3 and 5",
+      "figure": "m_right",
+      "params": {
+       "mode": "legs",
+       "a": 3,
+       "b": 5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Looking up",
+    "sentences": [
+     "From 50 metres away the angle of elevation is 30 degrees.",
+     "The tower is 30.4 metres high, with the eye at 1.5 metres."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "el",
+      "name": "Tower seen from 50 metres",
+      "figure": "m_elevation",
+      "params": {
+       "mode": "elevation",
+       "angle": 30,
+       "d": 50,
+       "eye": 1.5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Looking down",
+    "sentences": [
+     "From a building 60 metres high, an object is 80 metres away.",
+     "The angle of depression is 36.9 degrees."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "dp",
+      "name": "Looking down from a building",
+      "figure": "m_elevation",
+      "params": {
+       "mode": "depression",
+       "height": 60,
+       "d": 80
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Angles turn into heights",
+    "sentences": [
+     "One angle and one distance give a height."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Angle gives height",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "requestId": "w5-quadratic-by-its-graph",
+ "idempotencyKey": "w5-quadratic-by-its-graph-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "A quadratic seen as a graph",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Where does it cross?",
+    "sentences": [
+     "A ball's height follows a quadratic.",
+     "Where does the curve meet the ground?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Where does it cross?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Two roots",
+    "sentences": [
+     "The graph of x squared minus 5x plus 6 crosses the axis twice.",
+     "It crosses at 2 and 3.",
+     "The lowest point is at x 2.50, where y is 0.250 below the axis."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "q2",
+      "name": "Two roots",
+      "figure": "m_fnplot",
+      "params": {
+       "mode": "quad",
+       "a": 1,
+       "b": -5,
+       "c": 6
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Opening downwards",
+    "sentences": [
+     "Change the sign of a and the curve opens downwards.",
+     "Now the highest point is at x equal to 1, where y is 8."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "qd",
+      "name": "Opens downwards",
+      "figure": "m_fnplot",
+      "params": {
+       "mode": "quad",
+       "a": -2,
+       "b": 4,
+       "c": 6
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "No real roots",
+    "sentences": [
+     "Sometimes the curve never reaches the axis.",
+     "Then the discriminant is negative, here -8."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "qn",
+      "name": "No real roots",
+      "figure": "m_fnplot",
+      "params": {
+       "mode": "quad",
+       "a": 1,
+       "b": 0,
+       "c": 2,
+       "claim": "no_roots"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "The graph tells the roots",
+    "sentences": [
+     "Roots are where a curve meets the axis."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Roots are crossings",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
