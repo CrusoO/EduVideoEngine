@@ -11,6 +11,7 @@ import {
 } from "../objects";
 import type { Drawer } from "../objects";
 import { boxOf } from "../objects/physics/area";
+import { PHYSICS_FIGURES } from "../objects/physics/params";
 import { projectileFigure } from "../objects/physics/graphs";
 import { SAMPLES } from "./physics-samples";
 
@@ -41,7 +42,7 @@ describe("the physics request is strict: impossible or free-text inputs are refu
   it("fills the defaults a drawer relies on and every figure of the schema has an example", () => {
     const r = parseObjectRequest(phys({ speed: 20, angle_deg: 30 }));
     expect(r.ok && r.spec.kind === "physics" && r.spec.params).toMatchObject({ speed: 20, angle_deg: 30, height: 0, g: 9.8, components: true });
-    expect(new Set(names.map((n) => (SAMPLES[n] as { figure?: string }).figure).filter(Boolean)).size).toBe(20);
+    expect(new Set(names.map((n) => (SAMPLES[n] as { figure?: string }).figure).filter(Boolean)).size).toBe(PHYSICS_FIGURES.length);
   });
   it("refuses a figure that is not in the closed list, a language that is not English yet, and an unknown field", () => {
     expect(refuse(phys({}, "p_hologram")).path).toBe("figure");
@@ -89,9 +90,9 @@ describe("the physics request is strict: impossible or free-text inputs are refu
 });
 
 describe("the unreviewed switch: nothing unreviewed ships by accident, and the owner can flip it (ADR 0108)", () => {
-  it("every wave-1 drawer is registered reviewed: false, licence owner-original, source own-drawings, no tool", () => {
+  it("every wave-1 and wave-2 drawer is registered reviewed: false, licence owner-original, source own-drawings, no tool", () => {
     const added = defaultRegistry(reg).all().filter((d) => !wave0Registry(reg).get(d.name) && d.kind !== "chemistry"); // the chemistry drawers of wave 3 have their own tests
-    expect(added).toHaveLength(21);
+    expect(added).toHaveLength(40); // 21 of wave 1 and 19 of wave 2
     for (const d of added) expect([d.name, d.reviewed, d.license, d.sources, d.toolVersions ?? {}]).toEqual([d.name, false, "owner-original", ["own-drawings"], {}]);
     for (const d of wave0Registry(reg).all()) expect(d.reviewed).toBeUndefined();
   });
@@ -329,7 +330,7 @@ describe("labels pass through a hook, so Hindi and Nepali can follow without a c
   });
 });
 
-describe("coverage: the 21 objects of the plan's wave 1, counted from the registry", () => {
+describe("coverage: the 21 objects of the plan's wave 1 and the 19 of wave 2, counted from the registry", () => {
   const PLAN_W1 = [
     "Force and velocity vectors, parallelogram addition", "Free-body diagram with balance check", "Inclined plane with force components", "Position/velocity/time graphs, v-t area", "Projectile path with apex, range, vectors",
     "Circular motion, centripetal vector", "Simple pendulum, energy exchange", "Spring-mass, SHM", "Collisions and momentum on a track", "Energy bars, potential-energy curve",
@@ -337,10 +338,16 @@ describe("coverage: the 21 objects of the plan's wave 1, counted from the regist
     "P-V diagram, heat engine, isotherm/adiabat", "Heat flow, calorimetry, expansion", "Heating curve / change of state", "Transverse/longitudinal wave, superposition, standing wave", "Sound: compression/rarefaction, echo, ear",
     "Measuring instruments: ruler, vernier, screw gauge, error bars",
   ];
-  it("the drawers cover exactly the objects of the plan's W1 table (the 20 types plus spring-mass, which the plan grades as drawn today)", () => {
+  const PLAN_W2 = [
+    "Ray diagrams: plane/concave/convex mirror", "Ray diagrams: convex/concave lens, image formation", "Refraction, Snell, total internal reflection", "Prism dispersion, rainbow, spectrum", "Human eye, microscope, telescope ray paths",
+    "Double slit, diffraction, intensity pattern", "Circuit diagrams: series, parallel, Ohm's law", "Advanced circuits: capacitors, RC/LCR, Wheatstone, meter bridge", "Electric field lines, equipotentials, Gauss surface", "Charges, dipole, induction, electroscope",
+    "Magnetic field lines: magnet, wire, solenoid", "Induction, generator, motor, transformer", "AC waveform, phasor, resonance curve", "EM wave, spectrum", "Photoelectric setup and KE-frequency graph",
+    "Bohr model, energy levels, spectral series", "Binding-energy curve, decay chain, reactor schematic", "Band diagram, p-n junction, logic gates, transistor circuit", "Moon phases, seasons, day-night, sun path, eclipse",
+  ];
+  it("the drawers cover exactly the objects of the plan's W1 and W2 tables (the 20 types of W1 plus spring-mass, which the plan grades as drawn today, and the 19 types of W2)", () => {
     const covered = defaultRegistry(reg).all().filter((d) => d.kind !== "chemistry").flatMap((d) => d.covers ?? []);
-    expect(new Set(covered)).toEqual(new Set(PLAN_W1));
-    expect(covered).toHaveLength(PLAN_W1.length);
+    expect(new Set(covered)).toEqual(new Set([...PLAN_W1, ...PLAN_W2]));
+    expect(covered).toHaveLength(PLAN_W1.length + PLAN_W2.length);
   });
   it("the invented sample inventory is read per subject, class and wave, with registered and reviewed counted apart", () => {
     const rows = parseInventory(readFileSync(resolve(__dirname, "../objects/sample-inventory.csv"), "utf8"));
@@ -348,12 +355,13 @@ describe("coverage: the 21 objects of the plan's wave 1, counted from the regist
     expect(w0.total.registered).toBe(0);
     const rep = coverage(rows, defaultRegistry(reg));
     expect(rep.total.pairs).toBe(rows.length);
-    expect(rep.total.registered).toBe(rows.filter((r) => PLAN_W1.includes(r.object)).length);
-    expect(rep.total.registered).toBe(3);
-    expect(rep.total.reviewed).toBe(0); // every wave-1 drawer is unreviewed
-    expect(rep.byWave["1"]!.registered).toBe(rep.total.registered);
+    expect(rep.total.registered).toBe(rows.filter((r) => [...PLAN_W1, ...PLAN_W2].includes(r.object)).length);
+    expect(rep.total.registered).toBe(4);
+    expect(rep.total.reviewed).toBe(0); // every wave-1 and wave-2 drawer is unreviewed
+    expect(rep.byWave["1"]!.registered).toBe(3);
+    expect(rep.byWave["2"]!.registered).toBe(1); // the one W2 row of the sample, the mirror diagram
     expect(rep.byWave["3"]!.registered).toBe(0);
-    expect(rep.unreviewedObjects.filter((o) => PLAN_W1.includes(o))).toHaveLength(21);
+    expect(rep.unreviewedObjects.filter((o) => [...PLAN_W1, ...PLAN_W2].includes(o))).toHaveLength(40);
     const text = formatCoverage(rep, "sample");
     expect(text).toContain("Per wave");
     expect(text).toMatch(/\(\d+ of them not yet reviewed\)/);

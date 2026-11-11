@@ -1,0 +1,123 @@
+{
+ "requestId": "w2-rc-charging-and-discharging",
+ "idempotencyKey": "w2-rc-charging-and-discharging-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "An RC circuit charging and discharging",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How fast does a capacitor fill?",
+    "sentences": [
+     "A capacitor does not fill at once.",
+     "The resistor sets the pace."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How fast does it fill?",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The same axes, both ways",
+    "sentences": [
+     "A 10000 ohm resistor and a capacitor give a time constant of 0.0470 seconds.",
+     "Charging, the capacitor is at 6.32 volts after one time constant.",
+     "Discharging, it has fallen to 3.68 volts after the same time."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "rc1",
+      "name": "Charging",
+      "figure": "p_circuit_adv",
+      "params": {
+       "mode": "rc",
+       "volts": 10,
+       "r": 10000,
+       "c": 0.0000047,
+       "y_max": 10,
+       "compact": true,
+       "direction": "charging"
+      },
+      "sentence": 1,
+      "area": "A1:F3"
+     },
+     {
+      "kind": "physics",
+      "id": "rc2",
+      "name": "Discharging",
+      "figure": "p_circuit_adv",
+      "params": {
+       "mode": "rc",
+       "volts": 10,
+       "r": 10000,
+       "c": 0.0000047,
+       "y_max": 10,
+       "compact": true,
+       "direction": "discharging"
+      },
+      "sentence": 2,
+      "area": "A4:F6"
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Rule of thumb",
+    "sentences": [
+     "After five time constants the capacitor is within one percent of its final voltage.",
+     "That is why the window shows five of them."
+    ],
+    "visuals": []
+   },
+   {
+    "role": "wrap",
+    "heading": "Sixty three percent",
+    "sentences": [
+     "After one time constant a charging capacitor is about sixty three percent of the way.",
+     "A discharging one has lost the same share."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "tau = R C",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
