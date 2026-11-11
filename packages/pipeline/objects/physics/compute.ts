@@ -254,3 +254,4 @@ export function longitudinalPositions(wavelength: number, wavelengths: number): 
 }
 export const echo = (p: { distance: number; speed: number }) => ({ time: (2 * p.distance) / p.speed });
 export const soundWavelength = (speed: number, frequency: number): number => speed / frequency;
+export * from "./compute-b";
