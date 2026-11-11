@@ -1,0 +1,118 @@
+{
+ "requestId": "w1-velocity-time-graph",
+ "idempotencyKey": "w1-velocity-time-graph-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Reading a velocity time graph",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How far did it go?",
+    "sentences": [
+     "A car speeds up steadily.",
+     "How far does it travel?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How far did it go?",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The graph",
+    "sentences": [
+     "The car starts at 4 metres per second.",
+     "It speeds up by 2 metres per second every second.",
+     "After 6 seconds it moves at 16.0 metres per second."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "vt",
+      "name": "Velocity against time",
+      "figure": "p_motion_graph",
+      "params": {
+       "graph": "velocity",
+       "u": 4,
+       "a": 2,
+       "t_max": 6
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The area",
+    "sentences": [
+     "The area under a velocity time graph is the distance moved.",
+     "The shaded area is 60.0 metres."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "vt2",
+      "name": "Shaded area under the line",
+      "figure": "p_motion_graph",
+      "params": {
+       "graph": "velocity",
+       "u": 4,
+       "a": 2,
+       "t_max": 6
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Position against time",
+    "sentences": [
+     "The same motion on a position time graph bends upward, because the car keeps speeding up.",
+     "After 6 seconds it is 60.0 metres from the start."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "xt",
+      "name": "Position against time",
+      "figure": "p_motion_graph",
+      "params": {
+       "graph": "position",
+       "u": 4,
+       "a": 2,
+       "t_max": 6
+      },
+      "sentence": 0
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

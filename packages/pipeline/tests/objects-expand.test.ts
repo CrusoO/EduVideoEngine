@@ -5,7 +5,7 @@ import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { placeStory, sanitizeStory, storyPageHtml } from "../index";
 import {
-  coverage, defaultRegistry, expandStoryObjects, filesUnder, flagState, formatCoverage, labelCardDrawer, loadSourceRegister, objectsV2On, onScreenText, parseCsv, parseInventory, positioningProblems,
+  coverage, defaultRegistry, wave0Registry, expandStoryObjects, filesUnder, flagState, formatCoverage, labelCardDrawer, loadSourceRegister, objectsV2On, onScreenText, parseCsv, parseInventory, positioningProblems,
   privacyScan, propWrapper, readQueue, runReadBackHarness, findBannedPositioning, type RouteContext,
 } from "../objects";
 
@@ -143,7 +143,7 @@ describe("Q9 privacy", () => {
 });
 
 describe("Q4 read-back harness (skeleton later drawers plug into)", () => {
-  const registry = defaultRegistry(reg);
+  const registry = wave0Registry(reg);
   const cases = [
     { drawer: "label_card", spec: { kind: "label_card", id: "c", name: "Mirror", sentence: 0, reason: "not_drawable_yet" } as never, corrupt: (r: { shapes: Array<Record<string, unknown>>; alt: string }) => ({ ...r, shapes: r.shapes.map((s) => (s.kind === "text" ? { ...s, text: "Something else" } : s)) }) },
     { drawer: "label_card", spec: { kind: "label_card", id: "c", name: "Mirror", sentence: 0, reason: "not_drawable_yet" } as never, corrupt: (r: { shapes: Array<Record<string, unknown>>; alt: string }) => ({ ...r, shapes: [...r.shapes, { kind: "path", d: "M 0 0" }] }) },
@@ -173,22 +173,22 @@ describe("the coverage report", () => {
   });
   it("reads the sample, per subject and class, and counts nothing as registered in wave 0", () => {
     const rows = parseInventory(csv);
-    expect(rows).toHaveLength(5);
-    const rep = coverage(rows, defaultRegistry(reg));
-    expect(rep.total).toEqual({ pairs: 5, registered: 0, todayYes: 1, todayPartial: 1 });
-    expect(rep.bySubject.physics!.pairs).toBe(2);
+    expect(rows).toHaveLength(9);
+    const rep = coverage(rows, wave0Registry(reg));
+    expect(rep.total).toEqual({ pairs: 9, registered: 0, reviewed: 0, todayYes: 1, todayPartial: 3 });
+    expect(rep.bySubject.physics!.pairs).toBe(6);
     expect(rep.bySubject.maths!.pairs).toBe(1);
-    expect(rep.byClass["9"]!.pairs).toBe(2);
+    expect(rep.byClass["9"]!.pairs).toBe(3);
     expect(formatCoverage(rep, "sample")).toContain("wave 0 adds no coverage");
   });
   it("counts a pair when a registered drawer covers its object", () => {
-    const registry = defaultRegistry(reg).register({ name: "free_body", kind: "free_body", version: "1.0.0", license: "owner-original", sources: ["own-drawings"], covers: ["Free-body diagram"], draw: () => ({ shapes: [], alt: "" }) } as never);
+    const registry = wave0Registry(reg).register({ name: "free_body", kind: "free_body", version: "1.0.0", license: "owner-original", sources: ["own-drawings"], covers: ["Free-body diagram"], draw: () => ({ shapes: [], alt: "" }) } as never);
     const rep = coverage(parseInventory(csv), registry);
     expect(rep.total.registered).toBe(1);
     expect(rep.bySubjectClass["physics 9"]!.registered).toBe(1);
   });
   it("reads the CSV from a Markdown file's fenced block and refuses a wrong header or a malformed row", () => {
-    expect(parseInventory("# t\n```csv\n" + csv.trim() + "\n```\n")).toHaveLength(5);
+    expect(parseInventory("# t\n```csv\n" + csv.trim() + "\n```\n")).toHaveLength(9);
     expect(() => parseInventory("a,b\n1,2")).toThrow(/columns/);
     expect(() => parseInventory(csv.split("\n")[0] + "\nx,Physics,c,o,a,H,no,1,t")).toThrow(/malformed/);
   });

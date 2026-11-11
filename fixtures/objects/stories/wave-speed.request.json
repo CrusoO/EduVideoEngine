@@ -1,0 +1,117 @@
+{
+ "requestId": "w1-wave-speed",
+ "idempotencyKey": "w1-wave-speed-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Wave speed, frequency and wavelength",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How fast does a wave go?",
+    "sentences": [
+     "A wave travels along a rope.",
+     "How fast does it go?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How fast does it go?",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Speed = frequency x wavelength",
+    "sentences": [
+     "This wave has a frequency of 50 hertz and a wavelength of 0.400 metres.",
+     "Speed equals frequency times wavelength.",
+     "So its speed is 20.0 metres per second."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "w1",
+      "name": "Wave at 50 hertz",
+      "figure": "p_wave",
+      "params": {
+       "kind": "transverse",
+       "frequency": 50,
+       "wavelength": 0.4,
+       "amplitude": 0.02
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Half the frequency",
+    "sentences": [
+     "Halve the frequency to 25 hertz.",
+     "The wavelength doubles to 0.800 metres.",
+     "The speed is still 20.0 metres per second, because the rope sets the speed."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "w2",
+      "name": "Wave at 25 hertz",
+      "figure": "p_wave",
+      "params": {
+       "kind": "transverse",
+       "frequency": 25,
+       "wavelength": 0.8,
+       "amplitude": 0.02
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "The rule",
+    "sentences": [
+     "In one medium, a higher frequency means a shorter wavelength."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "v = f x wavelength",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

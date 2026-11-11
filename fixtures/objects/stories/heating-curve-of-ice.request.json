@@ -1,0 +1,113 @@
+{
+ "requestId": "w1-heating-curve-of-ice",
+ "idempotencyKey": "w1-heating-curve-of-ice-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Heating ice to steam",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Heat ice steadily",
+    "sentences": [
+     "Ice at minus 20 degrees is heated steadily.",
+     "What does its temperature do?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "What does the temperature do?",
+      "size": 3.4,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Melting",
+    "sentences": [
+     "We heat 0.1 kilogram of ice with a 500 watt heater.",
+     "The temperature rises until it reaches 0 degrees.",
+     "Then it stops rising for 66.8 seconds while the ice melts."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "hc",
+      "name": "Heating 0.1 kilogram of ice",
+      "figure": "p_heating_curve",
+      "params": {
+       "mass_kg": 0.1,
+       "power_w": 500
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Boiling",
+    "sentences": [
+     "Once the ice has melted, the water warms up to 100 degrees.",
+     "Then the temperature stops again, for 452 seconds, while the water boils into steam.",
+     "The whole trip takes 619 seconds."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "hc2",
+      "name": "Same curve, melting and boiling",
+      "figure": "p_heating_curve",
+      "params": {
+       "mass_kg": 0.1,
+       "power_w": 500
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Flat parts",
+    "sentences": [
+     "During a change of state the heat goes into changing the state, not into raising the temperature."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Flat part = change of state",
+      "size": 3.4,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
