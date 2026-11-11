@@ -1,0 +1,118 @@
+{
+ "requestId": "w2-snell-and-total-internal-reflection",
+ "idempotencyKey": "w2-snell-and-total-internal-reflection-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Refraction and total internal reflection",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Why a straw looks bent",
+    "sentences": [
+     "A straw in water looks broken at the surface.",
+     "Light changes direction when it changes material."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Light bends",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Air into glass",
+    "sentences": [
+     "A ray hits glass of index 1.50 at 40.0 degrees to the normal.",
+     "Snell's law gives 25.4 degrees inside the glass.",
+     "The ray bends towards the normal because the glass is denser."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "n1",
+      "name": "Air to glass at 40 degrees",
+      "figure": "p_refraction",
+      "params": {
+       "mode": "interface",
+       "n1": 1,
+       "n2": 1.5,
+       "angle_deg": 40
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Glass into air",
+    "sentences": [
+     "Run it backwards at 50.0 degrees, from glass into air.",
+     "The critical angle for this glass is 41.8 degrees.",
+     "Beyond it no light gets out, and the surface acts as a perfect mirror."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "n2",
+      "name": "Glass to air at 50 degrees",
+      "figure": "p_refraction",
+      "params": {
+       "mode": "interface",
+       "n1": 1.5,
+       "n2": 1,
+       "angle_deg": 50
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Where it matters",
+    "sentences": [
+     "Optical fibres and prisms use total internal reflection.",
+     "It needs a denser material and a large enough angle."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Total internal reflection",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

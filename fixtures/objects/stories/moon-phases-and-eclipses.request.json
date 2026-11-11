@@ -1,0 +1,134 @@
+{
+ "requestId": "w2-moon-phases-and-eclipses",
+ "idempotencyKey": "w2-moon-phases-and-eclipses-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Moon phases and eclipses",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "The Moon changes shape",
+    "sentences": [
+     "Night after night the Moon shows a different face.",
+     "Is something covering it?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Why the Moon changes",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Seven days in",
+    "sentences": [
+     "Seven days after new moon the Moon is 90.2 degrees from the Sun.",
+     "We see 50.2 percent of the disc lit, a first quarter."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "ph1",
+      "name": "First quarter",
+      "figure": "p_earth_sky",
+      "params": {
+       "mode": "phases",
+       "age_days": 7.4
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Half way round",
+    "sentences": [
+     "At 14.8 days it is opposite the Sun and 100 percent of the disc is lit.",
+     "Half the Moon is always lit by the Sun, and we see more or less of that half."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "ph2",
+      "name": "Full moon",
+      "figure": "p_earth_sky",
+      "params": {
+       "mode": "phases",
+       "age_days": 14.8
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "When the shadow reaches us",
+    "sentences": [
+     "When the Moon stands exactly between us and the Sun its shadow can reach the Earth.",
+     "If the Moon is near enough, the point of the shadow, 3.75e8 metres long, reaches the ground and the eclipse is total."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "ec1",
+      "name": "Solar eclipse with the Moon near",
+      "figure": "p_earth_sky",
+      "params": {
+       "mode": "eclipse_solar",
+       "moon_distance": 360000000
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Light and shadow",
+    "sentences": [
+     "The phases come from where the Moon is on its orbit.",
+     "An eclipse comes from where the shadow falls."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Light and shadow",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

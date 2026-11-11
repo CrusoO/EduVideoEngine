@@ -1,0 +1,1134 @@
+{
+ "mirror_concave": {
+  "kind": "physics",
+  "id": "mir_cc",
+  "name": "Concave mirror, object beyond C",
+  "figure": "p_ray_mirror",
+  "params": {
+   "mirror": "concave",
+   "focal_length": 0.1,
+   "object_distance": 0.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mirror_concave_inside": {
+  "kind": "physics",
+  "id": "mir_ci",
+  "name": "Concave mirror, object inside F",
+  "figure": "p_ray_mirror",
+  "params": {
+   "mirror": "concave",
+   "focal_length": 0.2,
+   "object_distance": 0.12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mirror_convex": {
+  "kind": "physics",
+  "id": "mir_cx",
+  "name": "Convex mirror",
+  "figure": "p_ray_mirror",
+  "params": {
+   "mirror": "convex",
+   "focal_length": 0.15,
+   "object_distance": 0.4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mirror_plane": {
+  "kind": "physics",
+  "id": "mir_pl",
+  "name": "Plane mirror",
+  "figure": "p_ray_mirror",
+  "params": {
+   "mirror": "plane",
+   "object_distance": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lens_convex": {
+  "kind": "physics",
+  "id": "len_cx",
+  "name": "Convex lens, object beyond 2F",
+  "figure": "p_ray_lens",
+  "params": {
+   "lens": "convex",
+   "focal_length": 0.1,
+   "object_distance": 0.35
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lens_convex_magnifier": {
+  "kind": "physics",
+  "id": "len_mg",
+  "name": "Convex lens as a magnifier",
+  "figure": "p_ray_lens",
+  "params": {
+   "lens": "convex",
+   "focal_length": 0.15,
+   "object_distance": 0.1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lens_concave": {
+  "kind": "physics",
+  "id": "len_cc",
+  "name": "Concave lens",
+  "figure": "p_ray_lens",
+  "params": {
+   "lens": "concave",
+   "focal_length": 0.12,
+   "object_distance": 0.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "refraction_in": {
+  "kind": "physics",
+  "id": "ref_in",
+  "name": "Air to glass",
+  "figure": "p_refraction",
+  "params": {
+   "mode": "interface",
+   "n1": 1,
+   "n2": 1.5,
+   "angle_deg": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "refraction_tir": {
+  "kind": "physics",
+  "id": "ref_tir",
+  "name": "Glass to air beyond the critical angle",
+  "figure": "p_refraction",
+  "params": {
+   "mode": "interface",
+   "n1": 1.5,
+   "n2": 1,
+   "angle_deg": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "refraction_out": {
+  "kind": "physics",
+  "id": "ref_out",
+  "name": "Glass to air below the critical angle",
+  "figure": "p_refraction",
+  "params": {
+   "mode": "interface",
+   "n1": 1.5,
+   "n2": 1,
+   "angle_deg": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "refraction_slab": {
+  "kind": "physics",
+  "id": "ref_sl",
+  "name": "Glass slab",
+  "figure": "p_refraction",
+  "params": {
+   "mode": "slab",
+   "n": 1.5,
+   "angle_deg": 50,
+   "thickness": 0.06
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "prism": {
+  "kind": "physics",
+  "id": "prism",
+  "name": "Dispersion by a prism",
+  "figure": "p_prism",
+  "params": {
+   "apex_deg": 60,
+   "incidence_deg": 50,
+   "n_red": 1.51,
+   "n_violet": 1.53
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "eye_myopia": {
+  "kind": "physics",
+  "id": "eye_my",
+  "name": "Short sight",
+  "figure": "p_eye",
+  "params": {
+   "mode": "myopia",
+   "far_point": 0.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "eye_myopia_fixed": {
+  "kind": "physics",
+  "id": "eye_myf",
+  "name": "Short sight corrected",
+  "figure": "p_eye",
+  "params": {
+   "mode": "myopia",
+   "far_point": 0.8,
+   "corrected": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "eye_hyper": {
+  "kind": "physics",
+  "id": "eye_hy",
+  "name": "Long sight",
+  "figure": "p_eye",
+  "params": {
+   "mode": "hypermetropia",
+   "near_point": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "eye_hyper_fixed": {
+  "kind": "physics",
+  "id": "eye_hyf",
+  "name": "Long sight corrected",
+  "figure": "p_eye",
+  "params": {
+   "mode": "hypermetropia",
+   "near_point": 1,
+   "corrected": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "telescope": {
+  "kind": "physics",
+  "id": "tele",
+  "name": "Astronomical telescope",
+  "figure": "p_eye",
+  "params": {
+   "mode": "telescope",
+   "f_objective": 1,
+   "f_eyepiece": 0.05
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "double_slit": {
+  "kind": "physics",
+  "id": "dbl",
+  "name": "Double slit fringes",
+  "figure": "p_interference",
+  "params": {
+   "mode": "double_slit",
+   "wavelength": 6e-7,
+   "separation": 0.0005,
+   "distance": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "double_slit_envelope": {
+  "kind": "physics",
+  "id": "dbl_e",
+  "name": "Double slit with slit width",
+  "figure": "p_interference",
+  "params": {
+   "mode": "double_slit",
+   "wavelength": 5e-7,
+   "separation": 0.0002,
+   "distance": 1,
+   "slit_width": 0.00005
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "single_slit": {
+  "kind": "physics",
+  "id": "sgl",
+  "name": "Single slit diffraction",
+  "figure": "p_interference",
+  "params": {
+   "mode": "single_slit",
+   "wavelength": 6e-7,
+   "slit_width": 0.0002,
+   "distance": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_ohm": {
+  "kind": "physics",
+  "id": "circuit_ohm",
+  "name": "Ohm law with one resistor",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "ohm",
+   "volts": 12,
+   "r1": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_series": {
+  "kind": "physics",
+  "id": "circuit_series",
+  "name": "Three resistors in series",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "series",
+   "volts": 12,
+   "r1": 10,
+   "r2": 20,
+   "r3": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_parallel": {
+  "kind": "physics",
+  "id": "circuit_parallel",
+  "name": "Three resistors in parallel",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "parallel",
+   "volts": 12,
+   "r1": 10,
+   "r2": 20,
+   "r3": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_mixed": {
+  "kind": "physics",
+  "id": "circuit_mixed",
+  "name": "One resistor in series with two in parallel",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "mixed",
+   "volts": 9,
+   "r1": 6,
+   "r2": 12,
+   "r3": 12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_two_loop": {
+  "kind": "physics",
+  "id": "circuit_two_loop",
+  "name": "Two cells and three resistors",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "two_loop",
+   "volts": 12,
+   "volts2": 6,
+   "r1": 4,
+   "r2": 2,
+   "r3": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circuit_two_loop_reversed": {
+  "kind": "physics",
+  "id": "circuit_two_loop_rev",
+  "name": "Two cells, the current in R1 reverses",
+  "figure": "p_circuit",
+  "params": {
+   "mode": "two_loop",
+   "volts": 3,
+   "volts2": 12,
+   "r1": 4,
+   "r2": 2,
+   "r3": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rc_charging": {
+  "kind": "physics",
+  "id": "rc_charging",
+  "name": "RC circuit charging",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "rc",
+   "volts": 10,
+   "r": 10000,
+   "c": 0.0000047,
+   "direction": "charging"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rc_discharging": {
+  "kind": "physics",
+  "id": "rc_discharging",
+  "name": "RC circuit discharging",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "rc",
+   "volts": 10,
+   "r": 10000,
+   "c": 0.0000047,
+   "direction": "discharging"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wheatstone_balanced": {
+  "kind": "physics",
+  "id": "wheatstone_balanced",
+  "name": "Wheatstone bridge balanced",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "wheatstone",
+   "volts": 6,
+   "p": 10,
+   "q": 20,
+   "r": 15,
+   "s": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wheatstone_unbalanced": {
+  "kind": "physics",
+  "id": "wheatstone_unbalance",
+  "name": "Wheatstone bridge unbalanced",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "wheatstone",
+   "volts": 6,
+   "p": 10,
+   "q": 20,
+   "r": 15,
+   "s": 40,
+   "g": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "capacitors_series": {
+  "kind": "physics",
+  "id": "capacitors_series",
+  "name": "Two capacitors in series",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "capacitors",
+   "arrangement": "series",
+   "volts": 12,
+   "c1": 0.000004,
+   "c2": 0.000006
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "capacitors_parallel": {
+  "kind": "physics",
+  "id": "capacitors_parallel",
+  "name": "Three capacitors in parallel",
+  "figure": "p_circuit_adv",
+  "params": {
+   "mode": "capacitors",
+   "arrangement": "parallel",
+   "volts": 12,
+   "c1": 0.000004,
+   "c2": 0.000006,
+   "c3": 0.000002
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_dipole": {
+  "kind": "physics",
+  "id": "field_dipole",
+  "name": "Field lines of a dipole",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "lines",
+   "q1_nc": 4,
+   "x1": -1,
+   "y1": 0,
+   "q2_nc": -4,
+   "x2": 1,
+   "y2": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_like": {
+  "kind": "physics",
+  "id": "field_like",
+  "name": "Field lines of two equal charges",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "lines",
+   "q1_nc": 3,
+   "x1": -1,
+   "y1": 0,
+   "q2_nc": 3,
+   "x2": 1,
+   "y2": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_unequal": {
+  "kind": "physics",
+  "id": "field_unequal",
+  "name": "Field lines of unequal charges",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "lines",
+   "q1_nc": 6,
+   "x1": -1.2,
+   "y1": 0,
+   "q2_nc": -2,
+   "x2": 1.2,
+   "y2": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_three": {
+  "kind": "physics",
+  "id": "field_three",
+  "name": "Field lines of three charges",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "lines",
+   "q1_nc": 2,
+   "x1": -1.5,
+   "y1": -0.8,
+   "q2_nc": -2,
+   "x2": 1.5,
+   "y2": -0.8,
+   "q3_nc": 2,
+   "x3": 0,
+   "y3": 1.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_equipotential": {
+  "kind": "physics",
+  "id": "field_equipotential",
+  "name": "Equipotentials of a point charge",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "equipotential",
+   "q_nc": 5,
+   "v1": 900,
+   "v2": 450,
+   "v3": 225
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "field_gauss": {
+  "kind": "physics",
+  "id": "field_gauss",
+  "name": "Gauss surface round one charge",
+  "figure": "p_electric_field",
+  "params": {
+   "mode": "gauss",
+   "q_in_nc": 3,
+   "q_out_nc": -5,
+   "radius": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "charge_coulomb_repel": {
+  "kind": "physics",
+  "id": "charge_coulomb_repel",
+  "name": "Two like charges",
+  "figure": "p_charge",
+  "params": {
+   "mode": "coulomb",
+   "q1_nc": 3,
+   "q2_nc": 5,
+   "r": 0.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "charge_coulomb_attract": {
+  "kind": "physics",
+  "id": "charge_coulomb_attra",
+  "name": "Two unlike charges",
+  "figure": "p_charge",
+  "params": {
+   "mode": "coulomb",
+   "q1_nc": -3,
+   "q2_nc": 2,
+   "r": 0.15
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "charge_dipole": {
+  "kind": "physics",
+  "id": "charge_dipole",
+  "name": "Electric dipole",
+  "figure": "p_charge",
+  "params": {
+   "mode": "dipole",
+   "q_nc": 2,
+   "separation": 0.04,
+   "r": 0.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "magnet_solenoid": {
+  "kind": "physics",
+  "id": "magnet_solenoid",
+  "name": "Field of a solenoid",
+  "figure": "p_magnet",
+  "params": {
+   "mode": "solenoid",
+   "turns": 12,
+   "current": 2,
+   "radius": 0.02,
+   "length": 0.1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "magnet_bar": {
+  "kind": "physics",
+  "id": "magnet_bar",
+  "name": "Field of a bar magnet",
+  "figure": "p_magnet",
+  "params": {
+   "mode": "bar"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "magnet_wire_out": {
+  "kind": "physics",
+  "id": "magnet_wire_out",
+  "name": "Field round a straight wire",
+  "figure": "p_magnet",
+  "params": {
+   "mode": "wire",
+   "current": 5,
+   "r1": 0.02,
+   "r2": 0.04,
+   "r3": 0.08,
+   "direction": "out"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "magnet_wire_in": {
+  "kind": "physics",
+  "id": "magnet_wire_in",
+  "name": "Field round a wire, current away",
+  "figure": "p_magnet",
+  "params": {
+   "mode": "wire",
+   "current": 5,
+   "r1": 0.02,
+   "r2": 0.04,
+   "r3": 0.08,
+   "direction": "in"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "induction_rod": {
+  "kind": "physics",
+  "id": "induction_rod",
+  "name": "Rod moving in a magnetic field",
+  "figure": "p_em_induction",
+  "params": {
+   "mode": "rod",
+   "b": 0.5,
+   "length": 0.4,
+   "speed": 3,
+   "resistance": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "induction_transformer": {
+  "kind": "physics",
+  "id": "induction_transforme",
+  "name": "Step-down transformer",
+  "figure": "p_em_induction",
+  "params": {
+   "mode": "transformer",
+   "vp": 230,
+   "np": 1000,
+   "ns": 100,
+   "ip": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "induction_transformer_up": {
+  "kind": "physics",
+  "id": "induction_transforme",
+  "name": "Step-up transformer",
+  "figure": "p_em_induction",
+  "params": {
+   "mode": "transformer",
+   "vp": 12,
+   "np": 50,
+   "ns": 400,
+   "ip": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "induction_motor": {
+  "kind": "physics",
+  "id": "induction_motor",
+  "name": "Force on a wire in a field",
+  "figure": "p_em_induction",
+  "params": {
+   "mode": "motor",
+   "b": 0.4,
+   "current": 5,
+   "length": 0.1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "induction_generator": {
+  "kind": "physics",
+  "id": "induction_generator",
+  "name": "AC generator emf",
+  "figure": "p_em_induction",
+  "params": {
+   "mode": "generator",
+   "turns": 200,
+   "b": 0.2,
+   "area": 0.05,
+   "frequency": 50,
+   "cycles": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ac_waveform": {
+  "kind": "physics",
+  "id": "ac_waveform",
+  "name": "Mains voltage waveform",
+  "figure": "p_ac",
+  "params": {
+   "mode": "waveform",
+   "v0": 325,
+   "frequency": 50,
+   "cycles": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ac_phasor": {
+  "kind": "physics",
+  "id": "ac_phasor",
+  "name": "Phasors of a series LCR circuit",
+  "figure": "p_ac",
+  "params": {
+   "mode": "phasor",
+   "v0": 10,
+   "r": 30,
+   "l": 0.1,
+   "c": 0.00005,
+   "frequency": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ac_resonance": {
+  "kind": "physics",
+  "id": "ac_resonance",
+  "name": "Resonance of a series LCR circuit",
+  "figure": "p_ac",
+  "params": {
+   "mode": "resonance",
+   "v0": 10,
+   "r": 20,
+   "l": 0.05,
+   "c": 0.000002
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "em_wave": {
+  "kind": "physics",
+  "id": "em_wave",
+  "name": "Electromagnetic wave in a vacuum",
+  "figure": "p_em_wave",
+  "params": {
+   "mode": "wave",
+   "frequency": 100000000,
+   "e0": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "em_spectrum": {
+  "kind": "physics",
+  "id": "em_spectrum",
+  "name": "Where green light sits in the spectrum",
+  "figure": "p_em_wave",
+  "params": {
+   "mode": "spectrum",
+   "wavelength": 5.5e-7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "photo_one": {
+  "kind": "physics",
+  "id": "photo_one",
+  "name": "Photoelectric effect, one metal",
+  "figure": "p_photoelectric",
+  "params": {
+   "work_ev": 2.3,
+   "frequency": 1000000000000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "photo_two": {
+  "kind": "physics",
+  "id": "photo_two",
+  "name": "Photoelectric effect, two metals",
+  "figure": "p_photoelectric",
+  "params": {
+   "work_ev": 2.3,
+   "work2_ev": 4.1,
+   "frequency": 1200000000000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "photo_below": {
+  "kind": "physics",
+  "id": "photo_below",
+  "name": "Light below the threshold",
+  "figure": "p_photoelectric",
+  "params": {
+   "work_ev": 4.1,
+   "frequency": 600000000000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_bohr": {
+  "kind": "physics",
+  "id": "atom_bohr",
+  "name": "Bohr model of hydrogen",
+  "figure": "p_atom_models",
+  "params": {
+   "mode": "bohr",
+   "z": 1,
+   "n_max": 4,
+   "n_at": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_levels": {
+  "kind": "physics",
+  "id": "atom_levels",
+  "name": "Hydrogen energy levels, the H-alpha line",
+  "figure": "p_atom_models",
+  "params": {
+   "mode": "levels",
+   "n_high": 3,
+   "n_low": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_levels_lyman": {
+  "kind": "physics",
+  "id": "atom_levels_lyman",
+  "name": "Hydrogen energy levels, high levels",
+  "figure": "p_atom_models",
+  "params": {
+   "mode": "levels",
+   "n_high": 7,
+   "n_low": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "nuclear_decay": {
+  "kind": "physics",
+  "id": "nuclear_decay",
+  "name": "Radioactive decay of 200 nuclei",
+  "figure": "p_nuclear",
+  "params": {
+   "mode": "decay",
+   "nuclei": 200,
+   "half_life": 10,
+   "seed": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "nuclear_chain": {
+  "kind": "physics",
+  "id": "nuclear_chain",
+  "name": "A decay chain from uranium",
+  "figure": "p_nuclear",
+  "params": {
+   "mode": "chain",
+   "a": 238,
+   "z": 92,
+   "steps": "abbaaa"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "nuclear_binding": {
+  "kind": "physics",
+  "id": "nuclear_binding",
+  "name": "Binding energy per nucleon",
+  "figure": "p_nuclear",
+  "params": {
+   "mode": "binding",
+   "a": 56
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_bands_si": {
+  "kind": "physics",
+  "id": "semi_bands_si",
+  "name": "Energy bands of silicon",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "bands",
+   "gap_ev": 1.1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_bands_insulator": {
+  "kind": "physics",
+  "id": "semi_bands_insulator",
+  "name": "Energy bands of an insulator",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "bands",
+   "gap_ev": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_bands_conductor": {
+  "kind": "physics",
+  "id": "semi_bands_conductor",
+  "name": "Energy bands of a conductor",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "bands",
+   "gap_ev": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_diode": {
+  "kind": "physics",
+  "id": "semi_diode",
+  "name": "Forward characteristic of a diode",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "diode",
+   "v_max": 0.7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_pn": {
+  "kind": "physics",
+  "id": "semi_pn",
+  "name": "A p-n junction",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "pn",
+   "na": 1e+23,
+   "nd": 1e+22
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_gate_nand": {
+  "kind": "physics",
+  "id": "semi_gate_nand",
+  "name": "NAND gate",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "gate",
+   "gate": "NAND"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_gate_xor": {
+  "kind": "physics",
+  "id": "semi_gate_xor",
+  "name": "XOR gate",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "gate",
+   "gate": "XOR"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "semi_gate_not": {
+  "kind": "physics",
+  "id": "semi_gate_not",
+  "name": "NOT gate",
+  "figure": "p_semiconductor",
+  "params": {
+   "mode": "gate",
+   "gate": "NOT"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_phase_crescent": {
+  "kind": "physics",
+  "id": "sky_phase_crescent",
+  "name": "Waxing crescent",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "phases",
+   "age_days": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_phase_quarter": {
+  "kind": "physics",
+  "id": "sky_phase_quarter",
+  "name": "First quarter",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "phases",
+   "age_days": 7.4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_phase_full": {
+  "kind": "physics",
+  "id": "sky_phase_full",
+  "name": "Full moon",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "phases",
+   "age_days": 14.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_phase_waning": {
+  "kind": "physics",
+  "id": "sky_phase_waning",
+  "name": "Waning gibbous",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "phases",
+   "age_days": 22
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_seasons": {
+  "kind": "physics",
+  "id": "sky_seasons",
+  "name": "Seasons from the tilt of the axis",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "seasons",
+   "latitude_deg": 28.6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_day_length": {
+  "kind": "physics",
+  "id": "sky_day_length",
+  "name": "Length of the day through the year",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "day_length",
+   "latitude_deg": 28.6,
+   "day_of_year": 172
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_eclipse_total": {
+  "kind": "physics",
+  "id": "sky_eclipse_total",
+  "name": "Solar eclipse with the Moon near",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "eclipse_solar",
+   "moon_distance": 360000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_eclipse_annular": {
+  "kind": "physics",
+  "id": "sky_eclipse_annular",
+  "name": "Solar eclipse with the Moon far",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "eclipse_solar",
+   "moon_distance": 405000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_lunar_total": {
+  "kind": "physics",
+  "id": "sky_lunar_total",
+  "name": "Total lunar eclipse",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "eclipse_lunar",
+   "moon_distance": 384000000,
+   "offset": 1000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sky_lunar_partial": {
+  "kind": "physics",
+  "id": "sky_lunar_partial",
+  "name": "Partial lunar eclipse",
+  "figure": "p_earth_sky",
+  "params": {
+   "mode": "eclipse_lunar",
+   "moon_distance": 384000000,
+   "offset": 4500000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}
