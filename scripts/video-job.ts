@@ -17,7 +17,7 @@ import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
-import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, storyForRender, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -267,7 +267,7 @@ finish(undefined);
  */
 async function hostJob(kind: "source" | "story"): Promise<never> {
   const sourceText = request.source;
-  const storyClean = kind === "story" ? sanitizeStory(request.story) : undefined;
+  const storyClean = kind === "story" ? sanitizeStory(storyForRender(request.story, hostEnv, REPO_ROOT).story) : undefined;
   const story = storyClean?.story ?? undefined;
   current = "retrieve";
   emit("retrieve", "started");

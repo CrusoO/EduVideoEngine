@@ -48,7 +48,8 @@
     "curriculum:extract": "python -I scripts/curriculum/extract.py",
     "job:watch": "vite-node scripts/job-watch.ts",
     "llm:bakeoff": "node --use-system-ca node_modules/vite-node/vite-node.mjs scripts/llm-bakeoff.ts",
-    "jobs:gc": "vite-node scripts/jobs-gc.ts"
+    "jobs:gc": "vite-node scripts/jobs-gc.ts",
+    "objects:coverage": "vite-node scripts/objects-coverage.ts"
   },
   "devDependencies": {
     "@playwright/test": "1.49.1",
