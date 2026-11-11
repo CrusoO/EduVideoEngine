@@ -86,3 +86,12 @@ Builds are staged. The agent stops and waits for the owner at each of these:
 - the subject entry gate (architecture section 13): named reviewers and a corruption set per subject before its drawers pass Dev;
 - the owner signs the biology art licence policy (ADR 0107, item 5) before W4 starts;
 - the exam freeze, 1 February to 31 March 2027: nothing reaches student-facing production without the owner's explicit OK.
+
+## 10. Looking at the objects: the inspector's Objects section
+
+Run `pnpm lesson:inspector`, open http://127.0.0.1:4323/ (it binds to 127.0.0.1 only) and press **Objects** at the top of the sidebar; **Pipeline** goes back to the existing panels, which are unchanged. It makes no network request, calls no model and plays no voice.
+- **Drawers:** every registered drawer (physics, chemistry, biology, and the wave 0 wrappers) with its kind, version, licence, sources, reviewed flag and the inventory objects it covers. Opening a drawer shows its sample figures from `fixtures/objects/*-samples.json`, drawn by the drawer's own code on the page the story video opens, each with its read-back result (clean, or the problem).
+- **Coverage:** per subject, class and chapter, and the gap list. It is read from `../EngineV2-E0/OBJECT-COVERAGE-8-12.md` when that file exists (read-only), and from the invented sample inventory otherwise; the page says which.
+- **Story requests:** the sample stories of `fixtures/objects/stories*`, scene by scene or with Play. The preview is silent and each sentence gets a nominal four seconds, so its timing is not the video's.
+- **Switches:** `ENGINE_OBJECTS_V2` and `ENGINE_OBJECTS_ALLOW_UNREVIEWED`, off on every load, change only how this page renders its previews (they are passed to the router as an explicit record, never read from or written to the process environment). A banner, "Unreviewed drawings, not for students", is always shown.
+- **Reviewer notes:** a note and a "mark reviewed" record per drawer go to `dist/objects-review-notes.json`, which git ignores. They change nothing in the registry or in any build: a drawer stays `reviewed: false` until the owner edits the code. The data is assembled by `packages/pipeline/objects/inspector-data.ts` (tests: `objects-inspector-data.test.ts`).

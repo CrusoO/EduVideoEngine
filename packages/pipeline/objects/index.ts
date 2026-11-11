@@ -11,6 +11,7 @@ export * from "./expand";
 export * from "./qa";
 export * from "./qa-text";
 export * from "./coverage";
+export * from "./inspector-data";
 export * from "./seam";
 export * from "./physics";
 export * from "./chemistry";
