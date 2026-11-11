@@ -1,0 +1,1752 @@
+{
+  "version": 1,
+  "readme": "Edit this file to change what the voice says. hinglish = Hindi sentence with English maths words; ncert = textbook Hindi; ne = Nepali. An entry with needsNativeCheck.ne true must be confirmed by a native Nepali speaker; an entry with \"ne\": null has NO wording yet (the normaliser prints a visible NE_TODO_<id> marker instead of guessing) and neSuggestion is only a hint for the reviewer, never used in output. needsNativeCheck.hi true means the Hindi wording was proposed by the engineers beyond the owner's table. Templates use {x} {n} {a} {b} {d} {u} {w} {f}.",
+  "numbers": {
+    "hi": {
+      "needsNativeCheck": false,
+      "ones": [
+        "शून्य",
+        "एक",
+        "दो",
+        "तीन",
+        "चार",
+        "पाँच",
+        "छह",
+        "सात",
+        "आठ",
+        "नौ",
+        "दस",
+        "ग्यारह",
+        "बारह",
+        "तेरह",
+        "चौदह",
+        "पंद्रह",
+        "सोलह",
+        "सत्रह",
+        "अठारह",
+        "उन्नीस",
+        "बीस",
+        "इक्कीस",
+        "बाईस",
+        "तेईस",
+        "चौबीस",
+        "पच्चीस",
+        "छब्बीस",
+        "सत्ताईस",
+        "अट्ठाईस",
+        "उनतीस",
+        "तीस",
+        "इकतीस",
+        "बत्तीस",
+        "तैंतीस",
+        "चौंतीस",
+        "पैंतीस",
+        "छत्तीस",
+        "सैंतीस",
+        "अड़तीस",
+        "उनतालीस",
+        "चालीस",
+        "इकतालीस",
+        "बयालीस",
+        "तैंतालीस",
+        "चौवालीस",
+        "पैंतालीस",
+        "छियालीस",
+        "सैंतालीस",
+        "अड़तालीस",
+        "उनचास",
+        "पचास",
+        "इक्यावन",
+        "बावन",
+        "तिरपन",
+        "चौवन",
+        "पचपन",
+        "छप्पन",
+        "सत्तावन",
+        "अट्ठावन",
+        "उनसठ",
+        "साठ",
+        "इकसठ",
+        "बासठ",
+        "तिरसठ",
+        "चौंसठ",
+        "पैंसठ",
+        "छियासठ",
+        "सड़सठ",
+        "अड़सठ",
+        "उनहत्तर",
+        "सत्तर",
+        "इकहत्तर",
+        "बहत्तर",
+        "तिहत्तर",
+        "चौहत्तर",
+        "पचहत्तर",
+        "छिहत्तर",
+        "सतहत्तर",
+        "अठहत्तर",
+        "उन्यासी",
+        "अस्सी",
+        "इक्यासी",
+        "बयासी",
+        "तिरासी",
+        "चौरासी",
+        "पचासी",
+        "छियासी",
+        "सत्तासी",
+        "अट्ठासी",
+        "नवासी",
+        "नब्बे",
+        "इक्यानवे",
+        "बानवे",
+        "तिरानवे",
+        "चौरानवे",
+        "पंचानवे",
+        "छियानवे",
+        "सत्तानवे",
+        "अट्ठानवे",
+        "निन्यानवे"
+      ],
+      "hundred": "सौ",
+      "thousand": "हज़ार",
+      "lakh": "लाख",
+      "crore": "करोड़"
+    },
+    "ne": {
+      "needsNativeCheck": true,
+      "ones": [
+        "शून्य",
+        "एक",
+        "दुई",
+        "तीन",
+        "चार",
+        "पाँच",
+        "छ",
+        "सात",
+        "आठ",
+        "नौ",
+        "दश",
+        "एघार",
+        "बाह्र",
+        "तेह्र",
+        "चौध",
+        "पन्ध्र",
+        "सोह्र",
+        "सत्र",
+        "अठार",
+        "उन्नाइस",
+        "बीस",
+        "एक्काइस",
+        "बाइस",
+        "तेइस",
+        "चौबीस",
+        "पच्चीस",
+        "छब्बीस",
+        "सत्ताइस",
+        "अठ्ठाइस",
+        "उनन्तीस",
+        "तीस",
+        "एकतीस",
+        "बत्तीस",
+        "तेत्तीस",
+        "चौँतीस",
+        "पैँतीस",
+        "छत्तीस",
+        "सैँतीस",
+        "अठतीस",
+        "उनान्चालीस",
+        "चालीस",
+        "एकचालीस",
+        "बयालीस",
+        "त्रिचालीस",
+        "चौवालीस",
+        "पैँतालीस",
+        "छयालीस",
+        "सत्चालीस",
+        "अठचालीस",
+        "उनान्पचास",
+        "पचास",
+        "एकाउन्न",
+        "बाउन्न",
+        "त्रिपन्न",
+        "चौवन्न",
+        "पचपन्न",
+        "छपन्न",
+        "सन्ताउन्न",
+        "अन्ठाउन्न",
+        "उनान्साठी",
+        "साठी",
+        "एकसट्ठी",
+        "बैसट्ठी",
+        "त्रिसट्ठी",
+        "चौँसट्ठी",
+        "पैँसट्ठी",
+        "छयसट्ठी",
+        "सतसट्ठी",
+        "अठसट्ठी",
+        "उनान्सत्तरी",
+        "सत्तरी",
+        "एकहत्तर",
+        "बहत्तर",
+        "त्रिहत्तर",
+        "चौहत्तर",
+        "पचहत्तर",
+        "छयहत्तर",
+        "सतहत्तर",
+        "अठहत्तर",
+        "उनान्असी",
+        "असी",
+        "एकासी",
+        "बयासी",
+        "त्रियासी",
+        "चौरासी",
+        "पचासी",
+        "छयासी",
+        "सतासी",
+        "अठासी",
+        "उनान्नब्बे",
+        "नब्बे",
+        "एकान्नब्बे",
+        "बयान्नब्बे",
+        "त्रियान्नब्बे",
+        "चौरान्नब्बे",
+        "पन्चान्नब्बे",
+        "छयान्नब्बे",
+        "सन्तान्नब्बे",
+        "अन्ठान्नब्बे",
+        "उनान्सय"
+      ],
+      "hundred": "सय",
+      "thousand": "हजार",
+      "lakh": "लाख",
+      "crore": "करोड"
+    },
+    "en": {
+      "ones": [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "twelve",
+        "thirteen",
+        "fourteen",
+        "fifteen",
+        "sixteen",
+        "seventeen",
+        "eighteen",
+        "nineteen"
+      ],
+      "tens": [
+        "",
+        "",
+        "twenty",
+        "thirty",
+        "forty",
+        "fifty",
+        "sixty",
+        "seventy",
+        "eighty",
+        "ninety"
+      ],
+      "hundred": "hundred",
+      "thousand": "thousand",
+      "lakh": "lakh",
+      "crore": "crore"
+    }
+  },
+  "ordinals": {
+    "hi": {
+      "needsNativeCheck": true,
+      "first": [
+        "",
+        "पहला",
+        "दूसरा",
+        "तीसरा",
+        "चौथा",
+        "पाँचवाँ",
+        "छठा",
+        "सातवाँ",
+        "आठवाँ",
+        "नौवाँ",
+        "दसवाँ"
+      ],
+      "suffix": "वाँ"
+    },
+    "ne": {
+      "needsNativeCheck": true,
+      "first": [
+        "",
+        "पहिलो",
+        "दोस्रो",
+        "तेस्रो",
+        "चौथो",
+        "पाँचौँ",
+        "छैटौँ",
+        "सातौँ",
+        "आठौँ",
+        "नवौँ",
+        "दसौँ"
+      ],
+      "suffix": "औँ"
+    }
+  },
+  "months": {
+    "en": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "hi": {
+      "needsNativeCheck": true,
+      "names": [
+        "जनवरी",
+        "फ़रवरी",
+        "मार्च",
+        "अप्रैल",
+        "मई",
+        "जून",
+        "जुलाई",
+        "अगस्त",
+        "सितंबर",
+        "अक्टूबर",
+        "नवंबर",
+        "दिसंबर"
+      ]
+    },
+    "ne": {
+      "needsNativeCheck": true,
+      "names": [
+        "जनवरी",
+        "फेब्रुअरी",
+        "मार्च",
+        "अप्रिल",
+        "मे",
+        "जुन",
+        "जुलाई",
+        "अगस्ट",
+        "सेप्टेम्बर",
+        "अक्टोबर",
+        "नोभेम्बर",
+        "डिसेम्बर"
+      ]
+    }
+  },
+  "letters": {
+    "hi": {
+      "needsNativeCheck": false,
+      "names": {
+        "A": "ए",
+        "B": "बी",
+        "C": "सी",
+        "D": "डी",
+        "E": "ई",
+        "F": "एफ़",
+        "G": "जी",
+        "H": "एच",
+        "I": "आई",
+        "J": "जे",
+        "K": "के",
+        "L": "एल",
+        "M": "एम",
+        "N": "एन",
+        "O": "ओ",
+        "P": "पी",
+        "Q": "क्यू",
+        "R": "आर",
+        "S": "एस",
+        "T": "टी",
+        "U": "यू",
+        "V": "वी",
+        "W": "डब्ल्यू",
+        "X": "एक्स",
+        "Y": "वाई",
+        "Z": "ज़ेड"
+      }
+    },
+    "ne": {
+      "needsNativeCheck": true,
+      "names": {
+        "A": "ए",
+        "B": "बी",
+        "C": "सी",
+        "D": "डी",
+        "E": "ई",
+        "F": "एफ",
+        "G": "जी",
+        "H": "एच",
+        "I": "आई",
+        "J": "जे",
+        "K": "के",
+        "L": "एल",
+        "M": "एम",
+        "N": "एन",
+        "O": "ओ",
+        "P": "पी",
+        "Q": "क्यू",
+        "R": "आर",
+        "S": "एस",
+        "T": "टी",
+        "U": "यू",
+        "V": "भी",
+        "W": "डब्ल्यू",
+        "X": "एक्स",
+        "Y": "वाई",
+        "Z": "जेड"
+      }
+    }
+  },
+  "chemistry": {
+    "elements": [
+      "H",
+      "He",
+      "Li",
+      "Be",
+      "B",
+      "C",
+      "N",
+      "O",
+      "F",
+      "Ne",
+      "Na",
+      "Mg",
+      "Al",
+      "Si",
+      "P",
+      "S",
+      "Cl",
+      "Ar",
+      "K",
+      "Ca",
+      "Mn",
+      "Fe",
+      "Co",
+      "Ni",
+      "Cu",
+      "Zn",
+      "Br",
+      "Ag",
+      "Sn",
+      "I",
+      "Ba",
+      "Au",
+      "Hg",
+      "Pb",
+      "Cr",
+      "Ti",
+      "Pt",
+      "U"
+    ],
+    "knownWithoutDigits": [
+      "NaCl",
+      "HCl",
+      "NaOH",
+      "KOH",
+      "CaO",
+      "MgO",
+      "KCl",
+      "AgCl",
+      "HBr",
+      "HI",
+      "HF",
+      "ZnO",
+      "CuO",
+      "FeS"
+    ],
+    "knownSingleElementWithDigits": [
+      "H2",
+      "O2",
+      "N2",
+      "Cl2",
+      "F2",
+      "Br2",
+      "I2",
+      "O3",
+      "P4",
+      "S8"
+    ],
+    "note": "Letters are read by the letter table (always Devanagari, a TTS voice cannot be trusted with the Latin letters of a formula); subscript digits are read as English number words in Devanagari (H2O: एच टू ओ)."
+  },
+  "translit": {
+    "needsNativeCheck": {
+      "hi": false,
+      "ne": true
+    },
+    "note": "English word to Devanagari, used only when englishScript is devanagari (a TTS vendor that cannot read Latin script).",
+    "words": {
+      "zero": "ज़ीरो",
+      "one": "वन",
+      "two": "टू",
+      "three": "थ्री",
+      "four": "फ़ोर",
+      "five": "फ़ाइव",
+      "six": "सिक्स",
+      "seven": "सेवन",
+      "eight": "एट",
+      "nine": "नाइन",
+      "ten": "टेन",
+      "eleven": "इलेवन",
+      "twelve": "ट्वेल्व",
+      "thirteen": "थर्टीन",
+      "fourteen": "फ़ोर्टीन",
+      "fifteen": "फ़िफ़्टीन",
+      "sixteen": "सिक्सटीन",
+      "seventeen": "सेवेन्टीन",
+      "eighteen": "एटीन",
+      "nineteen": "नाइनटीन",
+      "twenty": "ट्वेंटी",
+      "thirty": "थर्टी",
+      "forty": "फ़ोर्टी",
+      "fifty": "फ़िफ़्टी",
+      "sixty": "सिक्सटी",
+      "seventy": "सेवेन्टी",
+      "eighty": "एटी",
+      "ninety": "नाइंटी",
+      "hundred": "हंड्रेड",
+      "thousand": "थाउज़ेंड",
+      "lakh": "लाख",
+      "crore": "करोड़",
+      "point": "पॉइंट",
+      "minus": "माइनस",
+      "plus": "प्लस",
+      "equals": "इक्वल्स",
+      "into": "इन्टू",
+      "divided": "डिवाइडेड",
+      "by": "बाय",
+      "percent": "परसेंट",
+      "square": "स्क्वेयर",
+      "cube": "क्यूब",
+      "to": "टू",
+      "the": "द",
+      "power": "पावर",
+      "of": "ऑफ़",
+      "root": "रूट",
+      "and": "एंड",
+      "is": "इज़",
+      "less": "लेस",
+      "than": "दैन",
+      "greater": "ग्रेटर",
+      "or": "ऑर",
+      "equal": "इक्वल",
+      "not": "नॉट",
+      "approximately": "अप्रॉक्सिमेटली",
+      "bracket": "ब्रैकेट",
+      "open": "ओपन",
+      "close": "क्लोज़",
+      "per": "पर",
+      "sub": "सब",
+      "rupees": "रुपीज़",
+      "degree": "डिग्री",
+      "celsius": "सेल्सियस",
+      "fahrenheit": "फ़ारेनहाइट",
+      "first": "फ़र्स्ट",
+      "second": "सेकंड",
+      "third": "थर्ड",
+      "fourth": "फ़ोर्थ",
+      "fifth": "फ़िफ़्थ",
+      "sixth": "सिक्स्थ",
+      "seventh": "सेवंथ",
+      "eighth": "एट्थ",
+      "ninth": "नाइंथ",
+      "tenth": "टेंथ",
+      "eleventh": "इलेवंथ",
+      "twelfth": "ट्वेल्फ़्थ",
+      "thirteenth": "थर्टीनथ",
+      "fourteenth": "फ़ोर्टीनथ",
+      "fifteenth": "फ़िफ़्टीनथ",
+      "sixteenth": "सिक्सटीनथ",
+      "seventeenth": "सेवेन्टीनथ",
+      "eighteenth": "एटीनथ",
+      "nineteenth": "नाइनटीनथ",
+      "twentieth": "ट्वेंटीएथ",
+      "thirtieth": "थर्टीएथ",
+      "fortieth": "फ़ोर्टीएथ",
+      "fiftieth": "फ़िफ़्टीएथ",
+      "sixtieth": "सिक्सटीएथ",
+      "seventieth": "सेवेन्टीएथ",
+      "eightieth": "एटीएथ",
+      "ninetieth": "नाइंटीएथ",
+      "hundredth": "हंड्रेड्थ",
+      "thousandth": "थाउज़ेंड्थ",
+      "January": "जनवरी",
+      "February": "फ़रवरी",
+      "March": "मार्च",
+      "April": "अप्रैल",
+      "May": "मई",
+      "June": "जून",
+      "July": "जुलाई",
+      "August": "अगस्त",
+      "September": "सितंबर",
+      "October": "अक्टूबर",
+      "November": "नवंबर",
+      "December": "दिसंबर"
+    }
+  },
+  "entries": [
+    {
+      "id": "op.plus",
+      "category": "operator",
+      "written": "+",
+      "hinglish": "plus",
+      "ncert": "धन",
+      "ne": null,
+      "neSuggestion": "जोड",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.minus",
+      "category": "operator",
+      "written": "-",
+      "hinglish": "minus",
+      "ncert": "ऋण",
+      "ne": null,
+      "neSuggestion": "घटाउ",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.times",
+      "category": "operator",
+      "written": "×",
+      "hinglish": "into",
+      "ncert": "गुणा",
+      "ne": null,
+      "neSuggestion": "गुणा",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.divide",
+      "category": "operator",
+      "written": "÷",
+      "hinglish": "divided by",
+      "ncert": "भाग",
+      "ne": null,
+      "neSuggestion": "भागा",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.equals",
+      "category": "operator",
+      "written": "=",
+      "hinglish": "equals",
+      "ncert": "बराबर",
+      "ne": null,
+      "neSuggestion": "बराबर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.slash",
+      "category": "operator",
+      "written": "/",
+      "hinglish": "by",
+      "ncert": "बटा",
+      "ne": null,
+      "neSuggestion": "भागा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.lt",
+      "category": "relation",
+      "written": "<",
+      "hinglish": "is less than",
+      "ncert": "से छोटा",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      },
+      "note": "Hindi and Nepali put the second operand first (x < 5: 5 से छोटा x); the normaliser keeps the written order, so a reviewer should decide the phrasing"
+    },
+    {
+      "id": "op.gt",
+      "category": "relation",
+      "written": ">",
+      "hinglish": "is greater than",
+      "ncert": "से बड़ा",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.le",
+      "category": "relation",
+      "written": "≤",
+      "hinglish": "is less than or equal to",
+      "ncert": "से छोटा या बराबर",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.ge",
+      "category": "relation",
+      "written": "≥",
+      "hinglish": "is greater than or equal to",
+      "ncert": "से बड़ा या बराबर",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.ne",
+      "category": "relation",
+      "written": "≠",
+      "hinglish": "is not equal to",
+      "ncert": "बराबर नहीं",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.approx",
+      "category": "relation",
+      "written": "≈",
+      "hinglish": "is approximately equal to",
+      "ncert": "लगभग बराबर",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.plusminus",
+      "category": "operator",
+      "written": "±",
+      "hinglish": "plus or minus",
+      "ncert": "धन या ऋण",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "op.arrow",
+      "category": "operator",
+      "written": "→",
+      "hinglish": "gives",
+      "ncert": "देता है",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      },
+      "note": "a reaction arrow: Hindi word order may need the products first; the reviewer decides",
+      "neSuggestion": "बन्छ"
+    },
+    {
+      "id": "sym.pi",
+      "category": "symbol",
+      "written": "π",
+      "hinglish": "पाई",
+      "ncert": "पाई",
+      "ne": "पाई",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.alpha",
+      "category": "symbol",
+      "written": "α",
+      "hinglish": "अल्फा",
+      "ncert": "अल्फा",
+      "ne": "अल्फा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.beta",
+      "category": "symbol",
+      "written": "β",
+      "hinglish": "बीटा",
+      "ncert": "बीटा",
+      "ne": "बीटा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.theta",
+      "category": "symbol",
+      "written": "θ",
+      "hinglish": "थीटा",
+      "ncert": "थीटा",
+      "ne": "थीटा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.delta",
+      "category": "symbol",
+      "written": "Δ",
+      "hinglish": "डेल्टा",
+      "ncert": "डेल्टा",
+      "ne": "डेल्टा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.lambda",
+      "category": "symbol",
+      "written": "λ",
+      "hinglish": "लैम्ब्डा",
+      "ncert": "लैम्ब्डा",
+      "ne": "ल्याम्ब्डा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.mu",
+      "category": "symbol",
+      "written": "μ",
+      "hinglish": "म्यू",
+      "ncert": "म्यू",
+      "ne": "म्यु",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sym.omega",
+      "category": "symbol",
+      "written": "ω",
+      "hinglish": "ओमेगा",
+      "ncert": "ओमेगा",
+      "ne": "ओमेगा",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sign.minus",
+      "category": "sign",
+      "written": "-5",
+      "hinglish": "minus",
+      "ncert": "ऋण",
+      "ne": "माइनस",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "sign.plus",
+      "category": "sign",
+      "written": "+5",
+      "hinglish": "plus",
+      "ncert": "धन",
+      "ne": null,
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "frac",
+      "category": "structure",
+      "written": "3/4",
+      "hinglish": "{n} by {d}",
+      "ncert": "{n} बटा {d}",
+      "ne": "{d} भागको {n}",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "mixed",
+      "category": "structure",
+      "written": "2 3/4",
+      "hinglish": "{w} and {f}",
+      "ncert": "{w} पूर्ण {f}",
+      "ne": "{w} पूर्ण {f}",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "decimal.point",
+      "category": "structure",
+      "written": "2.5",
+      "hinglish": "point",
+      "ncert": "दशमलव",
+      "ne": "दशमलव",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "percent",
+      "category": "structure",
+      "written": "%",
+      "hinglish": "percent",
+      "ncert": "प्रतिशत",
+      "ne": "प्रतिशत",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "range",
+      "category": "structure",
+      "written": "5-10",
+      "hinglish": "{a} to {b}",
+      "ncert": "{a} से {b}",
+      "ne": "{a} देखि {b} सम्म",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "power.square",
+      "category": "power",
+      "written": "x^2",
+      "hinglish": "{x} square",
+      "ncert": "{x} का वर्ग",
+      "ne": "{x} को वर्ग",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "power.cube",
+      "category": "power",
+      "written": "x^3",
+      "hinglish": "{x} cube",
+      "ncert": "{x} का घन",
+      "ne": "{x} को घन",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "power.n",
+      "category": "power",
+      "written": "x^n",
+      "hinglish": "{x} to the power {n}",
+      "ncert": "{x} की घात {n}",
+      "ne": "{x} को घात {n}",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "root.square",
+      "category": "root",
+      "written": "√x",
+      "hinglish": "square root of {x}",
+      "ncert": "{x} का वर्गमूल",
+      "ne": "{x} को वर्गमूल",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "root.cube",
+      "category": "root",
+      "written": "∛x",
+      "hinglish": "cube root of {x}",
+      "ncert": "{x} का घनमूल",
+      "ne": "{x} को घनमूल",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "bracket.open",
+      "category": "structure",
+      "written": "(",
+      "hinglish": "bracket open",
+      "ncert": "कोष्ठक शुरू",
+      "ne": "कोष्ठक सुरु",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "bracket.close",
+      "category": "structure",
+      "written": ")",
+      "hinglish": "bracket close",
+      "ncert": "कोष्ठक समाप्त",
+      "ne": "कोष्ठक समाप्त",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "sub",
+      "category": "structure",
+      "written": "x_1",
+      "hinglish": "{x} {n}",
+      "ncert": "{x} {n}",
+      "ne": "{x} {n}",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      },
+      "note": "a subscript is read as the letter then the number (x one); change here if a reviewer wants an explicit word"
+    },
+    {
+      "id": "unit.degC",
+      "category": "unit",
+      "written": "°C",
+      "hinglish": "डिग्री सेल्सियस",
+      "ncert": "डिग्री सेल्सियस",
+      "ne": "डिग्री सेल्सियस",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.degF",
+      "category": "unit",
+      "written": "°F",
+      "hinglish": "डिग्री फ़ारेनहाइट",
+      "ncert": "डिग्री फ़ारेनहाइट",
+      "ne": "डिग्री फरेनहाइट",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.km",
+      "category": "unit",
+      "written": "km",
+      "hinglish": "किलोमीटर",
+      "ncert": "किलोमीटर",
+      "ne": "किलोमिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.m",
+      "category": "unit",
+      "written": "m",
+      "hinglish": "मीटर",
+      "ncert": "मीटर",
+      "ne": "मिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.cm",
+      "category": "unit",
+      "written": "cm",
+      "hinglish": "सेंटीमीटर",
+      "ncert": "सेंटीमीटर",
+      "ne": "सेन्टिमिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.mm",
+      "category": "unit",
+      "written": "mm",
+      "hinglish": "मिलीमीटर",
+      "ncert": "मिलीमीटर",
+      "ne": "मिलिमिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.kg",
+      "category": "unit",
+      "written": "kg",
+      "hinglish": "किलोग्राम",
+      "ncert": "किलोग्राम",
+      "ne": "किलोग्राम",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.g",
+      "category": "unit",
+      "written": "g",
+      "hinglish": "ग्राम",
+      "ncert": "ग्राम",
+      "ne": "ग्राम",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.mg",
+      "category": "unit",
+      "written": "mg",
+      "hinglish": "मिलीग्राम",
+      "ncert": "मिलीग्राम",
+      "ne": "मिलिग्राम",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.s",
+      "category": "unit",
+      "written": "s",
+      "hinglish": "सेकंड",
+      "ncert": "सेकंड",
+      "ne": "सेकेन्ड",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.ms",
+      "category": "unit",
+      "written": "ms",
+      "hinglish": "मिलीसेकंड",
+      "ncert": "मिलीसेकंड",
+      "ne": "मिलिसेकेन्ड",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.min",
+      "category": "unit",
+      "written": "min",
+      "hinglish": "मिनट",
+      "ncert": "मिनट",
+      "ne": "मिनेट",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.h",
+      "category": "unit",
+      "written": "h",
+      "hinglish": "घंटा",
+      "ncert": "घंटा",
+      "ne": "घण्टा",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.L",
+      "category": "unit",
+      "written": "L",
+      "hinglish": "लीटर",
+      "ncert": "लीटर",
+      "ne": "लिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.mL",
+      "category": "unit",
+      "written": "mL",
+      "hinglish": "मिलीलीटर",
+      "ncert": "मिलीलीटर",
+      "ne": "मिलिलिटर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.N",
+      "category": "unit",
+      "written": "N",
+      "hinglish": "न्यूटन",
+      "ncert": "न्यूटन",
+      "ne": "न्युटन",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.J",
+      "category": "unit",
+      "written": "J",
+      "hinglish": "जूल",
+      "ncert": "जूल",
+      "ne": "जुल",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.W",
+      "category": "unit",
+      "written": "W",
+      "hinglish": "वाट",
+      "ncert": "वाट",
+      "ne": "वाट",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.Pa",
+      "category": "unit",
+      "written": "Pa",
+      "hinglish": "पास्कल",
+      "ncert": "पास्कल",
+      "ne": "प्यास्कल",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.Hz",
+      "category": "unit",
+      "written": "Hz",
+      "hinglish": "हर्ट्ज़",
+      "ncert": "हर्ट्ज़",
+      "ne": "हर्ट्ज",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.V",
+      "category": "unit",
+      "written": "V",
+      "hinglish": "वोल्ट",
+      "ncert": "वोल्ट",
+      "ne": "भोल्ट",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.A",
+      "category": "unit",
+      "written": "A",
+      "hinglish": "एम्पियर",
+      "ncert": "एम्पियर",
+      "ne": "एम्पियर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.ohm",
+      "category": "unit",
+      "written": "Ω",
+      "hinglish": "ओम",
+      "ncert": "ओम",
+      "ne": "ओम",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.mol",
+      "category": "unit",
+      "written": "mol",
+      "hinglish": "मोल",
+      "ncert": "मोल",
+      "ne": "मोल",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.K",
+      "category": "unit",
+      "written": "K",
+      "hinglish": "केल्विन",
+      "ncert": "केल्विन",
+      "ne": "केल्भिन",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.rupee",
+      "category": "unit",
+      "written": "₹",
+      "hinglish": "रुपये",
+      "ncert": "रुपये",
+      "ne": "रुपैयाँ",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.per",
+      "category": "unit",
+      "written": "m/s",
+      "hinglish": "{a} पर {b}",
+      "ncert": "{a} पर {b}",
+      "ne": "{a} प्रति {b}",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.sq",
+      "category": "unit",
+      "written": "m^2",
+      "hinglish": "वर्ग {u}",
+      "ncert": "वर्ग {u}",
+      "ne": "वर्ग {u}",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "unit.cu",
+      "category": "unit",
+      "written": "m^3",
+      "hinglish": "घन {u}",
+      "ncert": "घन {u}",
+      "ne": "घन {u}",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.equation",
+      "category": "term",
+      "written": "equation",
+      "hinglish": "इक्वेशन",
+      "ncert": "समीकरण",
+      "ne": "समीकरण",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.algebra",
+      "category": "term",
+      "written": "algebra",
+      "hinglish": "अल्जेब्रा",
+      "ncert": "बीजगणित",
+      "ne": "बीजगणित",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.variable",
+      "category": "term",
+      "written": "variable",
+      "hinglish": "वेरिएबल",
+      "ncert": "चर",
+      "ne": "चर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.quadratic",
+      "category": "term",
+      "written": "quadratic",
+      "hinglish": "क्वाड्रैटिक",
+      "ncert": "द्विघात",
+      "ne": "द्विघात",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.polynomial",
+      "category": "term",
+      "written": "polynomial",
+      "hinglish": "पॉलिनोमियल",
+      "ncert": "बहुपद",
+      "ne": "बहुपद",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.coefficient",
+      "category": "term",
+      "written": "coefficient",
+      "hinglish": "कोएफ़िशिएंट",
+      "ncert": "गुणांक",
+      "ne": "गुणाङ्क",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.root",
+      "category": "term",
+      "written": "root",
+      "hinglish": "रूट",
+      "ncert": "मूल",
+      "ne": "मूल",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.roots",
+      "category": "term",
+      "written": "roots",
+      "hinglish": "रूट्स",
+      "ncert": "मूल",
+      "ne": "मूलहरू",
+      "needsNativeCheck": {
+        "hi": true,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.discriminant",
+      "category": "term",
+      "written": "discriminant",
+      "hinglish": "डिस्क्रिमिनेंट",
+      "ncert": "विविक्तकर",
+      "ne": "विविक्तकर",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.formula",
+      "category": "term",
+      "written": "formula",
+      "hinglish": "फ़ॉर्मूला",
+      "ncert": "सूत्र",
+      "ne": "सूत्र",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.graph",
+      "category": "term",
+      "written": "graph",
+      "hinglish": "ग्राफ़",
+      "ncert": "आलेख",
+      "ne": "ग्राफ",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.parabola",
+      "category": "term",
+      "written": "parabola",
+      "hinglish": "पैराबोला",
+      "ncert": "परवलय",
+      "ne": "परवलय",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.linear",
+      "category": "term",
+      "written": "linear",
+      "hinglish": "लीनियर",
+      "ncert": "रैखिक",
+      "ne": "रैखिक",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.expression",
+      "category": "term",
+      "written": "expression",
+      "hinglish": "एक्सप्रेशन",
+      "ncert": "व्यंजक",
+      "ne": "व्यञ्जक",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.function",
+      "category": "term",
+      "written": "function",
+      "hinglish": "फ़ंक्शन",
+      "ncert": "फलन",
+      "ne": "फलन",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.theorem",
+      "category": "term",
+      "written": "theorem",
+      "hinglish": "थ्योरम",
+      "ncert": "प्रमेय",
+      "ne": "प्रमेय",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.pythagoras",
+      "category": "term",
+      "written": "Pythagoras",
+      "hinglish": "पाइथागोरस",
+      "ncert": "पाइथागोरस",
+      "ne": "पाइथागोरस",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.triangle",
+      "category": "term",
+      "written": "triangle",
+      "hinglish": "ट्राएंगल",
+      "ncert": "त्रिभुज",
+      "ne": "त्रिभुज",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.velocity",
+      "category": "term",
+      "written": "velocity",
+      "hinglish": "वेलोसिटी",
+      "ncert": "वेग",
+      "ne": "वेग",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.acceleration",
+      "category": "term",
+      "written": "acceleration",
+      "hinglish": "एक्सेलरेशन",
+      "ncert": "त्वरण",
+      "ne": "त्वरण",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.force",
+      "category": "term",
+      "written": "force",
+      "hinglish": "फ़ोर्स",
+      "ncert": "बल",
+      "ne": "बल",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.newton",
+      "category": "term",
+      "written": "Newton",
+      "hinglish": "न्यूटन",
+      "ncert": "न्यूटन",
+      "ne": "न्युटन",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.atom",
+      "category": "term",
+      "written": "atom",
+      "hinglish": "एटम",
+      "ncert": "परमाणु",
+      "ne": "परमाणु",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.molecule",
+      "category": "term",
+      "written": "molecule",
+      "hinglish": "मॉलिक्यूल",
+      "ncert": "अणु",
+      "ne": "अणु",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.electron",
+      "category": "term",
+      "written": "electron",
+      "hinglish": "इलेक्ट्रॉन",
+      "ncert": "इलेक्ट्रॉन",
+      "ne": "इलेक्ट्रोन",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.photosynthesis",
+      "category": "term",
+      "written": "photosynthesis",
+      "hinglish": "फ़ोटोसिंथेसिस",
+      "ncert": "प्रकाश संश्लेषण",
+      "ne": "प्रकाश संश्लेषण",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.ATP",
+      "category": "term",
+      "written": "ATP",
+      "hinglish": "ए टी पी",
+      "ncert": "ए टी पी",
+      "ne": "ए टी पी",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.DNA",
+      "category": "term",
+      "written": "DNA",
+      "hinglish": "डी एन ए",
+      "ncert": "डी एन ए",
+      "ne": "डी एन ए",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    },
+    {
+      "id": "term.pH",
+      "category": "term",
+      "written": "pH",
+      "hinglish": "पी एच",
+      "ncert": "पी एच",
+      "ne": "पी एच",
+      "needsNativeCheck": {
+        "hi": false,
+        "ne": true
+      }
+    }
+  ]
+}

@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -47,6 +47,14 @@ const font = option("font", resolved.font) === "atkinson" ? "atkinson" : "inter"
 const speedOption = Number(option("speed", String(resolved.voiceSpeed ?? "")));
 const locale = request.options.locale ?? "en-IN";
 const isDevanagari = locale === "hi-IN" || locale === "ne-NP";
+// ADR 0106: off unless the request (or --spoken-math) asks, and only for Hindi and Nepali; the English path below is then the code it always was
+const spokenMathRegister = option("spoken-math", request.options.spokenMath ?? "");
+const spokenMathOn = isDevanagari && (spokenMathRegister === "hinglish" || spokenMathRegister === "ncert");
+const sayText = (text: string): { text: string; extraPauseMs: number } => {
+  if (!spokenMathOn) return { text: speechText(text), extraPauseMs: 0 };
+  const m = spokenMathForVoice(text, { language: locale === "ne-NP" ? "ne" : "hi", register: spokenMathRegister as "hinglish" | "ncert" });
+  return { text: speechText(m.text), extraPauseMs: m.extraPauseMs };
+};
 const timelineFile = join(dir, "timeline.json");
 const pageFile = join(dir, "page.html");
 
@@ -106,7 +114,7 @@ async function build(): Promise<void> {
           const j = jobs[k]!;
           const synth = j.pace ? marked.get(j.pace)! : normal[idx]!;
           const out = join(dir, j.file);
-          await synth.synthesizeAsync!(speechText(j.text), out);
+          await synth.synthesizeAsync!(sayText(j.text).text, out);
         }
       };
       await Promise.all([0, 1, 2].map(worker));
@@ -114,7 +122,7 @@ async function build(): Promise<void> {
       trimSilence(ffmpegPath as string, jobs.map((j) => join(dir, j.file)));
       // a pause is silence added to this sentence's length, so the next sentence starts later
       lap("silence trimmed");
-      for (const j of jobs) durations[j.si]![j.i] = wavInfo(readFileSync(join(dir, j.file))).durationMs + j.pauseMs;
+      for (const j of jobs) durations[j.si]![j.i] = wavInfo(readFileSync(join(dir, j.file))).durationMs + j.pauseMs + sayText(j.text).extraPauseMs;
     } finally {
       all.forEach((s) => s.dispose?.());
     }
@@ -129,10 +137,11 @@ async function build(): Promise<void> {
       for (let k = next++; k < jobs.length; k = next++) {
         const j = jobs[k]!;
         const out = join(dir, j.file);
-        const spoken = speechText(j.text);
+        const said = sayText(j.text);
+        const spoken = said.text;
         if (synth.synthesizeAsync) await synth.synthesizeAsync(spoken, out);
         else synth.synthesize(spoken, out);
-        durations[j.si]![j.i] = wavInfo(readFileSync(out)).durationMs;
+        durations[j.si]![j.i] = wavInfo(readFileSync(out)).durationMs + said.extraPauseMs;
       }
     };
     await Promise.all(Array.from({ length: 3 }, worker));
