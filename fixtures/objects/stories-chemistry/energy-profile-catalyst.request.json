@@ -1,0 +1,114 @@
+{
+ "requestId": "w3-energy-profile-catalyst",
+ "idempotencyKey": "w3-energy-profile-catalyst-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "How a catalyst changes the energy profile",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Why is a reaction slow?",
+    "sentences": [
+     "Some reactions are downhill but still very slow.",
+     "Something is in the way."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Why so slow?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The barrier",
+    "sentences": [
+     "The reaction gives out 92.0 kJ per mole, so it is exothermic.",
+     "But the reactants must first climb a barrier of 150 kJ per mole.",
+     "That barrier is the activation energy."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "profile",
+      "name": "Energy profile without a catalyst",
+      "figure": "c_energy",
+      "params": {
+       "delta_h": -92,
+       "ea": 150
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A catalyst lowers the barrier",
+    "sentences": [
+     "A catalyst gives the reaction a lower path.",
+     "Here the barrier falls to 90.0 kJ per mole, a drop of 60.0.",
+     "The energy given out does not change."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "cat",
+      "name": "Energy profile with a catalyst",
+      "figure": "c_energy",
+      "params": {
+       "delta_h": -92,
+       "ea": 150,
+       "ea_cat": 90
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Same ends, lower hill",
+    "sentences": [
+     "A catalyst changes the speed and not the energy change."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "A lower hill, not a new road end",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

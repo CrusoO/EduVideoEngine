@@ -1,0 +1,115 @@
+{
+ "requestId": "w3-titration-weak-acid",
+ "idempotencyKey": "w3-titration-weak-acid-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Titrating a weak acid",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "When does it end?",
+    "sentences": [
+     "We add base to an acid, drop by drop.",
+     "How do we know when to stop?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How do we know?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The set-up",
+    "sentences": [
+     "The burette holds the base.",
+     "The flask holds the acid and a few drops of indicator."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "setup",
+      "name": "Titration set-up",
+      "figure": "c_lab",
+      "params": {
+       "setup": "titration"
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The curve",
+    "sentences": [
+     "Twenty-five mL of tenth-molar ethanoic acid need 25.0 mL of tenth-molar base.",
+     "The pH starts at 2.88 and is 4.76 at half way, which is the pKa.",
+     "At the equivalence point the pH is 8.73, so phenolphthalein is the right indicator."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "curve",
+      "name": "Titration curve of a weak acid",
+      "figure": "c_titration",
+      "params": {
+       "acid": "weak",
+       "ca": 0.1,
+       "va": 25,
+       "cb": 0.1,
+       "pka": 4.76,
+       "indicator": "phenolphthalein"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Choose the indicator",
+    "sentences": [
+     "The indicator must change colour inside the steep part of the curve."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Match the indicator",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

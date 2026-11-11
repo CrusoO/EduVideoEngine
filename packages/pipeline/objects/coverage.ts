@@ -115,3 +115,22 @@ export function formatCoverage(rep: CoverageReport, source: string): string {
   ];
   return out.join("\n");
 }
+
+/** The objects of an inventory that no registered drawer covers, per subject, with the number of chapter-object pairs each leaves undrawn: the gap list of the coverage report (`pnpm objects:coverage <inventory> --gaps`). */
+export function uncovered(rows: InventoryRow[], registry: DrawerRegistry): Array<{ subject: string; object: string; pairs: number; classes: number[] }> {
+  const covered = new Set(registry.all().flatMap((d) => d.covers ?? []));
+  const by = new Map<string, { subject: string; object: string; pairs: number; classes: Set<number> }>();
+  for (const r of rows) {
+    if (covered.has(r.object)) continue;
+    const k = `${r.subject}|${r.object}`;
+    const e = by.get(k) ?? { subject: r.subject, object: r.object, pairs: 0, classes: new Set<number>() };
+    e.pairs++;
+    e.classes.add(r.class);
+    by.set(k, e);
+  }
+  return [...by.values()].map((e) => ({ subject: e.subject, object: e.object, pairs: e.pairs, classes: [...e.classes].sort((a, b) => a - b) })).sort((a, b) => a.subject.localeCompare(b.subject) || b.pairs - a.pairs || a.object.localeCompare(b.object));
+}
+export function formatGaps(gaps: ReturnType<typeof uncovered>): string {
+  if (gaps.length === 0) return "Every object of the inventory is covered by a registered drawer.";
+  return ["Objects no registered drawer covers (subject, pairs left undrawn, classes, object)", ...gaps.map((g) => `${g.subject.padEnd(10)} ${String(g.pairs).padStart(3)}  ${g.classes.join(",").padEnd(10)} ${g.object}`)].join("\n");
+}

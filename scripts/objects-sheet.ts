@@ -1,6 +1,6 @@
 /**
- * pnpm vite-node scripts/objects-sheet.ts <out folder> (--samples [name ...] | --story <request.json> ...)   (ADR 0108)
- * A contact sheet of drawn objects, to look at before a reviewer does: with --samples, every figure of fixtures/objects/physics-wave1-samples.json and physics-wave2-samples.json (or only the named ones) is drawn on a
+ * pnpm vite-node scripts/objects-sheet.ts <out folder> (--samples [--chemistry] [name ...] | --story <request.json> ...)   (ADR 0108, 0110)
+ * A contact sheet of drawn objects, to look at before a reviewer does: with --samples, every figure of fixtures/objects/physics-wave1-samples.json and physics-wave2-samples.json (or chemistry-wave3-samples.json with --chemistry; or only the named ones) is drawn on a
  * scene of its own; with --story, the scenes of each story request are drawn at the end of the scene. It opens the same page the story video opens, in Chromium, and photographs it, so a
  * picture here is what the video draws. No voice, no model, no network; the drawers run with ENGINE_OBJECTS_V2 and ENGINE_OBJECTS_ALLOW_UNREVIEWED on, because it is a development tool.
  */
@@ -19,7 +19,8 @@ if (!args[0] || (mode !== "--samples" && mode !== "--story")) {
   console.error("usage: objects-sheet.ts <out folder> (--samples [name ...] | --story <request.json> ...)");
   process.exit(2);
 }
-const rest = args.slice(2);
+const chemistry = args.includes("--chemistry"); // draw the samples of wave 3 (chemistry) instead of those of wave 1
+const rest = args.slice(2).filter((a) => a !== "--chemistry");
 mkdirSync(out, { recursive: true });
 const root = mkdtempSync(join(tmpdir(), "eve-sheet-"));
 const env = { ENGINE_OBJECTS_V2: "1", ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1" };
@@ -31,7 +32,7 @@ type Job = { name: string; story: unknown };
 const jobs: Job[] = [];
 if (mode === "--samples") {
   const all: Record<string, Record<string, unknown>> = {};
-  for (const f of ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
+  for (const f of chemistry ? ["chemistry-wave3-samples.json"] : ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
   for (const name of rest.length ? rest : Object.keys(all)) jobs.push({ name, story: { title: name, scenes: [{ heading: name, sentences: ["A figure.", "Another sentence.", "A third sentence."], visuals: [], objects: [all[name]] }] } });
 } else {
   for (const f of rest) jobs.push({ name: f.replace(/^.*[\\/]/, "").replace(/\.request\.json$/, ""), story: (JSON.parse(readFileSync(resolve(f), "utf8")) as { story: unknown }).story });
@@ -49,8 +50,14 @@ for (const job of jobs) {
   }
   for (const n of clean.notes) console.log(`${job.name}: ${n}`);
   const placed = placeStory(clean.story, clean.story.scenes.map((s) => s.sentences.map(() => 4000)));
+  // the formulas of a figure (the equation of a chemistry figure) are typeset with KaTeX once here, as scripts/story-video.ts does
+  const katex = createRequire(join(katexRoot, "package.json"))("katex") as { renderToString(s: string, o: object): string };
+  const math: Record<string, string> = {};
+  clean.story.scenes.forEach((sc, si) => sc.visuals.forEach((v, vi) => {
+    if (v.kind === "math") math[`${si}:${vi}`] = katex.renderToString(v.latex, { throwOnError: false, output: "html", trust: false, strict: "ignore", maxSize: 20, maxExpand: 200, displayMode: v.display === true });
+  }));
   const file = join(root, `${job.name}.html`);
-  writeFileSync(file, storyPageHtml(placed, "whiteboard", {}, runtime, pathToFileURL(cssPath).href, { visualStyle: "animated", chrome: "none", font: "atkinson" }));
+  writeFileSync(file, storyPageHtml(placed, "whiteboard", math, runtime, pathToFileURL(cssPath).href, { visualStyle: "animated", chrome: "none", font: "atkinson" }));
   await page.goto(pathToFileURL(file).href);
   await page.waitForFunction(() => (window as unknown as { __ready?: boolean }).__ready === true);
   await page.evaluate(async () => document.fonts.ready);

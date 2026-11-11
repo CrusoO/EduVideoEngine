@@ -1,0 +1,1997 @@
+{
+ "atom_na": {
+  "kind": "chemistry",
+  "id": "atom_na",
+  "name": "Sample atom_na",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 11
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_o": {
+  "kind": "chemistry",
+  "id": "atom_o",
+  "name": "Sample atom_o",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_fe": {
+  "kind": "chemistry",
+  "id": "atom_fe",
+  "name": "Sample atom_fe",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 26
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_cr": {
+  "kind": "chemistry",
+  "id": "atom_cr",
+  "name": "Sample atom_cr",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 24
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_cu": {
+  "kind": "chemistry",
+  "id": "atom_cu",
+  "name": "Sample atom_cu",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 29
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "atom_kr": {
+  "kind": "chemistry",
+  "id": "atom_kr",
+  "name": "Sample atom_kr",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 36
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ion_na": {
+  "kind": "chemistry",
+  "id": "ion_na",
+  "name": "Sample ion_na",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 11,
+   "charge": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ion_cl": {
+  "kind": "chemistry",
+  "id": "ion_cl",
+  "name": "Sample ion_cl",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 17,
+   "charge": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ion_o2": {
+  "kind": "chemistry",
+  "id": "ion_o2",
+  "name": "Sample ion_o2",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 8,
+   "charge": -2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ion_h": {
+  "kind": "chemistry",
+  "id": "ion_h",
+  "name": "Sample ion_h",
+  "figure": "c_atom_shells",
+  "params": {
+   "z": 1,
+   "charge": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "boxes_n": {
+  "kind": "chemistry",
+  "id": "boxes_n",
+  "name": "Sample boxes_n",
+  "figure": "c_orbital_boxes",
+  "params": {
+   "z": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "boxes_fe": {
+  "kind": "chemistry",
+  "id": "boxes_fe",
+  "name": "Sample boxes_fe",
+  "figure": "c_orbital_boxes",
+  "params": {
+   "z": 26
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "boxes_na": {
+  "kind": "chemistry",
+  "id": "boxes_na",
+  "name": "Sample boxes_na",
+  "figure": "c_orbital_boxes",
+  "params": {
+   "z": 11
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "boxes_cu": {
+  "kind": "chemistry",
+  "id": "boxes_cu",
+  "name": "Sample boxes_cu",
+  "figure": "c_orbital_boxes",
+  "params": {
+   "z": 29
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "boxes_o_2s": {
+  "kind": "chemistry",
+  "id": "boxes_o_2s",
+  "name": "Sample boxes_o_2s",
+  "figure": "c_orbital_boxes",
+  "params": {
+   "z": 8,
+   "subshell": "2s"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bohr_halpha": {
+  "kind": "chemistry",
+  "id": "bohr_halpha",
+  "name": "Sample bohr_halpha",
+  "figure": "c_bohr",
+  "params": {
+   "z": 1,
+   "n_from": 3,
+   "n_to": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bohr_lyman": {
+  "kind": "chemistry",
+  "id": "bohr_lyman",
+  "name": "Sample bohr_lyman",
+  "figure": "c_bohr",
+  "params": {
+   "z": 1,
+   "n_from": 2,
+   "n_to": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bohr_absorb": {
+  "kind": "chemistry",
+  "id": "bohr_absorb",
+  "name": "Sample bohr_absorb",
+  "figure": "c_bohr",
+  "params": {
+   "z": 1,
+   "n_from": 1,
+   "n_to": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bohr_heplus": {
+  "kind": "chemistry",
+  "id": "bohr_heplus",
+  "name": "Sample bohr_heplus",
+  "figure": "c_bohr",
+  "params": {
+   "z": 2,
+   "n_from": 4,
+   "n_to": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "bohr_paschen": {
+  "kind": "chemistry",
+  "id": "bohr_paschen",
+  "name": "Sample bohr_paschen",
+  "figure": "c_bohr",
+  "params": {
+   "z": 1,
+   "n_from": 6,
+   "n_to": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "periodic_1": {
+  "kind": "chemistry",
+  "id": "periodic_1",
+  "name": "Sample periodic_1",
+  "figure": "c_periodic",
+  "params": {
+   "z": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "periodic_2": {
+  "kind": "chemistry",
+  "id": "periodic_2",
+  "name": "Sample periodic_2",
+  "figure": "c_periodic",
+  "params": {
+   "z": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "periodic_11": {
+  "kind": "chemistry",
+  "id": "periodic_11",
+  "name": "Sample periodic_11",
+  "figure": "c_periodic",
+  "params": {
+   "z": 11
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "periodic_17": {
+  "kind": "chemistry",
+  "id": "periodic_17",
+  "name": "Sample periodic_17",
+  "figure": "c_periodic",
+  "params": {
+   "z": 17
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "periodic_26": {
+  "kind": "chemistry",
+  "id": "periodic_26",
+  "name": "Sample periodic_26",
+  "figure": "c_periodic",
+  "params": {
+   "z": 26
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_radius_period2": {
+  "kind": "chemistry",
+  "id": "trend_radius_period2",
+  "name": "Sample trend_radius_period2",
+  "figure": "c_trend",
+  "params": {
+   "property": "radius",
+   "series": "period2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_radius_period3": {
+  "kind": "chemistry",
+  "id": "trend_radius_period3",
+  "name": "Sample trend_radius_period3",
+  "figure": "c_trend",
+  "params": {
+   "property": "radius",
+   "series": "period3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_radius_group1": {
+  "kind": "chemistry",
+  "id": "trend_radius_group1",
+  "name": "Sample trend_radius_group1",
+  "figure": "c_trend",
+  "params": {
+   "property": "radius",
+   "series": "group1"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_ionisation_period2": {
+  "kind": "chemistry",
+  "id": "trend_ionisation_period2",
+  "name": "Sample trend_ionisation_period2",
+  "figure": "c_trend",
+  "params": {
+   "property": "ionisation",
+   "series": "period2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_ionisation_period3": {
+  "kind": "chemistry",
+  "id": "trend_ionisation_period3",
+  "name": "Sample trend_ionisation_period3",
+  "figure": "c_trend",
+  "params": {
+   "property": "ionisation",
+   "series": "period3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_ionisation_group17": {
+  "kind": "chemistry",
+  "id": "trend_ionisation_group17",
+  "name": "Sample trend_ionisation_group17",
+  "figure": "c_trend",
+  "params": {
+   "property": "ionisation",
+   "series": "group17"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_electronegativity_period2": {
+  "kind": "chemistry",
+  "id": "trend_electronegativity_period2",
+  "name": "Sample trend_electronegativity_period2",
+  "figure": "c_trend",
+  "params": {
+   "property": "electronegativity",
+   "series": "period2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_electronegativity_period3": {
+  "kind": "chemistry",
+  "id": "trend_electronegativity_period3",
+  "name": "Sample trend_electronegativity_period3",
+  "figure": "c_trend",
+  "params": {
+   "property": "electronegativity",
+   "series": "period3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_electronegativity_group17": {
+  "kind": "chemistry",
+  "id": "trend_electronegativity_group17",
+  "name": "Sample trend_electronegativity_group17",
+  "figure": "c_trend",
+  "params": {
+   "property": "electronegativity",
+   "series": "group17"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "trend_electronegativity_group1": {
+  "kind": "chemistry",
+  "id": "trend_electronegativity_group1",
+  "name": "Sample trend_electronegativity_group1",
+  "figure": "c_trend",
+  "params": {
+   "property": "electronegativity",
+   "series": "group1"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_1s": {
+  "kind": "chemistry",
+  "id": "orbital_1s",
+  "name": "Sample orbital_1s",
+  "figure": "c_orbital",
+  "params": {
+   "n": 1,
+   "l": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_2s": {
+  "kind": "chemistry",
+  "id": "orbital_2s",
+  "name": "Sample orbital_2s",
+  "figure": "c_orbital",
+  "params": {
+   "n": 2,
+   "l": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_3s": {
+  "kind": "chemistry",
+  "id": "orbital_3s",
+  "name": "Sample orbital_3s",
+  "figure": "c_orbital",
+  "params": {
+   "n": 3,
+   "l": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_4s": {
+  "kind": "chemistry",
+  "id": "orbital_4s",
+  "name": "Sample orbital_4s",
+  "figure": "c_orbital",
+  "params": {
+   "n": 4,
+   "l": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_2p": {
+  "kind": "chemistry",
+  "id": "orbital_2p",
+  "name": "Sample orbital_2p",
+  "figure": "c_orbital",
+  "params": {
+   "n": 2,
+   "l": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_3p": {
+  "kind": "chemistry",
+  "id": "orbital_3p",
+  "name": "Sample orbital_3p",
+  "figure": "c_orbital",
+  "params": {
+   "n": 3,
+   "l": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "orbital_3d": {
+  "kind": "chemistry",
+  "id": "orbital_3d",
+  "name": "Sample orbital_3d",
+  "figure": "c_orbital",
+  "params": {
+   "n": 3,
+   "l": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_na_cl": {
+  "kind": "chemistry",
+  "id": "ionic_na_cl",
+  "name": "Sample ionic_na_cl",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Na",
+   "nonmetal": "Cl"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_mg_o": {
+  "kind": "chemistry",
+  "id": "ionic_mg_o",
+  "name": "Sample ionic_mg_o",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Mg",
+   "nonmetal": "O"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_al_o": {
+  "kind": "chemistry",
+  "id": "ionic_al_o",
+  "name": "Sample ionic_al_o",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Al",
+   "nonmetal": "O"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_ca_cl": {
+  "kind": "chemistry",
+  "id": "ionic_ca_cl",
+  "name": "Sample ionic_ca_cl",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Ca",
+   "nonmetal": "Cl"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_li_f": {
+  "kind": "chemistry",
+  "id": "ionic_li_f",
+  "name": "Sample ionic_li_f",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Li",
+   "nonmetal": "F"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ionic_mg_n": {
+  "kind": "chemistry",
+  "id": "ionic_mg_n",
+  "name": "Sample ionic_mg_n",
+  "figure": "c_bond_ionic",
+  "params": {
+   "metal": "Mg",
+   "nonmetal": "N"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_ch4": {
+  "kind": "chemistry",
+  "id": "lewis_ch4",
+  "name": "Sample lewis_ch4",
+  "figure": "c_lewis",
+  "params": {
+   "central": "C",
+   "ligand": "H",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_ch4": {
+  "kind": "chemistry",
+  "id": "vsepr_ch4",
+  "name": "Sample vsepr_ch4",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "C",
+   "ligand": "H",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_nh3": {
+  "kind": "chemistry",
+  "id": "lewis_nh3",
+  "name": "Sample lewis_nh3",
+  "figure": "c_lewis",
+  "params": {
+   "central": "N",
+   "ligand": "H",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_nh3": {
+  "kind": "chemistry",
+  "id": "vsepr_nh3",
+  "name": "Sample vsepr_nh3",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "N",
+   "ligand": "H",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_oh2": {
+  "kind": "chemistry",
+  "id": "lewis_oh2",
+  "name": "Sample lewis_oh2",
+  "figure": "c_lewis",
+  "params": {
+   "central": "O",
+   "ligand": "H",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_oh2": {
+  "kind": "chemistry",
+  "id": "vsepr_oh2",
+  "name": "Sample vsepr_oh2",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "O",
+   "ligand": "H",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_co2": {
+  "kind": "chemistry",
+  "id": "lewis_co2",
+  "name": "Sample lewis_co2",
+  "figure": "c_lewis",
+  "params": {
+   "central": "C",
+   "ligand": "O",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_co2": {
+  "kind": "chemistry",
+  "id": "vsepr_co2",
+  "name": "Sample vsepr_co2",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "C",
+   "ligand": "O",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_nn1": {
+  "kind": "chemistry",
+  "id": "lewis_nn1",
+  "name": "Sample lewis_nn1",
+  "figure": "c_lewis",
+  "params": {
+   "central": "N",
+   "ligand": "N",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_nn1": {
+  "kind": "chemistry",
+  "id": "vsepr_nn1",
+  "name": "Sample vsepr_nn1",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "N",
+   "ligand": "N",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_oo1": {
+  "kind": "chemistry",
+  "id": "lewis_oo1",
+  "name": "Sample lewis_oo1",
+  "figure": "c_lewis",
+  "params": {
+   "central": "O",
+   "ligand": "O",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_oo1": {
+  "kind": "chemistry",
+  "id": "vsepr_oo1",
+  "name": "Sample vsepr_oo1",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "O",
+   "ligand": "O",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_clcl1": {
+  "kind": "chemistry",
+  "id": "lewis_clcl1",
+  "name": "Sample lewis_clcl1",
+  "figure": "c_lewis",
+  "params": {
+   "central": "Cl",
+   "ligand": "Cl",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_clcl1": {
+  "kind": "chemistry",
+  "id": "vsepr_clcl1",
+  "name": "Sample vsepr_clcl1",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "Cl",
+   "ligand": "Cl",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_sf6": {
+  "kind": "chemistry",
+  "id": "lewis_sf6",
+  "name": "Sample lewis_sf6",
+  "figure": "c_lewis",
+  "params": {
+   "central": "S",
+   "ligand": "F",
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_sf6": {
+  "kind": "chemistry",
+  "id": "vsepr_sf6",
+  "name": "Sample vsepr_sf6",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "S",
+   "ligand": "F",
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_pcl5": {
+  "kind": "chemistry",
+  "id": "lewis_pcl5",
+  "name": "Sample lewis_pcl5",
+  "figure": "c_lewis",
+  "params": {
+   "central": "P",
+   "ligand": "Cl",
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_pcl5": {
+  "kind": "chemistry",
+  "id": "vsepr_pcl5",
+  "name": "Sample vsepr_pcl5",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "P",
+   "ligand": "Cl",
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_bf3": {
+  "kind": "chemistry",
+  "id": "lewis_bf3",
+  "name": "Sample lewis_bf3",
+  "figure": "c_lewis",
+  "params": {
+   "central": "B",
+   "ligand": "F",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_bf3": {
+  "kind": "chemistry",
+  "id": "vsepr_bf3",
+  "name": "Sample vsepr_bf3",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "B",
+   "ligand": "F",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_so2": {
+  "kind": "chemistry",
+  "id": "lewis_so2",
+  "name": "Sample lewis_so2",
+  "figure": "c_lewis",
+  "params": {
+   "central": "S",
+   "ligand": "O",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_so2": {
+  "kind": "chemistry",
+  "id": "vsepr_so2",
+  "name": "Sample vsepr_so2",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "S",
+   "ligand": "O",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_sf4": {
+  "kind": "chemistry",
+  "id": "lewis_sf4",
+  "name": "Sample lewis_sf4",
+  "figure": "c_lewis",
+  "params": {
+   "central": "S",
+   "ligand": "F",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_sf4": {
+  "kind": "chemistry",
+  "id": "vsepr_sf4",
+  "name": "Sample vsepr_sf4",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "S",
+   "ligand": "F",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_clf3": {
+  "kind": "chemistry",
+  "id": "lewis_clf3",
+  "name": "Sample lewis_clf3",
+  "figure": "c_lewis",
+  "params": {
+   "central": "Cl",
+   "ligand": "F",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_clf3": {
+  "kind": "chemistry",
+  "id": "vsepr_clf3",
+  "name": "Sample vsepr_clf3",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "Cl",
+   "ligand": "F",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_beh2": {
+  "kind": "chemistry",
+  "id": "lewis_beh2",
+  "name": "Sample lewis_beh2",
+  "figure": "c_lewis",
+  "params": {
+   "central": "Be",
+   "ligand": "H",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_beh2": {
+  "kind": "chemistry",
+  "id": "vsepr_beh2",
+  "name": "Sample vsepr_beh2",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "Be",
+   "ligand": "H",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lewis_hh1": {
+  "kind": "chemistry",
+  "id": "lewis_hh1",
+  "name": "Sample lewis_hh1",
+  "figure": "c_lewis",
+  "params": {
+   "central": "H",
+   "ligand": "H",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vsepr_hh1": {
+  "kind": "chemistry",
+  "id": "vsepr_hh1",
+  "name": "Sample vsepr_hh1",
+  "figure": "c_vsepr",
+  "params": {
+   "central": "H",
+   "ligand": "H",
+   "n": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_0_alkane": {
+  "kind": "chemistry",
+  "id": "organic_0_alkane",
+  "name": "Sample organic_0_alkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "alkane",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_1_alkene": {
+  "kind": "chemistry",
+  "id": "organic_1_alkene",
+  "name": "Sample organic_1_alkene",
+  "figure": "c_organic",
+  "params": {
+   "family": "alkene",
+   "n": 4,
+   "pos": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_2_alkene": {
+  "kind": "chemistry",
+  "id": "organic_2_alkene",
+  "name": "Sample organic_2_alkene",
+  "figure": "c_organic",
+  "params": {
+   "family": "alkene",
+   "n": 4,
+   "pos": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_3_alkyne": {
+  "kind": "chemistry",
+  "id": "organic_3_alkyne",
+  "name": "Sample organic_3_alkyne",
+  "figure": "c_organic",
+  "params": {
+   "family": "alkyne",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_4_alcohol": {
+  "kind": "chemistry",
+  "id": "organic_4_alcohol",
+  "name": "Sample organic_4_alcohol",
+  "figure": "c_organic",
+  "params": {
+   "family": "alcohol",
+   "n": 3,
+   "pos": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_5_alcohol": {
+  "kind": "chemistry",
+  "id": "organic_5_alcohol",
+  "name": "Sample organic_5_alcohol",
+  "figure": "c_organic",
+  "params": {
+   "family": "alcohol",
+   "n": 3,
+   "pos": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_6_haloalkane": {
+  "kind": "chemistry",
+  "id": "organic_6_haloalkane",
+  "name": "Sample organic_6_haloalkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "haloalkane",
+   "n": 4,
+   "pos": 2,
+   "halogen": "Cl"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_7_haloalkane": {
+  "kind": "chemistry",
+  "id": "organic_7_haloalkane",
+  "name": "Sample organic_7_haloalkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "haloalkane",
+   "n": 3,
+   "pos": 1,
+   "halogen": "Br"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_8_amine": {
+  "kind": "chemistry",
+  "id": "organic_8_amine",
+  "name": "Sample organic_8_amine",
+  "figure": "c_organic",
+  "params": {
+   "family": "amine",
+   "n": 3,
+   "pos": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_9_aldehyde": {
+  "kind": "chemistry",
+  "id": "organic_9_aldehyde",
+  "name": "Sample organic_9_aldehyde",
+  "figure": "c_organic",
+  "params": {
+   "family": "aldehyde",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_10_ketone": {
+  "kind": "chemistry",
+  "id": "organic_10_ketone",
+  "name": "Sample organic_10_ketone",
+  "figure": "c_organic",
+  "params": {
+   "family": "ketone",
+   "n": 5,
+   "pos": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_11_ketone": {
+  "kind": "chemistry",
+  "id": "organic_11_ketone",
+  "name": "Sample organic_11_ketone",
+  "figure": "c_organic",
+  "params": {
+   "family": "ketone",
+   "n": 4,
+   "pos": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_12_acid": {
+  "kind": "chemistry",
+  "id": "organic_12_acid",
+  "name": "Sample organic_12_acid",
+  "figure": "c_organic",
+  "params": {
+   "family": "acid",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_13_acid": {
+  "kind": "chemistry",
+  "id": "organic_13_acid",
+  "name": "Sample organic_13_acid",
+  "figure": "c_organic",
+  "params": {
+   "family": "acid",
+   "n": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_14_cycloalkane": {
+  "kind": "chemistry",
+  "id": "organic_14_cycloalkane",
+  "name": "Sample organic_14_cycloalkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "cycloalkane",
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_15_cycloalkane": {
+  "kind": "chemistry",
+  "id": "organic_15_cycloalkane",
+  "name": "Sample organic_15_cycloalkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "cycloalkane",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_16_arene": {
+  "kind": "chemistry",
+  "id": "organic_16_arene",
+  "name": "Sample organic_16_arene",
+  "figure": "c_organic",
+  "params": {
+   "family": "arene",
+   "sub": "none"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_17_arene": {
+  "kind": "chemistry",
+  "id": "organic_17_arene",
+  "name": "Sample organic_17_arene",
+  "figure": "c_organic",
+  "params": {
+   "family": "arene",
+   "sub": "OH"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_18_arene": {
+  "kind": "chemistry",
+  "id": "organic_18_arene",
+  "name": "Sample organic_18_arene",
+  "figure": "c_organic",
+  "params": {
+   "family": "arene",
+   "sub": "Cl"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_19_arene": {
+  "kind": "chemistry",
+  "id": "organic_19_arene",
+  "name": "Sample organic_19_arene",
+  "figure": "c_organic",
+  "params": {
+   "family": "arene",
+   "sub": "CH3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_20_alkane": {
+  "kind": "chemistry",
+  "id": "organic_20_alkane",
+  "name": "Sample organic_20_alkane",
+  "figure": "c_organic",
+  "params": {
+   "family": "alkane",
+   "n": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organic_21_alcohol": {
+  "kind": "chemistry",
+  "id": "organic_21_alcohol",
+  "name": "Sample organic_21_alcohol",
+  "figure": "c_organic",
+  "params": {
+   "family": "alcohol",
+   "n": 4,
+   "pos": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "isomers_4": {
+  "kind": "chemistry",
+  "id": "isomers_4",
+  "name": "Sample isomers_4",
+  "figure": "c_isomers",
+  "params": {
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "isomers_5": {
+  "kind": "chemistry",
+  "id": "isomers_5",
+  "name": "Sample isomers_5",
+  "figure": "c_isomers",
+  "params": {
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "isomers_6": {
+  "kind": "chemistry",
+  "id": "isomers_6",
+  "name": "Sample isomers_6",
+  "figure": "c_isomers",
+  "params": {
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_water": {
+  "kind": "chemistry",
+  "id": "react_water",
+  "name": "Sample react_water",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "H2",
+   "r2": "O2",
+   "p1": "H2O"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_iron": {
+  "kind": "chemistry",
+  "id": "react_iron",
+  "name": "Sample react_iron",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "Fe2O3",
+   "r2": "CO",
+   "p1": "Fe",
+   "p2": "CO2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_neut": {
+  "kind": "chemistry",
+  "id": "react_neut",
+  "name": "Sample react_neut",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "Ca(OH)2",
+   "r2": "HCl",
+   "p1": "CaCl2",
+   "p2": "H2O"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_ionic": {
+  "kind": "chemistry",
+  "id": "react_ionic",
+  "name": "Sample react_ionic",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "Cu",
+   "r2": "Ag^+",
+   "p1": "Cu^2+",
+   "p2": "Ag"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_given": {
+  "kind": "chemistry",
+  "id": "react_given",
+  "name": "Sample react_given",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "CH4",
+   "r2": "O2",
+   "p1": "CO2",
+   "p2": "H2O",
+   "c_r1": 1,
+   "c_r2": 2,
+   "c_p1": 1,
+   "c_p2": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "react_al": {
+  "kind": "chemistry",
+  "id": "react_al",
+  "name": "Sample react_al",
+  "figure": "c_reaction",
+  "params": {
+   "r1": "Al",
+   "r2": "O2",
+   "p1": "Al2O3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "stoich_zn": {
+  "kind": "chemistry",
+  "id": "stoich_zn",
+  "name": "Sample stoich_zn",
+  "figure": "c_stoich",
+  "params": {
+   "r1": "Zn",
+   "r2": "HCl",
+   "p1": "ZnCl2",
+   "p2": "H2",
+   "m_r1": 6.54,
+   "m_r2": 7.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "stoich_caco3": {
+  "kind": "chemistry",
+  "id": "stoich_caco3",
+  "name": "Sample stoich_caco3",
+  "figure": "c_stoich",
+  "params": {
+   "r1": "CaCO3",
+   "p1": "CaO",
+   "p2": "CO2",
+   "m_r1": 100
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "stoich_water": {
+  "kind": "chemistry",
+  "id": "stoich_water",
+  "name": "Sample stoich_water",
+  "figure": "c_stoich",
+  "params": {
+   "r1": "H2",
+   "r2": "O2",
+   "p1": "H2O",
+   "m_r1": 4,
+   "m_r2": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "energy_exo": {
+  "kind": "chemistry",
+  "id": "energy_exo",
+  "name": "Sample energy_exo",
+  "figure": "c_energy",
+  "params": {
+   "delta_h": -92,
+   "ea": 150
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "energy_endo": {
+  "kind": "chemistry",
+  "id": "energy_endo",
+  "name": "Sample energy_endo",
+  "figure": "c_energy",
+  "params": {
+   "delta_h": 50,
+   "ea": 120
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "energy_cat": {
+  "kind": "chemistry",
+  "id": "energy_cat",
+  "name": "Sample energy_cat",
+  "figure": "c_energy",
+  "params": {
+   "delta_h": -92,
+   "ea": 150,
+   "ea_cat": 90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "kin_zero": {
+  "kind": "chemistry",
+  "id": "kin_zero",
+  "name": "Sample kin_zero",
+  "figure": "c_kinetics",
+  "params": {
+   "mode": "order",
+   "order": 0,
+   "k": 0.01,
+   "c0": 1,
+   "t_max": 80
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "kin_first": {
+  "kind": "chemistry",
+  "id": "kin_first",
+  "name": "Sample kin_first",
+  "figure": "c_kinetics",
+  "params": {
+   "mode": "order",
+   "order": 1,
+   "k": 0.05,
+   "c0": 1,
+   "t_max": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "kin_second": {
+  "kind": "chemistry",
+  "id": "kin_second",
+  "name": "Sample kin_second",
+  "figure": "c_kinetics",
+  "params": {
+   "mode": "order",
+   "order": 2,
+   "k": 0.1,
+   "c0": 1,
+   "t_max": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "kin_equil": {
+  "kind": "chemistry",
+  "id": "kin_equil",
+  "name": "Sample kin_equil",
+  "figure": "c_kinetics",
+  "params": {
+   "mode": "equilibrium",
+   "kf": 0.3,
+   "kr": 0.1,
+   "a0": 1,
+   "t_max": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "kin_arrh": {
+  "kind": "chemistry",
+  "id": "kin_arrh",
+  "name": "Sample kin_arrh",
+  "figure": "c_kinetics",
+  "params": {
+   "mode": "arrhenius",
+   "ea_kj": 75,
+   "log10_a": 10,
+   "t_min": 300,
+   "t_max": 400
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gas_boyle": {
+  "kind": "chemistry",
+  "id": "gas_boyle",
+  "name": "Sample gas_boyle",
+  "figure": "c_gas",
+  "params": {
+   "mode": "boyle",
+   "n_mol": 1,
+   "t_k": 300,
+   "v_min": 5,
+   "v_max": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gas_charles": {
+  "kind": "chemistry",
+  "id": "gas_charles",
+  "name": "Sample gas_charles",
+  "figure": "c_gas",
+  "params": {
+   "mode": "charles",
+   "n_mol": 1,
+   "p_kpa": 100,
+   "t_max": 400
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gas_gaylussac": {
+  "kind": "chemistry",
+  "id": "gas_gaylussac",
+  "name": "Sample gas_gaylussac",
+  "figure": "c_gas",
+  "params": {
+   "mode": "gay_lussac",
+   "n_mol": 1,
+   "v_l": 10,
+   "t_max": 400
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gas_maxwell": {
+  "kind": "chemistry",
+  "id": "gas_maxwell",
+  "name": "Sample gas_maxwell",
+  "figure": "c_gas",
+  "params": {
+   "mode": "maxwell",
+   "gas": "N2",
+   "t1": 300
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gas_maxwell2": {
+  "kind": "chemistry",
+  "id": "gas_maxwell2",
+  "name": "Sample gas_maxwell2",
+  "figure": "c_gas",
+  "params": {
+   "mode": "maxwell",
+   "gas": "O2",
+   "t1": 300,
+   "t2": 900
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "titr_strong": {
+  "kind": "chemistry",
+  "id": "titr_strong",
+  "name": "Sample titr_strong",
+  "figure": "c_titration",
+  "params": {
+   "acid": "strong",
+   "ca": 0.1,
+   "va": 25,
+   "cb": 0.1,
+   "indicator": "phenolphthalein"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "titr_weak": {
+  "kind": "chemistry",
+  "id": "titr_weak",
+  "name": "Sample titr_weak",
+  "figure": "c_titration",
+  "params": {
+   "acid": "weak",
+   "ca": 0.1,
+   "va": 25,
+   "cb": 0.1,
+   "pka": 4.76,
+   "indicator": "phenolphthalein"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "titr_weak_mo": {
+  "kind": "chemistry",
+  "id": "titr_weak_mo",
+  "name": "Sample titr_weak_mo",
+  "figure": "c_titration",
+  "params": {
+   "acid": "weak",
+   "ca": 0.1,
+   "va": 25,
+   "cb": 0.1,
+   "pka": 4.76,
+   "indicator": "methyl_orange"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "titr_plain": {
+  "kind": "chemistry",
+  "id": "titr_plain",
+  "name": "Sample titr_plain",
+  "figure": "c_titration",
+  "params": {
+   "acid": "strong",
+   "ca": 0.2,
+   "va": 20,
+   "cb": 0.1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ph_acid": {
+  "kind": "chemistry",
+  "id": "ph_acid",
+  "name": "Sample ph_acid",
+  "figure": "c_ph",
+  "params": {
+   "ph": 3,
+   "indicator": "methyl_orange"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ph_conc": {
+  "kind": "chemistry",
+  "id": "ph_conc",
+  "name": "Sample ph_conc",
+  "figure": "c_ph",
+  "params": {
+   "h_conc": 1e-9,
+   "indicator": "phenolphthalein"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ph_neutral": {
+  "kind": "chemistry",
+  "id": "ph_neutral",
+  "name": "Sample ph_neutral",
+  "figure": "c_ph",
+  "params": {
+   "ph": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sol_kno3": {
+  "kind": "chemistry",
+  "id": "sol_kno3",
+  "name": "Sample sol_kno3",
+  "figure": "c_solubility",
+  "params": {
+   "mode": "curve",
+   "salt": "kno3",
+   "temp_c": 60,
+   "mass_g": 120,
+   "cool_to_c": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sol_nacl": {
+  "kind": "chemistry",
+  "id": "sol_nacl",
+  "name": "Sample sol_nacl",
+  "figure": "c_solubility",
+  "params": {
+   "mode": "curve",
+   "salt": "nacl",
+   "temp_c": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sol_kcl": {
+  "kind": "chemistry",
+  "id": "sol_kcl",
+  "name": "Sample sol_kcl",
+  "figure": "c_solubility",
+  "params": {
+   "mode": "curve",
+   "salt": "kcl",
+   "temp_c": 50,
+   "mass_g": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vap_70": {
+  "kind": "chemistry",
+  "id": "vap_70",
+  "name": "Sample vap_70",
+  "figure": "c_solubility",
+  "params": {
+   "mode": "vapour",
+   "pressure_kpa": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vap_atm": {
+  "kind": "chemistry",
+  "id": "vap_atm",
+  "name": "Sample vap_atm",
+  "figure": "c_solubility",
+  "params": {
+   "mode": "vapour",
+   "pressure_kpa": 101.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_zn_cu": {
+  "kind": "chemistry",
+  "id": "cell_zn_cu",
+  "name": "Sample cell_zn_cu",
+  "figure": "c_cell",
+  "params": {
+   "m1": "Zn",
+   "m2": "Cu"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_ag_mg": {
+  "kind": "chemistry",
+  "id": "cell_ag_mg",
+  "name": "Sample cell_ag_mg",
+  "figure": "c_cell",
+  "params": {
+   "m1": "Ag",
+   "m2": "Mg"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_fe_cu": {
+  "kind": "chemistry",
+  "id": "cell_fe_cu",
+  "name": "Sample cell_fe_cu",
+  "figure": "c_cell",
+  "params": {
+   "m1": "Fe",
+   "m2": "Cu"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_al_zn": {
+  "kind": "chemistry",
+  "id": "cell_al_zn",
+  "name": "Sample cell_al_zn",
+  "figure": "c_cell",
+  "params": {
+   "m1": "Al",
+   "m2": "Zn"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "electrolysis_molten_nacl": {
+  "kind": "chemistry",
+  "id": "electrolysis_molten_nacl",
+  "name": "Sample electrolysis_molten_nacl",
+  "figure": "c_electrolysis",
+  "params": {
+   "electrolyte": "molten_nacl",
+   "current_a": 2,
+   "time_min": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "electrolysis_aq_nacl": {
+  "kind": "chemistry",
+  "id": "electrolysis_aq_nacl",
+  "name": "Sample electrolysis_aq_nacl",
+  "figure": "c_electrolysis",
+  "params": {
+   "electrolyte": "aq_nacl",
+   "current_a": 2,
+   "time_min": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "electrolysis_aq_cuso4": {
+  "kind": "chemistry",
+  "id": "electrolysis_aq_cuso4",
+  "name": "Sample electrolysis_aq_cuso4",
+  "figure": "c_electrolysis",
+  "params": {
+   "electrolyte": "aq_cuso4",
+   "current_a": 2,
+   "time_min": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "electrolysis_dil_h2so4": {
+  "kind": "chemistry",
+  "id": "electrolysis_dil_h2so4",
+  "name": "Sample electrolysis_dil_h2so4",
+  "figure": "c_electrolysis",
+  "params": {
+   "electrolyte": "dil_h2so4",
+   "current_a": 2,
+   "time_min": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_distillation": {
+  "kind": "chemistry",
+  "id": "lab_distillation",
+  "name": "Sample lab_distillation",
+  "figure": "c_lab",
+  "params": {
+   "setup": "distillation"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_filtration": {
+  "kind": "chemistry",
+  "id": "lab_filtration",
+  "name": "Sample lab_filtration",
+  "figure": "c_lab",
+  "params": {
+   "setup": "filtration"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_titration": {
+  "kind": "chemistry",
+  "id": "lab_titration",
+  "name": "Sample lab_titration",
+  "figure": "c_lab",
+  "params": {
+   "setup": "titration"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_h2": {
+  "kind": "chemistry",
+  "id": "lab_gas_h2",
+  "name": "Sample lab_gas_h2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "H2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_nh3": {
+  "kind": "chemistry",
+  "id": "lab_gas_nh3",
+  "name": "Sample lab_gas_nh3",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "NH3"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_co2": {
+  "kind": "chemistry",
+  "id": "lab_gas_co2",
+  "name": "Sample lab_gas_co2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "CO2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_cl2": {
+  "kind": "chemistry",
+  "id": "lab_gas_cl2",
+  "name": "Sample lab_gas_cl2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "Cl2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_so2": {
+  "kind": "chemistry",
+  "id": "lab_gas_so2",
+  "name": "Sample lab_gas_so2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "SO2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_n2": {
+  "kind": "chemistry",
+  "id": "lab_gas_n2",
+  "name": "Sample lab_gas_n2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "N2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_o2": {
+  "kind": "chemistry",
+  "id": "lab_gas_o2",
+  "name": "Sample lab_gas_o2",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "O2"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_hcl": {
+  "kind": "chemistry",
+  "id": "lab_gas_hcl",
+  "name": "Sample lab_gas_hcl",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "HCl"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_co2_air": {
+  "kind": "chemistry",
+  "id": "lab_gas_co2_air",
+  "name": "Sample lab_gas_co2_air",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "CO2",
+   "method": "air_upward"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lab_gas_h2_air": {
+  "kind": "chemistry",
+  "id": "lab_gas_h2_air",
+  "name": "Sample lab_gas_h2_air",
+  "figure": "c_lab",
+  "params": {
+   "setup": "gas_collection",
+   "gas": "H2",
+   "method": "air_downward"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}

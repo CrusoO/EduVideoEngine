@@ -1,0 +1,114 @@
+{
+ "requestId": "w3-daniell-cell",
+ "idempotencyKey": "w3-daniell-cell-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "The Daniell cell",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A battery from two metals",
+    "sentences": [
+     "Zinc and copper can make an electric cell.",
+     "Which metal gives up its electrons?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Two metals, one cell",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Anode and cathode",
+    "sentences": [
+     "Zinc has the lower standard potential, so it is the anode.",
+     "Electrons flow in the wire from zinc to copper.",
+     "The cell gives 1.10 V and the free energy change is -212 kJ per mole."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "cell",
+      "name": "Daniell cell",
+      "figure": "c_cell",
+      "params": {
+       "m1": "Zn",
+       "m2": "Cu"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The other way round",
+    "sentences": [
+     "Electrolysis forces a current the other way.",
+     "In copper sulfate solution a current of 2 A for 30 minutes deposits 1.19 g of copper.",
+     "That is the charge of 3600 coulombs."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "elec",
+      "name": "Electrolysis of copper sulfate",
+      "figure": "c_electrolysis",
+      "params": {
+       "electrolyte": "aq_cuso4",
+       "current_a": 2,
+       "time_min": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Spontaneous or forced",
+    "sentences": [
+     "A cell uses a reaction that goes by itself, and electrolysis forces one that will not."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Spontaneous or forced",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

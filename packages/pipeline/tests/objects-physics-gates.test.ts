@@ -91,7 +91,7 @@ describe("the physics request is strict: impossible or free-text inputs are refu
 
 describe("the unreviewed switch: nothing unreviewed ships by accident, and the owner can flip it (ADR 0108)", () => {
   it("every wave-1 and wave-2 drawer is registered reviewed: false, licence owner-original, source own-drawings, no tool", () => {
-    const added = defaultRegistry(reg).all().filter((d) => !wave0Registry(reg).get(d.name));
+    const added = defaultRegistry(reg).all().filter((d) => !wave0Registry(reg).get(d.name) && d.kind !== "chemistry"); // the chemistry drawers of wave 3 have their own tests
     expect(added).toHaveLength(40); // 21 of wave 1 and 19 of wave 2
     for (const d of added) expect([d.name, d.reviewed, d.license, d.sources, d.toolVersions ?? {}]).toEqual([d.name, false, "owner-original", ["own-drawings"], {}]);
     for (const d of wave0Registry(reg).all()) expect(d.reviewed).toBeUndefined();
@@ -345,7 +345,7 @@ describe("coverage: the 21 objects of the plan's wave 1 and the 19 of wave 2, co
     "Bohr model, energy levels, spectral series", "Binding-energy curve, decay chain, reactor schematic", "Band diagram, p-n junction, logic gates, transistor circuit", "Moon phases, seasons, day-night, sun path, eclipse",
   ];
   it("the drawers cover exactly the objects of the plan's W1 and W2 tables (the 20 types of W1 plus spring-mass, which the plan grades as drawn today, and the 19 types of W2)", () => {
-    const covered = defaultRegistry(reg).all().flatMap((d) => d.covers ?? []);
+    const covered = defaultRegistry(reg).all().filter((d) => d.kind !== "chemistry").flatMap((d) => d.covers ?? []);
     expect(new Set(covered)).toEqual(new Set([...PLAN_W1, ...PLAN_W2]));
     expect(covered).toHaveLength(PLAN_W1.length + PLAN_W2.length);
   });
@@ -361,10 +361,10 @@ describe("coverage: the 21 objects of the plan's wave 1 and the 19 of wave 2, co
     expect(rep.byWave["1"]!.registered).toBe(3);
     expect(rep.byWave["2"]!.registered).toBe(1); // the one W2 row of the sample, the mirror diagram
     expect(rep.byWave["3"]!.registered).toBe(0);
-    expect(rep.unreviewedObjects).toHaveLength(40);
+    expect(rep.unreviewedObjects.filter((o) => [...PLAN_W1, ...PLAN_W2].includes(o))).toHaveLength(40);
     const text = formatCoverage(rep, "sample");
     expect(text).toContain("Per wave");
-    expect(text).toContain("40 of them not yet reviewed");
+    expect(text).toMatch(/\(\d+ of them not yet reviewed\)/);
     expect(text).toContain("reviewed");
   });
   it("a reviewed drawer counts as reviewed coverage", () => {
