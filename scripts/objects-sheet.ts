@@ -1,6 +1,6 @@
 /**
  * pnpm vite-node scripts/objects-sheet.ts <out folder> (--samples [name ...] | --story <request.json> ...)   (ADR 0108)
- * A contact sheet of drawn objects, to look at before a reviewer does: with --samples, every figure of fixtures/objects/physics-wave1-samples.json (or only the named ones) is drawn on a
+ * A contact sheet of drawn objects, to look at before a reviewer does: with --samples, every figure of fixtures/objects/physics-wave1-samples.json and physics-wave2-samples.json (or only the named ones) is drawn on a
  * scene of its own; with --story, the scenes of each story request are drawn at the end of the scene. It opens the same page the story video opens, in Chromium, and photographs it, so a
  * picture here is what the video draws. No voice, no model, no network; the drawers run with ENGINE_OBJECTS_V2 and ENGINE_OBJECTS_ALLOW_UNREVIEWED on, because it is a development tool.
  */
@@ -30,7 +30,8 @@ const cssPath = createRequire(join(katexRoot, "package.json")).resolve("katex/di
 type Job = { name: string; story: unknown };
 const jobs: Job[] = [];
 if (mode === "--samples") {
-  const all = JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects/physics-wave1-samples.json"), "utf8")) as Record<string, Record<string, unknown>>;
+  const all: Record<string, Record<string, unknown>> = {};
+  for (const f of ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
   for (const name of rest.length ? rest : Object.keys(all)) jobs.push({ name, story: { title: name, scenes: [{ heading: name, sentences: ["A figure.", "Another sentence.", "A third sentence."], visuals: [], objects: [all[name]] }] } });
 } else {
   for (const f of rest) jobs.push({ name: f.replace(/^.*[\\/]/, "").replace(/\.request\.json$/, ""), story: (JSON.parse(readFileSync(resolve(f), "utf8")) as { story: unknown }).story });

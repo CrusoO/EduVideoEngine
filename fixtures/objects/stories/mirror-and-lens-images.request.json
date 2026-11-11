@@ -1,0 +1,117 @@
+{
+ "requestId": "w2-mirror-and-lens-images",
+ "idempotencyKey": "w2-mirror-and-lens-images-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Images from a mirror and a lens",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A picture in a spoon",
+    "sentences": [
+     "Look into the bowl of a spoon and your face is small and upside down.",
+     "Where does that picture come from?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "A picture in a spoon",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A concave mirror",
+    "sentences": [
+     "A concave mirror has a focal length of 0.100 metres.",
+     "An object stands 0.300 metres in front of it.",
+     "The image forms 0.150 metres from the mirror.",
+     "It is real, upside down and smaller, and the magnification is -0.500."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "m1",
+      "name": "Concave mirror, object beyond C",
+      "figure": "p_ray_mirror",
+      "params": {
+       "mirror": "concave",
+       "focal_length": 0.1,
+       "object_distance": 0.3
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A convex lens",
+    "sentences": [
+     "Now a convex lens of focal length 0.100 metres.",
+     "The object is 0.350 metres away, beyond twice the focal length.",
+     "The image forms 0.140 metres behind the lens, real, upside down and smaller, with a magnification of -0.400."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "l1",
+      "name": "Convex lens, object beyond 2F",
+      "figure": "p_ray_lens",
+      "params": {
+       "lens": "convex",
+       "focal_length": 0.1,
+       "object_distance": 0.35
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "One formula",
+    "sentences": [
+     "Both pictures follow the same rule between the object distance, the image distance and the focal length.",
+     "Two rays are enough to find the image."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "One rule, two rays",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

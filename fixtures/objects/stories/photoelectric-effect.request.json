@@ -1,0 +1,115 @@
+{
+ "requestId": "w2-photoelectric-effect",
+ "idempotencyKey": "w2-photoelectric-effect-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "The photoelectric effect",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Light that knocks electrons out",
+    "sentences": [
+     "Shine light on a clean metal and electrons can leave it.",
+     "Brighter light does not help if the colour is wrong."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Light and electrons",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A threshold and a straight line",
+    "sentences": [
+     "A metal holds its electrons with a work function of 2.30 electron volts.",
+     "Light must reach 5.56e14 hertz before any electron comes out.",
+     "At 1e15 hertz each photon carries 4.14 electron volts.",
+     "The fastest electrons leave with 1.84 electron volts, and the line has the same slope for every metal."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "pe1",
+      "name": "Photoelectric effect, one metal",
+      "figure": "p_photoelectric",
+      "params": {
+       "work_ev": 2.3,
+       "frequency": 1000000000000000
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A second metal",
+    "sentences": [
+     "A second metal holds its electrons more tightly, with a work function of 2.30 electron volts.",
+     "Its threshold moves right to 9.91e14 hertz, but its line is parallel to the first."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "pe2",
+      "name": "Photoelectric effect, two metals",
+      "figure": "p_photoelectric",
+      "params": {
+       "work_ev": 2.3,
+       "work2_ev": 4.1,
+       "frequency": 1200000000000000
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Photons, not waves",
+    "sentences": [
+     "The energy of a photon depends on the frequency alone.",
+     "That is why the colour decides, and the brightness only sets how many."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Frequency decides",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

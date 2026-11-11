@@ -69,6 +69,24 @@ export const corruptors = (r: DrawResult): Corruptor[] => {
     });
     return done ? c : null;
   } });
+  // wave 2: two printed numbers exchanged (a wrong variable on the wrong line)
+  out.push({ name: "swapped readout numbers", apply: (x) => {
+    const idx = x.shapes.map((s, i) => [s, i] as const).filter(([s]) => /_r\d+$/.test(String(s.id)) && typeof s.text === "string" && /^.+? = -?\d/.test(s.text));
+    const numOf = (t: string): string => /= (-?\d+(?:\.\d+)?(?:e-?\d+)?)/.exec(t)![1]!;
+    for (let i = 0; i < idx.length; i++)
+      for (let j = i + 1; j < idx.length; j++) {
+        const [a, b] = [numOf(String(idx[i]![0].text)), numOf(String(idx[j]![0].text))];
+        if (a === b) continue;
+        const shapes = x.shapes.map((s, k) => (k === idx[i]![1] ? { ...s, text: String(s.text).replace(a, b) } : k === idx[j]![1] ? { ...s, text: String(s.text).replace(b, a) } : s));
+        return { ...x, shapes };
+      }
+    return null;
+  } });
+  // wave 2: a read-out the figure should print has gone
+  out.push({ name: "dropped readout", apply: (x) => {
+    const k = x.shapes.findIndex((s) => /_r\d+$/.test(String(s.id)));
+    return k < 0 ? null : { ...x, shapes: x.shapes.filter((_, i) => i !== k) };
+  } });
   // a printed number that is not the computed one (a typed number)
   out.push({ name: "typed number", apply: (x) => {
     let done = false;

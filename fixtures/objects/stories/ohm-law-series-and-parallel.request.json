@@ -1,0 +1,121 @@
+{
+ "requestId": "w2-ohm-law-series-and-parallel",
+ "idempotencyKey": "w2-ohm-law-series-and-parallel-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Ohm's law in series and in parallel",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "One cell, three resistors",
+    "sentences": [
+     "A cell can push current through resistors in two ways.",
+     "How much current flows in each?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Series or parallel?",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "In series",
+    "sentences": [
+     "A 12.0 volt cell drives one current through three resistors in a row.",
+     "Their total is 60.0 ohm.",
+     "The current is 0.200 amperes, the same in every resistor.",
+     "The voltages across them are 2.00, 4.00 and 6.00 volts, and they add up to the cell."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "s1",
+      "name": "Three resistors in series",
+      "figure": "p_circuit",
+      "params": {
+       "mode": "series",
+       "volts": 12,
+       "r1": 10,
+       "r2": 20,
+       "r3": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "In parallel",
+    "sentences": [
+     "Now the same three resistors side by side across the 12.0 volt cell.",
+     "The total falls to 5.45 ohm.",
+     "The currents are 1.20, 0.600 and 0.400 amperes, and they add up to 2.20 amperes from the cell."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "p1",
+      "name": "Three resistors in parallel",
+      "figure": "p_circuit",
+      "params": {
+       "mode": "parallel",
+       "volts": 12,
+       "r1": 10,
+       "r2": 20,
+       "r3": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Same rule, different shape",
+    "sentences": [
+     "Ohm's law holds for every resistor.",
+     "In series the current is shared, and in parallel the voltage is."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "V = I R, everywhere",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

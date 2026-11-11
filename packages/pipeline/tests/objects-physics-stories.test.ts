@@ -13,17 +13,18 @@ afterEach(() => rmSync(dir, { recursive: true, force: true }));
 const ctx = (): RouteContext => ({ enabled: true, registry: defaultRegistry(), today: "2026-11-11", cacheDir: join(dir, "cache"), queueFile: join(dir, "queue.jsonl"), allowUnreviewed: true });
 type Scene = { sentences: string[]; objects?: unknown[]; visuals?: unknown[] };
 
-describe("the six sample story requests of wave 1 (Class 9 to 11 topics), pure data", () => {
-  it("there are six, named for their topics", () => {
+describe("the twelve sample story requests of waves 1 and 2 (Class 8 to 12 topics), pure data", () => {
+  it("there are twelve, named for their topics: six of wave 1 (Class 9 to 11) and six of wave 2 (Class 8 to 12)", () => {
     expect(files).toEqual([
-      "heating-curve-of-ice.request.json", "newton-second-law-incline.request.json", "projectile-motion.request.json", "simple-pendulum.request.json", "velocity-time-graph.request.json", "wave-speed.request.json",
+      "heating-curve-of-ice.request.json", "mirror-and-lens-images.request.json", "moon-phases-and-eclipses.request.json", "newton-second-law-incline.request.json", "ohm-law-series-and-parallel.request.json", "photoelectric-effect.request.json",
+      "projectile-motion.request.json", "rc-charging-and-discharging.request.json", "simple-pendulum.request.json", "snell-and-total-internal-reflection.request.json", "velocity-time-graph.request.json", "wave-speed.request.json",
     ]);
   });
   it.each(files)("%s is a valid lesson request whose objects all draw, with nothing refused, cut or dropped", (file) => {
     const req = LessonRequest.parse(JSON.parse(readFileSync(join(FOLDER, file), "utf8")));
     expect(req.curriculum.board).toBe("CBSE");
-    expect(req.curriculum.grade).toBeGreaterThanOrEqual(9);
-    expect(req.curriculum.grade).toBeLessThanOrEqual(11);
+    expect(req.curriculum.grade).toBeGreaterThanOrEqual(8);
+    expect(req.curriculum.grade).toBeLessThanOrEqual(12);
     expect(req.curriculum.subject).toBe("physics");
     expect(req.options.style).toBe("animated");
     const out = expandStoryObjects(req.story, ctx());
