@@ -54,6 +54,8 @@ export const LessonRequest = z
         voiceSpeed: z.number().min(0.6).max(1).optional(),
         /** Story jobs, English only (ADR 0097): which Kokoro voice, from the ones that were measured. Left out, af_heart. Other languages keep their own voice. */
         voiceName: z.enum(KOKORO_VOICES).optional(),
+        /** Story jobs in hi-IN or ne-NP only (ADR 0106): write every digit, sign and maths symbol of the narration as words before the voice speaks it, in this register ("ncert" textbook Hindi, "hinglish" Hindi with English maths words). Left out, the narration is spoken as it is written; the English path never changes. */
+        spokenMath: z.enum(["hinglish", "ncert"]).optional(),
       })
       .strict()
       .default({}),
@@ -86,7 +88,7 @@ export const EXPLAINER = { chrome: "none", font: "atkinson", voiceName: "af_kore
  * style, frame, captions, font, voice or speed builds again instead of being told "same inputs as the last run" and handed the old video.
  */
 export function storyOutputOptions(options: LessonRequest["options"]): Record<string, unknown> {
-  return { style: options.style, locale: options.locale, captions: options.captions, ...resolveStoryOptions(options) };
+  return { style: options.style, locale: options.locale, captions: options.captions, ...resolveStoryOptions(options), ...(options.spokenMath ? { spokenMath: options.spokenMath } : {}) };
 }
 
 /** The story options with their defaults filled in: the explainer pattern for the animated style, the plain page and the language's own voice otherwise. A value in the request always wins. */
