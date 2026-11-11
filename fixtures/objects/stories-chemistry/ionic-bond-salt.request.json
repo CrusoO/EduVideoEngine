@@ -1,0 +1,113 @@
+{
+ "requestId": "w3-ionic-bond-salt",
+ "idempotencyKey": "w3-ionic-bond-salt-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "How sodium and chlorine make salt",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Where does salt come from?",
+    "sentences": [
+     "Table salt is two elements joined together.",
+     "One is a metal and one is a poisonous gas."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How is salt made?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The sodium atom",
+    "sentences": [
+     "Sodium has 11 electrons.",
+     "They sit in shells of 2, 8 and 1.",
+     "The one electron on the outside is easy to lose."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "na",
+      "name": "Sodium atom",
+      "figure": "c_atom_shells",
+      "params": {
+       "z": 11
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The electron moves",
+    "sentences": [
+     "Sodium gives its outer electron to chlorine.",
+     "Sodium becomes Na+ and chlorine becomes Cl-.",
+     "Opposite charges pull the two ions together as NaCl."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "nacl",
+      "name": "Sodium and chlorine",
+      "figure": "c_bond_ionic",
+      "params": {
+       "metal": "Na",
+       "nonmetal": "Cl"
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "A full outer shell",
+    "sentences": [
+     "Each ion now has a full outer shell.",
+     "That is why salt is so stable."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Full shells, stable ions",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

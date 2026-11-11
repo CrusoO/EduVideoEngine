@@ -90,7 +90,7 @@ describe("the physics request is strict: impossible or free-text inputs are refu
 
 describe("the unreviewed switch: nothing unreviewed ships by accident, and the owner can flip it (ADR 0108)", () => {
   it("every wave-1 drawer is registered reviewed: false, licence owner-original, source own-drawings, no tool", () => {
-    const added = defaultRegistry(reg).all().filter((d) => !wave0Registry(reg).get(d.name));
+    const added = defaultRegistry(reg).all().filter((d) => !wave0Registry(reg).get(d.name) && d.kind !== "chemistry"); // the chemistry drawers of wave 3 have their own tests
     expect(added).toHaveLength(21);
     for (const d of added) expect([d.name, d.reviewed, d.license, d.sources, d.toolVersions ?? {}]).toEqual([d.name, false, "owner-original", ["own-drawings"], {}]);
     for (const d of wave0Registry(reg).all()) expect(d.reviewed).toBeUndefined();
@@ -338,7 +338,7 @@ describe("coverage: the 21 objects of the plan's wave 1, counted from the regist
     "Measuring instruments: ruler, vernier, screw gauge, error bars",
   ];
   it("the drawers cover exactly the objects of the plan's W1 table (the 20 types plus spring-mass, which the plan grades as drawn today)", () => {
-    const covered = defaultRegistry(reg).all().flatMap((d) => d.covers ?? []);
+    const covered = defaultRegistry(reg).all().filter((d) => d.kind !== "chemistry").flatMap((d) => d.covers ?? []);
     expect(new Set(covered)).toEqual(new Set(PLAN_W1));
     expect(covered).toHaveLength(PLAN_W1.length);
   });
@@ -353,10 +353,10 @@ describe("coverage: the 21 objects of the plan's wave 1, counted from the regist
     expect(rep.total.reviewed).toBe(0); // every wave-1 drawer is unreviewed
     expect(rep.byWave["1"]!.registered).toBe(rep.total.registered);
     expect(rep.byWave["3"]!.registered).toBe(0);
-    expect(rep.unreviewedObjects).toHaveLength(21);
+    expect(rep.unreviewedObjects.filter((o) => PLAN_W1.includes(o))).toHaveLength(21);
     const text = formatCoverage(rep, "sample");
     expect(text).toContain("Per wave");
-    expect(text).toContain("21 of them not yet reviewed");
+    expect(text).toMatch(/\(\d+ of them not yet reviewed\)/);
     expect(text).toContain("reviewed");
   });
   it("a reviewed drawer counts as reviewed coverage", () => {

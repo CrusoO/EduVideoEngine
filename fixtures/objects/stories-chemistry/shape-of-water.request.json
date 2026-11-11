@@ -1,0 +1,115 @@
+{
+ "requestId": "w3-shape-of-water",
+ "idempotencyKey": "w3-shape-of-water-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Why a water molecule is bent",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Straight or bent?",
+    "sentences": [
+     "A water molecule has one oxygen and two hydrogens.",
+     "Are the three atoms in a straight line?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Is water straight?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Counting the electrons",
+    "sentences": [
+     "Oxygen has 6 outer electrons and each hydrogen brings 1.",
+     "That makes 8 electrons, which is 4 pairs.",
+     "Two pairs are bonds and two pairs are lone pairs."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "lewis",
+      "name": "Lewis structure of water",
+      "figure": "c_lewis",
+      "params": {
+       "central": "O",
+       "ligand": "H",
+       "n": 2
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Four pairs push apart",
+    "sentences": [
+     "Four electron pairs spread out in a tetrahedron.",
+     "The ideal angle is 109.5 degrees.",
+     "Two of the four are lone pairs, so the atoms make a bent shape."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "vsepr",
+      "name": "Shape of water",
+      "figure": "c_vsepr",
+      "params": {
+       "central": "O",
+       "ligand": "H",
+       "n": 2
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Lone pairs bend it",
+    "sentences": [
+     "The lone pairs take room, so water is bent and not straight."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Lone pairs bend water",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

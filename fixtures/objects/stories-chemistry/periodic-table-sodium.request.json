@@ -1,0 +1,112 @@
+{
+ "requestId": "w3-periodic-table-sodium",
+ "idempotencyKey": "w3-periodic-table-sodium-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Finding sodium in the periodic table",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Where is sodium?",
+    "sentences": [
+     "Every element has a place in the periodic table.",
+     "Its place tells us how it behaves."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Find the element",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The cell of sodium",
+    "sentences": [
+     "Sodium has atomic number 11 and a mass of 23.0 on the atomic scale.",
+     "It is in group 1 and period 3.",
+     "It is a metal in the s block."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "cell",
+      "name": "Element cell of sodium",
+      "figure": "c_periodic",
+      "params": {
+       "z": 11
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Across period 3",
+    "sentences": [
+     "The first ionisation energy rises across the period.",
+     "Sodium loses its outer electron easily, and argon hardly at all.",
+     "Magnesium to aluminium and phosphorus to sulfur are the two small dips."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "chemistry",
+      "id": "ie3",
+      "name": "First ionisation energy of period 3",
+      "figure": "c_trend",
+      "params": {
+       "property": "ionisation",
+       "series": "period3"
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Position tells the story",
+    "sentences": [
+     "The place in the table predicts the chemistry."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Position tells the story",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
