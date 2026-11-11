@@ -14,8 +14,8 @@ import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
-import { REPO_ROOT } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { REPO_ROOT, readEnv } from "../packages/adapters/src";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -31,7 +31,7 @@ if (!jobDir || !existsSync(join(jobDir, "request.json")) || (stage !== "build" &
   process.exit(2);
 }
 const request = LessonRequest.parse(JSON.parse(readFileSync(join(jobDir, "request.json"), "utf8")));
-const clean = sanitizeStory(request.story);
+const clean = sanitizeStory(storyForRender(request.story, readEnv(), REPO_ROOT).story);
 if (!clean.story) {
   console.error(`the story is not usable: ${clean.notes.join("; ")}`);
   process.exit(2);

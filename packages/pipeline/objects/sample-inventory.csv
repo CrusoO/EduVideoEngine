@@ -1,0 +1,6 @@
+class,subject,chapter,object,drawer_type,priority,today,wave,tag
+9,Physics,"Invented chapter A","Vector arrows, with a ""quoted"" note",c,M,partial,1,SAMPLE
+9,Physics,"Invented chapter A","Free-body diagram",c,M,no,1,SAMPLE
+10,Chemistry,"Invented chapter B","Molecule from a name",d,H,no,3,SAMPLE
+10,Biology,"Invented chapter C","Plant cell",e,H,no,4,SAMPLE
+8,Mathematics,"Invented chapter D","Number line",b,L,yes,5,SAMPLE
