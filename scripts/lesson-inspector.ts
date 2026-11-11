@@ -21,6 +21,7 @@ import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { spawn, type ChildProcess } from "node:child_process";
 import { REPO_ROOT, clientFromEnv, childEnv } from "../packages/adapters/src";
 import { harnessPort } from "./harness-port";
+import { handleObjectsRoute } from "./objects-inspector";
 import { loadStore } from "../packages/content/src";
 import {
   planArc,
@@ -373,6 +374,9 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
 .pbtn2{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);border-radius:var(--radius);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer;width:auto}
 .pbtn2:hover{background:color-mix(in srgb,var(--accent) 28%,transparent)}
 .pbtn2:disabled{opacity:.45;cursor:not-allowed}
+.vtabs{display:flex;gap:6px}
+.vtab{background:var(--bg);color:var(--muted);border:1px solid var(--border);padding:6px 10px;font-size:12px}
+.vtab.on{color:var(--accent);border-color:var(--accent)}
 </style>
 </head>
 <body>
@@ -381,6 +385,7 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
     <h1>Pipeline Inspector</h1>
     <div class="sub">Layer-by-layer debug view · publish bypass</div>
   </div>
+  <div class="vtabs"><button id="tab-pipeline" class="vtab on" type="button">Pipeline</button><button id="tab-objects" class="vtab" type="button">Objects</button></div>
   <div class="field">
     <span class="lbl">Skill</span>
     <select id="sk">${opts}</select>
@@ -412,6 +417,7 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
   </div>
 </aside>
 <main class="main" id="main"></main>
+<section id="objects-root" aria-label="Objects"></section>
 <div class="ov" id="ov" onclick="if(event.target===this)closeOv()">
   <div class="ovbox">
     <div class="ovhdr">
@@ -421,6 +427,7 @@ td{padding:5px 8px;border-bottom:1px solid color-mix(in srgb,var(--border) 50%,t
     <div class="ovbody" id="ov-body"></div>
   </div>
 </div>
+<script src="/objects/client.js"></script>
 <script>
 const PANELS=[
   {id:"content",     num:"01",title:"Content Plane",  sub:"Approved records loaded for the skill"},
@@ -673,6 +680,8 @@ runBtn.addEventListener("click",async()=>{
 const PORT = 4323;
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? "/", `http://127.0.0.1:${PORT}`);
+
+  if (handleObjectsRoute(req, res, url)) return;
 
   if (req.method === "GET" && url.pathname === "/") {
     const html = renderHtml(skills);
