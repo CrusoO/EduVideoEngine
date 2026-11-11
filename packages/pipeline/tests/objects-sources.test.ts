@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   creditsFor,
   defaultRegistry,
+  wave0Registry,
   DrawerRegistry,
   drawerProblems,
   loadSourceRegister,
@@ -124,9 +125,9 @@ describe("registering a drawer needs allowed sources (ADR 0107)", () => {
   });
 
   it("wave 0 registers only the label card and the wrappers of the existing path", () => {
-    const names = defaultRegistry(reg).all().map((d) => `${d.name}:${d.kind}${d.wraps ? ":wraps" : ""}`).sort();
+    const names = wave0Registry(reg).all().map((d) => `${d.name}:${d.kind}${d.wraps ? ":wraps" : ""}`).sort();
     expect(names).toEqual(["existing_primitive:primitive:wraps", "existing_prop:prop:wraps", "label_card:label_card"]);
-    for (const d of defaultRegistry(reg).all()) expect(d.covers ?? [], d.name).toEqual([]); // adds no coverage
+    for (const d of wave0Registry(reg).all()) expect(d.covers ?? [], d.name).toEqual([]); // adds no coverage
   });
 
   it("a tool needs its version recorded once its licence is verified", () => {

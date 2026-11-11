@@ -15,15 +15,19 @@ import { placeStory, sanitizeStory, storyForRender, storyPageHtml } from "../pac
 const path = process.argv[2];
 const reps = Number(process.argv[3] ?? 5);
 if (!path) throw new Error("usage: objects-speed.ts <request.json> [reps]");
-const raw = (JSON.parse(readFileSync(resolve(path), "utf8")) as { story: { scenes: Array<Record<string, unknown>> } }).story;
+const withFigures = (JSON.parse(readFileSync(resolve(path), "utf8")) as { story: { scenes: Array<Record<string, unknown>> } }).story;
+// the story as the host would send it without any typed object, and (if the request carries physics figures, wave 1) with them
+const raw = { ...withFigures, scenes: withFigures.scenes.map(({ objects: _objects, ...scene }) => scene) };
 const runtime = readFileSync(resolve(__dirname, "story-runtime.js"), "utf8");
 const root = mkdtempSync(join(tmpdir(), "eve-speed-"));
+const figures = withFigures.scenes.reduce((n, sc) => n + (Array.isArray(sc.objects) ? sc.objects.length : 0), 0);
 const extra = { ...raw, scenes: raw.scenes.map((s, i) => (i === 0 ? { ...s, objects: [{ kind: "prop", id: "p1", name: "Tree", prop: "tree", cell: "B2" }, { kind: "primitive", id: "c1", name: "Ball", shape: "circle", cell: "E5" }, { kind: "ray_diagram", id: "r1", name: "Concave mirror", device: "mirror_concave", cell: "A5" }] } : s)) };
 const median = (a: number[]): number => [...a].sort((x, y) => x - y)[Math.floor(a.length / 2)]!;
 const ms = (t0: bigint): number => Number(process.hrtime.bigint() - t0) / 1e6;
 
 function page(input: unknown, flag: "0" | "1"): string {
-  const story = sanitizeStory(storyForRender(input, { ENGINE_OBJECTS_V2: flag }, root).story).story!;
+  // the switch for unreviewed drawers is on so that the wave-1 figures are drawn (they are unreviewed until the owner records a review, ADR 0108)
+  const story = sanitizeStory(storyForRender(input, { ENGINE_OBJECTS_V2: flag, ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1" }, root).story).story!;
   return storyPageHtml(placeStory(story, story.scenes.map((s) => s.sentences.map(() => 2500))), "whiteboard", {}, runtime, "x", {});
 }
 const browser = await chromium.launch({}).catch(() => chromium.launch({ channel: "msedge" })).catch(() => chromium.launch({ channel: "chrome" }));
@@ -40,6 +44,7 @@ async function frames(html: string): Promise<void> {
   await p.close();
 }
 const rows: Array<[string, unknown, "0" | "1"]> = [["flag off", raw, "0"], ["flag on, same story", raw, "1"], ["flag on, +3 objects", extra, "1"]];
+if (figures > 0) rows.push([`flag off, ${figures} figures (ignored)`, withFigures, "0"], [`flag on, ${figures} physics figures`, withFigures, "1"]);
 console.log(`story: ${raw.scenes.length} scenes; median of ${reps}`);
 for (const [name, input, flag] of rows) {
   const a: number[] = [];

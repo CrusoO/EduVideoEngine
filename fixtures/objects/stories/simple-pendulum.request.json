@@ -1,0 +1,115 @@
+{
+ "requestId": "w1-simple-pendulum",
+ "idempotencyKey": "w1-simple-pendulum-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "The simple pendulum",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How long is one swing?",
+    "sentences": [
+     "A swing goes back and forth.",
+     "What decides how long one swing takes?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How long is one swing?",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A pendulum 1 metre long",
+    "sentences": [
+     "A pendulum 1 metre long is let go from 30 degrees.",
+     "One full swing takes 2.04 seconds.",
+     "For very small swings the time is 2.01 seconds, set by the length and gravity alone.",
+     "The swing keeps repeating, and its energy stays the same."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "p1",
+      "name": "Pendulum 1 metre long",
+      "figure": "p_pendulum",
+      "params": {
+       "length": 1,
+       "theta0_deg": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A longer string",
+    "sentences": [
+     "Make the string four times longer, 4 metres.",
+     "One swing now takes 4.08 seconds.",
+     "Four times the length gives twice the time."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "p4",
+      "name": "Pendulum 4 metres long",
+      "figure": "p_pendulum",
+      "params": {
+       "length": 4,
+       "theta0_deg": 30
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "What matters",
+    "sentences": [
+     "The time depends on the length and on gravity.",
+     "It does not depend on the mass of the bob."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Length and gravity",
+      "size": 3.8,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

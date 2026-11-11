@@ -1,0 +1,116 @@
+{
+ "requestId": "w1-projectile-motion",
+ "idempotencyKey": "w1-projectile-motion-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "A ball thrown at an angle",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Where does it land?",
+    "sentences": [
+     "You kick a ball into the air at an angle.",
+     "How far away does it land?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Where does it land?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The path of the ball",
+    "sentences": [
+     "The ball leaves the ground at 20 metres per second, 30 degrees above the ground.",
+     "Its path is a curve called a parabola.",
+     "It stays in the air for 2.04 seconds and lands 35.3 metres away.",
+     "At the top of its path it is 5.10 metres high.",
+     "We ignore air resistance."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "path30",
+      "name": "Ball thrown at 30 degrees",
+      "figure": "p_projectile",
+      "params": {
+       "speed": 20,
+       "angle_deg": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A steeper throw",
+    "sentences": [
+     "Now throw it at 45 degrees with the same speed.",
+     "It stays up longer, for 2.89 seconds, and lands 40.8 metres away.",
+     "On level ground, 45 degrees gives the longest range."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "path45",
+      "name": "Same speed at 45 degrees",
+      "figure": "p_projectile",
+      "params": {
+       "speed": 20,
+       "angle_deg": 45
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "What decides the range",
+    "sentences": [
+     "The range comes from the speed, the angle and gravity.",
+     "Without air resistance, 30 degrees and 60 degrees land in the same place."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Speed, angle, gravity",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

@@ -44,6 +44,8 @@ export type Facts = {
   blockedSources?: string[];
   safetyCritical?: boolean;
   reviewed?: boolean;
+  /** the drawer that would draw this request is registered `reviewed: false` and the switch that allows unreviewed drawers is off (outcome 8, ADR 0108) */
+  unreviewedDrawer?: boolean;
   sensitive?: boolean;
   sourcesDisagree?: boolean;
   /** text that says what is ambiguous (outcome 2); the author is asked at plan time */
@@ -77,6 +79,7 @@ export function decide(spec: ObjectSpec, facts: Facts, drawer: Drawer | undefine
   if (facts.reported) return decision(16, "label_card", "an error was reported in this object; it is out of the cache until it is re-reviewed", true, drawer, loc);
   if (facts.blockedSources && facts.blockedSources.length > 0) return decision(13, "refuse", `blocked by the licence policy: ${facts.blockedSources.join(", ")}`, false, drawer, loc);
   if (facts.safetyCritical && !facts.reviewed) return decision(8, "refuse", "safety-critical content needs a cited source and a reviewer's sign-off before it is shown", false, drawer, loc);
+  if (facts.unreviewedDrawer) return decision(8, "label_card", `the drawer ${drawer?.name ?? ""} has not been reviewed by a subject teacher; it is shown as a label card and queued until the owner records the review (or allows unreviewed drawers for development)`, true, drawer, loc);
   if (facts.sourcesDisagree) return decision(10, "label_card", "the sources disagree; neither is drawn until a reviewer resolves it", true, drawer, loc);
   if (facts.ambiguous) return decision(2, "refuse", `ambiguous: ${facts.ambiguous}; the author says which one at plan time`, false, drawer, loc);
   if (facts.sensitive) return decision(9, "label_card", "sensitive content is not drawn until an approved neutral schematic exists", true, drawer, loc);
@@ -101,6 +104,8 @@ export type RouteContext = {
   today: string;
   cacheDir?: string;
   queueFile?: string;
+  /** Draw with drawers that are registered `reviewed: false` (ADR 0108). Off unless the caller turns it on: nothing unreviewed ships by accident. Dev and test turn it on through ENGINE_OBJECTS_ALLOW_UNREVIEWED. */
+  allowUnreviewed?: boolean;
   /** extra facts for a request (later waves: reviewer data); the defaults are derived from the register */
   facts?: (spec: ObjectSpec) => Facts;
 };
@@ -136,6 +141,7 @@ export function routeObject(raw: unknown, ctx: RouteContext): Routed {
   const queueFile = ctx.queueFile ?? DEFAULT_QUEUE_FILE;
   const drawer = ctx.registry.find(spec);
   const facts: Facts = { ...deriveFacts(spec, ctx.registry.sources), ...(ctx.facts?.(spec) ?? {}) };
+  if (drawer?.reviewed === false && !ctx.allowUnreviewed) facts.unreviewedDrawer = true;
 
   const key = drawer ? cacheKey(spec, drawer) : null;
   const entry = key && !facts.reported ? cacheGet(cacheDir, key) : null;

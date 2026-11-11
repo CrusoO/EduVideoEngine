@@ -22,7 +22,7 @@ export const sha256 = (text: string): string => createHash("sha256").update(text
  * used, the licence it carries, the versions of the tools, and when. An object without a complete record is refused, so nothing unaccounted for reaches a video. `reviewer` is set by
  * the review step of a later wave (a name or role from the owner's list, never a learner).
  */
-export type Provenance = { drawer: string; version: string; inputHash: string; sources: string[]; licence: string; toolVersions: Record<string, string>; date: string; reviewer?: string };
+export type Provenance = { drawer: string; version: string; inputHash: string; sources: string[]; licence: string; toolVersions: Record<string, string>; date: string; reviewer?: string; /** false when the drawer has not been reviewed by a subject teacher (ADR 0108); absent means reviewed */ reviewed?: false };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SEMVER = /^\d+\.\d+\.\d+$/;

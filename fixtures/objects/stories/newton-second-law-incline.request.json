@@ -1,0 +1,151 @@
+{
+ "requestId": "w1-newton-second-law-incline",
+ "idempotencyKey": "w1-newton-second-law-incline-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "physics"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "A block on a slope",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Will it slide?",
+    "sentences": [
+     "A 2 kilogram block sits on a slope.",
+     "Will it slide, and how fast?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Will it slide?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Forces on the slope",
+    "sentences": [
+     "The slope is 30 degrees and the friction coefficient is 0.2.",
+     "The weight is 19.6 newtons, straight down.",
+     "The part of it pulling the block down the slope is 9.80 newtons.",
+     "The slope pushes back with a normal force of 17.0 newtons."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "physics",
+      "id": "slope",
+      "name": "Block on a 30 degree slope",
+      "figure": "p_incline",
+      "params": {
+       "angle_deg": 30,
+       "mass_kg": 2,
+       "mu": 0.2
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Net force and acceleration",
+    "sentences": [
+     "Friction pushes up the slope with 3.39 newtons.",
+     "The net force down the slope is 6.41 newtons.",
+     "Newton's second law says acceleration is net force divided by mass.",
+     "So the block speeds up at 3.20 metres per second squared."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "free_body",
+      "id": "fbd",
+      "name": "Forces on the block",
+      "body": "block",
+      "sentence": 0,
+      "forces": [
+       {
+        "id": "w",
+        "kind": "weight",
+        "magnitude": {
+         "value": 19.6,
+         "unit": "N"
+        },
+        "angle": {
+         "value": 270,
+         "unit": "deg"
+        }
+       },
+       {
+        "id": "n",
+        "kind": "normal",
+        "magnitude": {
+         "value": 16.974,
+         "unit": "N"
+        },
+        "angle": {
+         "value": 120,
+         "unit": "deg"
+        }
+       },
+       {
+        "id": "f",
+        "kind": "friction",
+        "magnitude": {
+         "value": 3.3948,
+         "unit": "N"
+        },
+        "angle": {
+         "value": 30,
+         "unit": "deg"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "The idea",
+    "sentences": [
+     "Add the forces along the slope, then divide by the mass.",
+     "That is Newton's second law."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Net force = mass x acceleration",
+      "size": 3.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

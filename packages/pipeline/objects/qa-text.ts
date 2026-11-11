@@ -16,5 +16,9 @@ const BANNED_POSITIONING: ReadonlyArray<readonly [string, RegExp]> = [
 /** The banned positioning phrases found in a text (their names, not the text). */
 export const findBannedPositioning = (text: string): string[] => BANNED_POSITIONING.filter(([, re]) => re.test(text)).map(([name]) => name);
 
-/** The kinds of personal data or secret found in a text; never the text itself. */
-export const findPrivacyProblems = (text: string): string[] => [...findPersonalData(text), ...findSecrets(text)].map((f) => f.kind);
+/**
+ * The kinds of personal data or secret found in a text; never the text itself. A SHA-256 hash (the object cache key, the input hash of a provenance record, the hash of a queued request) is
+ * a run of 64 hexadecimal characters, and one in five of them holds ten digits in a row, which the phone-number rule reads as a number; a hash holds no person's data, so it is set aside
+ * for that rule only (the secret rules still see it).
+ */
+export const findPrivacyProblems = (text: string): string[] => [...findPersonalData(text.replace(/(?<![0-9a-f])[0-9a-f]{64}(?![0-9a-f])/g, "<hash>")), ...findSecrets(text)].map((f) => f.kind);

@@ -15,6 +15,7 @@ const valid: Record<string, unknown> = {
   geometry: { kind: "geometry", ...common, construction: "triangle_sss", givens: { a: 3, b: 4, c: 5 } },
   icon: { kind: "icon", ...common, set: "tabler-icons", icon: "flask" },
   simulation: { kind: "simulation", ...common, model: "projectile", params: { speed: { value: 20, unit: "m/s" } }, seed: 1 },
+  physics: { kind: "physics", ...common, figure: "p_projectile", params: { speed: 20, angle_deg: 30 }, area: "A1:D3" },
 };
 
 describe("the typed object spec (ADR 0107)", () => {

@@ -12,3 +12,4 @@ export * from "./qa";
 export * from "./qa-text";
 export * from "./coverage";
 export * from "./seam";
+export * from "./physics";

@@ -1,0 +1,879 @@
+{
+ "vector_add": {
+  "kind": "physics",
+  "id": "vec_add",
+  "name": "Sample vec_add",
+  "figure": "p_vector",
+  "params": {
+   "a_mag": 5,
+   "a_deg": 30,
+   "b_mag": 7,
+   "b_deg": 120,
+   "components": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "vector_sub": {
+  "kind": "physics",
+  "id": "vec_sub",
+  "name": "Sample vec_sub",
+  "figure": "p_vector",
+  "params": {
+   "a_mag": 12,
+   "a_deg": 0,
+   "b_mag": 5,
+   "b_deg": 90,
+   "op": "subtract",
+   "unit": "m/s"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fbd_balanced": {
+  "kind": "free_body",
+  "id": "fbd_bal",
+  "name": "Block at rest",
+  "sentence": 0,
+  "area": "A1:F6",
+  "body": "block",
+  "forces": [
+   {
+    "id": "w",
+    "kind": "weight",
+    "magnitude": {
+     "value": 20,
+     "unit": "N"
+    }
+   },
+   {
+    "id": "n",
+    "kind": "normal",
+    "magnitude": {
+     "value": 20,
+     "unit": "N"
+    }
+   }
+  ]
+ },
+ "fbd_net": {
+  "kind": "free_body",
+  "id": "fbd_net",
+  "name": "Pushed block",
+  "sentence": 0,
+  "area": "A1:F6",
+  "body": "crate",
+  "forces": [
+   {
+    "id": "w",
+    "kind": "weight",
+    "magnitude": {
+     "value": 49,
+     "unit": "N"
+    }
+   },
+   {
+    "id": "n",
+    "kind": "normal",
+    "magnitude": {
+     "value": 49,
+     "unit": "N"
+    }
+   },
+   {
+    "id": "p",
+    "kind": "applied",
+    "magnitude": {
+     "value": 20,
+     "unit": "N"
+    }
+   },
+   {
+    "id": "f",
+    "kind": "friction",
+    "magnitude": {
+     "value": 8,
+     "unit": "N"
+    }
+   }
+  ]
+ },
+ "incline_slides": {
+  "kind": "physics",
+  "id": "inc_slide",
+  "name": "Sample inc_slide",
+  "figure": "p_incline",
+  "params": {
+   "angle_deg": 30,
+   "mass_kg": 2,
+   "mu": 0.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "incline_smooth": {
+  "kind": "physics",
+  "id": "inc_smooth",
+  "name": "Sample inc_smooth",
+  "figure": "p_incline",
+  "params": {
+   "angle_deg": 37,
+   "mass_kg": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "incline_static": {
+  "kind": "physics",
+  "id": "inc_static",
+  "name": "Sample inc_static",
+  "figure": "p_incline",
+  "params": {
+   "angle_deg": 20,
+   "mass_kg": 3,
+   "mu": 0.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "motion_position": {
+  "kind": "physics",
+  "id": "mot_x",
+  "name": "Sample mot_x",
+  "figure": "p_motion_graph",
+  "params": {
+   "graph": "position",
+   "u": 5,
+   "a": 2,
+   "t_max": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "motion_velocity": {
+  "kind": "physics",
+  "id": "mot_v",
+  "name": "Sample mot_v",
+  "figure": "p_motion_graph",
+  "params": {
+   "graph": "velocity",
+   "u": 10,
+   "a": -2,
+   "t_max": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "motion_velocity_cross": {
+  "kind": "physics",
+  "id": "mot_vc",
+  "name": "Sample mot_vc",
+  "figure": "p_motion_graph",
+  "params": {
+   "graph": "velocity",
+   "u": -4,
+   "a": 2,
+   "t_max": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "motion_acceleration": {
+  "kind": "physics",
+  "id": "mot_a",
+  "name": "Sample mot_a",
+  "figure": "p_motion_graph",
+  "params": {
+   "graph": "acceleration",
+   "a": 3,
+   "t_max": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "projectile": {
+  "kind": "physics",
+  "id": "proj",
+  "name": "Sample proj",
+  "figure": "p_projectile",
+  "params": {
+   "speed": 20,
+   "angle_deg": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "projectile_height": {
+  "kind": "physics",
+  "id": "proj_h",
+  "name": "Sample proj_h",
+  "figure": "p_projectile",
+  "params": {
+   "speed": 15,
+   "angle_deg": 45,
+   "height": 10,
+   "components": false
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "projectile_horizontal": {
+  "kind": "physics",
+  "id": "proj_hz",
+  "name": "Sample proj_hz",
+  "figure": "p_projectile",
+  "params": {
+   "speed": 10,
+   "angle_deg": 0,
+   "height": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "circular": {
+  "kind": "physics",
+  "id": "circ",
+  "name": "Sample circ",
+  "figure": "p_circular",
+  "params": {
+   "radius": 2,
+   "speed": 4,
+   "mass_kg": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pendulum": {
+  "kind": "physics",
+  "id": "pend",
+  "name": "Sample pend",
+  "figure": "p_pendulum",
+  "params": {
+   "length": 1,
+   "theta0_deg": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pendulum_large": {
+  "kind": "physics",
+  "id": "pend_l",
+  "name": "Sample pend_l",
+  "figure": "p_pendulum",
+  "params": {
+   "length": 2.5,
+   "theta0_deg": 60,
+   "periods": 1,
+   "mass_kg": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "spring_mass": {
+  "kind": "physics",
+  "id": "spr",
+  "name": "Sample spr",
+  "figure": "p_spring_mass",
+  "params": {
+   "mass_kg": 0.5,
+   "k": 200,
+   "amplitude": 0.05
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "collision_elastic": {
+  "kind": "physics",
+  "id": "col_e",
+  "name": "Sample col_e",
+  "figure": "p_collision",
+  "params": {
+   "m1": 2,
+   "u1": 3,
+   "m2": 1,
+   "u2": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "collision_inelastic": {
+  "kind": "physics",
+  "id": "col_i",
+  "name": "Sample col_i",
+  "figure": "p_collision",
+  "params": {
+   "m1": 4,
+   "u1": 5,
+   "m2": 6,
+   "u2": 0,
+   "e": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "collision_partial": {
+  "kind": "physics",
+  "id": "col_p",
+  "name": "Sample col_p",
+  "figure": "p_collision",
+  "params": {
+   "m1": 3,
+   "u1": 4,
+   "m2": 2,
+   "u2": -2,
+   "e": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "energy_fall": {
+  "kind": "physics",
+  "id": "en_f",
+  "name": "Sample en_f",
+  "figure": "p_energy_graph",
+  "params": {
+   "mode": "fall",
+   "mass_kg": 2,
+   "height": 10
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "energy_spring": {
+  "kind": "physics",
+  "id": "en_s",
+  "name": "Sample en_s",
+  "figure": "p_energy_graph",
+  "params": {
+   "mode": "spring",
+   "k": 100,
+   "amplitude": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_torque": {
+  "kind": "physics",
+  "id": "rot_t",
+  "name": "Sample rot_t",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "torque",
+   "force": 20,
+   "arm": 0.5,
+   "angle_deg": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_balance": {
+  "kind": "physics",
+  "id": "rot_b",
+  "name": "Sample rot_b",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "balance",
+   "m1": 2,
+   "x1": 1,
+   "m2": 3,
+   "x2": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_balance3": {
+  "kind": "physics",
+  "id": "rot_b3",
+  "name": "Sample rot_b3",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "balance",
+   "m1": 1,
+   "x1": 2,
+   "m2": 2,
+   "x2": 5,
+   "m3": 4,
+   "x3": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_disc": {
+  "kind": "physics",
+  "id": "rot_d",
+  "name": "Sample rot_d",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "inertia",
+   "shape": "disc",
+   "mass_kg": 2,
+   "size": 0.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_ring": {
+  "kind": "physics",
+  "id": "rot_r",
+  "name": "Sample rot_r",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "inertia",
+   "shape": "ring",
+   "mass_kg": 2,
+   "size": 0.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rotation_rod": {
+  "kind": "physics",
+  "id": "rot_o",
+  "name": "Sample rot_o",
+  "figure": "p_rotation",
+  "params": {
+   "mode": "inertia",
+   "shape": "rod",
+   "mass_kg": 1.2,
+   "size": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gravity_leo": {
+  "kind": "physics",
+  "id": "grav_o",
+  "name": "Sample grav_o",
+  "figure": "p_gravity",
+  "params": {
+   "mode": "orbit",
+   "semi_major": 6771000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gravity_ellipse": {
+  "kind": "physics",
+  "id": "grav_e",
+  "name": "Sample grav_e",
+  "figure": "p_gravity",
+  "params": {
+   "mode": "orbit",
+   "semi_major": 42000000,
+   "eccentricity": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "gravity_g": {
+  "kind": "physics",
+  "id": "grav_g",
+  "name": "Sample grav_g",
+  "figure": "p_gravity",
+  "params": {
+   "mode": "g_height",
+   "max_height": 20000000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lever1": {
+  "kind": "physics",
+  "id": "lev1",
+  "name": "Sample lev1",
+  "figure": "p_lever",
+  "params": {
+   "lever_class": 1,
+   "load": 300,
+   "load_arm": 0.5,
+   "effort_arm": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lever2": {
+  "kind": "physics",
+  "id": "lev2",
+  "name": "Sample lev2",
+  "figure": "p_lever",
+  "params": {
+   "lever_class": 2,
+   "load": 400,
+   "load_arm": 0.4,
+   "effort_arm": 1.6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lever3": {
+  "kind": "physics",
+  "id": "lev3",
+  "name": "Sample lev3",
+  "figure": "p_lever",
+  "params": {
+   "lever_class": 3,
+   "load": 50,
+   "load_arm": 1.2,
+   "effort_arm": 0.3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pressure_depth": {
+  "kind": "physics",
+  "id": "pr_d",
+  "name": "Sample pr_d",
+  "figure": "p_pressure",
+  "params": {
+   "mode": "depth",
+   "depth": 10,
+   "atmosphere": true
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pressure_hydraulic": {
+  "kind": "physics",
+  "id": "pr_h",
+  "name": "Sample pr_h",
+  "figure": "p_pressure",
+  "params": {
+   "mode": "hydraulic",
+   "force_in": 50,
+   "area_in": 0.002,
+   "area_out": 0.04
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pressure_floats": {
+  "kind": "physics",
+  "id": "pr_f",
+  "name": "Sample pr_f",
+  "figure": "p_pressure",
+  "params": {
+   "mode": "buoyancy",
+   "volume": 0.002,
+   "object_mass": 1.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pressure_sinks": {
+  "kind": "physics",
+  "id": "pr_s",
+  "name": "Sample pr_s",
+  "figure": "p_pressure",
+  "params": {
+   "mode": "buoyancy",
+   "volume": 0.001,
+   "object_mass": 7.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "stress_strain": {
+  "kind": "physics",
+  "id": "ss",
+  "name": "Sample ss",
+  "figure": "p_stress_strain",
+  "params": {
+   "youngs_gpa": 200,
+   "yield_mpa": 250,
+   "uts_mpa": 400,
+   "uts_strain": 0.15,
+   "fracture_strain": 0.25,
+   "fracture_mpa": 300
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pv_isotherm": {
+  "kind": "physics",
+  "id": "pv_i",
+  "name": "Sample pv_i",
+  "figure": "p_thermo_pv",
+  "params": {
+   "process": "isotherm",
+   "p1_kpa": 200,
+   "v1_l": 1,
+   "v2_l": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pv_adiabat": {
+  "kind": "physics",
+  "id": "pv_a",
+  "name": "Sample pv_a",
+  "figure": "p_thermo_pv",
+  "params": {
+   "process": "adiabat",
+   "p1_kpa": 200,
+   "v1_l": 1,
+   "v2_l": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pv_both": {
+  "kind": "physics",
+  "id": "pv_b",
+  "name": "Sample pv_b",
+  "figure": "p_thermo_pv",
+  "params": {
+   "process": "both",
+   "p1_kpa": 200,
+   "v1_l": 1,
+   "v2_l": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pv_cycle": {
+  "kind": "physics",
+  "id": "pv_c",
+  "name": "Sample pv_c",
+  "figure": "p_thermo_pv",
+  "params": {
+   "process": "cycle",
+   "p_low_kpa": 100,
+   "p_high_kpa": 300,
+   "v_small_l": 1,
+   "v_large_l": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "heat_conduction": {
+  "kind": "physics",
+  "id": "hc",
+  "name": "Sample hc",
+  "figure": "p_heat_conduct",
+  "params": {
+   "mode": "conduction",
+   "k": 400,
+   "area": 0.0004,
+   "length": 0.5,
+   "t_hot": 100,
+   "t_cold": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "heat_expansion": {
+  "kind": "physics",
+  "id": "he",
+  "name": "Sample he",
+  "figure": "p_heat_conduct",
+  "params": {
+   "mode": "expansion",
+   "length0": 2,
+   "alpha_per_k": 0.000012,
+   "delta_t": 80
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "heat_calorimetry": {
+  "kind": "physics",
+  "id": "hk",
+  "name": "Sample hk",
+  "figure": "p_heat_conduct",
+  "params": {
+   "mode": "calorimetry",
+   "m1": 0.2,
+   "c1": 900,
+   "t1": 90,
+   "m2": 0.5,
+   "c2": 4186,
+   "t2": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "heating_up": {
+  "kind": "physics",
+  "id": "hu",
+  "name": "Sample hu",
+  "figure": "p_heating_curve",
+  "params": {
+   "mass_kg": 0.1,
+   "power_w": 500
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cooling_down": {
+  "kind": "physics",
+  "id": "cd",
+  "name": "Sample cd",
+  "figure": "p_heating_curve",
+  "params": {
+   "mass_kg": 0.05,
+   "power_w": 200,
+   "direction": "cooling",
+   "t_start": -10,
+   "t_end": 110
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_transverse": {
+  "kind": "physics",
+  "id": "wt",
+  "name": "Sample wt",
+  "figure": "p_wave",
+  "params": {
+   "kind": "transverse",
+   "frequency": 50,
+   "wavelength": 0.4,
+   "amplitude": 0.02
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_longitudinal": {
+  "kind": "physics",
+  "id": "wl",
+  "name": "Sample wl",
+  "figure": "p_wave",
+  "params": {
+   "kind": "longitudinal",
+   "frequency": 10,
+   "wavelength": 0.6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_constructive": {
+  "kind": "physics",
+  "id": "wsc",
+  "name": "Sample wsc",
+  "figure": "p_wave",
+  "params": {
+   "kind": "superposition",
+   "wavelength": 2,
+   "amp1": 1,
+   "amp2": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_destructive": {
+  "kind": "physics",
+  "id": "wsd",
+  "name": "Sample wsd",
+  "figure": "p_wave",
+  "params": {
+   "kind": "superposition",
+   "wavelength": 2,
+   "amp1": 1,
+   "amp2": 1,
+   "phase_deg": 180
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_partial": {
+  "kind": "physics",
+  "id": "wsp",
+  "name": "Sample wsp",
+  "figure": "p_wave",
+  "params": {
+   "kind": "superposition",
+   "wavelength": 2,
+   "amp1": 1,
+   "amp2": 2,
+   "phase_deg": 90
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "wave_standing": {
+  "kind": "physics",
+  "id": "wst",
+  "name": "Sample wst",
+  "figure": "p_wave",
+  "params": {
+   "kind": "standing",
+   "wavelength": 1,
+   "harmonic": 3,
+   "amplitude": 0.05
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sound_compression": {
+  "kind": "physics",
+  "id": "sc",
+  "name": "Sample sc",
+  "figure": "p_sound",
+  "params": {
+   "mode": "compression",
+   "frequency": 500
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sound_echo": {
+  "kind": "physics",
+  "id": "se",
+  "name": "Sample se",
+  "figure": "p_sound",
+  "params": {
+   "mode": "echo",
+   "distance": 85
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dimension_ruler": {
+  "kind": "physics",
+  "id": "dr",
+  "name": "Sample dr",
+  "figure": "p_dimension",
+  "params": {
+   "instrument": "ruler",
+   "reading_mm": 23
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dimension_vernier": {
+  "kind": "physics",
+  "id": "dv",
+  "name": "Sample dv",
+  "figure": "p_dimension",
+  "params": {
+   "instrument": "vernier",
+   "reading_mm": 12.7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dimension_vernier_zero": {
+  "kind": "physics",
+  "id": "dv0",
+  "name": "Sample dv0",
+  "figure": "p_dimension",
+  "params": {
+   "instrument": "vernier",
+   "reading_mm": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dimension_screw": {
+  "kind": "physics",
+  "id": "ds",
+  "name": "Sample ds",
+  "figure": "p_dimension",
+  "params": {
+   "instrument": "screw_gauge",
+   "reading_mm": 5.37
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}
