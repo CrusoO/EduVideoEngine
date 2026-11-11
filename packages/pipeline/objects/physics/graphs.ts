@@ -359,9 +359,10 @@ export const heatingCurveFigure = physicsDrawer("p_heating_curve", "heating_curv
   },
   draw(sk, p) {
     const c = heatingCurve(p);
-    const f = drawGraph(sk, { xName: "time", xUnit: "s", yName: "temperature", yUnit: "degC", xwin: [0, niceCeil(c.total)], ywin: niceWindow(p.t_start, p.t_end), series: [{ id: "c0", pts: heatingPoints(p) }] });
+    const f = drawGraph(sk, { xName: "time", xUnit: "s", yName: "temperature", yUnit: "degC", xwin: [0, niceCeil(c.total)], ywin: niceWindow(Math.min(p.t_start, p.melt_c - 0.16 * (p.t_end - p.t_start)), p.t_end), series: [{ id: "c0", pts: heatingPoints(p) }] }); // room under the melting plateau for its label
     const [m, b] = [c.segments.find((s) => s.name === "melting")!, c.segments.find((s) => s.name === "boiling")!];
-    sk.text("pm", Math.max(f.X((m.t0 + m.t1) / 2), f.l + 5.2), f.Y(p.melt_c) - 1.8, p.direction === "heating" ? "melting" : "freezing", { anchor: "middle" });
+    // the melting plateau sits near the zero line of a graph that starts below it, so its label goes under the plateau, on the side away from the steep part of the curve
+    sk.text("pm", p.direction === "heating" ? f.X(m.t0) + 0.4 : f.X(m.t1) - 0.4, f.Y(p.melt_c) + 2.5, p.direction === "heating" ? "melting" : "freezing", { anchor: p.direction === "heating" ? "start" : "end" });
     sk.text("pb", f.X((b.t0 + b.t1) / 2), f.Y(p.boil_c) - 1.8, p.direction === "heating" ? "boiling" : "condensing", { anchor: "middle" });
   },
   check(r, p) {
