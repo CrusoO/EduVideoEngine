@@ -16,3 +16,4 @@ export * from "./seam";
 export * from "./physics";
 export * from "./chemistry";
 export * from "./biology";
+export * from "./maths";

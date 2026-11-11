@@ -6,6 +6,7 @@ import { PHYSICS_FIGURES, parsePhysicsParams } from "./physics/params";
 import { areaTooSmall, boxOf, MIN_AREA } from "./physics/area";
 import { CHEMISTRY_FIGURES, CHEM_MIN_AREA, parseChemistryParams } from "./chemistry/params";
 import { BIOLOGY_FIGURES, BIO_MIN_AREA, parseBiologyParams } from "./biology/params";
+import { MATHS_FIGURES, MATHS_MIN_AREA, parseMathsParams } from "./maths/params";
 
 /**
  * The typed object request (ADR 0107). A host or a planner names WHICH object it wants and fills the typed fields; code computes and draws it. Nothing here is a coordinate: a place is a
@@ -14,7 +15,7 @@ import { BIOLOGY_FIGURES, BIO_MIN_AREA, parseBiologyParams } from "./biology/par
  *
  * Wave 0 defines the fields each drawer will need; it registers no drawer for any of them except the label card and the wrappers of the existing props and shapes.
  */
-export const OBJECT_KINDS = ["prop", "primitive", "label_card", "figure", "circuit", "ray_diagram", "free_body", "molecule", "plot", "geometry", "icon", "simulation", "physics", "chemistry", "biology"] as const;
+export const OBJECT_KINDS = ["prop", "primitive", "label_card", "figure", "circuit", "ray_diagram", "free_body", "molecule", "plot", "geometry", "icon", "simulation", "physics", "chemistry", "biology", "maths"] as const;
 export type ObjectKind = (typeof OBJECT_KINDS)[number];
 export const SUBJECTS = ["maths", "physics", "chemistry", "biology"] as const;
 export type Subject = (typeof SUBJECTS)[number];
@@ -107,6 +108,8 @@ export const ObjectSpec = z.discriminatedUnion("kind", [
   base("chemistry", { figure: z.enum(CHEMISTRY_FIGURES), params: z.record(idField, z.union([z.number(), z.boolean(), z.string().max(24)])).default({}), lang: z.enum(["en"]).default("en") }),
   // a wave-4 biology figure (ADR 0111): which figure, and its inputs (numbers, closed lists, letters of a gene or a nucleic acid), checked per figure by parseBiologyParams
   base("biology", { figure: z.enum(BIOLOGY_FIGURES), params: z.record(idField, z.union([z.number(), z.boolean(), z.string().max(24)])).default({}), lang: z.enum(["en"]).default("en") }),
+  // a wave-5 maths figure (ADR 0112): which figure, and its inputs (numbers and closed lists only), checked per figure by parseMathsParams
+  base("maths", { figure: z.enum(MATHS_FIGURES), params: z.record(idField, z.union([z.number(), z.boolean(), z.string().max(24)])).default({}), lang: z.enum(["en"]).default("en") }),
 ]);
 export type ObjectSpec = z.infer<typeof ObjectSpec>;
 export type ObjectSpecOf<K extends ObjectKind> = Extract<ObjectSpec, { kind: K }>;
@@ -149,6 +152,13 @@ export function parseObjectRequest(raw: unknown): ParsedObject {
     if (!p.ok) return { ok: false, refusal: { code: "invalid_spec", reason: p.reason, path: p.path } };
     const box = boxOf(r.data);
     if (box.w < BIO_MIN_AREA.w || box.h < BIO_MIN_AREA.h) return { ok: false, refusal: { code: "invalid_spec", reason: "a biology figure is drawn on the whole stage grid (A1:F6, the default): its pictures and read-outs are laid out for that size, so nothing is drawn where its text would leave the area", path: r.data.area !== undefined ? "area" : "cell" } };
+    r.data.params = p.params as never;
+  }
+  if (r.data.kind === "maths") {
+    const p = parseMathsParams(r.data.figure, r.data.params);
+    if (!p.ok) return { ok: false, refusal: { code: "invalid_spec", reason: p.reason, path: p.path } };
+    const box = boxOf(r.data);
+    if (box.w < MATHS_MIN_AREA.w || box.h < MATHS_MIN_AREA.h) return { ok: false, refusal: { code: "invalid_spec", reason: "a maths figure is drawn on the whole stage grid (A1:F6, the default): its picture, scale bar and read-outs are laid out for that size, so nothing is drawn where its text would leave the area", path: r.data.area !== undefined ? "area" : "cell" } };
     r.data.params = p.params as never;
   }
   if (r.data.cell !== undefined && r.data.area !== undefined) return { ok: false, refusal: { code: "area_and_cell", reason: "give a cell or an area, not both", path: "area" } };
