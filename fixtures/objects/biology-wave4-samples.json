@@ -1,0 +1,1542 @@
+{
+ "cell_plant": {
+  "kind": "biology",
+  "id": "cell_plant",
+  "name": "Sample cell plant",
+  "figure": "b_cell",
+  "params": {
+   "cell": "plant"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_animal": {
+  "kind": "biology",
+  "id": "cell_animal",
+  "name": "Sample cell animal",
+  "figure": "b_cell",
+  "params": {
+   "cell": "animal"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cell_bacterium": {
+  "kind": "biology",
+  "id": "cell_bacterium",
+  "name": "Sample cell bacterium",
+  "figure": "b_cell",
+  "params": {
+   "cell": "bacterium"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organelle_mitochondrion": {
+  "kind": "biology",
+  "id": "organelle_mitochondrion",
+  "name": "Sample organelle mitochondrion",
+  "figure": "b_organelle",
+  "params": {
+   "organelle": "mitochondrion"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organelle_chloroplast": {
+  "kind": "biology",
+  "id": "organelle_chloroplast",
+  "name": "Sample organelle chloroplast",
+  "figure": "b_organelle",
+  "params": {
+   "organelle": "chloroplast"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organelle_nucleus": {
+  "kind": "biology",
+  "id": "organelle_nucleus",
+  "name": "Sample organelle nucleus",
+  "figure": "b_organelle",
+  "params": {
+   "organelle": "nucleus"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organelle_er": {
+  "kind": "biology",
+  "id": "organelle_er",
+  "name": "Sample organelle er",
+  "figure": "b_organelle",
+  "params": {
+   "organelle": "er"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "organelle_golgi": {
+  "kind": "biology",
+  "id": "organelle_golgi",
+  "name": "Sample organelle golgi",
+  "figure": "b_organelle",
+  "params": {
+   "organelle": "golgi"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_bilayer": {
+  "kind": "biology",
+  "id": "mem_bilayer",
+  "name": "Sample mem bilayer",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "bilayer"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_diff": {
+  "kind": "biology",
+  "id": "mem_diff",
+  "name": "Sample mem diff",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "diffusion",
+   "left": 6,
+   "right": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_diff_claim": {
+  "kind": "biology",
+  "id": "mem_diff_claim",
+  "name": "Sample mem diff claim",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "diffusion",
+   "left": 1,
+   "right": 5,
+   "claim": "right_to_left"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_diff_eq": {
+  "kind": "biology",
+  "id": "mem_diff_eq",
+  "name": "Sample mem diff eq",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "diffusion",
+   "left": 3,
+   "right": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_osm": {
+  "kind": "biology",
+  "id": "mem_osm",
+  "name": "Sample mem osm",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "osmosis",
+   "left": 2,
+   "right": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mem_active": {
+  "kind": "biology",
+  "id": "mem_active",
+  "name": "Sample mem active",
+  "figure": "b_membrane",
+  "params": {
+   "mode": "active",
+   "left": 2,
+   "right": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_squamous": {
+  "kind": "biology",
+  "id": "tissue_squamous",
+  "name": "Sample tissue squamous",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "squamous"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_cuboidal": {
+  "kind": "biology",
+  "id": "tissue_cuboidal",
+  "name": "Sample tissue cuboidal",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "cuboidal"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_columnar": {
+  "kind": "biology",
+  "id": "tissue_columnar",
+  "name": "Sample tissue columnar",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "columnar"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_skeletal_muscle": {
+  "kind": "biology",
+  "id": "tissue_skeletal_muscle",
+  "name": "Sample tissue skeletal muscle",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "skeletal_muscle"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_smooth_muscle": {
+  "kind": "biology",
+  "id": "tissue_smooth_muscle",
+  "name": "Sample tissue smooth muscle",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "smooth_muscle"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_parenchyma": {
+  "kind": "biology",
+  "id": "tissue_parenchyma",
+  "name": "Sample tissue parenchyma",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "parenchyma"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_sclerenchyma": {
+  "kind": "biology",
+  "id": "tissue_sclerenchyma",
+  "name": "Sample tissue sclerenchyma",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "sclerenchyma"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tissue_xylem": {
+  "kind": "biology",
+  "id": "tissue_xylem",
+  "name": "Sample tissue xylem",
+  "figure": "b_tissue",
+  "params": {
+   "tissue": "xylem"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "microbe_virus": {
+  "kind": "biology",
+  "id": "microbe_virus",
+  "name": "Sample microbe virus",
+  "figure": "b_microbe",
+  "params": {
+   "microbe": "virus"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "microbe_bacteriophage": {
+  "kind": "biology",
+  "id": "microbe_bacteriophage",
+  "name": "Sample microbe bacteriophage",
+  "figure": "b_microbe",
+  "params": {
+   "microbe": "bacteriophage"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "microbe_amoeba": {
+  "kind": "biology",
+  "id": "microbe_amoeba",
+  "name": "Sample microbe amoeba",
+  "figure": "b_microbe",
+  "params": {
+   "microbe": "amoeba"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "microbe_paramecium": {
+  "kind": "biology",
+  "id": "microbe_paramecium",
+  "name": "Sample microbe paramecium",
+  "figure": "b_microbe",
+  "params": {
+   "microbe": "paramecium"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_prophase": {
+  "kind": "biology",
+  "id": "mitosis_prophase",
+  "name": "Sample mitosis prophase",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "prophase",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_metaphase": {
+  "kind": "biology",
+  "id": "mitosis_metaphase",
+  "name": "Sample mitosis metaphase",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "metaphase",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_anaphase": {
+  "kind": "biology",
+  "id": "mitosis_anaphase",
+  "name": "Sample mitosis anaphase",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "anaphase",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_telophase": {
+  "kind": "biology",
+  "id": "mitosis_telophase",
+  "name": "Sample mitosis telophase",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "telophase",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_metaphase_d6": {
+  "kind": "biology",
+  "id": "mitosis_metaphase_d6",
+  "name": "Sample mitosis metaphase d6",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "metaphase",
+   "d": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mitosis_anaphase_d6": {
+  "kind": "biology",
+  "id": "mitosis_anaphase_d6",
+  "name": "Sample mitosis anaphase d6",
+  "figure": "b_division",
+  "params": {
+   "mode": "mitosis",
+   "stage": "anaphase",
+   "d": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_prophase1": {
+  "kind": "biology",
+  "id": "meiosis_prophase1",
+  "name": "Sample meiosis prophase1",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "prophase1",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_metaphase1": {
+  "kind": "biology",
+  "id": "meiosis_metaphase1",
+  "name": "Sample meiosis metaphase1",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "metaphase1",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_anaphase1": {
+  "kind": "biology",
+  "id": "meiosis_anaphase1",
+  "name": "Sample meiosis anaphase1",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "anaphase1",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_telophase1": {
+  "kind": "biology",
+  "id": "meiosis_telophase1",
+  "name": "Sample meiosis telophase1",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "telophase1",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_metaphase2": {
+  "kind": "biology",
+  "id": "meiosis_metaphase2",
+  "name": "Sample meiosis metaphase2",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "metaphase2",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_anaphase2": {
+  "kind": "biology",
+  "id": "meiosis_anaphase2",
+  "name": "Sample meiosis anaphase2",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "anaphase2",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_gametes": {
+  "kind": "biology",
+  "id": "meiosis_gametes",
+  "name": "Sample meiosis gametes",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "gametes",
+   "d": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_prophase1_d6": {
+  "kind": "biology",
+  "id": "meiosis_prophase1_d6",
+  "name": "Sample meiosis prophase1 d6",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "prophase1",
+   "d": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_anaphase2_d6": {
+  "kind": "biology",
+  "id": "meiosis_anaphase2_d6",
+  "name": "Sample meiosis anaphase2 d6",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "anaphase2",
+   "d": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "meiosis_gametes_d6": {
+  "kind": "biology",
+  "id": "meiosis_gametes_d6",
+  "name": "Sample meiosis gametes d6",
+  "figure": "b_division",
+  "params": {
+   "mode": "meiosis",
+   "stage": "gametes",
+   "d": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dna_6": {
+  "kind": "biology",
+  "id": "dna_6",
+  "name": "Sample dna 6",
+  "figure": "b_dna",
+  "params": {
+   "mode": "dna",
+   "seq": "ATGCCA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dna_8": {
+  "kind": "biology",
+  "id": "dna_8",
+  "name": "Sample dna 8",
+  "figure": "b_dna",
+  "params": {
+   "mode": "dna",
+   "seq": "GCGCATTA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "rna_6": {
+  "kind": "biology",
+  "id": "rna_6",
+  "name": "Sample rna 6",
+  "figure": "b_dna",
+  "params": {
+   "mode": "rna",
+   "seq": "AUGGCU"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dogma_4": {
+  "kind": "biology",
+  "id": "dogma_4",
+  "name": "Sample dogma 4",
+  "figure": "b_dogma",
+  "params": {
+   "seq": "ATGGCTAAATAA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dogma_5": {
+  "kind": "biology",
+  "id": "dogma_5",
+  "name": "Sample dogma 5",
+  "figure": "b_dogma",
+  "params": {
+   "seq": "ATGTGGGGCAAGTGA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dogma_2": {
+  "kind": "biology",
+  "id": "dogma_2",
+  "name": "Sample dogma 2",
+  "figure": "b_dogma",
+  "params": {
+   "seq": "ATGTAA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "dogma_nostop": {
+  "kind": "biology",
+  "id": "dogma_nostop",
+  "name": "Sample dogma nostop",
+  "figure": "b_dogma",
+  "params": {
+   "seq": "ATGGCTGGA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_mono": {
+  "kind": "biology",
+  "id": "punnett_mono",
+  "name": "Sample punnett mono",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "mono",
+   "trait": "height",
+   "p1": "Tt",
+   "p2": "Tt"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_test": {
+  "kind": "biology",
+  "id": "punnett_test",
+  "name": "Sample punnett test",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "mono",
+   "trait": "seed_shape",
+   "p1": "Rr",
+   "p2": "rr"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_pure": {
+  "kind": "biology",
+  "id": "punnett_pure",
+  "name": "Sample punnett pure",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "mono",
+   "trait": "flower_colour",
+   "p1": "PP",
+   "p2": "pp"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_di": {
+  "kind": "biology",
+  "id": "punnett_di",
+  "name": "Sample punnett di",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "dihybrid",
+   "trait1": "height",
+   "trait2": "seed_shape",
+   "p1": "TtRr",
+   "p2": "TtRr"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_di2": {
+  "kind": "biology",
+  "id": "punnett_di2",
+  "name": "Sample punnett di2",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "dihybrid",
+   "trait1": "seed_colour",
+   "trait2": "pod_shape",
+   "p1": "YyII",
+   "p2": "yyIi"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_inc": {
+  "kind": "biology",
+  "id": "punnett_inc",
+  "name": "Sample punnett inc",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "incomplete",
+   "p1": "RW",
+   "p2": "RW"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_inc2": {
+  "kind": "biology",
+  "id": "punnett_inc2",
+  "name": "Sample punnett inc2",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "incomplete",
+   "p1": "RR",
+   "p2": "WW"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_abo": {
+  "kind": "biology",
+  "id": "punnett_abo",
+  "name": "Sample punnett abo",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "abo",
+   "p1": "IAi",
+   "p2": "IBi"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_abo2": {
+  "kind": "biology",
+  "id": "punnett_abo2",
+  "name": "Sample punnett abo2",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "abo",
+   "p1": "IAIB",
+   "p2": "ii"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "punnett_sex": {
+  "kind": "biology",
+  "id": "punnett_sex",
+  "name": "Sample punnett sex",
+  "figure": "b_punnett",
+  "params": {
+   "mode": "sex"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ped_ar": {
+  "kind": "biology",
+  "id": "ped_ar",
+  "name": "Sample ped ar",
+  "figure": "b_pedigree",
+  "params": {
+   "mode": "ar",
+   "f": "Aa",
+   "m": "Aa",
+   "n": 3,
+   "s1": "M",
+   "g1": "aa",
+   "s2": "F",
+   "g2": "Aa",
+   "s3": "M",
+   "g3": "AA"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ped_ad": {
+  "kind": "biology",
+  "id": "ped_ad",
+  "name": "Sample ped ad",
+  "figure": "b_pedigree",
+  "params": {
+   "mode": "ad",
+   "f": "Aa",
+   "m": "aa",
+   "n": 2,
+   "s1": "M",
+   "g1": "Aa",
+   "s2": "F",
+   "g2": "aa"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ped_xr": {
+  "kind": "biology",
+  "id": "ped_xr",
+  "name": "Sample ped xr",
+  "figure": "b_pedigree",
+  "params": {
+   "mode": "xr",
+   "f": "XY",
+   "m": "Xx",
+   "n": 3,
+   "s1": "M",
+   "g1": "xY",
+   "s2": "F",
+   "g2": "Xx",
+   "s3": "M",
+   "g3": "XY"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ped_xr2": {
+  "kind": "biology",
+  "id": "ped_xr2",
+  "name": "Sample ped xr2",
+  "figure": "b_pedigree",
+  "params": {
+   "mode": "xr",
+   "f": "xY",
+   "m": "XX",
+   "n": 2,
+   "s1": "F",
+   "g1": "Xx",
+   "s2": "F",
+   "g2": "Xx"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "ped_four": {
+  "kind": "biology",
+  "id": "ped_four",
+  "name": "Sample ped four",
+  "figure": "b_pedigree",
+  "params": {
+   "mode": "ar",
+   "f": "Aa",
+   "m": "Aa",
+   "n": 4,
+   "s1": "F",
+   "g1": "AA",
+   "s2": "M",
+   "g2": "Aa",
+   "s3": "F",
+   "g3": "aa",
+   "s4": "M",
+   "g4": "Aa"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pathway_photosynthesis": {
+  "kind": "biology",
+  "id": "pathway_photosynthesis",
+  "name": "Sample pathway photosynthesis",
+  "figure": "b_pathway",
+  "params": {
+   "pathway": "photosynthesis"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pathway_aerobic": {
+  "kind": "biology",
+  "id": "pathway_aerobic",
+  "name": "Sample pathway aerobic",
+  "figure": "b_pathway",
+  "params": {
+   "pathway": "aerobic"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pathway_yeast": {
+  "kind": "biology",
+  "id": "pathway_yeast",
+  "name": "Sample pathway yeast",
+  "figure": "b_pathway",
+  "params": {
+   "pathway": "yeast"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pathway_lactic": {
+  "kind": "biology",
+  "id": "pathway_lactic",
+  "name": "Sample pathway lactic",
+  "figure": "b_pathway",
+  "params": {
+   "pathway": "lactic"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_digestion": {
+  "kind": "biology",
+  "id": "system_digestion",
+  "name": "Sample system digestion",
+  "figure": "b_system",
+  "params": {
+   "system": "digestion"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_respiration": {
+  "kind": "biology",
+  "id": "system_respiration",
+  "name": "Sample system respiration",
+  "figure": "b_system",
+  "params": {
+   "system": "respiration"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_reflex_arc": {
+  "kind": "biology",
+  "id": "system_reflex_arc",
+  "name": "Sample system reflex arc",
+  "figure": "b_system",
+  "params": {
+   "system": "reflex_arc"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_reproduction_male": {
+  "kind": "biology",
+  "id": "system_reproduction_male",
+  "name": "Sample system reproduction male",
+  "figure": "b_system",
+  "params": {
+   "system": "reproduction_male"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_reproduction_female": {
+  "kind": "biology",
+  "id": "system_reproduction_female",
+  "name": "Sample system reproduction female",
+  "figure": "b_system",
+  "params": {
+   "system": "reproduction_female"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_immune_response": {
+  "kind": "biology",
+  "id": "system_immune_response",
+  "name": "Sample system immune response",
+  "figure": "b_system",
+  "params": {
+   "system": "immune_response"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_vaccination": {
+  "kind": "biology",
+  "id": "system_vaccination",
+  "name": "Sample system vaccination",
+  "figure": "b_system",
+  "params": {
+   "system": "vaccination"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_water_transport": {
+  "kind": "biology",
+  "id": "system_water_transport",
+  "name": "Sample system water transport",
+  "figure": "b_system",
+  "params": {
+   "system": "water_transport"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_phloem": {
+  "kind": "biology",
+  "id": "system_phloem",
+  "name": "Sample system phloem",
+  "figure": "b_system",
+  "params": {
+   "system": "phloem"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_pollination": {
+  "kind": "biology",
+  "id": "system_pollination",
+  "name": "Sample system pollination",
+  "figure": "b_system",
+  "params": {
+   "system": "pollination"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "heart": {
+  "kind": "biology",
+  "id": "heart",
+  "name": "Sample heart",
+  "figure": "b_heart",
+  "params": {},
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "neuron_2": {
+  "kind": "biology",
+  "id": "neuron_2",
+  "name": "Sample neuron 2",
+  "figure": "b_neuron",
+  "params": {
+   "segments": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "neuron_3": {
+  "kind": "biology",
+  "id": "neuron_3",
+  "name": "Sample neuron 3",
+  "figure": "b_neuron",
+  "params": {
+   "segments": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "neuron_5": {
+  "kind": "biology",
+  "id": "neuron_5",
+  "name": "Sample neuron 5",
+  "figure": "b_neuron",
+  "params": {
+   "segments": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "nephron": {
+  "kind": "biology",
+  "id": "nephron",
+  "name": "Sample nephron",
+  "figure": "b_nephron",
+  "params": {},
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "nephron_150": {
+  "kind": "biology",
+  "id": "nephron_150",
+  "name": "Sample nephron 150",
+  "figure": "b_nephron",
+  "params": {
+   "filtrate_l": 150,
+   "urine_l": 1.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "endocrine": {
+  "kind": "biology",
+  "id": "endocrine",
+  "name": "Sample endocrine",
+  "figure": "b_endocrine",
+  "params": {},
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "endocrine_thyroid": {
+  "kind": "biology",
+  "id": "endocrine_thyroid",
+  "name": "Sample endocrine thyroid",
+  "figure": "b_endocrine",
+  "params": {
+   "focus": "thyroid"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "endocrine_pancreas": {
+  "kind": "biology",
+  "id": "endocrine_pancreas",
+  "name": "Sample endocrine pancreas",
+  "figure": "b_endocrine",
+  "params": {
+   "focus": "pancreas"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_leaf_open": {
+  "kind": "biology",
+  "id": "plant_leaf_open",
+  "name": "Sample plant leaf open",
+  "figure": "b_plant",
+  "params": {
+   "part": "leaf",
+   "stomata": "open"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_leaf_closed": {
+  "kind": "biology",
+  "id": "plant_leaf_closed",
+  "name": "Sample plant leaf closed",
+  "figure": "b_plant",
+  "params": {
+   "part": "leaf",
+   "stomata": "closed"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_stem_dicot": {
+  "kind": "biology",
+  "id": "plant_stem_dicot",
+  "name": "Sample plant stem dicot",
+  "figure": "b_plant",
+  "params": {
+   "part": "stem_dicot"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_stem_monocot": {
+  "kind": "biology",
+  "id": "plant_stem_monocot",
+  "name": "Sample plant stem monocot",
+  "figure": "b_plant",
+  "params": {
+   "part": "stem_monocot"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_root": {
+  "kind": "biology",
+  "id": "plant_root",
+  "name": "Sample plant root",
+  "figure": "b_plant",
+  "params": {
+   "part": "root"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_flower": {
+  "kind": "biology",
+  "id": "plant_flower",
+  "name": "Sample plant flower",
+  "figure": "b_plant",
+  "params": {
+   "part": "flower"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_seed": {
+  "kind": "biology",
+  "id": "plant_seed",
+  "name": "Sample plant seed",
+  "figure": "b_plant",
+  "params": {
+   "part": "seed"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "plant_germination": {
+  "kind": "biology",
+  "id": "plant_germination",
+  "name": "Sample plant germination",
+  "figure": "b_plant",
+  "params": {
+   "part": "germination"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "web_grassland_chain": {
+  "kind": "biology",
+  "id": "web_grassland_chain",
+  "name": "Sample web grassland chain",
+  "figure": "b_web",
+  "params": {
+   "web": "grassland_chain"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "web_grassland": {
+  "kind": "biology",
+  "id": "web_grassland",
+  "name": "Sample web grassland",
+  "figure": "b_web",
+  "params": {
+   "web": "grassland"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "web_pond": {
+  "kind": "biology",
+  "id": "web_pond",
+  "name": "Sample web pond",
+  "figure": "b_web",
+  "params": {
+   "web": "pond"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pyramid_10": {
+  "kind": "biology",
+  "id": "pyramid_10",
+  "name": "Sample pyramid 10",
+  "figure": "b_pyramid",
+  "params": {
+   "mode": "efficiency",
+   "e1": 10000,
+   "eff": 10,
+   "levels": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pyramid_15": {
+  "kind": "biology",
+  "id": "pyramid_15",
+  "name": "Sample pyramid 15",
+  "figure": "b_pyramid",
+  "params": {
+   "mode": "efficiency",
+   "e1": 5000,
+   "eff": 15,
+   "levels": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pyramid_given": {
+  "kind": "biology",
+  "id": "pyramid_given",
+  "name": "Sample pyramid given",
+  "figure": "b_pyramid",
+  "params": {
+   "mode": "given",
+   "e1": 8000,
+   "e2": 900,
+   "e3": 70,
+   "e4": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pop_exp": {
+  "kind": "biology",
+  "id": "pop_exp",
+  "name": "Sample pop exp",
+  "figure": "b_population",
+  "params": {
+   "mode": "exponential",
+   "n0": 50,
+   "r": 0.3,
+   "t_max": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pop_logistic": {
+  "kind": "biology",
+  "id": "pop_logistic",
+  "name": "Sample pop logistic",
+  "figure": "b_population",
+  "params": {
+   "mode": "logistic",
+   "n0": 50,
+   "r": 0.5,
+   "k": 1000,
+   "t_max": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pop_pp": {
+  "kind": "biology",
+  "id": "pop_pp",
+  "name": "Sample pop pp",
+  "figure": "b_population",
+  "params": {
+   "mode": "predator_prey",
+   "a": 0.8,
+   "b": 0.04,
+   "c": 0.6,
+   "d": 0.02,
+   "x0": 40,
+   "y0": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pop_area": {
+  "kind": "biology",
+  "id": "pop_area",
+  "name": "Sample pop area",
+  "figure": "b_population",
+  "params": {
+   "mode": "species_area",
+   "c": 5,
+   "z": 0.25,
+   "a_max": 1000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "pop_selection": {
+  "kind": "biology",
+  "id": "pop_selection",
+  "name": "Sample pop selection",
+  "figure": "b_population",
+  "params": {
+   "mode": "selection",
+   "p0": 0.05,
+   "s": 0.2,
+   "t_max": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cycle_carbon": {
+  "kind": "biology",
+  "id": "cycle_carbon",
+  "name": "Sample cycle carbon",
+  "figure": "b_cycle",
+  "params": {
+   "cycle": "carbon"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cycle_nitrogen": {
+  "kind": "biology",
+  "id": "cycle_nitrogen",
+  "name": "Sample cycle nitrogen",
+  "figure": "b_cycle",
+  "params": {
+   "cycle": "nitrogen"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "cycle_water": {
+  "kind": "biology",
+  "id": "cycle_water",
+  "name": "Sample cycle water",
+  "figure": "b_cycle",
+  "params": {
+   "cycle": "water"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_vert": {
+  "kind": "biology",
+  "id": "tree_vert",
+  "name": "Sample tree vert",
+  "figure": "b_tree",
+  "params": {
+   "tree": "vertebrates"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_vert_mrca": {
+  "kind": "biology",
+  "id": "tree_vert_mrca",
+  "name": "Sample tree vert mrca",
+  "figure": "b_tree",
+  "params": {
+   "tree": "vertebrates",
+   "a": "Mammals",
+   "b": "Birds"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_apes_mrca": {
+  "kind": "biology",
+  "id": "tree_apes_mrca",
+  "name": "Sample tree apes mrca",
+  "figure": "b_tree",
+  "params": {
+   "tree": "apes",
+   "a": "Human",
+   "b": "Chimpanzee"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_apes_far": {
+  "kind": "biology",
+  "id": "tree_apes_far",
+  "name": "Sample tree apes far",
+  "figure": "b_tree",
+  "params": {
+   "tree": "apes",
+   "a": "Gibbon",
+   "b": "Human"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "taxonomy_human": {
+  "kind": "biology",
+  "id": "taxonomy_human",
+  "name": "Sample taxonomy human",
+  "figure": "b_taxonomy",
+  "params": {
+   "organism": "human"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "taxonomy_tiger": {
+  "kind": "biology",
+  "id": "taxonomy_tiger",
+  "name": "Sample taxonomy tiger",
+  "figure": "b_taxonomy",
+  "params": {
+   "organism": "tiger"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "taxonomy_cat": {
+  "kind": "biology",
+  "id": "taxonomy_cat",
+  "name": "Sample taxonomy cat",
+  "figure": "b_taxonomy",
+  "params": {
+   "organism": "cat"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "taxonomy_peacock": {
+  "kind": "biology",
+  "id": "taxonomy_peacock",
+  "name": "Sample taxonomy peacock",
+  "figure": "b_taxonomy",
+  "params": {
+   "organism": "peacock"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "enzyme_mm": {
+  "kind": "biology",
+  "id": "enzyme_mm",
+  "name": "Sample enzyme mm",
+  "figure": "b_enzyme",
+  "params": {
+   "mode": "michaelis",
+   "vmax": 100,
+   "km": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "enzyme_temp": {
+  "kind": "biology",
+  "id": "enzyme_temp",
+  "name": "Sample enzyme temp",
+  "figure": "b_enzyme",
+  "params": {
+   "mode": "temperature",
+   "ea_kj": 50,
+   "t_denature": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "enzyme_ph": {
+  "kind": "biology",
+  "id": "enzyme_ph",
+  "name": "Sample enzyme ph",
+  "figure": "b_enzyme",
+  "params": {
+   "mode": "ph",
+   "pka1": 4,
+   "pka2": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "enzyme_inhib": {
+  "kind": "biology",
+  "id": "enzyme_inhib",
+  "name": "Sample enzyme inhib",
+  "figure": "b_enzyme",
+  "params": {
+   "mode": "inhibition",
+   "vmax": 100,
+   "km": 5,
+   "i": 10,
+   "ki": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "biotech_pcr": {
+  "kind": "biology",
+  "id": "biotech_pcr",
+  "name": "Sample biotech pcr",
+  "figure": "b_biotech",
+  "params": {
+   "mode": "pcr",
+   "cycles": 25,
+   "efficiency": 0.95
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "biotech_pcr_ideal": {
+  "kind": "biology",
+  "id": "biotech_pcr_ideal",
+  "name": "Sample biotech pcr ideal",
+  "figure": "b_biotech",
+  "params": {
+   "mode": "pcr",
+   "cycles": 10,
+   "efficiency": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "biotech_gel": {
+  "kind": "biology",
+  "id": "biotech_gel",
+  "name": "Sample biotech gel",
+  "figure": "b_biotech",
+  "params": {
+   "mode": "gel",
+   "f1": 500,
+   "f2": 1200,
+   "f3": 3000
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "biotech_gel2": {
+  "kind": "biology",
+  "id": "biotech_gel2",
+  "name": "Sample biotech gel2",
+  "figure": "b_biotech",
+  "params": {
+   "mode": "gel",
+   "f1": 300,
+   "f2": 800
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}

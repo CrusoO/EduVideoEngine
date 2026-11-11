@@ -1,0 +1,146 @@
+{
+ "requestId": "w4-mendel-pea-cross",
+ "idempotencyKey": "w4-mendel-pea-cross-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Mendel and the pea plants",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A tall plant and a short one",
+    "sentences": [
+     "Cross a tall pea plant with a dwarf one and every child is tall.",
+     "Where did the dwarf go?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Where did the dwarf go?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "One gene, two alleles",
+    "sentences": [
+     "Both parents are Tt, tall but carrying the dwarf allele.",
+     "Each gamete gets one allele, so the square has four cells and the ratio is 3:1."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "punnett_mono",
+      "name": "Cross of two Tt plants",
+      "figure": "b_punnett",
+      "params": {
+       "mode": "mono",
+       "trait": "height",
+       "p1": "Tt",
+       "p2": "Tt"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Two genes at once",
+    "sentences": [
+     "Now follow height and seed shape together.",
+     "Sixteen cells, nine kinds of genotype, and the ratio 9:3:3:1."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "punnett_di",
+      "name": "Cross of two TtRr plants",
+      "figure": "b_punnett",
+      "params": {
+       "mode": "dihybrid",
+       "trait1": "height",
+       "trait2": "seed_shape",
+       "p1": "TtRr",
+       "p2": "TtRr"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A family tree",
+    "sentences": [
+     "Two carriers of a recessive allele can have an affected child.",
+     "For each child the chance is 25.0 per cent."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "ped_ar",
+      "name": "Pedigree of a recessive trait",
+      "figure": "b_pedigree",
+      "params": {
+       "mode": "ar",
+       "f": "Aa",
+       "m": "Aa",
+       "n": 3,
+       "s1": "M",
+       "g1": "aa",
+       "s2": "F",
+       "g2": "Aa",
+       "s3": "M",
+       "g3": "AA"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "The ratio comes from counting",
+    "sentences": [
+     "Count the cells and the ratio follows."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Count the cells",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

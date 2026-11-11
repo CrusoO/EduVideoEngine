@@ -1,0 +1,141 @@
+{
+ "requestId": "w4-population-growth",
+ "idempotencyKey": "w4-population-growth-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "How populations grow",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A few become many",
+    "sentences": [
+     "Fifty bacteria become thousands in a day."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "A few become many",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Without limits",
+    "sentences": [
+     "With no limits the population doubles every 2.31 hours."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "pop_exp",
+      "name": "Exponential growth",
+      "figure": "b_population",
+      "params": {
+       "mode": "exponential",
+       "n0": 50,
+       "r": 0.3,
+       "t_max": 20
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "With limits",
+    "sentences": [
+     "Food runs out, so the curve flattens at the carrying capacity K of 1000.",
+     "Growth is fastest at 5.89 hours, when the population is half of K."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "pop_logistic",
+      "name": "Logistic growth",
+      "figure": "b_population",
+      "params": {
+       "mode": "logistic",
+       "n0": 50,
+       "r": 0.5,
+       "k": 1000,
+       "t_max": 30
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Hunters and hunted",
+    "sentences": [
+     "A predator and its prey rise and fall in a cycle.",
+     "Each cycle takes 9.07 years."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "pop_pp",
+      "name": "Predator and prey",
+      "figure": "b_population",
+      "params": {
+       "mode": "predator_prey",
+       "a": 0.8,
+       "b": 0.04,
+       "c": 0.6,
+       "d": 0.02,
+       "x0": 40,
+       "y0": 9
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Room for everyone",
+    "sentences": [
+     "Limits shape every population."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Limits shape growth",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "requestId": "w4-energy-food-chain",
+ "idempotencyKey": "w4-energy-food-chain-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Energy in a food chain",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Who eats whom",
+    "sentences": [
+     "A hawk eats a snake that ate a frog that ate a grasshopper that ate grass.",
+     "How much of the grass is left in the hawk?"
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Grass to hawk",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A web of chains",
+    "sentences": [
+     "Real animals eat more than one thing, so chains join into a web.",
+     "The hawk sits at level 3.75, because it eats a snake and a rabbit."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "web_grassland",
+      "name": "Grassland food web",
+      "figure": "b_web",
+      "params": {
+       "web": "grassland"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Ten per cent",
+    "sentences": [
+     "Each step passes on only 10.0 per cent of the energy.",
+     "Four levels from 10000 kilojoules leave 10 at the top."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "pyramid_10",
+      "name": "Energy pyramid",
+      "figure": "b_pyramid",
+      "params": {
+       "mode": "efficiency",
+       "e1": 10000,
+       "eff": 10,
+       "levels": 4
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Carbon goes round",
+    "sentences": [
+     "Energy flows one way, but carbon goes round in a cycle."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "cycle_carbon",
+      "name": "Carbon cycle",
+      "figure": "b_cycle",
+      "params": {
+       "cycle": "carbon"
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Short chains feed more",
+    "sentences": [
+     "The shorter the chain, the more energy reaches the end."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Short chains feed more",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

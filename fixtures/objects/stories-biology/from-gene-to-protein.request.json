@@ -1,0 +1,132 @@
+{
+ "requestId": "w4-gene-to-protein",
+ "idempotencyKey": "w4-gene-to-protein-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "From gene to protein",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A code of four letters",
+    "sentences": [
+     "Four letters, A, C, G and T, write every gene."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Four letters",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Two strands",
+    "sentences": [
+     "The two strands pair A with T and G with C.",
+     "This stretch has 50.0 per cent G and C."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "dna_6",
+      "name": "A short stretch of DNA",
+      "figure": "b_dna",
+      "params": {
+       "mode": "dna",
+       "seq": "ATGCCA"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "Copy and read",
+    "sentences": [
+     "The gene is copied into mRNA with U in place of T.",
+     "Each codon of three letters is read to an amino acid, and this gene makes three of them.",
+     "Only 25.0 per cent of its letters are G or C."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "dogma_4",
+      "name": "Transcription and translation",
+      "figure": "b_dogma",
+      "params": {
+       "seq": "ATGGCTAAATAA"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Sharing the chromosomes",
+    "sentences": [
+     "Meiosis shares the chromosomes so that each gamete has half."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "biology",
+      "id": "meiosis_gametes",
+      "name": "Four gametes after meiosis",
+      "figure": "b_division",
+      "params": {
+       "mode": "meiosis",
+       "stage": "gametes",
+       "d": 4
+      },
+      "sentence": 0
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Letters to life",
+    "sentences": [
+     "The order of the letters decides the protein."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Letters to life",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
