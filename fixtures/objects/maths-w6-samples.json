@@ -1,0 +1,1508 @@
+{
+ "freq_histogram_five": {
+  "kind": "maths",
+  "id": "freq_histogram_five",
+  "name": "Sample freq histogram five",
+  "figure": "m_freq",
+  "params": {
+   "mode": "histogram",
+   "start": 0,
+   "width": 10,
+   "f1": 4,
+   "f2": 8,
+   "f3": 15,
+   "f4": 9,
+   "f5": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "freq_histogram_six": {
+  "kind": "maths",
+  "id": "freq_histogram_six",
+  "name": "Sample freq histogram six",
+  "figure": "m_freq",
+  "params": {
+   "mode": "histogram",
+   "start": 20,
+   "width": 5,
+   "f1": 3,
+   "f2": 7,
+   "f3": 12,
+   "f4": 12,
+   "f5": 6,
+   "f6": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "freq_polygon": {
+  "kind": "maths",
+  "id": "freq_polygon",
+  "name": "Sample freq polygon",
+  "figure": "m_freq",
+  "params": {
+   "mode": "polygon",
+   "start": 0,
+   "width": 10,
+   "f1": 5,
+   "f2": 10,
+   "f3": 16,
+   "f4": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "freq_polygon_six": {
+  "kind": "maths",
+  "id": "freq_polygon_six",
+  "name": "Sample freq polygon six",
+  "figure": "m_freq",
+  "params": {
+   "mode": "polygon",
+   "start": 100,
+   "width": 20,
+   "f1": 2,
+   "f2": 6,
+   "f3": 11,
+   "f4": 14,
+   "f5": 8,
+   "f6": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "freq_ogive_five": {
+  "kind": "maths",
+  "id": "freq_ogive_five",
+  "name": "Sample freq ogive five",
+  "figure": "m_freq",
+  "params": {
+   "mode": "ogive",
+   "start": 0,
+   "width": 10,
+   "f1": 5,
+   "f2": 9,
+   "f3": 14,
+   "f4": 7,
+   "f5": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "freq_ogive_four": {
+  "kind": "maths",
+  "id": "freq_ogive_four",
+  "name": "Sample freq ogive four",
+  "figure": "m_freq",
+  "params": {
+   "mode": "ogive",
+   "start": 140,
+   "width": 10,
+   "f1": 6,
+   "f2": 14,
+   "f3": 12,
+   "f4": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "centre_dots_mode": {
+  "kind": "maths",
+  "id": "centre_dots_mode",
+  "name": "Sample centre dots mode",
+  "figure": "m_centre",
+  "params": {
+   "mode": "dots",
+   "d1": 4,
+   "d2": 6,
+   "d3": 6,
+   "d4": 7,
+   "d5": 9,
+   "d6": 10,
+   "d7": 10,
+   "d8": 10,
+   "d9": 13
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "centre_dots_distinct": {
+  "kind": "maths",
+  "id": "centre_dots_distinct",
+  "name": "Sample centre dots distinct",
+  "figure": "m_centre",
+  "params": {
+   "mode": "dots",
+   "d1": 12,
+   "d2": 15,
+   "d3": 17,
+   "d4": 20,
+   "d5": 22
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "centre_box_odd": {
+  "kind": "maths",
+  "id": "centre_box_odd",
+  "name": "Sample centre box odd",
+  "figure": "m_centre",
+  "params": {
+   "mode": "box",
+   "d1": 3,
+   "d2": 5,
+   "d3": 7,
+   "d4": 8,
+   "d5": 9,
+   "d6": 11,
+   "d7": 13,
+   "d8": 15,
+   "d9": 20
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "centre_box_even": {
+  "kind": "maths",
+  "id": "centre_box_even",
+  "name": "Sample centre box even",
+  "figure": "m_centre",
+  "params": {
+   "mode": "box",
+   "d1": 12,
+   "d2": 15,
+   "d3": 18,
+   "d4": 22,
+   "d5": 25,
+   "d6": 31
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "scatter_positive": {
+  "kind": "maths",
+  "id": "scatter_positive",
+  "name": "Sample scatter positive",
+  "figure": "m_scatter",
+  "params": {
+   "x1": 2,
+   "y1": 3,
+   "x2": 4,
+   "y2": 5,
+   "x3": 5,
+   "y3": 4,
+   "x4": 7,
+   "y4": 8,
+   "x5": 9,
+   "y5": 9,
+   "x6": 10,
+   "y6": 12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "scatter_negative": {
+  "kind": "maths",
+  "id": "scatter_negative",
+  "name": "Sample scatter negative",
+  "figure": "m_scatter",
+  "params": {
+   "x1": 1,
+   "y1": 20,
+   "x2": 3,
+   "y2": 17,
+   "x3": 4,
+   "y3": 14,
+   "x4": 6,
+   "y4": 11,
+   "x5": 8,
+   "y5": 7,
+   "x6": 9,
+   "y6": 6,
+   "x7": 10,
+   "y7": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "scatter_weak": {
+  "kind": "maths",
+  "id": "scatter_weak",
+  "name": "Sample scatter weak",
+  "figure": "m_scatter",
+  "params": {
+   "x1": 1,
+   "y1": 5,
+   "x2": 2,
+   "y2": 9,
+   "x3": 4,
+   "y3": 4,
+   "x4": 5,
+   "y4": 8,
+   "x5": 7,
+   "y5": 5,
+   "x6": 8,
+   "y6": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "normal_between": {
+  "kind": "maths",
+  "id": "normal_between",
+  "name": "Sample normal between",
+  "figure": "m_normal",
+  "params": {
+   "mode": "between",
+   "mu": 50,
+   "sigma": 10,
+   "a": 40,
+   "b": 65
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "normal_one_side": {
+  "kind": "maths",
+  "id": "normal_one_side",
+  "name": "Sample normal one side",
+  "figure": "m_normal",
+  "params": {
+   "mode": "between",
+   "mu": 100,
+   "sigma": 15,
+   "a": 85,
+   "b": 130
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "normal_rule_1": {
+  "kind": "maths",
+  "id": "normal_rule_1",
+  "name": "Sample normal rule 1",
+  "figure": "m_normal",
+  "params": {
+   "mode": "rule",
+   "mu": 100,
+   "sigma": 15,
+   "k": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "normal_rule_2": {
+  "kind": "maths",
+  "id": "normal_rule_2",
+  "name": "Sample normal rule 2",
+  "figure": "m_normal",
+  "params": {
+   "mode": "rule",
+   "mu": 100,
+   "sigma": 15,
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "normal_rule_3": {
+  "kind": "maths",
+  "id": "normal_rule_3",
+  "name": "Sample normal rule 3",
+  "figure": "m_normal",
+  "params": {
+   "mode": "rule",
+   "mu": 60,
+   "sigma": 5,
+   "k": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "binom_exact": {
+  "kind": "maths",
+  "id": "binom_exact",
+  "name": "Sample binom exact",
+  "figure": "m_binom",
+  "params": {
+   "mode": "exact",
+   "n": 8,
+   "p": 0.5,
+   "k": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "binom_atmost": {
+  "kind": "maths",
+  "id": "binom_atmost",
+  "name": "Sample binom atmost",
+  "figure": "m_binom",
+  "params": {
+   "mode": "atmost",
+   "n": 10,
+   "p": 0.3,
+   "k": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "binom_skewed": {
+  "kind": "maths",
+  "id": "binom_skewed",
+  "name": "Sample binom skewed",
+  "figure": "m_binom",
+  "params": {
+   "mode": "exact",
+   "n": 12,
+   "p": 0.2,
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "binom_simulate_coin": {
+  "kind": "maths",
+  "id": "binom_simulate_coin",
+  "name": "Sample binom simulate coin",
+  "figure": "m_binom",
+  "params": {
+   "mode": "simulate",
+   "n": 6,
+   "p": 0.5,
+   "trials": 200,
+   "seed": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "binom_simulate_biased": {
+  "kind": "maths",
+  "id": "binom_simulate_biased",
+  "name": "Sample binom simulate biased",
+  "figure": "m_binom",
+  "params": {
+   "mode": "simulate",
+   "n": 10,
+   "p": 0.4,
+   "trials": 400,
+   "seed": 2026
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_bag_without": {
+  "kind": "maths",
+  "id": "tree_bag_without",
+  "name": "Sample tree bag without",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "bag",
+   "red": 3,
+   "blue": 2,
+   "replace": false,
+   "event": "different"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_bag_with": {
+  "kind": "maths",
+  "id": "tree_bag_with",
+  "name": "Sample tree bag with",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "bag",
+   "red": 4,
+   "blue": 6,
+   "replace": true,
+   "event": "both_first"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_bag_same": {
+  "kind": "maths",
+  "id": "tree_bag_same",
+  "name": "Sample tree bag same",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "bag",
+   "red": 5,
+   "blue": 3,
+   "replace": false,
+   "event": "same"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_bag_atleast": {
+  "kind": "maths",
+  "id": "tree_bag_atleast",
+  "name": "Sample tree bag atleast",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "bag",
+   "red": 2,
+   "blue": 6,
+   "replace": false,
+   "event": "at_least_one_first"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_probs": {
+  "kind": "maths",
+  "id": "tree_probs",
+  "name": "Sample tree probs",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "probs",
+   "p1": 0.6,
+   "p2": 0.4,
+   "q11": 0.7,
+   "q12": 0.3,
+   "q21": 0.2,
+   "q22": 0.8,
+   "event": "both_second"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tree_probs_coin": {
+  "kind": "maths",
+  "id": "tree_probs_coin",
+  "name": "Sample tree probs coin",
+  "figure": "m_ptree",
+  "params": {
+   "mode": "probs",
+   "p1": 0.5,
+   "p2": 0.5,
+   "q11": 0.5,
+   "q12": 0.5,
+   "q21": 0.5,
+   "q22": 0.5,
+   "event": "same"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "venn_counts": {
+  "kind": "maths",
+  "id": "venn_counts",
+  "name": "Sample venn counts",
+  "figure": "m_venn",
+  "params": {
+   "mode": "counts",
+   "u": 40,
+   "a": 18,
+   "b": 15,
+   "ab": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "venn_disjoint_part": {
+  "kind": "maths",
+  "id": "venn_disjoint_part",
+  "name": "Sample venn disjoint part",
+  "figure": "m_venn",
+  "params": {
+   "mode": "counts",
+   "u": 30,
+   "a": 12,
+   "b": 9,
+   "ab": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "venn_subset": {
+  "kind": "maths",
+  "id": "venn_subset",
+  "name": "Sample venn subset",
+  "figure": "m_venn",
+  "params": {
+   "mode": "counts",
+   "u": 25,
+   "a": 14,
+   "b": 6,
+   "ab": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "venn_conditional": {
+  "kind": "maths",
+  "id": "venn_conditional",
+  "name": "Sample venn conditional",
+  "figure": "m_venn",
+  "params": {
+   "mode": "conditional",
+   "u": 60,
+   "a": 24,
+   "b": 30,
+   "ab": 12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "venn_conditional_small": {
+  "kind": "maths",
+  "id": "venn_conditional_small",
+  "name": "Sample venn conditional small",
+  "figure": "m_venn",
+  "params": {
+   "mode": "conditional",
+   "u": 20,
+   "a": 9,
+   "b": 8,
+   "ab": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_dice_sum7": {
+  "kind": "maths",
+  "id": "sample_dice_sum7",
+  "name": "Sample sample dice sum7",
+  "figure": "m_sample",
+  "params": {
+   "space": "dice2",
+   "event": "sum_eq",
+   "k": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_dice_sum_ge": {
+  "kind": "maths",
+  "id": "sample_dice_sum_ge",
+  "name": "Sample sample dice sum ge",
+  "figure": "m_sample",
+  "params": {
+   "space": "dice2",
+   "event": "sum_ge",
+   "k": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_dice_sum_le": {
+  "kind": "maths",
+  "id": "sample_dice_sum_le",
+  "name": "Sample sample dice sum le",
+  "figure": "m_sample",
+  "params": {
+   "space": "dice2",
+   "event": "sum_le",
+   "k": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_dice_doubles": {
+  "kind": "maths",
+  "id": "sample_dice_doubles",
+  "name": "Sample sample dice doubles",
+  "figure": "m_sample",
+  "params": {
+   "space": "dice2",
+   "event": "doubles",
+   "k": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_coins2_one_head": {
+  "kind": "maths",
+  "id": "sample_coins2_one_head",
+  "name": "Sample sample coins2 one head",
+  "figure": "m_sample",
+  "params": {
+   "space": "coins2",
+   "event": "heads_eq",
+   "k": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_coins3_two_heads": {
+  "kind": "maths",
+  "id": "sample_coins3_two_heads",
+  "name": "Sample sample coins3 two heads",
+  "figure": "m_sample",
+  "params": {
+   "space": "coins3",
+   "event": "heads_eq",
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_coins3_at_least": {
+  "kind": "maths",
+  "id": "sample_coins3_at_least",
+  "name": "Sample sample coins3 at least",
+  "figure": "m_sample",
+  "params": {
+   "space": "coins3",
+   "event": "heads_ge",
+   "k": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "sample_coin_die": {
+  "kind": "maths",
+  "id": "sample_coin_die",
+  "name": "Sample sample coin die",
+  "figure": "m_sample",
+  "params": {
+   "space": "coin_die",
+   "event": "head_and_even",
+   "k": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_x2": {
+  "kind": "maths",
+  "id": "tangent_x2",
+  "name": "Sample tangent x2",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "x2",
+   "x0": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_x3": {
+  "kind": "maths",
+  "id": "tangent_x3",
+  "name": "Sample tangent x3",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "x3",
+   "x0": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_sqrt": {
+  "kind": "maths",
+  "id": "tangent_sqrt",
+  "name": "Sample tangent sqrt",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "sqrt",
+   "x0": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_sin": {
+  "kind": "maths",
+  "id": "tangent_sin",
+  "name": "Sample tangent sin",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "sin",
+   "x0": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_exp": {
+  "kind": "maths",
+  "id": "tangent_exp",
+  "name": "Sample tangent exp",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "exp",
+   "x0": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "tangent_ln": {
+  "kind": "maths",
+  "id": "tangent_ln",
+  "name": "Sample tangent ln",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "tangent",
+   "fn": "ln",
+   "x0": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "secant_x2_wide": {
+  "kind": "maths",
+  "id": "secant_x2_wide",
+  "name": "Sample secant x2 wide",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "secant",
+   "fn": "x2",
+   "x0": 1,
+   "h": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "secant_x2_close": {
+  "kind": "maths",
+  "id": "secant_x2_close",
+  "name": "Sample secant x2 close",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "secant",
+   "fn": "x2",
+   "x0": 1,
+   "h": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "secant_sin_back": {
+  "kind": "maths",
+  "id": "secant_sin_back",
+  "name": "Sample secant sin back",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "secant",
+   "fn": "sin",
+   "x0": 1.5,
+   "h": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "secant_exp": {
+  "kind": "maths",
+  "id": "secant_exp",
+  "name": "Sample secant exp",
+  "figure": "m_tangent",
+  "params": {
+   "mode": "secant",
+   "fn": "exp",
+   "x0": 0,
+   "h": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_x2_left": {
+  "kind": "maths",
+  "id": "riemann_x2_left",
+  "name": "Sample riemann x2 left",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "x2",
+   "a": 0,
+   "b": 3,
+   "n": 6,
+   "rule": "left"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_x2_right": {
+  "kind": "maths",
+  "id": "riemann_x2_right",
+  "name": "Sample riemann x2 right",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "x2",
+   "a": 0,
+   "b": 3,
+   "n": 6,
+   "rule": "right"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_x2_mid": {
+  "kind": "maths",
+  "id": "riemann_x2_mid",
+  "name": "Sample riemann x2 mid",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "x2",
+   "a": 0,
+   "b": 3,
+   "n": 6,
+   "rule": "mid"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_sqrt_mid": {
+  "kind": "maths",
+  "id": "riemann_sqrt_mid",
+  "name": "Sample riemann sqrt mid",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "sqrt",
+   "a": 1,
+   "b": 4,
+   "n": 6,
+   "rule": "mid"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_sin_mid": {
+  "kind": "maths",
+  "id": "riemann_sin_mid",
+  "name": "Sample riemann sin mid",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "sin",
+   "a": 0,
+   "b": 3,
+   "n": 8,
+   "rule": "mid"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_exp_right": {
+  "kind": "maths",
+  "id": "riemann_exp_right",
+  "name": "Sample riemann exp right",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "exp",
+   "a": 0,
+   "b": 2,
+   "n": 5,
+   "rule": "right"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_ln_left": {
+  "kind": "maths",
+  "id": "riemann_ln_left",
+  "name": "Sample riemann ln left",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "ln",
+   "a": 1,
+   "b": 5,
+   "n": 8,
+   "rule": "left"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "riemann_x3_right": {
+  "kind": "maths",
+  "id": "riemann_x3_right",
+  "name": "Sample riemann x3 right",
+  "figure": "m_riemann",
+  "params": {
+   "fn": "x3",
+   "a": 0,
+   "b": 2,
+   "n": 4,
+   "rule": "right"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "optim_fence": {
+  "kind": "maths",
+  "id": "optim_fence",
+  "name": "Sample optim fence",
+  "figure": "m_optim",
+  "params": {
+   "kind": "fence",
+   "s": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "optim_fence_small": {
+  "kind": "maths",
+  "id": "optim_fence_small",
+  "name": "Sample optim fence small",
+  "figure": "m_optim",
+  "params": {
+   "kind": "fence",
+   "s": 24
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "optim_box": {
+  "kind": "maths",
+  "id": "optim_box",
+  "name": "Sample optim box",
+  "figure": "m_optim",
+  "params": {
+   "kind": "box",
+   "s": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "optim_box_small": {
+  "kind": "maths",
+  "id": "optim_box_small",
+  "name": "Sample optim box small",
+  "figure": "m_optim",
+  "params": {
+   "kind": "box",
+   "s": 12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_hole": {
+  "kind": "maths",
+  "id": "limit_hole",
+  "name": "Sample limit hole",
+  "figure": "m_limit",
+  "params": {
+   "mode": "hole",
+   "a": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_hole_negative": {
+  "kind": "maths",
+  "id": "limit_hole_negative",
+  "name": "Sample limit hole negative",
+  "figure": "m_limit",
+  "params": {
+   "mode": "hole",
+   "a": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_jump": {
+  "kind": "maths",
+  "id": "limit_jump",
+  "name": "Sample limit jump",
+  "figure": "m_limit",
+  "params": {
+   "mode": "jump",
+   "c": 1,
+   "left": 1,
+   "right": 3,
+   "claim": "not_exist"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_jump_down": {
+  "kind": "maths",
+  "id": "limit_jump_down",
+  "name": "Sample limit jump down",
+  "figure": "m_limit",
+  "params": {
+   "mode": "jump",
+   "c": -2,
+   "left": 3,
+   "right": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_jump_equal": {
+  "kind": "maths",
+  "id": "limit_jump_equal",
+  "name": "Sample limit jump equal",
+  "figure": "m_limit",
+  "params": {
+   "mode": "jump",
+   "c": 0,
+   "left": 2,
+   "right": 2,
+   "claim": "exists"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_infinity": {
+  "kind": "maths",
+  "id": "limit_infinity",
+  "name": "Sample limit infinity",
+  "figure": "m_limit",
+  "params": {
+   "mode": "infinity",
+   "k": 2,
+   "b": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "limit_infinity_negative": {
+  "kind": "maths",
+  "id": "limit_infinity_negative",
+  "name": "Sample limit infinity negative",
+  "figure": "m_limit",
+  "params": {
+   "mode": "infinity",
+   "k": -1,
+   "b": -2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_ap_up": {
+  "kind": "maths",
+  "id": "seq_ap_up",
+  "name": "Sample seq ap up",
+  "figure": "m_seq",
+  "params": {
+   "mode": "ap",
+   "a": 3,
+   "d": 2,
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_ap_down": {
+  "kind": "maths",
+  "id": "seq_ap_down",
+  "name": "Sample seq ap down",
+  "figure": "m_seq",
+  "params": {
+   "mode": "ap",
+   "a": 20,
+   "d": -4,
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_partial_sums": {
+  "kind": "maths",
+  "id": "seq_partial_sums",
+  "name": "Sample seq partial sums",
+  "figure": "m_seq",
+  "params": {
+   "mode": "partial",
+   "a": 2,
+   "d": 3,
+   "n": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_gp_double": {
+  "kind": "maths",
+  "id": "seq_gp_double",
+  "name": "Sample seq gp double",
+  "figure": "m_seq",
+  "params": {
+   "mode": "gp",
+   "a": 2,
+   "r": 2,
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_gp_half": {
+  "kind": "maths",
+  "id": "seq_gp_half",
+  "name": "Sample seq gp half",
+  "figure": "m_seq",
+  "params": {
+   "mode": "gp",
+   "a": 48,
+   "r": 0.5,
+   "n": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_gp_alternating": {
+  "kind": "maths",
+  "id": "seq_gp_alternating",
+  "name": "Sample seq gp alternating",
+  "figure": "m_seq",
+  "params": {
+   "mode": "gp",
+   "a": 3,
+   "r": -2,
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_converge_half": {
+  "kind": "maths",
+  "id": "seq_converge_half",
+  "name": "Sample seq converge half",
+  "figure": "m_seq",
+  "params": {
+   "mode": "converge",
+   "a": 10,
+   "r": 0.5,
+   "n": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_converge_alternating": {
+  "kind": "maths",
+  "id": "seq_converge_alternating",
+  "name": "Sample seq converge alternating",
+  "figure": "m_seq",
+  "params": {
+   "mode": "converge",
+   "a": 12,
+   "r": -0.5,
+   "n": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "seq_converge_slow": {
+  "kind": "maths",
+  "id": "seq_converge_slow",
+  "name": "Sample seq converge slow",
+  "figure": "m_seq",
+  "params": {
+   "mode": "converge",
+   "a": 9,
+   "r": 0.8,
+   "n": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_scale": {
+  "kind": "maths",
+  "id": "matrix_scale",
+  "name": "Sample matrix scale",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 2,
+   "b": 0,
+   "c": 0,
+   "d": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_shear": {
+  "kind": "maths",
+  "id": "matrix_shear",
+  "name": "Sample matrix shear",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 1,
+   "b": 1,
+   "c": 0,
+   "d": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_rotate_90": {
+  "kind": "maths",
+  "id": "matrix_rotate_90",
+  "name": "Sample matrix rotate 90",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 0,
+   "b": -1,
+   "c": 1,
+   "d": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_reflect": {
+  "kind": "maths",
+  "id": "matrix_reflect",
+  "name": "Sample matrix reflect",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 1,
+   "b": 0,
+   "c": 0,
+   "d": -1,
+   "claim": "invertible"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_general": {
+  "kind": "maths",
+  "id": "matrix_general",
+  "name": "Sample matrix general",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 2,
+   "b": 1,
+   "c": 1,
+   "d": 3,
+   "claim": "invertible"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "matrix_singular": {
+  "kind": "maths",
+  "id": "matrix_singular",
+  "name": "Sample matrix singular",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "square",
+   "a": 1,
+   "b": 2,
+   "c": 2,
+   "d": 4,
+   "claim": "singular"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_unique": {
+  "kind": "maths",
+  "id": "system_unique",
+  "name": "Sample system unique",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "system",
+   "a1": 2,
+   "b1": 3,
+   "c1": 12,
+   "a2": 1,
+   "b2": -1,
+   "c2": 1,
+   "claim": "unique"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_unique_two": {
+  "kind": "maths",
+  "id": "system_unique_two",
+  "name": "Sample system unique two",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "system",
+   "a1": 3,
+   "b1": -2,
+   "c1": 4,
+   "a2": 1,
+   "b2": 1,
+   "c2": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_parallel": {
+  "kind": "maths",
+  "id": "system_parallel",
+  "name": "Sample system parallel",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "system",
+   "a1": 1,
+   "b1": 1,
+   "c1": 4,
+   "a2": 2,
+   "b2": 2,
+   "c2": 6,
+   "claim": "none"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_same_line": {
+  "kind": "maths",
+  "id": "system_same_line",
+  "name": "Sample system same line",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "system",
+   "a1": 1,
+   "b1": 2,
+   "c1": 4,
+   "a2": 2,
+   "b2": 4,
+   "c2": 8,
+   "claim": "infinite"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "system_axes_parallel": {
+  "kind": "maths",
+  "id": "system_axes_parallel",
+  "name": "Sample system axes parallel",
+  "figure": "m_matrix",
+  "params": {
+   "mode": "system",
+   "a1": 1,
+   "b1": 0,
+   "c1": 3,
+   "a2": 0,
+   "b2": 1,
+   "c2": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_point_q1": {
+  "kind": "maths",
+  "id": "argand_point_q1",
+  "name": "Sample argand point q1",
+  "figure": "m_argand",
+  "params": {
+   "mode": "point",
+   "re": 3,
+   "im": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_point_q2": {
+  "kind": "maths",
+  "id": "argand_point_q2",
+  "name": "Sample argand point q2",
+  "figure": "m_argand",
+  "params": {
+   "mode": "point",
+   "re": -2,
+   "im": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_point_real": {
+  "kind": "maths",
+  "id": "argand_point_real",
+  "name": "Sample argand point real",
+  "figure": "m_argand",
+  "params": {
+   "mode": "point",
+   "re": 5,
+   "im": 0
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_sum": {
+  "kind": "maths",
+  "id": "argand_sum",
+  "name": "Sample argand sum",
+  "figure": "m_argand",
+  "params": {
+   "mode": "sum",
+   "re1": 3,
+   "im1": 2,
+   "re2": 1,
+   "im2": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_sum_negative": {
+  "kind": "maths",
+  "id": "argand_sum_negative",
+  "name": "Sample argand sum negative",
+  "figure": "m_argand",
+  "params": {
+   "mode": "sum",
+   "re1": -2,
+   "im1": 3,
+   "re2": 4,
+   "im2": -1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_product": {
+  "kind": "maths",
+  "id": "argand_product",
+  "name": "Sample argand product",
+  "figure": "m_argand",
+  "params": {
+   "mode": "product",
+   "re1": 2,
+   "im1": 1,
+   "re2": 1,
+   "im2": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_product_i": {
+  "kind": "maths",
+  "id": "argand_product_i",
+  "name": "Sample argand product i",
+  "figure": "m_argand",
+  "params": {
+   "mode": "product",
+   "re1": 1,
+   "im1": 1,
+   "re2": 0,
+   "im2": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_unity_3": {
+  "kind": "maths",
+  "id": "argand_unity_3",
+  "name": "Sample argand unity 3",
+  "figure": "m_argand",
+  "params": {
+   "mode": "unity",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_unity_4": {
+  "kind": "maths",
+  "id": "argand_unity_4",
+  "name": "Sample argand unity 4",
+  "figure": "m_argand",
+  "params": {
+   "mode": "unity",
+   "n": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "argand_unity_6": {
+  "kind": "maths",
+  "id": "argand_unity_6",
+  "name": "Sample argand unity 6",
+  "figure": "m_argand",
+  "params": {
+   "mode": "unity",
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ }
+}

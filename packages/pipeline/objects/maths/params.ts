@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AXES, EPS, QUAD_KINDS, isCollinear, quadRoots, triangleProblem, type Pt } from "./compute";
+import { MATHS_B_FIGURES, MATHS_B_PARAMS } from "./bparams";
 
 /**
  * The typed inputs of every wave-5 maths figure (ADR 0112). Every field is a number, a boolean or a value of a closed list: there is no free text and no formula string, so nothing a
@@ -16,6 +17,7 @@ const coord = n(-20, 20);
 export const MATHS_FIGURES = [
   "m_coord", "m_line", "m_fnplot", "m_trig", "m_unitcircle", "m_numline", "m_triangle", "m_right", "m_congsim", "m_circle", "m_quad", "m_polygon", "m_angles", "m_sector", "m_solid", "m_net", "m_section",
   "m_construct", "m_transform", "m_vector", "m_space", "m_elevation",
+  ...MATHS_B_FIGURES,
 ] as const;
 export type MathsFigure = (typeof MATHS_FIGURES)[number];
 /** The smallest area of a maths figure: the whole stage grid (A1:F6, 92 by 41 stage units); its picture, scale bar and column of read-outs are laid out for that size, and a smaller area is refused at parse time. */
@@ -265,6 +267,7 @@ const elevation = z.discriminatedUnion("mode", [
 export const MATHS_PARAMS = {
   m_coord: coordFig, m_line: lineFig, m_fnplot: fnFig, m_trig: trigFig, m_unitcircle: unitCircle, m_numline: numLine, m_triangle: triangle, m_right: right, m_congsim: congSim, m_circle: circle, m_quad: quad,
   m_polygon: polygon, m_angles: angles, m_sector: sector, m_solid: solid, m_net: net, m_section: section, m_construct: construct, m_transform: transform, m_vector: vector, m_space: space, m_elevation: elevation,
+  ...MATHS_B_PARAMS,
 } as const;
 export type MathsParams<F extends MathsFigure> = z.infer<(typeof MATHS_PARAMS)[F]>;
 
