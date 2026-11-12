@@ -46,6 +46,15 @@ export const chemCorruptors = (r: DrawResult): Corruptor[] => {
   // a box (an arrow of an orbital box) deleted, a bar changed
   const arrow = r.shapes.find((s) => s.kind === "arrow" && /_(u|d)\d+$/.test(String(s.id)));
   if (arrow) out.push({ name: "a spin arrow removed", apply: (x) => ({ ...x, shapes: x.shapes.filter((s) => s.id !== arrow.id) }) });
+  // the orbital-box figure: an up arrow cut out of its path, a down arrow cut out, the last box of the last row deleted, a row label changed
+  for (const id of ["ua0", "da0"]) {
+    const spins = r.shapes.find((s) => suffix(s) === id && s.kind === "path");
+    if (spins) out.push({ name: `a spin arrow removed from ${id}`, apply: (x) => map(x, (s) => (s.id === spins.id ? { ...s, d: (String(s.d).match(/M[^M]*M[^M]*/g) ?? []).slice(1).join("") } : s)) });
+  }
+  const boxes = r.shapes.find((s) => suffix(s) === "bx" && s.kind === "path");
+  if (boxes) out.push({ name: "the last box of the figure deleted", apply: (x) => map(x, (s) => (s.id === boxes.id ? { ...s, d: String(s.d).slice(0, String(s.d).lastIndexOf("M")) } : s)) });
+  const rowLabel = r.shapes.find((s) => s.kind === "text" && /_sl\d+$/.test(String(s.id)));
+  if (rowLabel) out.push({ name: "a row label changed", apply: (x) => map(x, (s) => (s.id === rowLabel.id ? { ...s, text: "9z" } : s)) });
   const bar = r.shapes.find((s) => /_b\d+$/.test(String(s.id)) && s.kind === "rect");
   if (bar) out.push({ name: "a bar changed", apply: (x) => map(x, (s) => (s.id === bar.id ? { ...s, h: Number(s.h) * 0.8, y: Number(s.y) + Number(s.h) * 0.2 } : s)) });
   // a printed text of the apparatus (a label such as Water in) swapped for another
