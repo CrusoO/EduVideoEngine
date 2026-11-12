@@ -92,6 +92,14 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   const captionCss = fullBleed
     ? `left:0;width:${FRAME.width}px;bottom:0;height:110px;z-index:20;justify-content:center;text-align:center;padding:0 120px;background:linear-gradient(transparent,${captionWash});`
     : `left:120px;width:1680px;top:906px;height:132px;`;
+  // A scene that carries a drawn object (its shapes are named obj_<id>_...) lifts its caption off the bottom edge of the frame: a two-line caption fills the whole 110 px band and touches the edge otherwise.
+  // Only stories with such a scene get the extra rule and script, so every other page stays byte for byte what it was.
+  const objectScenes = story.scenes.map((sc) => sc.visuals.some((v) => v.id.startsWith("obj_")));
+  const liftCaptions = fullBleed && captions !== "none" && objectScenes.some(Boolean);
+  const liftCss = liftCaptions ? "\n#caption.objs{bottom:30px;line-height:1.25}" : "";
+  const liftScript = liftCaptions
+    ? `<script>(function(){var objs=${JSON.stringify(objectScenes)},d=window.__draw,sc=window.__STORY.scenes,el=document.getElementById("caption");window.__draw=function(T){d(T);var c=sc.length-1;for(var i=0;i<sc.length;i++){if(T<sc[i].endMs){c=i;break}}el.classList.toggle("objs",objs[c]===true)}})();</script>`
+    : "";
   return `<!doctype html><html lang="${langAttr}"><head><meta charset="utf-8">${googleFontLinks}<link rel="stylesheet" href="${katexCss}"><style>
 @font-face{font-family:"Inter";src:url("${inter400}") format("woff2");font-weight:400;font-display:block}
 @font-face{font-family:"Inter";src:url("${inter600}") format("woff2");font-weight:600;font-display:block}
@@ -105,10 +113,10 @@ ${clean ? "#top{display:none}" : ""}
 #panel{position:absolute;left:${fullBleed ? "0" : "120px"};top:${fullBleed ? "0" : "126px"};width:${fullBleed ? FRAME.width + "px" : "1680px"};height:${fullBleed ? FRAME.height + "px" : "756px"};background:${panelBg};border:${panelBorder};border-radius:${panelRadius};overflow:hidden}
 svg{position:absolute;inset:0;width:${fullBleed ? FRAME.width + "px" : "1680px"};height:${fullBleed ? FRAME.height + "px" : "756px"};font-family:${fontStack}}
 #caption{position:absolute;${captionCss}display:flex;align-items:center;font-size:${isAnimated ? captionSize : captionSize};line-height:1.6;letter-spacing:${captionLetterSpacing};font-weight:${captionWeight};color:${isAnimated ? "#334155" : p.ink};${devanagariExtra}}
-#caption span{display:block;max-width:1200px}
+#caption span{display:block;max-width:1200px}${liftCss}
 ${captions === "none" ? "#caption{display:none}" : ""}
 #bar{position:absolute;left:0;bottom:0;height:7px;background:${p.blue};width:0;${clean ? "display:none;" : ""}}
 .math{color:${p.ink}}
 </style></head><body><div id="frame"><div id="top"><div id="heading"></div><div id="count"></div></div><div id="panel"><svg id="stage" viewBox="0 0 100 45" preserveAspectRatio="xMidYMid meet"></svg></div><div id="caption"><span id="cap-text"></span></div><div id="bar"></div></div>
-<script>window.__STORY=${embedJson(data)};</script><script>${runtime.replace(/<\/script/gi, "<\\/script")}</script></body></html>`;
+<script>window.__STORY=${embedJson(data)};</script><script>${runtime.replace(/<\/script/gi, "<\\/script")}</script>${liftScript}</body></html>`;
 }

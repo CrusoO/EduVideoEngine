@@ -92,6 +92,18 @@ export const atomShells = chemDrawer("c_atom_shells", "atom_shells", {
 
 // ---- orbital boxes (Hund's rule) ------------------------------------------------------------------------------------------------------------------------------------------
 const subshellOf = (z: number, name: string): Sub => (name === "auto" ? lastFilled(z) : configOf(z).find((s) => subName(s) === name)!);
+/** The rows of the figure: every occupied subshell in the order the electrons fill them, from 1s up to the one asked for (the last filled one when none is asked for). */
+const rowsOf = (z: number, name: string): Sub[] => {
+  const c = [...configOf(z)].sort((a, b) => a.n + a.l - (b.n + b.l) || a.n - b.n); // the Madelung order: 4s before 3d
+  const last = subName(subshellOf(z, name));
+  return c.slice(0, c.findIndex((s) => subName(s) === last) + 1);
+};
+/** An up or down electron arrow in one path: the shaft, then a head of two strokes. Several share a path, which is how the figure stays inside its shape budget. */
+const spinD = (x: number, y1: number, y2: number, head: number): string => {
+  const hy = y2 + (y2 < y1 ? head : -head);
+  return `M${r1(x)} ${r1(y1)}V${r1(y2)}M${r1(x - head * 0.7)} ${r1(hy)}L${r1(x)} ${r1(y2)}L${r1(x + head * 0.7)} ${r1(hy)}`;
+};
+const SPINS_PER_PATH = 10;
 export const orbitalBoxes = chemDrawer("c_orbital_boxes", "orbital_boxes", {
   covers: ["Shell/Bohr atom diagram from atomic number, electron configuration"],
   readouts(p) {
@@ -100,40 +112,66 @@ export const orbitalBoxes = chemDrawer("c_orbital_boxes", "orbital_boxes", {
     return [{ key: "Subshell", word: subName(s) }, { key: "Electrons in it", value: s.e, unit: "" }, { key: "Unpaired", value: unpaired, unit: "" }, { key: "Config", word: configLine(p.z) }];
   },
   draw(sk, p) {
-    const s = subshellOf(p.z, p.subshell);
-    const boxes = hundBoxes(s.l, s.e);
+    const rows = rowsOf(p.z, p.subshell);
+    const target = subName(subshellOf(p.z, p.subshell));
     const { pic } = sk.L;
-    const bw = Math.min(6, (pic.w - 7) / boxes.length);
-    const total = 5 + boxes.length * bw;
+    const widest = Math.max(...rows.map((r) => 2 * r.l + 1));
+    const bw = Math.max(1.8, Math.min(6, (pic.w - 7) / widest, (pic.h - 1.2) / rows.length - 0.4));
+    const pitch = bw + 0.4;
+    const total = 5 + widest * bw;
     const x0 = pic.x + (pic.w - total) / 2 + 5;
-    const y0 = pic.y + pic.h / 2 - bw / 2;
-    sk.text("sl", x0 - 0.8, y0 + bw / 2, subName(s), { anchor: "end", bold: true });
-    sk.path("bx", rectsD(boxes.map((_, i) => [x0 + i * bw, y0, bw, bw])), { width: 0.35, how: "fade" });
-    boxes.forEach(([u, d], i) => {
-      if (u) sk.arrow(`u${i}`, x0 + i * bw + bw * 0.33, y0 + bw - 0.8, x0 + i * bw + bw * 0.33, y0 + 0.8, { color: "red", width: 0.4 });
-      if (d) sk.arrow(`d${i}`, x0 + i * bw + bw * 0.67, y0 + 0.8, x0 + i * bw + bw * 0.67, y0 + bw - 0.8, { color: "purple", width: 0.4 });
+    const yTop = pic.y + 0.6 + (pic.h - 1.2 - rows.length * pitch + 0.4) / 2;
+    const m = Math.min(0.8, bw * 0.18);
+    const head = Math.min(0.7, bw * 0.15);
+    const rects: Array<[number, number, number, number]> = [];
+    const up: string[] = [];
+    const down: string[] = [];
+    rows.forEach((row, r) => {
+      const y0 = yTop + r * pitch;
+      sk.text(`sl${r}`, x0 - 0.8, y0 + bw / 2, subName(row), { anchor: "end", bold: subName(row) === target });
+      hundBoxes(row.l, row.e).forEach(([u, d], i) => {
+        rects.push([x0 + i * bw, y0, bw, bw]);
+        if (u) up.push(spinD(x0 + i * bw + bw * 0.33, y0 + bw - m, y0 + m, head));
+        if (d) down.push(spinD(x0 + i * bw + bw * 0.67, y0 + m, y0 + bw - m, head));
+      });
     });
+    sk.path("bx", rectsD(rects), { width: 0.35, how: "fade" });
+    for (let i = 0; i * SPINS_PER_PATH < up.length; i++) sk.path(`ua${i}`, up.slice(i * SPINS_PER_PATH, (i + 1) * SPINS_PER_PATH).join(""), { color: "red", width: 0.4 });
+    for (let i = 0; i * SPINS_PER_PATH < down.length; i++) sk.path(`da${i}`, down.slice(i * SPINS_PER_PATH, (i + 1) * SPINS_PER_PATH).join(""), { color: "purple", width: 0.4 });
   },
   check(result, p) {
     const out: string[] = [];
-    const s = subshellOf(p.z, p.subshell);
-    const want = hundBoxes(s.l, s.e);
+    const rows = rowsOf(p.z, p.subshell);
     const rects = readRects(result, "bx");
-    if (textBy(result, "sl") !== subName(s)) out.push("the subshell label is not the one asked for");
-    if (rects.length !== want.length) return [...out, `${rects.length} boxes are drawn and a ${SUBSHELL_LETTER[s.l]} subshell has ${want.length}`];
+    const ys = [...new Set(rects.map((r) => Math.round(r[1] * 10)))].sort((a, b) => a - b);
+    if (ys.length !== rows.length) return [`${ys.length} rows of boxes are drawn and the configuration up to ${subName(rows.at(-1)!)} has ${rows.length}`];
+    const rowOf = (y: number): number => ys.findIndex((v) => Math.abs(v - Math.round(y * 10)) <= 1);
+    rows.forEach((row, r) => {
+      if (textBy(result, `sl${r}`) !== subName(row)) out.push(`row ${r + 1} is labelled ${textBy(result, `sl${r}`) ?? "nothing"} and should be ${subName(row)}`);
+      const n = rects.filter((q) => rowOf(q[1]) === r).length;
+      if (n !== 2 * row.l + 1) out.push(`${n} boxes are drawn in the ${subName(row)} row and a ${SUBSHELL_LETTER[row.l]} subshell has ${2 * row.l + 1}`);
+    });
+    if (out.length) return out.slice(0, 3);
     const got = rects.map(() => [0, 0] as [number, number]);
-    for (const a of result.shapes.filter((x) => x.kind === "arrow")) {
-      const x = Number(a.x1);
-      const i = rects.findIndex(([rx, , rw]) => x > rx && x < rx + rw);
-      if (i < 0) {
-        out.push("an arrow is outside every box");
-        continue;
+    for (const s of shapesLike(result, "[ud]a")) {
+      for (const m of String(s.d).matchAll(/M(-?[\d.]+) (-?[\d.]+)V(-?[\d.]+)M/g)) {
+        const [x, y1, y2] = [Number(m[1]), Number(m[2]), Number(m[3])];
+        const i = rects.findIndex(([rx, ry, rw, rh]) => x > rx && x < rx + rw && y1 > ry - 0.01 && y1 < ry + rh + 0.01);
+        if (i < 0) {
+          out.push("an arrow is outside every box");
+          continue;
+        }
+        if (y2 < y1) got[i]![0]++;
+        else got[i]![1]++;
       }
-      if (Number(a.y2) < Number(a.y1)) got[i]![0]++;
-      else got[i]![1]++;
     }
-    want.forEach(([u, d], i) => {
-      if (got[i]![0] !== u || got[i]![1] !== d) out.push(`box ${i + 1} holds ${got[i]![0]} up and ${got[i]![1]} down and Hund's rule gives ${u} up and ${d} down`);
+    let at = 0;
+    rows.forEach((row, r) => {
+      for (const [u, d] of hundBoxes(row.l, row.e)) {
+        const k = rects.findIndex((q, j) => j >= at && rowOf(q[1]) === r);
+        at = k + 1;
+        if (got[k]![0] !== u || got[k]![1] !== d) out.push(`a ${subName(row)} box holds ${got[k]![0]} up and ${got[k]![1]} down and Hund's rule gives ${u} up and ${d} down`);
+      }
     });
     return out.slice(0, 3);
   },
@@ -261,14 +299,22 @@ export const periodicTrend = chemDrawer("c_trend", "periodic_trend", {
     const pts = TREND_DATA[p.property][p.series];
     const s = trendSummary(pts);
     const u = TREND_UNIT[p.property];
-    return [{ key: "Series", word: SERIES_NAME[p.series] }, { key: "Trend", word: s.direction }, { key: "Dips", value: s.dips, unit: "" }, { key: "Highest", value: s.max, unit: u.unit }, { key: "Lowest", value: s.min, unit: u.unit }];
+    return [{ key: "Series", word: SERIES_NAME[p.series] }, { key: "Trend", word: s.direction }, { key: "Steps down", value: s.dips, unit: "" }, { key: "Highest", value: s.max, unit: u.unit }, { key: "Lowest", value: s.min, unit: u.unit }];
   },
   draw(sk, p) {
     const pts = TREND_DATA[p.property][p.series];
     const u = TREND_UNIT[p.property];
     const series: GraphModel["series"] = [{ id: "c0", pts: pts.map((q, i) => [i + 1, q.v] as [number, number]) }];
     const f = drawGraph(sk, { xName: "Element", xUnit: "", yName: u.name, yUnit: u.unit, xwin: [0, pts.length + 1], ywin: niceWindow(0, trendSummary(pts).max), series });
-    pts.forEach((q, i) => sk.text(`t${i}`, f.X(i + 1), f.Y(q.v) - 1.8, q.sym, { anchor: "middle" }));
+    // A label goes on the side of its point that the curve does not use (screen y grows downwards): above a peak, below a dip, above-left of a rising stretch, above-right of a falling one.
+    const ys = pts.map((q) => f.Y(q.v));
+    pts.forEach((q, i) => {
+      const y = ys[i]!;
+      const before = i > 0 ? ys[i - 1]! : 2 * y - ys[i + 1]!;
+      const after = i < ys.length - 1 ? ys[i + 1]! : 2 * y - ys[i - 1]!;
+      const [dx, dy] = before > y && after > y ? [0, -2.1] : before <= y && after <= y && (before < y || after < y) ? [0, 2.5] : before > y ? [-1.7, -2.1] : [1.7, -2.1];
+      sk.text(`t${i}`, f.X(i + 1) + dx, y + dy, q.sym, { anchor: "middle" });
+    });
   },
   check(result, p) {
     const pts = TREND_DATA[p.property][p.series];
