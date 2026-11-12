@@ -110,7 +110,7 @@ const vennFig = z
     if (p.mode === "counts" && p.a === 0 && !why) issue(ctx, "a", "a set with no members has no circle to draw");
     if (p.mode === "counts" && p.b === 0 && !why) issue(ctx, "b", "a set with no members has no circle to draw");
   });
-const sampleFig = S({ space: z.enum(SPACES), event: z.enum(SPACE_EVENTS), k: nd(0, 12, 0) }).superRefine((p, ctx) => {
+const sampleFig = S({ space: z.enum(SPACES), event: z.enum(SPACE_EVENTS), k: nd(0, 20, 0) }).superRefine((p, ctx) => {
   const why = spaceEventProblem(p.space, p.event, p.k);
   if (why) issue(ctx, "event", why);
   if (p.k !== Math.round(p.k)) issue(ctx, "k", "k is a whole number");

@@ -1,0 +1,139 @@
+{
+ "requestId": "w6-sequences-that-settle",
+ "idempotencyKey": "w6-sequences-that-settle-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Sequences that climb and sequences that settle",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Term after term",
+    "sentences": [
+     "A sequence is a list with a rule.",
+     "Some lists climb for ever and some settle."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Term after term",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "An arithmetic progression",
+    "sentences": [
+     "Start at 3 and add 2 each time.",
+     "Six terms add up to 48."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "ap",
+      "name": "Start at 3, add 2",
+      "figure": "m_seq",
+      "params": {
+       "mode": "ap",
+       "a": 3,
+       "d": 2,
+       "n": 6
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A geometric progression",
+    "sentences": [
+     "Start at 2 and double each time.",
+     "The sixth term is 64 and the six add up to 126."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "gp",
+      "name": "Start at 2, double",
+      "figure": "m_seq",
+      "params": {
+       "mode": "gp",
+       "a": 2,
+       "r": 2,
+       "n": 6
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A series that settles",
+    "sentences": [
+     "Start at 10 and halve each time and the partial sums creep up on 20.",
+     "After eight terms the sum is 19.9."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "cv",
+      "name": "Start at 10, halve",
+      "figure": "m_seq",
+      "params": {
+       "mode": "converge",
+       "a": 10,
+       "r": 0.5,
+       "n": 8
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Climb or settle",
+    "sentences": [
+     "Only a ratio smaller than 1 in size lets a sum settle."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Climb or settle",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

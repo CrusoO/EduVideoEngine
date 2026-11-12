@@ -1,0 +1,139 @@
+{
+ "requestId": "w6-slope-of-a-curve",
+ "idempotencyKey": "w6-slope-of-a-curve-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "The slope of a curve and the area under it",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "How steep is a curve?",
+    "sentences": [
+     "A line has one slope.",
+     "A curve has a different slope at every point."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "How steep is a curve?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The tangent",
+    "sentences": [
+     "The tangent at x equal to 1.5 on the curve y equals x squared touches it at one point.",
+     "Its slope is 3."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "tg",
+      "name": "Tangent to x squared",
+      "figure": "m_tangent",
+      "params": {
+       "mode": "tangent",
+       "fn": "x2",
+       "x0": 1.5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "The secant",
+    "sentences": [
+     "Join two points of the curve instead and you get a secant.",
+     "From x equal to 1 with a step of 2 its slope is 4, and the tangent there has slope 2."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "sc",
+      "name": "Secant to x squared",
+      "figure": "m_tangent",
+      "params": {
+       "mode": "secant",
+       "fn": "x2",
+       "x0": 1,
+       "h": 2
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "The area",
+    "sentences": [
+     "Now cut the area under the curve into six strips and count the left ends.",
+     "The rectangles add up to 6.88, and the exact area is 9."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "rm",
+      "name": "Six rectangles under x squared",
+      "figure": "m_riemann",
+      "params": {
+       "fn": "x2",
+       "a": 0,
+       "b": 3,
+       "n": 6,
+       "rule": "left"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Slope and area",
+    "sentences": [
+     "Slope and area are two sides of one idea."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Slope and area",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

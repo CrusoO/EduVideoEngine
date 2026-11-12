@@ -73,8 +73,8 @@ export const conicFigure = mathsFigure("m_conic", "conic_section", {
     const { facts: f, P } = plan;
     const fw = (q: Pt): string => `(${sig(q[0])}, ${sig(q[1])})`;
     if (p.kind === "parabola") return [num("Focal length a", p.a), word("Focus", fw(f.foci[0]!)), num("Latus rectum", f.latus), num("Eccentricity e", 1), num("PF", dist(P, f.foci[0]!)), num("Distance to directrix", distToLine(P, ...f.directrices[0]!))];
-    if (p.kind === "ellipse") return [num("a", p.a), num("b", p.b), num("Focal distance c", f.c), num("Eccentricity e", f.e), num("PF1 + PF2", dist(P, f.foci[0]!) + dist(P, f.foci[1]!)), num("Major axis", f.sumOrDiff!)];
-    return [num("a", p.a), num("b", p.b), num("Focal distance c", f.c), num("Eccentricity e", f.e), num("PF1 - PF2", Math.abs(dist(P, f.foci[0]!) - dist(P, f.foci[1]!))), num("Transverse axis", f.sumOrDiff!)];
+    if (p.kind === "ellipse") return [num("a", p.a), num("b", p.b), num("Focal distance c", f.c), num("Eccentricity e", f.e), num("PF1 + PF2", dist(P, f.foci[0]!) + dist(P, f.foci[1]!)), num("Latus rectum", f.latus)];
+    return [num("a", p.a), num("b", p.b), num("Focal distance c", f.c), num("Eccentricity e", f.e), num("PF1 - PF2", Math.abs(dist(P, f.foci[0]!) - dist(P, f.foci[1]!))), num("Latus rectum", f.latus)];
   },
   draw(sk, p) {
     const plan = conicPlan(p);

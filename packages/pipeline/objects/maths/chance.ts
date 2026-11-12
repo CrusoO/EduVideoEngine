@@ -53,7 +53,7 @@ export const treeFigure = mathsFigure("m_ptree", "probability_tree", {
       const [i, j] = [k >> 1, k & 1];
       sk.line(`e${2 + k}`, g.nodeX, g.nodeY[i]!, g.leafX, g.leafY[k]!, { width: 0.35 });
       sk.text(`tb${2 + k}`, (g.nodeX + g.leafX) / 2, (g.nodeY[i]! + g.leafY[k]!) / 2 + (j === 0 ? -1.5 : 3.1), `${L[j]} ${pText(t, "p2", i, j)}`, { anchor: "middle" });
-      sk.text(`lf${k}`, g.leafX + 1.4, g.leafY[k]! + 0.9, `${L[i]}${L[j]} ${pText(t, "leaf", i, j)}`, { color: inEvent(k) ? "purple" : "ink", bold: inEvent(k) });
+      sk.text(`lf${k}`, g.leafX + 1.4, g.leafY[k]! + 0.9, `${L[i]}${L[j]} ${pText(t, "leaf", i, j)}`, { color: "ink", bold: inEvent(k) });
     }
   },
   check(r, p) {
