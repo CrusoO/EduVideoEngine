@@ -219,7 +219,7 @@ export const identityFigure = mathsFigure("m_identity", "identity_area_model", {
       const pts: Pt[] = [fr.at([q.x, q.y]), fr.at([q.x + q.w, q.y]), fr.at([q.x + q.w, q.y + q.h]), fr.at([q.x, q.y + q.h])];
       sk.polygon(`w${i}`, pts, { color: i === 3 || (p.identity === "minus" && i === 0) ? "red" : "ink", fill: i === 0 ? "purple" : i === 3 ? "red" : "none", fillOpacity: 0.22, width: 0.35 });
       const c = fr.at([q.x + q.w / 2, q.y + q.h / 2]);
-      sk.text(`ct${i}`, c[0], c[1] + 0.9, q.text, { anchor: "middle" });
+      sk.text(`ct${i}`, c[0], c[1], q.text, { anchor: "middle" });
     });
     const top = fr.at([m.cols[0] / 2, e.h]);
     sk.text("dl0", top[0], top[1] - 1.6, m.dims[0], { anchor: "middle" });
@@ -300,12 +300,12 @@ export const realTreeFigure = mathsFigure("m_realtree", "real_number_tree", {
     NODES.forEach((nm, i) => {
       const member = c.sets.includes(SETKEY[i] as never);
       sk.rect(`nb${i}`, pos[i]![0] - 11, pos[i]![1] - 2.2, 22, 4.4, { color: "ink", fill: member ? "purple" : "none", fillOpacity: 0.3, width: member ? 0.5 : 0.25 });
-      sk.text(`nt${i}`, pos[i]![0], pos[i]![1] + 0.9, nm, { anchor: "middle", bold: member });
+      sk.text(`nt${i}`, pos[i]![0], pos[i]![1], nm, { anchor: "middle", bold: member });
     });
     TREE_EDGES.forEach(([a, c2], k) => sk.arrow(`e${k}`, pos[a]![0] - (a === 0 && c2 === 1 ? 5 : a === 0 ? -5 : 0), pos[a]![1] + 2.2, pos[c2]![0] + (a === 0 && c2 === 1 ? 2 : a === 0 ? -2 : 0), pos[c2]![1] - 2.2, { color: "soft", width: 0.3 }));
     const small = SETKEY.indexOf(c.smallest);
     if (c.smallest === "I") sk.text("ct0", pos[small]![0], pos[small]![1] + 7, numberText(p), { anchor: "middle" });
-    else sk.text("ct0", pos[small]![0] + 13, pos[small]![1] + 0.9, numberText(p));
+    else sk.text("ct0", pos[small]![0] + 13, pos[small]![1], numberText(p));
   },
   check(r, p) {
     const out: string[] = [];
@@ -352,7 +352,7 @@ export const realTreeFigure = mathsFigure("m_realtree", "real_number_tree", {
     else {
       const s = shapeBy(r, `nb${SETKEY.indexOf(c.smallest)}`);
       const below = c.smallest === "I";
-      if (s && s.kind === "rect" && (below ? at.at[1] - 0.9 < Number(s.y) + Number(s.h) || Math.abs(at.at[0] - (Number(s.x) + Number(s.w) / 2)) > 0.6 : at.at[0] < Number(s.x) + Number(s.w) || Math.abs(at.at[1] - 0.9 - (Number(s.y) + Number(s.h) / 2)) > 0.6)) out.push("the number is not beside the smallest set that holds it");
+      if (s && s.kind === "rect" && (below ? at.at[1] < Number(s.y) + Number(s.h) || Math.abs(at.at[0] - (Number(s.x) + Number(s.w) / 2)) > 0.6 : at.at[0] < Number(s.x) + Number(s.w) || Math.abs(at.at[1] - (Number(s.y) + Number(s.h) / 2)) > 0.6)) out.push("the number is not beside the smallest set that holds it");
     }
     void same;
     return out;

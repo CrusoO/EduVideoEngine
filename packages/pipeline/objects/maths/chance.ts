@@ -47,13 +47,13 @@ export const treeFigure = mathsFigure("m_ptree", "probability_tree", {
     const inEvent = (k: number): boolean => EVENT_FLAGS[p.event]!(k >> 1, k & 1);
     [0, 1].forEach((i) => {
       sk.line(`e${i}`, g.root[0], g.root[1], g.nodeX, g.nodeY[i]!, { width: 0.35 });
-      sk.text(`tb${i}`, (g.root[0] + g.nodeX) / 2, (g.root[1] + g.nodeY[i]!) / 2 + (i === 0 ? -2.2 : 3.4), `${L[i]} ${pText(t, "p1", i)}`, { anchor: "middle" });
+      sk.text(`tb${i}`, g.root[0] + (g.nodeX - g.root[0]) * 0.4, g.root[1] + (g.nodeY[i]! - g.root[1]) * 0.4 + (i === 0 ? -2.6 : 3.8), `${L[i]} ${pText(t, "p1", i)}`, { anchor: "middle" });
     });
     for (let k = 0; k < 4; k++) {
       const [i, j] = [k >> 1, k & 1];
       sk.line(`e${2 + k}`, g.nodeX, g.nodeY[i]!, g.leafX, g.leafY[k]!, { width: 0.35 });
-      sk.text(`tb${2 + k}`, (g.nodeX + g.leafX) / 2, (g.nodeY[i]! + g.leafY[k]!) / 2 + (j === 0 ? -1.5 : 3.1), `${L[j]} ${pText(t, "p2", i, j)}`, { anchor: "middle" });
-      sk.text(`lf${k}`, g.leafX + 1.4, g.leafY[k]! + 0.9, `${L[i]}${L[j]} ${pText(t, "leaf", i, j)}`, { color: "ink", bold: inEvent(k) });
+      sk.text(`tb${2 + k}`, g.nodeX + (g.leafX - g.nodeX) * 0.4, g.nodeY[i]! + (g.leafY[k]! - g.nodeY[i]!) * 0.4 + (j === 0 ? -2.6 : 3.8), `${L[j]} ${pText(t, "p2", i, j)}`, { anchor: "middle" });
+      sk.text(`lf${k}`, g.leafX + 1.4, g.leafY[k]!, `${L[i]}${L[j]} ${pText(t, "leaf", i, j)}`, { color: "ink", bold: inEvent(k) });
     }
   },
   check(r, p) {
@@ -95,7 +95,7 @@ export const treeFigure = mathsFigure("m_ptree", "probability_tree", {
       const bold = s?.bold === true;
       if (bold !== EVENT_FLAGS[p.event]!(i, j)) out.push(`the leaf ${L[i]}${L[j]} is ${bold ? "marked" : "not marked"} as part of the event and ${EVENT_FLAGS[p.event]!(i, j) ? "is" : "is not"} in it`);
       const at = textAt(r, `lf${k}`);
-      if (at && Math.abs(at.at[1] - 0.9 - e[2 + k]![1][1]) > 0.2) out.push(`the leaf ${L[i]}${L[j]} is not at the end of its branch`);
+      if (at && Math.abs(at.at[1] - e[2 + k]![1][1]) > 0.2) out.push(`the leaf ${L[i]}${L[j]} is not at the end of its branch`);
     }
     if (leaves.length === 4 && Math.abs(leaves.reduce((s, v) => s + v, 0) - 1) > 0.02) out.push("the leaf probabilities drawn do not add up to 1");
     void LEAF_NAMES;
@@ -139,9 +139,9 @@ export const vennFigure = mathsFigure("m_venn", "venn_diagram", {
     sk.circle("ca", g.ax, g.cy, g.R, { color: "ink", fill: p.mode === "conditional" ? "none" : "none", width: 0.35 });
     sk.circle("cb", g.bx, g.cy, g.R, { color: "ink", fill: p.mode === "conditional" ? "purple" : "none", fillOpacity: 0.12, width: p.mode === "conditional" ? 0.6 : 0.35 });
     sk.path("hl", `M${r2(g.cx)} ${r2(g.cy - g.hh)}A${r2(g.R)} ${r2(g.R)} 0 0 1 ${r2(g.cx)} ${r2(g.cy + g.hh)}A${r2(g.R)} ${r2(g.R)} 0 0 1 ${r2(g.cx)} ${r2(g.cy - g.hh)}Z`, { color: "none", fill: "purple", fillOpacity: 0.3 });
-    sk.text("ka", g.cx - g.R, g.cy + 0.9, String(v.aOnly), { anchor: "middle" });
-    sk.text("kb", g.cx + g.R, g.cy + 0.9, String(v.bOnly), { anchor: "middle" });
-    sk.text("kab", g.cx, g.cy + 0.9, String(v.ab), { anchor: "middle" });
+    sk.text("ka", g.cx - g.R, g.cy, String(v.aOnly), { anchor: "middle" });
+    sk.text("kb", g.cx + g.R, g.cy, String(v.bOnly), { anchor: "middle" });
+    sk.text("kab", g.cx, g.cy, String(v.ab), { anchor: "middle" });
     sk.text("ku", g.x0 + 3, g.y0 + g.h - 2, String(v.neither), { anchor: "middle" });
     sk.text("na", g.ax - g.R * 0.6, g.cy - g.R - 1.2, "A", { anchor: "middle", bold: true });
     sk.text("nb", g.bx + g.R * 0.6, g.cy - g.R - 1.2, "B", { anchor: "middle", bold: true });
@@ -163,7 +163,7 @@ export const vennFigure = mathsFigure("m_venn", "venn_diagram", {
     const outC = (c: { c: Pt; r: number }, q: Pt): boolean => Math.hypot(q[0] - c.c[0], q[1] - c.c[1]) > c.r + 0.3;
     const lab = (id: string): { n: number; at: Pt } | null => {
       const t = textAt(r, id);
-      return t && /^\d+$/.test(t.text) ? { n: Number(t.text), at: [t.at[0], t.at[1] - 0.9] } : null;
+      return t && /^\d+$/.test(t.text) ? { n: Number(t.text), at: [t.at[0], t.at[1]] } : null;
     };
     const [ka, kb, kab, ku] = [lab("ka"), lab("kb"), lab("kab"), lab("ku")];
     if (!ka || !kb || !kab || !ku) return [...out, "a count is missing from a region"];
@@ -243,7 +243,7 @@ export const sampleFigure = mathsFigure("m_sample", "sample_space_grid", {
       }
     });
     sk.path("hl", runs.join(""), { color: "purple", fill: "purple", fillOpacity: 0.3, width: 0.2, how: "fade" });
-    g.rows.forEach((t, i) => sk.text(`rw${i}`, m.gx0 - 1.2, m.gy0 + (i + 0.5) * m.ch + 0.9, t, { anchor: "end" }));
+    g.rows.forEach((t, i) => sk.text(`rw${i}`, m.gx0 - 1.2, m.gy0 + (i + 0.5) * m.ch, t, { anchor: "end" }));
     g.cols.forEach((t, j) => sk.text(`cl${j}`, m.gx0 + (j + 0.5) * m.cw, m.gy0 - 1.4, t, { anchor: "middle" }));
   },
   check(r, p) {
@@ -262,7 +262,7 @@ export const sampleFigure = mathsFigure("m_sample", "sample_space_grid", {
     const rowL = labels("rw", g.rows.length);
     const colL = labels("cl", g.cols.length);
     if (rowL.join() !== g.rows.join() || colL.join() !== g.cols.join()) out.push("the row or column labels are not the outcomes of the space");
-    rowL.forEach((_, i) => { const t = textAt(r, `rw${i}`); if (t && Math.abs(t.at[1] - 0.9 - (ys[i]! + ys[i + 1]!) / 2) > 0.3) out.push(`the label of row ${i + 1} is not beside its row`); });
+    rowL.forEach((_, i) => { const t = textAt(r, `rw${i}`); if (t && Math.abs(t.at[1] - (ys[i]! + ys[i + 1]!) / 2) > 0.3) out.push(`the label of row ${i + 1} is not beside its row`); });
     colL.forEach((_, j) => { const t = textAt(r, `cl${j}`); if (t && Math.abs(t.at[0] - (xs[j]! + xs[j + 1]!) / 2) > 0.3) out.push(`the label of column ${j + 1} is not above its column`); });
     const drawn = new Set<string>();
     for (const m of String(hl.d).matchAll(/M(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)L(-?[\d.]+) (-?[\d.]+)Z/g)) {

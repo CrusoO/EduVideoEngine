@@ -104,7 +104,7 @@ export const conicFigure = mathsFigure("m_conic", "conic_section", {
     const bounds: Box = { x: g.l + 0.2, y: g.t + 0.8, w: g.r - g.l - 0.4, h: g.b - g.t - 1.6 };
     f.foci.forEach((q, i) => {
       const text = f.foci.length === 1 ? "F" : `F${i + 1}`;
-      const sp = labelSpot(taken, bounds, M(q), text, [0, -1], 1.4);
+      const sp = labelSpot(taken, bounds, M(q), text, [0, 1], 2.8);
       sk.text(`lb${i}`, sp.x, sp.y, text, { anchor: sp.anchor });
     });
   },

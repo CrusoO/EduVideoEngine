@@ -35,14 +35,14 @@ const flowNodes = (p: FlowP, b: Box): { nodes: Node[]; edges: Array<[number, num
       { text: "Start", cx: X(-12), cy: T(3), w: 14, h: 4.4, term: true }, { text: "S = 0, i = 1", cx: X(-12), cy: T(9.5), w: 20, h: 4.4 }, { text: "Is i at most n", cx: X(-12), cy: T(18), w: 28, h: 9, diamond: true },
       { text: "Add i, then i + 1", cx: X(19), cy: T(18), w: 24, h: 4.4 }, { text: "Print S", cx: X(-12), cy: T(28), w: 16, h: 4.4 }, { text: "Stop", cx: X(-12), cy: T(34.2), w: 14, h: 3.6, term: true },
     ];
-    return { nodes, edges: [[0, 1, "b", "t"], [1, 2, "b", "t"], [2, 3, "r", "l"], [2, 4, "b", "t"], [3, 2, "t", "t"], [4, 5, "b", "t"]], yes: [X(6), T(16)], no: [X(-9.5), T(24.6)] };
+    return { nodes, edges: [[0, 1, "b", "t"], [1, 2, "b", "t"], [2, 3, "r", "l"], [2, 4, "b", "t"], [3, 2, "t", "t"], [4, 5, "b", "t"]], yes: [X(7), T(21.4)], no: [X(-8), T(24.6)] };
   }
   const q = p.flow === "even_odd" ? ["Read n", "Is n even", "Print even", "Print odd"] : ["Read a and b", "Is a at least b", "Print a", "Print b"];
   const nodes: Node[] = [
     { text: "Start", cx: X(0), cy: T(3), w: 14, h: 4.4, term: true }, { text: q[0]!, cx: X(0), cy: T(9.5), w: 22, h: 4.4 }, { text: q[1]!, cx: X(0), cy: T(18), w: 28, h: 9, diamond: true },
     { text: q[2]!, cx: X(-17), cy: T(28), w: 22, h: 4.4 }, { text: q[3]!, cx: X(17), cy: T(28), w: 22, h: 4.4 }, { text: "Stop", cx: X(0), cy: T(34.2), w: 14, h: 3.6, term: true },
   ];
-  return { nodes, edges: [[0, 1, "b", "t"], [1, 2, "b", "t"], [2, 3, "l", "t"], [2, 4, "r", "t"], [3, 5, "b", "l"], [4, 5, "b", "r"]], yes: [X(-12), T(15.4)], no: [X(12), T(15.4)] };
+  return { nodes, edges: [[0, 1, "b", "t"], [1, 2, "b", "t"], [2, 3, "l", "t"], [2, 4, "r", "t"], [3, 5, "b", "l"], [4, 5, "b", "r"]], yes: [X(-15), T(13.6)], no: [X(15), T(13.6)] };
 };
 const anchorOf = (n: Node, side: "t" | "l" | "r" | "b"): Pt => (side === "t" ? [n.cx, n.cy - n.h / 2] : side === "b" ? [n.cx, n.cy + n.h / 2] : side === "l" ? [n.cx - n.w / 2, n.cy] : [n.cx + n.w / 2, n.cy]);
 const flowRun = (p: FlowP) => runFlow(p.flow, p.a, p.flow === "larger" ? p.b : 0);
@@ -60,7 +60,7 @@ export const flowFigure = mathsFigure("m_flow", "flowchart", {
     nodes.forEach((n, i) => {
       if (n.diamond) sk.polygon(`nb${i}`, [[n.cx, n.cy - n.h / 2], [n.cx + n.w / 2, n.cy], [n.cx, n.cy + n.h / 2], [n.cx - n.w / 2, n.cy]], { color: "ink", width: 0.3 });
       else sk.rect(`nb${i}`, n.cx - n.w / 2, n.cy - n.h / 2, n.w, n.h, { color: "ink", fill: n.term ? "purple" : "none", fillOpacity: 0.2, width: 0.3 });
-      sk.text(`nt${i}`, n.cx, n.cy + 0.9, n.text, { anchor: "middle" });
+      sk.text(`nt${i}`, n.cx, n.cy, n.text, { anchor: "middle" });
     });
     edges.forEach(([a, b, sa, sb], k) => {
       const [s, e] = [anchorOf(nodes[a]!, sa), anchorOf(nodes[b]!, sb)];
@@ -141,7 +141,7 @@ export const mappingFigure = mathsFigure("m_mapping", "mapping_diagram", {
     sk.text("hy", rx, b.y + 3.4, "Y", { anchor: "middle", bold: true });
     xs.forEach((v, i) => sk.text(`dm${i}`, lx, ly[i]!, String(v), { anchor: "middle" }));
     ys.forEach((v, j) => sk.text(`cd${j}`, rx, ry[j]!, String(v), { anchor: "middle" }));
-    arrows.forEach(([i, j], k) => sk.arrow(`ar${k}`, lx + 4.5, ly[i]! - 0.9, rx - 4.5, ry[j]! - 0.9, { color: "ink", width: 0.35 }));
+    arrows.forEach(([i, j], k) => sk.arrow(`ar${k}`, lx + 4.5, ly[i]!, rx - 4.5, ry[j]!, { color: "ink", width: 0.35 }));
   },
   check(r, p) {
     const { xs, ys, arrows } = mapSets(p);
@@ -152,7 +152,7 @@ export const mappingFigure = mathsFigure("m_mapping", "mapping_diagram", {
     ys.forEach((v, j) => { if (cd[j]!.text !== String(v)) out.push(`codomain element ${j + 1} should say ${v}`); });
     const near = (list: Array<{ at: Pt } | null>, y: number): number => {
       let best = 0;
-      list.forEach((t, i) => { if (Math.abs(t!.at[1] - 0.9 - y) < Math.abs(list[best]!.at[1] - 0.9 - y)) best = i; });
+      list.forEach((t, i) => { if (Math.abs(t!.at[1] - y) < Math.abs(list[best]!.at[1] - y)) best = i; });
       return best;
     };
     const drawn: Array<[number, number]> = [];
