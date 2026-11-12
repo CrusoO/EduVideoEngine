@@ -389,18 +389,9 @@ export type Flow = (typeof FLOWS)[number];
 export function runFlow(flow: Flow, a: number, b: number): { edges: number[]; result: string; loops: number } {
   if (flow === "even_odd") return a % 2 === 0 ? { edges: [0, 1, 2, 4], result: "even", loops: 0 } : { edges: [0, 1, 3, 5], result: "odd", loops: 0 };
   if (flow === "larger") return a >= b ? { edges: [0, 1, 2, 4], result: String(a), loops: 0 } : { edges: [0, 1, 3, 5], result: String(b), loops: 0 };
-  let s = 0;
-  let i = 1;
-  const edges = [0, 1];
-  let loops = 0;
-  while (i <= a) {
-    edges.push(2, 4, ...(loops === 0 ? [] : []));
-    s += i;
-    i++;
-    loops++;
-  }
-  edges.push(3, 5);
-  return { edges: [...new Set(edges)].sort((x, y) => x - y), result: String(s), loops };
+  // n at least 1: the loop body runs n times, then the test fails once, so every arrow is used
+  const n = a;
+  return { edges: [0, 1, 2, 3, 4, 5], result: String((n * (n + 1)) / 2), loops: n };
 }
 
 // ---- mappings -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -456,6 +447,6 @@ export function proofRows(t: Theorem, a: number, b: number, c: number): ProofRow
     case "isosceles": return [{ s: `AB = AC, A = ${a} deg`, r: "Given" }, { s: "Angle B = Angle C", r: "Equal sides" }, { s: `B + C = ${180 - a} deg`, r: "Angle sum" }, { s: `Angle B = ${(180 - a) / 2} deg`, r: "Halve" }];
     case "exterior": return [{ s: `A = ${a} deg, B = ${b} deg`, r: "Given" }, { s: `C = ${180 - a - b} deg`, r: "Angle sum" }, { s: `Exterior = ${a + b} deg`, r: "Linear pair" }, { s: "Exterior = A + B", r: "Steps 1 and 3" }];
     case "pythagoras": return [{ s: `Sides ${a}, ${b} and ${c}`, r: "Given" }, { s: `${a}^2 + ${b}^2 = ${a * a + b * b}`, r: "Square and add" }, { s: `${c}^2 = ${c * c}`, r: "Square" }, { s: "a^2 + b^2 = c^2", r: "Equal" }, { s: "Angle C = 90 deg", r: "Converse" }];
-    case "parallelogram": return [{ s: "ABCD is a parallelogram", r: "Given" }, { s: `Angle A = ${a} deg`, r: "Given" }, { s: `Angle C = ${a} deg`, r: "Opposite angles" }, { s: `Angle B = ${180 - a} deg`, r: "Co-interior" }, { s: `Angle D = ${180 - a} deg`, r: "Opposite angles" }];
+    case "parallelogram": return [{ s: "ABCD parallelogram", r: "Given" }, { s: `Angle A = ${a} deg`, r: "Given" }, { s: `Angle C = ${a} deg`, r: "Opposite angles" }, { s: `Angle B = ${180 - a} deg`, r: "Co-interior" }, { s: `Angle D = ${180 - a} deg`, r: "Opposite angles" }];
   }
 }

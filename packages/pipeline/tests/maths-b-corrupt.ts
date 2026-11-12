@@ -27,7 +27,7 @@ export const mathsBCorruptors = (r: DrawResult): Corruptor[] => {
     if (s0) raw.push({ name: `the mark ${id} moved`, apply: (x) => map(x, (s) => (s.id === s0.id ? { ...s, x1: num(s, "x1") + 2.1, x2: num(s, "x2") + 2.1, y1: num(s, "y1") + 0.9, y2: num(s, "y2") + 0.9 } : s)) });
   }
   // a text with a number in it changed (a branch probability, a cell, a count)
-  const labelled = r.shapes.filter((s) => s.kind === "text" && /^(tb|lf|ct|nd|mp|rw|cl|ps|ka|kb|kab|ku|vl|tk|sq|pc)\d*$/.test(suffix(s)) && /\d/.test(String(s.text)));
+  const labelled = r.shapes.filter((s) => s.kind === "text" && /^(tb|lf|ct|nd|mp|rw|cl|ps|ka|kb|kab|ku|vl|tk|sq|pc|dm|cd|st|rs|dl)\d*$/.test(suffix(s)) && /\d/.test(String(s.text)));
   if (labelled[0]) raw.push({ name: "a number in a drawn label changed", apply: (x) => map(x, (s) => (s.id === labelled[0]!.id ? { ...s, text: String(s.text).replace(/\d/, (d) => String((Number(d) + 4) % 10)) } : s)) });
   const hl = first(r, /^(hl|ev|hi)$/, "path");
   if (hl) {

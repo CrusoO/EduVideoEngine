@@ -1504,5 +1504,1045 @@
   },
   "sentence": 0,
   "area": "A1:F6"
+ },
+ "conic_parabola_right": {
+  "kind": "maths",
+  "id": "conic_parabola_right",
+  "name": "Sample conic parabola right",
+  "figure": "m_conic",
+  "params": {
+   "kind": "parabola",
+   "a": 2,
+   "opens": "right",
+   "t": 1.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_parabola_up": {
+  "kind": "maths",
+  "id": "conic_parabola_up",
+  "name": "Sample conic parabola up",
+  "figure": "m_conic",
+  "params": {
+   "kind": "parabola",
+   "a": 1.5,
+   "opens": "up",
+   "t": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_parabola_left": {
+  "kind": "maths",
+  "id": "conic_parabola_left",
+  "name": "Sample conic parabola left",
+  "figure": "m_conic",
+  "params": {
+   "kind": "parabola",
+   "a": 1,
+   "opens": "left",
+   "t": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_parabola_down": {
+  "kind": "maths",
+  "id": "conic_parabola_down",
+  "name": "Sample conic parabola down",
+  "figure": "m_conic",
+  "params": {
+   "kind": "parabola",
+   "a": 2,
+   "opens": "down",
+   "t": 1.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_ellipse_wide": {
+  "kind": "maths",
+  "id": "conic_ellipse_wide",
+  "name": "Sample conic ellipse wide",
+  "figure": "m_conic",
+  "params": {
+   "kind": "ellipse",
+   "a": 5,
+   "b": 3,
+   "t": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_ellipse_tall": {
+  "kind": "maths",
+  "id": "conic_ellipse_tall",
+  "name": "Sample conic ellipse tall",
+  "figure": "m_conic",
+  "params": {
+   "kind": "ellipse",
+   "a": 3,
+   "b": 5,
+   "t": 120
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_ellipse_slim": {
+  "kind": "maths",
+  "id": "conic_ellipse_slim",
+  "name": "Sample conic ellipse slim",
+  "figure": "m_conic",
+  "params": {
+   "kind": "ellipse",
+   "a": 4,
+   "b": 2.5,
+   "t": 30
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_hyperbola": {
+  "kind": "maths",
+  "id": "conic_hyperbola",
+  "name": "Sample conic hyperbola",
+  "figure": "m_conic",
+  "params": {
+   "kind": "hyperbola",
+   "a": 3,
+   "b": 2,
+   "t": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_hyperbola_steep": {
+  "kind": "maths",
+  "id": "conic_hyperbola_steep",
+  "name": "Sample conic hyperbola steep",
+  "figure": "m_conic",
+  "params": {
+   "kind": "hyperbola",
+   "a": 2,
+   "b": 4,
+   "t": 0.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "conic_hyperbola_345": {
+  "kind": "maths",
+  "id": "conic_hyperbola_345",
+  "name": "Sample conic hyperbola 345",
+  "figure": "m_conic",
+  "params": {
+   "kind": "hyperbola",
+   "a": 4,
+   "b": 3,
+   "t": 1.2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_max_two": {
+  "kind": "maths",
+  "id": "lp_max_two",
+  "name": "Sample lp max two",
+  "figure": "m_lp",
+  "params": {
+   "a1": 1,
+   "b1": 1,
+   "c1": 4,
+   "a2": 1,
+   "b2": 3,
+   "c2": 6,
+   "goal": "max",
+   "p": 3,
+   "q": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_max_three": {
+  "kind": "maths",
+  "id": "lp_max_three",
+  "name": "Sample lp max three",
+  "figure": "m_lp",
+  "params": {
+   "a1": 6,
+   "b1": 4,
+   "c1": 24,
+   "a2": 1,
+   "b2": 2,
+   "c2": 6,
+   "a3": 0,
+   "b3": 1,
+   "c3": 2,
+   "goal": "max",
+   "p": 5,
+   "q": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_min_diet": {
+  "kind": "maths",
+  "id": "lp_min_diet",
+  "name": "Sample lp min diet",
+  "figure": "m_lp",
+  "params": {
+   "a1": 1,
+   "b1": 1,
+   "c1": 5,
+   "op1": "ge",
+   "a2": 1,
+   "b2": 3,
+   "c2": 9,
+   "op2": "ge",
+   "goal": "min",
+   "p": 2,
+   "q": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_max_wall": {
+  "kind": "maths",
+  "id": "lp_max_wall",
+  "name": "Sample lp max wall",
+  "figure": "m_lp",
+  "params": {
+   "a1": 1,
+   "b1": 1,
+   "c1": 6,
+   "a2": 1,
+   "b2": 0,
+   "c2": 4,
+   "goal": "max",
+   "p": 2,
+   "q": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_region_only": {
+  "kind": "maths",
+  "id": "lp_region_only",
+  "name": "Sample lp region only",
+  "figure": "m_lp",
+  "params": {
+   "a1": 2,
+   "b1": 1,
+   "c1": 8,
+   "a2": 1,
+   "b2": 2,
+   "c2": 8,
+   "goal": "none"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "lp_region_unbounded": {
+  "kind": "maths",
+  "id": "lp_region_unbounded",
+  "name": "Sample lp region unbounded",
+  "figure": "m_lp",
+  "params": {
+   "a1": 1,
+   "b1": 1,
+   "c1": 4,
+   "op1": "ge",
+   "a2": 1,
+   "b2": 0,
+   "c2": 1,
+   "op2": "ge",
+   "goal": "none"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arcsin": {
+  "kind": "maths",
+  "id": "invtrig_arcsin",
+  "name": "Sample invtrig arcsin",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arcsin",
+   "x0": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arcsin_negative": {
+  "kind": "maths",
+  "id": "invtrig_arcsin_negative",
+  "name": "Sample invtrig arcsin negative",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arcsin",
+   "x0": -0.8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arccos": {
+  "kind": "maths",
+  "id": "invtrig_arccos",
+  "name": "Sample invtrig arccos",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arccos",
+   "x0": 0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arccos_negative": {
+  "kind": "maths",
+  "id": "invtrig_arccos_negative",
+  "name": "Sample invtrig arccos negative",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arccos",
+   "x0": -0.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arctan": {
+  "kind": "maths",
+  "id": "invtrig_arctan",
+  "name": "Sample invtrig arctan",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arctan",
+   "x0": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "invtrig_arctan_far": {
+  "kind": "maths",
+  "id": "invtrig_arctan_far",
+  "name": "Sample invtrig arctan far",
+  "figure": "m_invtrig",
+  "params": {
+   "fn": "arctan",
+   "x0": -2.5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_even_odd_odd": {
+  "kind": "maths",
+  "id": "flow_even_odd_odd",
+  "name": "Sample flow even odd odd",
+  "figure": "m_flow",
+  "params": {
+   "flow": "even_odd",
+   "a": 7
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_even_odd_even": {
+  "kind": "maths",
+  "id": "flow_even_odd_even",
+  "name": "Sample flow even odd even",
+  "figure": "m_flow",
+  "params": {
+   "flow": "even_odd",
+   "a": 10
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_larger_a": {
+  "kind": "maths",
+  "id": "flow_larger_a",
+  "name": "Sample flow larger a",
+  "figure": "m_flow",
+  "params": {
+   "flow": "larger",
+   "a": 12,
+   "b": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_larger_b": {
+  "kind": "maths",
+  "id": "flow_larger_b",
+  "name": "Sample flow larger b",
+  "figure": "m_flow",
+  "params": {
+   "flow": "larger",
+   "a": 4,
+   "b": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_sum_to_5": {
+  "kind": "maths",
+  "id": "flow_sum_to_5",
+  "name": "Sample flow sum to 5",
+  "figure": "m_flow",
+  "params": {
+   "flow": "sum_to_n",
+   "a": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "flow_sum_to_10": {
+  "kind": "maths",
+  "id": "flow_sum_to_10",
+  "name": "Sample flow sum to 10",
+  "figure": "m_flow",
+  "params": {
+   "flow": "sum_to_n",
+   "a": 10
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_linear_onto": {
+  "kind": "maths",
+  "id": "mapping_linear_onto",
+  "name": "Sample mapping linear onto",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "rule",
+   "rule": "linear",
+   "a": 2,
+   "b": 1,
+   "x1": 1,
+   "x2": 2,
+   "x3": 3,
+   "claim": "one_one"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_linear_into": {
+  "kind": "maths",
+  "id": "mapping_linear_into",
+  "name": "Sample mapping linear into",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "rule",
+   "rule": "linear",
+   "a": 3,
+   "b": -1,
+   "x1": 0,
+   "x2": 1,
+   "x3": 2,
+   "x4": 3,
+   "extra": 1,
+   "claim": "into"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_square_many_one": {
+  "kind": "maths",
+  "id": "mapping_square_many_one",
+  "name": "Sample mapping square many one",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "rule",
+   "rule": "square",
+   "x1": -2,
+   "x2": -1,
+   "x3": 1,
+   "x4": 2,
+   "claim": "many_one"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_abs": {
+  "kind": "maths",
+  "id": "mapping_abs",
+  "name": "Sample mapping abs",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "rule",
+   "rule": "abs",
+   "x1": -3,
+   "x2": 0,
+   "x3": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_negative_slope": {
+  "kind": "maths",
+  "id": "mapping_negative_slope",
+  "name": "Sample mapping negative slope",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "rule",
+   "rule": "linear",
+   "a": -1,
+   "b": 4,
+   "x1": 1,
+   "x2": 2,
+   "x3": 3,
+   "x4": 4,
+   "extra": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_relation_function": {
+  "kind": "maths",
+  "id": "mapping_relation_function",
+  "name": "Sample mapping relation function",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "relation",
+   "x1": 1,
+   "x2": 2,
+   "x3": 3,
+   "y1": 4,
+   "y2": 5,
+   "y3": 6,
+   "y4": 7,
+   "f1": 1,
+   "t1": 2,
+   "f2": 2,
+   "t2": 3,
+   "f3": 3,
+   "t3": 1,
+   "claim": "function"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_relation_two_images": {
+  "kind": "maths",
+  "id": "mapping_relation_two_images",
+  "name": "Sample mapping relation two images",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "relation",
+   "x1": 1,
+   "x2": 2,
+   "x3": 3,
+   "y1": 4,
+   "y2": 5,
+   "y3": 6,
+   "y4": 7,
+   "f1": 1,
+   "t1": 1,
+   "f2": 1,
+   "t2": 2,
+   "f3": 2,
+   "t3": 3,
+   "f4": 3,
+   "t4": 4,
+   "claim": "not_function"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "mapping_relation_many_one": {
+  "kind": "maths",
+  "id": "mapping_relation_many_one",
+  "name": "Sample mapping relation many one",
+  "figure": "m_mapping",
+  "params": {
+   "mode": "relation",
+   "x1": -1,
+   "x2": 0,
+   "x3": 1,
+   "y1": 0,
+   "y2": 1,
+   "y3": 2,
+   "f1": 1,
+   "t1": 2,
+   "f2": 2,
+   "t2": 1,
+   "f3": 3,
+   "t3": 2
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_vertical": {
+  "kind": "maths",
+  "id": "proof_vertical",
+  "name": "Sample proof vertical",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "vertical",
+   "a": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_triangle_sum": {
+  "kind": "maths",
+  "id": "proof_triangle_sum",
+  "name": "Sample proof triangle sum",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "triangle_sum",
+   "a": 50,
+   "b": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_isosceles": {
+  "kind": "maths",
+  "id": "proof_isosceles",
+  "name": "Sample proof isosceles",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "isosceles",
+   "a": 40
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_exterior": {
+  "kind": "maths",
+  "id": "proof_exterior",
+  "name": "Sample proof exterior",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "exterior",
+   "a": 50,
+   "b": 60
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_pythagoras_345": {
+  "kind": "maths",
+  "id": "proof_pythagoras_345",
+  "name": "Sample proof pythagoras 345",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "pythagoras",
+   "a": 3,
+   "b": 4,
+   "c": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_pythagoras_5_12_13": {
+  "kind": "maths",
+  "id": "proof_pythagoras_5_12_13",
+  "name": "Sample proof pythagoras 5 12 13",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "pythagoras",
+   "a": 5,
+   "b": 12,
+   "c": 13
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "proof_parallelogram": {
+  "kind": "maths",
+  "id": "proof_parallelogram",
+  "name": "Sample proof parallelogram",
+  "figure": "m_proof",
+  "params": {
+   "theorem": "parallelogram",
+   "a": 70
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_square_5": {
+  "kind": "maths",
+  "id": "blocks_square_5",
+  "name": "Sample blocks square 5",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "square",
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_square_9": {
+  "kind": "maths",
+  "id": "blocks_square_9",
+  "name": "Sample blocks square 9",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "square",
+   "n": 9
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_cube_3": {
+  "kind": "maths",
+  "id": "blocks_cube_3",
+  "name": "Sample blocks cube 3",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "cube",
+   "n": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_cube_6": {
+  "kind": "maths",
+  "id": "blocks_cube_6",
+  "name": "Sample blocks cube 6",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "cube",
+   "n": 6
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_root_square": {
+  "kind": "maths",
+  "id": "blocks_root_square",
+  "name": "Sample blocks root square",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "find_root",
+   "power": 2,
+   "value": 49
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "blocks_root_cube": {
+  "kind": "maths",
+  "id": "blocks_root_cube",
+  "name": "Sample blocks root cube",
+  "figure": "m_blocks",
+  "params": {
+   "mode": "find_root",
+   "power": 3,
+   "value": 125
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_fraction_38": {
+  "kind": "maths",
+  "id": "fracbar_fraction_38",
+  "name": "Sample fracbar fraction 38",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "fraction",
+   "num": 3,
+   "den": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_fraction_512": {
+  "kind": "maths",
+  "id": "fracbar_fraction_512",
+  "name": "Sample fracbar fraction 512",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "fraction",
+   "num": 5,
+   "den": 12
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_whole": {
+  "kind": "maths",
+  "id": "fracbar_whole",
+  "name": "Sample fracbar whole",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "fraction",
+   "num": 4,
+   "den": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_equal": {
+  "kind": "maths",
+  "id": "fracbar_equal",
+  "name": "Sample fracbar equal",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "compare",
+   "n1": 1,
+   "d1": 2,
+   "n2": 3,
+   "d2": 6,
+   "claim": "eq"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_greater": {
+  "kind": "maths",
+  "id": "fracbar_greater",
+  "name": "Sample fracbar greater",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "compare",
+   "n1": 2,
+   "d1": 3,
+   "n2": 3,
+   "d2": 5,
+   "claim": "gt"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_less": {
+  "kind": "maths",
+  "id": "fracbar_less",
+  "name": "Sample fracbar less",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "compare",
+   "n1": 3,
+   "d1": 8,
+   "n2": 1,
+   "d2": 2,
+   "claim": "lt"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_ratio_35": {
+  "kind": "maths",
+  "id": "fracbar_ratio_35",
+  "name": "Sample fracbar ratio 35",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "ratio",
+   "a": 3,
+   "b": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "fracbar_ratio_24": {
+  "kind": "maths",
+  "id": "fracbar_ratio_24",
+  "name": "Sample fracbar ratio 24",
+  "figure": "m_fracbar",
+  "params": {
+   "mode": "ratio",
+   "a": 2,
+   "b": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_plus": {
+  "kind": "maths",
+  "id": "identity_plus",
+  "name": "Sample identity plus",
+  "figure": "m_identity",
+  "params": {
+   "identity": "plus",
+   "a": 5,
+   "b": 3,
+   "claim": "identity"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_plus_close": {
+  "kind": "maths",
+  "id": "identity_plus_close",
+  "name": "Sample identity plus close",
+  "figure": "m_identity",
+  "params": {
+   "identity": "plus",
+   "a": 6,
+   "b": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_minus": {
+  "kind": "maths",
+  "id": "identity_minus",
+  "name": "Sample identity minus",
+  "figure": "m_identity",
+  "params": {
+   "identity": "minus",
+   "a": 7,
+   "b": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_diff": {
+  "kind": "maths",
+  "id": "identity_diff",
+  "name": "Sample identity diff",
+  "figure": "m_identity",
+  "params": {
+   "identity": "diff",
+   "a": 8,
+   "b": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_xpq": {
+  "kind": "maths",
+  "id": "identity_xpq",
+  "name": "Sample identity xpq",
+  "figure": "m_identity",
+  "params": {
+   "identity": "xpq",
+   "x": 4,
+   "p": 2,
+   "q": 3
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "identity_xpq_wide": {
+  "kind": "maths",
+  "id": "identity_xpq_wide",
+  "name": "Sample identity xpq wide",
+  "figure": "m_identity",
+  "params": {
+   "identity": "xpq",
+   "x": 5,
+   "p": 3,
+   "q": 1
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_fraction": {
+  "kind": "maths",
+  "id": "realtree_fraction",
+  "name": "Sample realtree fraction",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "fraction",
+   "p": 3,
+   "q": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_negative_integer": {
+  "kind": "maths",
+  "id": "realtree_negative_integer",
+  "name": "Sample realtree negative integer",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "fraction",
+   "p": -6,
+   "q": 3,
+   "claim": "rational"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_natural": {
+  "kind": "maths",
+  "id": "realtree_natural",
+  "name": "Sample realtree natural",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "fraction",
+   "p": 12,
+   "q": 4
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_zero": {
+  "kind": "maths",
+  "id": "realtree_zero",
+  "name": "Sample realtree zero",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "fraction",
+   "p": 0,
+   "q": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_sqrt16": {
+  "kind": "maths",
+  "id": "realtree_sqrt16",
+  "name": "Sample realtree sqrt16",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "sqrt",
+   "m": 16,
+   "claim": "rational"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_sqrt2": {
+  "kind": "maths",
+  "id": "realtree_sqrt2",
+  "name": "Sample realtree sqrt2",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "sqrt",
+   "m": 2,
+   "claim": "irrational"
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_sqrt50": {
+  "kind": "maths",
+  "id": "realtree_sqrt50",
+  "name": "Sample realtree sqrt50",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "sqrt",
+   "m": 50
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_spiral_5": {
+  "kind": "maths",
+  "id": "realtree_spiral_5",
+  "name": "Sample realtree spiral 5",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "spiral",
+   "n": 5
+  },
+  "sentence": 0,
+  "area": "A1:F6"
+ },
+ "realtree_spiral_8": {
+  "kind": "maths",
+  "id": "realtree_spiral_8",
+  "name": "Sample realtree spiral 8",
+  "figure": "m_realtree",
+  "params": {
+   "mode": "spiral",
+   "n": 8
+  },
+  "sentence": 0,
+  "area": "A1:F6"
  }
 }

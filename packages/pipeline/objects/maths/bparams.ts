@@ -306,8 +306,8 @@ const blocksFig = z
   });
 const fracBar = z
   .discriminatedUnion("mode", [
-    S({ mode: z.literal("fraction"), num: int(0, 12), den: int(1, 12) }),
-    S({ mode: z.literal("compare"), n1: int(0, 12), d1: int(1, 12), n2: int(0, 12), d2: int(1, 12), claim: z.enum(["gt", "lt", "eq"]).optional() }),
+    S({ mode: z.literal("fraction"), num: int(1, 12), den: int(1, 12) }),
+    S({ mode: z.literal("compare"), n1: int(1, 12), d1: int(1, 12), n2: int(1, 12), d2: int(1, 12), claim: z.enum(["gt", "lt", "eq"]).optional() }),
     S({ mode: z.literal("ratio"), a: int(1, 12), b: int(1, 12) }),
   ])
   .superRefine((p, ctx) => {
