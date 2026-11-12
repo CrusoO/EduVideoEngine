@@ -34,7 +34,7 @@ type Job = { name: string; story: unknown };
 const jobs: Job[] = [];
 if (mode === "--samples") {
   const all: Record<string, Record<string, unknown>> = {};
-  for (const f of maths ? ["maths-w5-samples.json"] : biology ? ["biology-wave4-samples.json"] : chemistry ? ["chemistry-wave3-samples.json"] : ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
+  for (const f of maths ? ["maths-w5-samples.json", "maths-w6-samples.json"] : biology ? ["biology-wave4-samples.json"] : chemistry ? ["chemistry-wave3-samples.json"] : ["physics-wave1-samples.json", "physics-wave2-samples.json"]) Object.assign(all, JSON.parse(readFileSync(resolve(__dirname, "../fixtures/objects", f), "utf8")));
   for (const name of rest.length ? rest : Object.keys(all)) jobs.push({ name, story: { title: name, scenes: [{ heading: name, sentences: ["A figure.", "Another sentence.", "A third sentence."], visuals: [], objects: [all[name]] }] } });
 } else {
   for (const f of rest) jobs.push({ name: f.replace(/^.*[\\/]/, "").replace(/\.request\.json$/, ""), story: (JSON.parse(readFileSync(resolve(f), "utf8")) as { story: unknown }).story });

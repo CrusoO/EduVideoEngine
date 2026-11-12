@@ -135,8 +135,8 @@ describe("the unreviewed switch: nothing unreviewed ships by accident (ADR 0108,
   it("every maths drawer is registered reviewed: false, licence owner-original, source own-drawings, no tool", () => {
     expect(mathsDrawers).toHaveLength(22);
     const added = defaultRegistry(reg).all().filter((d) => d.kind === "maths");
-    expect(added).toHaveLength(22);
-    for (const d of added) expect([d.name, d.reviewed, d.license, d.sources, d.toolVersions ?? {}]).toEqual([d.name, false, "owner-original", ["own-drawings"], {}]);
+    expect(added).toHaveLength(22 + 25);
+    for (const d of added.slice(0, 22)) expect([d.name, d.reviewed, d.license, d.sources, d.toolVersions ?? {}]).toEqual([d.name, false, "owner-original", ["own-drawings"], {}]);
     expect(new Set(defaultRegistry(reg).all().map((d) => d.name)).size).toBe(defaultRegistry(reg).all().length);
     for (const d of wave0Registry(reg).all()) expect(d.reviewed).toBeUndefined();
   });
@@ -344,11 +344,12 @@ describe("coverage: the objects of the plan's maths table that the drawers cover
     ].join("\n");
     const rows = parseInventory(csv);
     const rep = coverage(rows, defaultRegistry(reg));
-    expect(rep.bySubject.maths).toMatchObject({ pairs: 6, registered: 3, reviewed: 0 });
+    expect(rep.bySubject.maths).toMatchObject({ pairs: 6, registered: 6, reviewed: 0 });
     expect(rep.byWave["5"]).toMatchObject({ pairs: 2, registered: 2 });
-    expect(rep.byWave["6"]).toMatchObject({ pairs: 4, registered: 1 });
+    // wave 6 (ADR 0113) draws the probability tree, the matrix and the area under a curve too: of the four invented wave-6 pairs all four are now registered
+    expect(rep.byWave["6"]).toMatchObject({ pairs: 4, registered: 4 });
     expect(rep.unreviewedObjects).toEqual(expect.arrayContaining(MATHS_OBJECTS));
-    expect(uncovered(rows, defaultRegistry(reg)).map((g) => g.object)).toEqual(expect.arrayContaining(["Probability tree, sample-space grid, dice, coins", "Matrix and determinant display, row operations", "Area under curve, Riemann sum, area between curves"]));
+    expect(uncovered(rows, defaultRegistry(reg))).toEqual([]);
     expect(formatCoverage(rep, "invented")).toContain("maths");
   });
   it("the inspector's Objects panel shows maths without being edited: the samples file is read from the folder, every figure is clean, the drawers land in a group the panel renders, and coverage lists the subject", () => {
@@ -357,11 +358,11 @@ describe("coverage: the objects of the plan's maths table that the drawers cover
     const samples = loadSamples(fixtures).filter((s) => s.file === "maths-w5-samples.json");
     expect(samples).toHaveLength(names.length);
     expect(samples.map((s) => figureResult(registry, s)).filter((r) => r.status !== "clean")).toEqual([]);
-    // the panel (scripts/objects-inspector-client.js) groups a drawer by the file of its first sample, `^([a-z]+)-wave`, and renders the groups physics, chemistry, biology, wave 0 and other only
+    // the panel (scripts/objects-inspector-client.js) groups a drawer by the file of its first sample, `^([a-z]+)-(?:wave|w\d)` (wave 6 added the "w5" form and the group "maths", ADR 0113)
     const client = readFileSync(resolve(__dirname, "../../../scripts/objects-inspector-client.js"), "utf8");
-    const group = /^([a-z]+)-wave/.exec("maths-w5-samples.json")?.[1] ?? "other";
-    expect(group).toBe("other");
-    expect(client).toContain('var order = ["physics", "chemistry", "biology", "wave 0 (existing paths)", "other"]');
+    const group = /^([a-z]+)-(?:wave|w\d)/.exec("maths-w5-samples.json")?.[1] ?? "other";
+    expect(group).toBe("maths");
+    expect(client).toContain('var order = ["physics", "chemistry", "biology", "maths", "wave 0 (existing paths)", "other"]');
     const rows = parseInventory(['class,subject,chapter,object,drawer_type,priority,today,wave,tag', '9,Mathematics,"Invented A","Coordinate plane with plotted points and quadrants",b,M,partial,5,SAMPLE'].join("\n"));
     expect(coverageView(rows, registry, "invented", false).bySubject).toEqual([{ subject: "maths", pairs: 1, registered: 1, reviewed: 0 }]);
   });

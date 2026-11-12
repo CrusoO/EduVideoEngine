@@ -17,3 +17,4 @@ export * from "./physics";
 export * from "./chemistry";
 export * from "./biology";
 export * from "./maths";
+export { mathsBDrawers } from "./maths/bindex";

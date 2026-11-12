@@ -1,0 +1,139 @@
+{
+ "requestId": "w6-curves-with-foci",
+ "idempotencyKey": "w6-curves-with-foci-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 11,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Curves with foci",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A string and two pins",
+    "sentences": [
+     "Pin a string at two points and pull it tight with a pencil.",
+     "The pencil draws a curve."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "A string and two pins",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "An ellipse",
+    "sentences": [
+     "The two pins are the foci and the string has length 10.",
+     "Here e is 0.8 and the latus rectum is 3.6."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "el",
+      "name": "An ellipse",
+      "figure": "m_conic",
+      "params": {
+       "kind": "ellipse",
+       "a": 5,
+       "b": 3,
+       "t": 50
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A parabola",
+    "sentences": [
+     "A parabola is as far from its focus as from its directrix.",
+     "With a focal length of 2 the latus rectum is 8."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "pa",
+      "name": "A parabola",
+      "figure": "m_conic",
+      "params": {
+       "kind": "parabola",
+       "a": 2,
+       "opens": "right",
+       "t": 1.5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A hyperbola",
+    "sentences": [
+     "For a hyperbola the two distances differ by a fixed length.",
+     "With a of 4 and b of 3 the focal distance is 5, e is 1.25 and the latus rectum is 4.5."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "hy",
+      "name": "A hyperbola",
+      "figure": "m_conic",
+      "params": {
+       "kind": "hyperbola",
+       "a": 4,
+       "b": 3,
+       "t": 1.2
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Three conics",
+    "sentences": [
+     "One idea, a point and a distance, makes all three."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Three conics",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

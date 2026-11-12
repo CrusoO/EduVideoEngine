@@ -1,0 +1,140 @@
+{
+ "requestId": "w6-chance-with-a-bag",
+ "idempotencyKey": "w6-chance-with-a-bag-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Chance with a bag, a Venn diagram and two dice",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "What are the odds?",
+    "sentences": [
+     "Chance is a number between 0 and 1.",
+     "We can count it or we can draw it."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "What are the odds?",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A tree for two draws",
+    "sentences": [
+     "Three red balls and two blue ones are in a bag and nothing is put back.",
+     "The chance of two different colours is 3/5."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "tr",
+      "name": "Two draws without replacement",
+      "figure": "m_ptree",
+      "params": {
+       "mode": "bag",
+       "red": 3,
+       "blue": 2,
+       "replace": false,
+       "event": "different"
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A Venn diagram",
+    "sentences": [
+     "Out of 60 students, 24 play cricket and 30 play football and 12 play both.",
+     "Given a footballer, the chance of a cricketer is 2/5."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "vn",
+      "name": "Cricket and football",
+      "figure": "m_venn",
+      "params": {
+       "mode": "conditional",
+       "u": 60,
+       "a": 24,
+       "b": 30,
+       "ab": 12
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Two dice",
+    "sentences": [
+     "Thirty six outcomes make the sample space.",
+     "Six of them add up to 7, which is about 0.167."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "sp",
+      "name": "Two dice that add up to seven",
+      "figure": "m_sample",
+      "params": {
+       "space": "dice2",
+       "event": "sum_eq",
+       "k": 7
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Count, then draw",
+    "sentences": [
+     "Every probability here was counted before it was drawn."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Count, then draw",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

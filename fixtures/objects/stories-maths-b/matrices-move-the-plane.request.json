@@ -1,0 +1,144 @@
+{
+ "requestId": "w6-matrices-move-the-plane",
+ "idempotencyKey": "w6-matrices-move-the-plane-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 12,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Matrices that move the plane, and two equations",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A table of four numbers",
+    "sentences": [
+     "A matrix is four numbers in a square.",
+     "It also moves every point of the plane."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "A table of four numbers",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A stretch",
+    "sentences": [
+     "This matrix stretches by 2 across and 3 up.",
+     "The unit square becomes a rectangle of area 6."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "st",
+      "name": "A stretch",
+      "figure": "m_matrix",
+      "params": {
+       "mode": "square",
+       "a": 2,
+       "b": 0,
+       "c": 0,
+       "d": 3
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A shear",
+    "sentences": [
+     "This one slides the top of the square sideways.",
+     "The area stays 1."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "sh",
+      "name": "A shear",
+      "figure": "m_matrix",
+      "params": {
+       "mode": "square",
+       "a": 1,
+       "b": 1,
+       "c": 0,
+       "d": 1
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "Two equations",
+    "sentences": [
+     "Two equations are two lines.",
+     "They cross at the point where x is 3 and y is 2."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "sy",
+      "name": "Two lines that cross",
+      "figure": "m_matrix",
+      "params": {
+       "mode": "system",
+       "a1": 2,
+       "b1": 3,
+       "c1": 12,
+       "a2": 1,
+       "b2": -1,
+       "c2": 1
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "The determinant",
+    "sentences": [
+     "The determinant is the area scale, and it tells us if the lines meet."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "The determinant",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}

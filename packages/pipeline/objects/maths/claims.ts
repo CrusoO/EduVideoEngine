@@ -3,6 +3,7 @@ import {
   solveLinearIneq, solidFacts, type Pt,
 } from "./compute";
 import type { MathsFigure, MathsParams } from "./params";
+import { figureClaimsB, NOT_EXPRESSIBLE_B } from "./bclaims";
 
 /**
  * What a maths figure claims, written as claims for the existing SymPy verifier (ADR 0100, ADR 0112). The verifier's expression language is closed to `num sym neg add sub mul div pow eq` (no square root,
@@ -271,12 +272,13 @@ export function figureClaims(figure: MathsFigure, params: unknown): FigureClaims
       return b.done();
     }
     default:
-      return null;
+      return figureClaimsB(figure, params);
   }
 }
 
 /** The figures whose numbers the closed expression language cannot state at all, and why: what the ADR lists as not verified by the SymPy verifier. */
 export const NOT_EXPRESSIBLE: Partial<Record<MathsFigure, string>> = {
+  ...NOT_EXPRESSIBLE_B,
   m_trig: "sine, cosine and tangent are not node types of the closed expression language",
   m_unitcircle: "sine, cosine and tangent are not node types of the closed expression language",
   m_sector: "arc length and area use pi, which is not a node type",

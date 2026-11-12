@@ -172,7 +172,7 @@
   function groupOf(d) {
     var figs = data.figures.filter(function (f) { return f.drawer === d.name; });
     if (!figs.length) return d.wraps || d.name === "label_card" ? "wave 0 (existing paths)" : "other";
-    var m = /^([a-z]+)-wave/.exec(figs[0].file);
+    var m = /^([a-z]+)-(?:wave|w\d)/.exec(figs[0].file);
     return m ? m[1] : "other";
   }
   function latestNote(name) {
@@ -182,7 +182,7 @@
   function drawersHtml() {
     var groups = {};
     data.drawers.forEach(function (d) { (groups[groupOf(d)] = groups[groupOf(d)] || []).push(d); });
-    var order = ["physics", "chemistry", "biology", "wave 0 (existing paths)", "other"];
+    var order = ["physics", "chemistry", "biology", "maths", "wave 0 (existing paths)", "other"];
     var html = "";
     order.forEach(function (g) {
       if (!groups[g]) return;

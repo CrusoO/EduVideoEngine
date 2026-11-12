@@ -1,0 +1,153 @@
+{
+ "requestId": "w6-reading-a-histogram",
+ "idempotencyKey": "w6-reading-a-histogram-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Reading a histogram, an ogive and a box plot",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Forty marks, one picture",
+    "sentences": [
+     "Forty students sat a test.",
+     "A picture can say more than a list."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "ht",
+      "cell": "B3:E4",
+      "text": "Forty marks, one picture",
+      "size": 4.2,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "A histogram",
+    "sentences": [
+     "Each bar stands on a class and is as high as its frequency.",
+     "The mean of the grouped marks is 25.3."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "hg",
+      "name": "Histogram of forty marks",
+      "figure": "m_freq",
+      "params": {
+       "mode": "histogram",
+       "start": 0,
+       "width": 10,
+       "f1": 4,
+       "f2": 8,
+       "f3": 15,
+       "f4": 9,
+       "f5": 4
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "build",
+    "heading": "An ogive",
+    "sentences": [
+     "Add the frequencies as you go and the bars become a curve.",
+     "Read across from half of 40 and the median is 24.3."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "og",
+      "name": "Ogive of the same marks",
+      "figure": "m_freq",
+      "params": {
+       "mode": "ogive",
+       "start": 0,
+       "width": 10,
+       "f1": 5,
+       "f2": 9,
+       "f3": 14,
+       "f4": 7,
+       "f5": 5
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "reveal",
+    "heading": "A box plot",
+    "sentences": [
+     "Five numbers sum up nine values: the least, the quartiles, the median and the greatest.",
+     "Here the box runs from 6 to 14."
+    ],
+    "visuals": [],
+    "objects": [
+     {
+      "kind": "maths",
+      "id": "bx",
+      "name": "Box plot of nine values",
+      "figure": "m_centre",
+      "params": {
+       "mode": "box",
+       "d1": 3,
+       "d2": 5,
+       "d3": 7,
+       "d4": 8,
+       "d5": 9,
+       "d6": 11,
+       "d7": 13,
+       "d8": 15,
+       "d9": 20
+      },
+      "sentence": 1
+     }
+    ]
+   },
+   {
+    "role": "wrap",
+    "heading": "Three pictures of data",
+    "sentences": [
+     "Each one is drawn from the numbers, so it cannot disagree with them."
+    ],
+    "visuals": [
+     {
+      "kind": "text",
+      "id": "wt",
+      "cell": "B3:E4",
+      "text": "Three pictures of data",
+      "size": 3.6,
+      "anchor": "middle",
+      "bold": true,
+      "how": "write",
+      "in": {
+       "s": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "style": "animated",
+  "locale": "en-IN"
+ }
+}
