@@ -13,7 +13,7 @@ import type { DrawerRegistry } from "./registry";
 /** The two switches the inspector can flip for its own page rendering only (they are never read from, or written to, the process environment). */
 export type InspectorToggles = { objectsV2: boolean; allowUnreviewed: boolean };
 export const DEFAULT_TOGGLES: InspectorToggles = { objectsV2: false, allowUnreviewed: false };
-/** The environment record `storyForRender` is given. Both values are explicit, so the NODE_ENV default of ENGINE_OBJECTS_ALLOW_UNREVIEWED never applies. */
+/** The environment record `storyForRender` is given. Both values are explicit; the switch has no environment-based default (ADR 0108, Amendment). */
 export const togglesEnv = (t: InspectorToggles): Record<string, string> => ({ ENGINE_OBJECTS_V2: t.objectsV2 ? "1" : "0", ENGINE_OBJECTS_ALLOW_UNREVIEWED: t.allowUnreviewed ? "1" : "0" });
 /** Toggles from a query string: only the text "1" turns one on; anything else, or nothing, is off. */
 export const togglesFromQuery = (q: { get(name: string): string | null }): InspectorToggles => ({ objectsV2: q.get("v2") === "1", allowUnreviewed: q.get("unrev") === "1" });
