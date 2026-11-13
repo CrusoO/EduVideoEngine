@@ -15,6 +15,7 @@ import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { cpus, tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { readEnv } from "../packages/adapters/src";
 import { kokoroMissing, kokoroTools } from "../packages/pipeline/build/kokoro";
 import { compareSamples, formatTable, median, parseList, pcmOf, settingLabel, settingsGrid, splitAcross, type Result, type Setting } from "../packages/pipeline/build/voice-bench";
 
@@ -44,7 +45,8 @@ type Worker = { child: ChildProcessWithoutNullStreams; lines: string[]; wake: ((
 
 function startWorker(python: string, worker: string, model: string, voices: string, threads: Setting["threads"]): Worker {
   const env: NodeJS.ProcessEnv = {};
-  for (const k of SAFE_ENV) if (process.env[k] !== undefined) env[k] = process.env[k];
+  const host = readEnv();
+  for (const k of SAFE_ENV) if (host[k] !== undefined) env[k] = host[k];
   if (threads !== "default") env.OMP_NUM_THREADS = String(threads);
   const child = spawn(python, ["-I", worker, model, voices, VOICE, SPEED, LANG], { stdio: ["pipe", "pipe", "pipe"], env });
   const w: Worker = { child, lines: [], wake: undefined, closed: false };
