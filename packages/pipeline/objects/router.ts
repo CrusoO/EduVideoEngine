@@ -104,7 +104,7 @@ export type RouteContext = {
   today: string;
   cacheDir?: string;
   queueFile?: string;
-  /** Draw with drawers that are registered `reviewed: false` (ADR 0108). Off unless the caller turns it on: nothing unreviewed ships by accident. Dev and test turn it on through ENGINE_OBJECTS_ALLOW_UNREVIEWED. */
+  /** Draw with drawers that are registered `reviewed: false` (ADR 0108). Off unless the caller turns it on: nothing unreviewed ships by accident. Only an explicit ENGINE_OBJECTS_ALLOW_UNREVIEWED turns it on, in every environment. */
   allowUnreviewed?: boolean;
   /** extra facts for a request (later waves: reviewer data); the defaults are derived from the register */
   facts?: (spec: ObjectSpec) => Facts;

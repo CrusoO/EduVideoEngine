@@ -161,7 +161,7 @@ describe("Q1: with ENGINE_OBJECTS_V2 off the output is byte-identical, biology o
     expect(pageOf(storyForRender(withChem, {}, dir).story)).toBe(direct);
     expect(pageOf(storyForRender(withChem, { ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1", NODE_ENV: "test" }, dir).story)).toBe(direct);
     expect(pageOf(storyForRender(base, { ENGINE_OBJECTS_V2: "1", NODE_ENV: "test" }, dir).story)).toBe(direct);
-    expect(pageOf(storyForRender(withChem, { ENGINE_OBJECTS_V2: "1", NODE_ENV: "test" }, dir).story)).not.toBe(direct);
+    expect(pageOf(storyForRender(withChem, { ENGINE_OBJECTS_V2: "1", ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1", NODE_ENV: "test" }, dir).story)).not.toBe(direct);
   });
   it("with the flag off the story is returned as the very same value and nothing is written", () => {
     expect(storyForRender(withChem, {}, dir).story).toBe(withChem);

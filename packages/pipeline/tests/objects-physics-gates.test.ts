@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { placeStory, sanitizeStory, storyPageHtml } from "../index";
 import { ANIMATED_PALETTE_OVERRIDE, PALETTES } from "../job/story-page";
 import {
-  ALLOW_UNREVIEWED, allowUnreviewedOn, cacheKey, coverage, creditsFor, decide, defaultRegistry, DrawerRegistry, expandStoryObjects, findPrivacyProblems, formatCoverage, inputHash, labelCardDrawer, layoutProblems,
+  ALLOW_UNREVIEWED, allowUnreviewedOn, flagState, objectsSafetyLine, objectsV2On, cacheKey, coverage, creditsFor, decide, defaultRegistry, DrawerRegistry, expandStoryObjects, findPrivacyProblems, formatCoverage, inputHash, labelCardDrawer, layoutProblems,
   LABEL_HOOKS, loadSourceRegister, makeProvenance, MIN_TEXT, onScreenText, parseInventory, parseObjectRequest, positioningProblems, privacyScan, provenanceProblems, readQueue, routeObject, storyForRender,
   wave0Registry, type RouteContext,
 } from "../objects";
@@ -137,16 +137,51 @@ describe("the unreviewed switch: nothing unreviewed ships by accident, and the o
     expect(decide(s, { unreviewedDrawer: true, cached: true }, d).outcome).toBe(8);
     expect(decide(s, {}, d).outcome).toBe(3);
   });
-  it("the switch is explicit-first: on in dev and test, off elsewhere, and a typo is off", () => {
+  it("the switch is off unless explicitly on, whatever NODE_ENV says, and a typo is off", () => {
     expect(allowUnreviewedOn({})).toBe(false);
     expect(allowUnreviewedOn({ NODE_ENV: "production" })).toBe(false);
-    expect(allowUnreviewedOn({ NODE_ENV: "development" })).toBe(true);
-    expect(allowUnreviewedOn({ NODE_ENV: "test" })).toBe(true);
+    expect(allowUnreviewedOn({ NODE_ENV: "development" })).toBe(false);
+    expect(allowUnreviewedOn({ NODE_ENV: "test" })).toBe(false);
     expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "1" })).toBe(true);
+    expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: " On " })).toBe(true);
     expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "yes", NODE_ENV: "production" })).toBe(true);
     expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "0", NODE_ENV: "test" })).toBe(false);
     expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "ture", NODE_ENV: "test" })).toBe(false);
-    expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "", NODE_ENV: "test" })).toBe(true);
+    expect(allowUnreviewedOn({ [ALLOW_UNREVIEWED]: "", NODE_ENV: "test" })).toBe(false);
+  });
+  it("V2 on, NODE_ENV=development and the switch unset: an unreviewed drawer is a label card (outcome 8), never a drawing", () => {
+    const story = { title: "A test story", scenes: [{ heading: "h", sentences: ["a."], objects: [SAMPLES.projectile] }] };
+    for (const env of [{ NODE_ENV: "development" }, { NODE_ENV: "test" }, {}]) {
+      const r = storyForRender(story, { ENGINE_OBJECTS_V2: "1", ...env }, dir);
+      const shapes = (r.story as { scenes: Array<{ visuals: Array<{ kind: string }> }> }).scenes[0]!.visuals.map((v) => v.kind);
+      expect(shapes).toEqual(["rect", "text"]);
+      expect(r.decisions.some((d) => d.decision.outcome === 8)).toBe(true);
+      expect(r.notes.join(" ")).toContain("label card");
+    }
+  });
+  it("the job-time safety line is quiet with V2 off, warns when unreviewed drawers are allowed, and counts them when blocked", () => {
+    const n = defaultRegistry().all().filter((d) => d.reviewed === false).length;
+    expect(n).toBeGreaterThan(100);
+    expect(objectsSafetyLine({})).toBeNull();
+    expect(objectsSafetyLine({ [ALLOW_UNREVIEWED]: "1" })).toBeNull();
+    const blocked = objectsSafetyLine({ ENGINE_OBJECTS_V2: "1", NODE_ENV: "development" })!;
+    expect(blocked).toContain("ENGINE_OBJECTS_ALLOW_UNREVIEWED is off");
+    expect(blocked).toContain(`${n} unreviewed drawer(s) are blocked`);
+    const open = objectsSafetyLine({ ENGINE_OBJECTS_V2: "1", [ALLOW_UNREVIEWED]: "1" })!;
+    expect(open).toContain("WARNING");
+    expect(open).toContain(`${n} unreviewed drawer(s) will be drawn`);
+  });
+  it("ENGINE_MOTION_V2 and ENGINE_MISTAKE_VISUALS are reserved and inert: they change no output and no switch", () => {
+    const story = { title: "A test story", scenes: [{ heading: "h", sentences: ["a."], objects: [SAMPLES.projectile] }] };
+    const inert = { ENGINE_MOTION_V2: "1", ENGINE_MISTAKE_VISUALS: "1" };
+    expect(flagState({ ...inert })).toEqual({ ENGINE_OBJECTS_V2: false, ENGINE_MOTION_V2: true, ENGINE_MISTAKE_VISUALS: true });
+    expect(objectsV2On(inert)).toBe(false);
+    expect(allowUnreviewedOn(inert)).toBe(false);
+    expect(objectsSafetyLine(inert)).toBeNull();
+    expect(storyForRender(story, inert, dir).story).toBe(story);
+    for (const base of [{ ENGINE_OBJECTS_V2: "1" }, { ENGINE_OBJECTS_V2: "1", [ALLOW_UNREVIEWED]: "1" }]) {
+      expect(pageOf(storyForRender(story, { ...base, ...inert }, dir).story)).toBe(pageOf(storyForRender(story, base, dir).story));
+    }
   });
   it("the seam reads the switch from the environment it is given", () => {
     const story = { title: "A test story", scenes: [{ heading: "h", sentences: ["a."], objects: [SAMPLES.projectile] }] };
@@ -156,7 +191,8 @@ describe("the unreviewed switch: nothing unreviewed ships by accident, and the o
     };
     expect(kinds({}).shapes).toEqual(["rect", "text"]);
     expect(kinds({ NODE_ENV: "production" }).shapes).toEqual(["rect", "text"]);
-    expect(kinds({ NODE_ENV: "test" }).shapes.length).toBeGreaterThan(5);
+    expect(kinds({ NODE_ENV: "test" }).shapes).toEqual(["rect", "text"]);
+    expect(kinds({ NODE_ENV: "test", [ALLOW_UNREVIEWED]: "1" }).shapes.length).toBeGreaterThan(5);
     expect(kinds({ [ALLOW_UNREVIEWED]: "1" }).notes.join(" ")).toContain("unreviewed drawer projectile_path");
     expect(kinds({}).notes.join(" ")).toContain("label card");
   });
@@ -171,7 +207,7 @@ describe("Q1: with ENGINE_OBJECTS_V2 off the output is byte-identical, physics o
     expect(pageOf(storyForRender(withPhysics, { ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1", NODE_ENV: "test" }, dir).story)).toBe(direct);
     expect(storyForRender(base, { ENGINE_OBJECTS_V2: "1" }, dir).story).toBeDefined();
     expect(pageOf(storyForRender(base, { ENGINE_OBJECTS_V2: "1", NODE_ENV: "test" }, dir).story)).toBe(direct);
-    expect(pageOf(storyForRender(withPhysics, { ENGINE_OBJECTS_V2: "1", NODE_ENV: "test" }, dir).story)).not.toBe(direct);
+    expect(pageOf(storyForRender(withPhysics, { ENGINE_OBJECTS_V2: "1", ENGINE_OBJECTS_ALLOW_UNREVIEWED: "1", NODE_ENV: "test" }, dir).story)).not.toBe(direct);
   });
   it("with the flag off the story is returned as the very same value and nothing is written", () => {
     expect(storyForRender(withPhysics, {}, dir).story).toBe(withPhysics);
