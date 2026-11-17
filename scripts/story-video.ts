@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT, readEnv } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, storyPageHtml, storyQA, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -42,7 +42,9 @@ const theme = option("theme", request.options.theme) === "dark" ? "dark" : "whit
 const visualStyle = (option("style", request.options.style ?? "technical") === "animated" ? "animated" : "technical") as "animated" | "technical";
 const resolved = resolveStoryOptions(request.options); // the same defaults the job runner passes, so running this script by hand gives the same video
 const chrome = option("chrome", resolved.chrome) === "none" ? "none" : "full";
-const captions = option("captions", request.options.captions ?? "sentence") === "none" ? "none" : "sentence";
+const captionsMode = option("captions", request.options.captions ?? "sentence");
+const sidecar = captionsMode === "sidecar"; // ADR 0114: no caption band in the picture; captions.vtt is written beside the video instead
+const captions = captionsMode === "none" || sidecar ? "none" : "sentence";
 const font = option("font", resolved.font) === "atkinson" ? "atkinson" : "inter";
 const speedOption = Number(option("speed", String(resolved.voiceSpeed ?? "")));
 const locale = request.options.locale ?? "en-IN";
@@ -166,6 +168,7 @@ async function build(): Promise<void> {
   const cssPath = createRequire(join(katexRoot, "package.json")).resolve("katex/dist/katex.min.css");
   const runtime = readFileSync(join(REPO_ROOT, "scripts", "story-runtime.js"), "utf8");
   writeFileSync(pageFile, storyPageHtml(placed, theme, math, runtime, pathToFileURL(cssPath).href, { visualStyle, locale, chrome, captions, font }));
+  if (sidecar) writeFileSync(join(dir, "captions.vtt"), toWebVtt(sentenceCaptionCues(placed)));
   const audio = jobs.map((j) => ({ wav: j.file, startMs: placed.scenes[j.si]!.sentences[j.i]!.startMs }));
   // soft checks on the story and on how it was timed: notes for the host, never a failure
   const qa = { story: storyQA(story), timing: placedQA(placed) };

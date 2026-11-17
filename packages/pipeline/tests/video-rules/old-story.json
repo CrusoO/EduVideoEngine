@@ -1,0 +1,43 @@
+{
+  "title": "Why does a seesaw balance",
+  "color_map": { "weight": "orange" },
+  "scenes": [
+    {
+      "role": "hook",
+      "heading": "A puzzle",
+      "sentences": ["A small child can lift a heavy adult on a seesaw.", "How is that possible?"],
+      "visuals": [
+        { "id": "beam", "kind": "rect", "x": 20, "y": 24, "w": 60, "h": 2, "fill": "soft", "color": "ink", "in": { "s": 0, "off": 0 } },
+        { "id": "kid", "kind": "circle", "cx": 24, "cy": 18, "r": 3, "fill": "blue", "color": "blue", "label": "child", "in": { "s": 0, "off": 400 } },
+        { "id": "adult", "kind": "circle", "cx": 70, "cy": 20, "r": 5, "fill": "orange", "color": "orange", "label": "adult", "in": { "s": 1, "off": 0 } }
+      ]
+    },
+    {
+      "role": "build",
+      "heading": "Turning effect",
+      "sentences": ["A force turns the beam about the pivot.", "The turning effect is the force times its distance from the pivot."],
+      "visuals": [
+        { "id": "pivot", "kind": "polygon", "points": [[46, 26], [54, 26], [50, 34]], "fill": "soft", "color": "ink", "in": { "s": 0, "off": 0 } },
+        { "id": "arr", "kind": "arrow", "x1": 24, "y1": 10, "x2": 24, "y2": 22, "color": "red", "label": "force", "in": { "s": 1, "off": 0 } },
+        { "id": "f", "kind": "math", "x": 50, "y": 8, "latex": "\tau = F \times d", "size": 4, "anchor": "middle", "in": { "s": 1, "off": 600 } }
+      ]
+    },
+    {
+      "role": "reveal",
+      "heading": "Balance",
+      "sentences": ["Let us work out an example with a child at two metres.", "Two times three equals six, so the heavy side needs a short distance."],
+      "visuals": [
+        { "id": "t1", "kind": "text", "x": 30, "y": 14, "text": "3 x 2 = 6", "size": 4, "color": "blue", "in": { "s": 0, "off": 0 } },
+        { "id": "t2", "kind": "text", "x": 70, "y": 14, "text": "6 x 1 = 6", "size": 4, "color": "orange", "in": { "s": 1, "off": 0 }, "focus": true }
+      ]
+    },
+    {
+      "role": "wrap",
+      "heading": "Remember",
+      "sentences": ["Turning effect is force times distance.", "Now it is your turn to try one."],
+      "visuals": [
+        { "id": "r", "kind": "text", "x": 50, "y": 20, "text": "force x distance", "size": 4, "anchor": "middle", "color": "ink", "in": { "s": 0, "off": 0 } }
+      ]
+    }
+  ]
+}

@@ -46,8 +46,8 @@ export const LessonRequest = z
         style: z.enum(["technical", "animated"]).default("technical"),
         /** Story jobs (ADR 0096): left out, "full" for the technical style and "none" for the animated one (see resolveStoryOptions). "none" draws the story on one full, plain white frame with no heading, scene counter or card border, only the stage and the caption. "full" is the page as before. */
         chrome: z.enum(["full", "none"]).optional(),
-        /** Story jobs (ADR 0097): "sentence" prints each sentence under the picture while it is spoken; "none" shows no caption band. With none, the host should offer its own text alternative. */
-        captions: z.enum(["sentence", "none"]).default("sentence"),
+        /** Story jobs (ADR 0097, 0114): "sentence" prints each sentence under the picture while it is spoken (burned in; the default); "none" shows no caption band, and the host should offer its own text alternative; "sidecar" draws no caption band and also writes captions.vtt (WebVTT, one cue per sentence at the same times) beside lesson.mp4, for a player that shows the captions itself with a toggle. */
+        captions: z.enum(["sentence", "none", "sidecar"]).default("sentence"),
         /** Story jobs (ADR 0098): the text face; left out, "inter" for the technical style and "atkinson" for the animated one (see resolveStoryOptions). "inter" or "atkinson", Atkinson Hyperlegible, made so look-alike characters (the O in CO2 and a zero) can be told apart. */
         font: z.enum(["inter", "atkinson"]).optional(),
         /** Story jobs, Kokoro voice (ADR 0096): the base speaking speed, 1 is the voice's normal pace. Left out, the engine uses its own speed for the language (0.92 for English); a sentence marked [slow] is said 13% slower than this. */

@@ -2,6 +2,7 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { STORY_STYLE, type PlacedStory } from "./story";
 import { PROPS } from "./story-props";
+import { applyRole, rolePaletteName, usesRoles, withRoleColours } from "./story-roles";
 
 /** The colours a story may name, for each theme. A host names a colour; it never writes one. */
 export const PALETTES = {
@@ -45,7 +46,11 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   const p = isAnimated ? { ...baseP, ...ANIMATED_PALETTE_OVERRIDE } : baseP;
   const isDevanagari = locale === "hi-IN" || locale === "ne-NP";
   const langAttr = locale === "hi-IN" ? "hi" : locale === "ne-NP" ? "ne" : "en";
-  const data = { title: story.title, scenes: story.scenes, totalMs: story.totalMs, palette: p, math, visualStyle, locale, style: STORY_STYLE, props: PROPS, chrome };
+  // Colour roles (ADR 0114): only a story that names a role carries the four role colours and draws those shapes in them; every other story is built exactly as before.
+  const roles = usesRoles(story);
+  const pagePalette = roles ? withRoleColours(p, rolePaletteName(theme, visualStyle)) : p;
+  const pageScenes = roles ? story.scenes.map((sc) => ({ ...sc, visuals: sc.visuals.map(applyRole) })) : story.scenes;
+  const data = { title: story.title, scenes: pageScenes, totalMs: story.totalMs, palette: pagePalette, math, visualStyle, locale, style: STORY_STYLE, props: PROPS, chrome };
   const fontDir = resolve(__dirname, "../../components/fonts");
   const inter400 = pathToFileURL(resolve(fontDir, "inter-latin-400.woff2")).href;
   const inter600 = pathToFileURL(resolve(fontDir, "inter-latin-600.woff2")).href;
@@ -100,6 +105,10 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   const liftScript = liftCaptions
     ? `<script>(function(){var objs=${JSON.stringify(objectScenes)},d=window.__draw,sc=window.__STORY.scenes,el=document.getElementById("caption");window.__draw=function(T){d(T);var c=sc.length-1;for(var i=0;i<sc.length;i++){if(T<sc[i].endMs){c=i;break}}el.classList.toggle("objs",objs[c]===true)}})();</script>`
     : "";
+  // A highlighted word of a sentence is drawn bold, underlined and in its role colour inside the caption; only a story with a highlight gets this script.
+  const highlightScript = captions !== "none" && story.scenes.some((sc) => (sc.highlights?.length ?? 0) > 0)
+    ? `<script>(function(){var P=window.__STORY.palette,sc=window.__STORY.scenes,el=document.getElementById("cap-text"),d=window.__draw;window.__draw=function(T){d(T);var c=sc.length-1;for(var i=0;i<sc.length;i++){if(T<sc[i].endMs){c=i;break}}var s=sc[c],hs=s.highlights||[],k=-1;for(var q=0;q<s.sentences.length;q++){if(T>=s.sentences[q].startMs)k=q}if(!hs.length||k<0||el.querySelector("mark"))return;var text=el.textContent,low=text.toLowerCase(),sp=[];hs.forEach(function(h){if(h.s!==k)return;var a=low.indexOf(h.word.toLowerCase());if(a>=0)sp.push([a,a+h.word.length,h.role])});sp.sort(function(x,y){return x[0]-y[0]});var out=[],at=0;sp.forEach(function(x){if(x[0]<at)return;out.push(document.createTextNode(text.slice(at,x[0])));var m=document.createElement("mark");m.textContent=text.slice(x[0],x[1]);m.style.cssText="background:none;font-weight:700;text-decoration:underline;color:"+P["role_"+x[2].replace("-","_")];out.push(m);at=x[1]});if(!out.length)return;out.push(document.createTextNode(text.slice(at)));el.textContent="";out.forEach(function(n){el.appendChild(n)})}})();</script>`
+    : "";
   return `<!doctype html><html lang="${langAttr}"><head><meta charset="utf-8">${googleFontLinks}<link rel="stylesheet" href="${katexCss}"><style>
 @font-face{font-family:"Inter";src:url("${inter400}") format("woff2");font-weight:400;font-display:block}
 @font-face{font-family:"Inter";src:url("${inter600}") format("woff2");font-weight:600;font-display:block}
@@ -118,5 +127,5 @@ ${captions === "none" ? "#caption{display:none}" : ""}
 #bar{position:absolute;left:0;bottom:0;height:7px;background:${p.blue};width:0;${clean ? "display:none;" : ""}}
 .math{color:${p.ink}}
 </style></head><body><div id="frame"><div id="top"><div id="heading"></div><div id="count"></div></div><div id="panel"><svg id="stage" viewBox="0 0 100 45" preserveAspectRatio="xMidYMid meet"></svg></div><div id="caption"><span id="cap-text"></span></div><div id="bar"></div></div>
-<script>window.__STORY=${embedJson(data)};</script><script>${runtime.replace(/<\/script/gi, "<\\/script")}</script>${liftScript}</body></html>`;
+<script>window.__STORY=${embedJson(data)};</script><script>${runtime.replace(/<\/script/gi, "<\\/script")}</script>${liftScript}${highlightScript}</body></html>`;
 }

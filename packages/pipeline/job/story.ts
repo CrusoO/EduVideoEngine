@@ -39,7 +39,7 @@ export type StoryMove = { at: StoryCue; dur: number; dx: number; dy: number; rot
 
 export const LABEL_POSITIONS = ["above", "below", "left", "right", "center"] as const;
 export type LabelPosition = (typeof LABEL_POSITIONS)[number];
-export type StoryBase = { id: string; cells?: string; label?: string; labelPos: LabelPosition; in: StoryCue; out?: StoryCue; how: StoryHow; floodFrom?: FloodFrom; color: StoryColor; fill: StoryColor; fillOpacity: number; width: number; opacity: number; dash: boolean; focus: boolean; z: number; moves: StoryMove[]; signal?: boolean };
+export type StoryBase = { id: string; cells?: string; label?: string; labelPos: LabelPosition; in: StoryCue; out?: StoryCue; how: StoryHow; floodFrom?: FloodFrom; color: StoryColor; fill: StoryColor; fillOpacity: number; width: number; opacity: number; dash: boolean; focus: boolean; z: number; moves: StoryMove[]; signal?: boolean; role?: ColourRole };
 export type StoryBox = { x: number; y: number; w: number; h: number };
 export type StoryWindow = { xmin: number; xmax: number; ymin: number; ymax: number };
 export type StoryShape =
@@ -67,6 +67,12 @@ export type StoryShape =
   | { kind: "particles"; cx: StoryNum; cy: StoryNum; r: StoryNum; n?: number; size?: number; speed?: number };
 export type StoryVisual = StoryBase & StoryShape;
 
+/** What a colour means (ADR 0114): the thing being explained, the key element or result, a caution (amber) and something checked by code (green). Optional on a shape and on a highlighted word; see story-roles.ts. */
+export const COLOUR_ROLES = ["term", "key", "look-again", "checked"] as const;
+export type ColourRole = (typeof COLOUR_ROLES)[number];
+/** A word of a sentence, drawn in a role colour in the caption (ADR 0114). */
+export type StoryHighlight = { s: number; word: string; role: ColourRole };
+export const STORY_HIGHLIGHTS_PER_SCENE = 4;
 export const STORY_ROLES = ["hook", "build", "reveal", "wrap"] as const;
 export type StoryRole = (typeof STORY_ROLES)[number];
 export type StorySentencePace = "slow" | "fast";
@@ -86,10 +92,11 @@ export type StoryColorMap = Partial<Record<string, StoryColor>>;
 
 export type StoryCamera = { x: number; y: number; w: number; h: number };
 export type SceneBg = { kind: "solid"; color: string } | { kind: "gradient"; from: string; to: string; angle?: number };
-export type StoryScene = { role: StoryRole; heading: string; sentences: StorySentence[]; visuals: StoryVisual[]; stagger_ms?: number; camera?: StoryCamera; bg?: SceneBg };
+export type StoryScene = { role: StoryRole; heading: string; sentences: StorySentence[]; visuals: StoryVisual[]; stagger_ms?: number; camera?: StoryCamera; bg?: SceneBg; highlights?: StoryHighlight[] };
 export type Story = { title: string; color_map?: StoryColorMap; scenes: StoryScene[] };
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
+const isColourRole = (v: unknown): v is ColourRole => typeof v === "string" && (COLOUR_ROLES as readonly string[]).includes(v);
 const clamp = (n: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, n));
 const finite = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
 const text = (v: unknown, max: number): string => (typeof v === "string" ? cleanLine(v.replace(/[\u0000-\u001f\u007f]/g, " ")).slice(0, max) : "");
@@ -384,6 +391,7 @@ export function sanitizeStory(raw: unknown): Sanitized {
           shape.d = d;
         }
       }
+      if (v.role !== undefined && !isColourRole(v.role)) notes.push(`scene ${si + 1}, shape ${vi + 1}: role must be one of ${COLOUR_ROLES.join(", ")}; it was ignored`);
       const floodFrom = typeof v.floodFrom === "string" && (FLOOD_FROMS as readonly string[]).includes(v.floodFrom) ? (v.floodFrom as FloodFrom) : null;
       if (how === "flood" && v.floodFrom !== undefined && floodFrom === null) notes.push(`scene ${si + 1}, shape ${vi + 1}: floodFrom must be bottom, top, left or right`);
       for (const key of ["in", "out"] as const) {
@@ -407,6 +415,7 @@ export function sanitizeStory(raw: unknown): Sanitized {
         dash: v.dash === true,
         focus: v.focus === true,
         ...(v.signal === true ? { signal: true } : {}),
+        ...(isColourRole(v.role) ? { role: v.role } : {}),
         z: typeof v.z === "number" && isFinite(v.z) ? Math.round(clamp(v.z, -10, 10)) : 0,
         moves: (Array.isArray(v.moves) ? v.moves : []).slice(0, STORY_LIMITS.moves).map(moveOf).filter((m): m is StoryMove => m !== null),
         ...shape,
@@ -444,7 +453,14 @@ export function sanitizeStory(raw: unknown): Sanitized {
         bg = { kind: "gradient", from: sc.bg.from, to: sc.bg.to, ...(typeof sc.bg.angle === "number" ? { angle: clamp(sc.bg.angle, 0, 360) } : {}) };
       }
     }
-    scenes.push({ role, heading: text(sc.heading, STORY_LIMITS.heading) || `Part ${scenes.length + 1}`, sentences, visuals: finalVisuals, ...(stagger_ms ? { stagger_ms } : {}), ...(camera ? { camera } : {}), ...(bg ? { bg } : {}) });
+    const highlights: StoryHighlight[] = [];
+    for (const h of (Array.isArray(sc.highlights) ? sc.highlights : []).slice(0, STORY_HIGHLIGHTS_PER_SCENE)) {
+      const word = isObj(h) ? text(h.word, 40) : "";
+      const at = isObj(h) && finite(h.s) ? Math.round(h.s) : -1;
+      if (isObj(h) && word && isColourRole(h.role) && sentences[at]?.text.toLowerCase().includes(word.toLowerCase())) highlights.push({ s: at, word, role: h.role });
+      else notes.push(`scene ${si + 1}: a highlight needs s (a sentence), word (a word of it) and role (${COLOUR_ROLES.join(", ")}); it was dropped`);
+    }
+    scenes.push({ role, heading: text(sc.heading, STORY_LIMITS.heading) || `Part ${scenes.length + 1}`, sentences, visuals: finalVisuals, ...(stagger_ms ? { stagger_ms } : {}), ...(camera ? { camera } : {}), ...(bg ? { bg } : {}), ...(highlights.length ? { highlights } : {}) });
     sceneIndex++;
   }
   if (scenes.length === 0) return { story: null, notes: [...notes, "the story has no scene with a sentence"] };
@@ -462,7 +478,7 @@ export const APPEAR_MS: Record<StoryHow, number> = { fade: 250, write: 800, indi
 export type PlacedSentence = { text: string; startMs: number; durMs: number; pauseMs?: number; pace?: StorySentencePace };
 export type PlacedMove = Omit<StoryMove, "at"> & { atMs: number };
 export type PlacedVisual = Omit<StoryVisual, "in" | "out" | "moves"> & { inMs: number; inS: number; outMs: number | null; appearMs: number; moves: PlacedMove[]; missingWords?: string[] };
-export type PlacedScene = { role: StoryRole; heading: string; startMs: number; endMs: number; sentences: PlacedSentence[]; visuals: PlacedVisual[]; stagger_ms?: number; camera?: StoryCamera; bg?: SceneBg };
+export type PlacedScene = { role: StoryRole; heading: string; startMs: number; endMs: number; sentences: PlacedSentence[]; visuals: PlacedVisual[]; stagger_ms?: number; camera?: StoryCamera; bg?: SceneBg; highlights?: StoryHighlight[] };
 export type PlacedStory = { title: string; color_map?: StoryColorMap; scenes: PlacedScene[]; totalMs: number };
 
 /** Turns cues into times: a cue is a delay after the start of a sentence of its scene (a sentence number past the end means the last one). */
@@ -511,7 +527,7 @@ export function placeStory(story: Story, durations: ReadonlyArray<ReadonlyArray<
         group.forEach((v, rank) => { v.inMs += sc.stagger_ms! * rank; });
       }
     }
-    return { role: sc.role, heading: sc.heading, startMs, endMs, sentences, visuals, ...(sc.stagger_ms ? { stagger_ms: sc.stagger_ms } : {}), ...(sc.camera ? { camera: sc.camera } : {}), ...(sc.bg ? { bg: sc.bg } : {}) };
+    return { role: sc.role, heading: sc.heading, startMs, endMs, sentences, visuals, ...(sc.stagger_ms ? { stagger_ms: sc.stagger_ms } : {}), ...(sc.camera ? { camera: sc.camera } : {}), ...(sc.bg ? { bg: sc.bg } : {}), ...(sc.highlights ? { highlights: sc.highlights } : {}) };
   });
   return { title: story.title, ...(story.color_map ? { color_map: story.color_map } : {}), scenes, totalMs: t };
 }

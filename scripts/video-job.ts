@@ -17,7 +17,7 @@ import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
-import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -49,16 +49,18 @@ const emit = (stage: JobEvent["stage"], status: JobEvent["status"], extra: { cod
   appendFileSync(eventsFile, JSON.stringify(e) + "\n");
   console.log(JSON.stringify(e));
 };
+/** Set when a story job with `captions: "sidecar"` has written captions.vtt (ADR 0114): goes into result.json. */
+let captionsMeta: { file: "captions.vtt"; language: string; format: "webvtt" } | undefined;
 const finish = (code: ErrorCode | undefined, detail?: string): never => {
   releaseSlot?.();
   const state = reduceJob(events);
-  writeFileSync(join(jobDir, "result.json"), JSON.stringify({ requestId: safeId, status: code ? (code === "cancelled" ? "cancelled" : "failed") : "done", code, detail, state, files: files() }, null, 2) + "\n");
+  writeFileSync(join(jobDir, "result.json"), JSON.stringify({ requestId: safeId, status: code ? (code === "cancelled" ? "cancelled" : "failed") : "done", code, detail, state, files: files(), ...(captionsMeta ? { captions: captionsMeta } : {}) }, null, 2) + "\n");
   process.exit(code === undefined ? 0 : code === "cancelled" ? 3 : 1);
 };
 let pkg = "package";
 const files = (): Record<string, { path: string; bytes: number; sha256: string }> => {
   const out: Record<string, { path: string; bytes: number; sha256: string }> = {};
-  for (const [k, rel] of [["video", "lesson.mp4"], ["sources", "sources.json"], ["lesson", join(pkg, "lesson.json")], ["report", join(pkg, "report.json")]] as const) {
+  for (const [k, rel] of [["video", "lesson.mp4"], ...(captionsMeta ? [["captions", "captions.vtt"] as const] : []), ["sources", "sources.json"], ["lesson", join(pkg, "lesson.json")], ["report", join(pkg, "report.json")]] as const) {
     const p = join(jobDir, rel);
     if (existsSync(p)) out[k] = { path: rel.replace(/\\/g, "/"), bytes: statSync(p).size, sha256: sha(p) };
   }
@@ -162,6 +164,7 @@ if (keys.idempotencyKey !== undefined && keys.idempotencyKey !== request.idempot
 if (prior?.status === "done" && keys.requestHash === requestHash && !args.includes("--fresh")) {
   emit("job", "started");
   emit("job", "done", { detail: "found the finished job for this idempotency key" });
+  if (request.story && request.options.captions === "sidecar" && existsSync(join(jobDir, "captions.vtt"))) captionsMeta = { file: "captions.vtt", language: request.options.locale, format: "webvtt" };
   finish(undefined);
 }
 if (args.includes("--fresh")) keys = { stages: {} };
@@ -322,8 +325,17 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
     mp4DurationS: dur ? Number(dur[1]) * 3600 + Number(dur[2]) * 60 + Number(dur[3]) : null,
     expectedS: timeline.totalMs / 1000,
   });
-  writeFileSync(join(jobDir, "qa.json"), JSON.stringify(checks, null, 2) + "\n");
+  // advisory notes on the story as a lesson (ADR 0114): entries with severity "advisory", ok always true, so they never change the verdict
+  const advisories = kind === "story" ? storyAdvisories(story!, { locale: request.options.locale }).map((a) => ({ id: `advisory:${a.kind}`, ok: true, severity: "advisory", kind: a.kind, scene: a.scene, ...(a.shape ? { shape: a.shape } : {}), message: a.message })) : [];
+  writeFileSync(join(jobDir, "qa.json"), JSON.stringify([...checks, ...advisories], null, 2) + "\n");
   writeFileSync(join(jobDir, "lesson.mp4"), readFileSync(mp4));
+  if (kind === "story" && request.options.captions === "sidecar") {
+    // captions.vtt beside lesson.mp4 (ADR 0114); a missing file is a failed delivery, not a silent video without captions
+    const vtt = join(dir, "captions.vtt");
+    if (!existsSync(vtt)) fail("qa", "qa_failed", "captions: sidecar was asked for but captions.vtt was not written");
+    writeFileSync(join(jobDir, "captions.vtt"), readFileSync(vtt));
+    captionsMeta = { file: "captions.vtt", language: request.options.locale, format: "webvtt" };
+  }
   const bad = checks.filter((c) => !c.ok);
   if (bad.length > 0) fail("qa", "qa_failed", bad.map((c) => `${c.id}: ${c.message}`).join("; "));
   emit("qa", "done", { detail: `${checks.length} checks passed` });
