@@ -6,7 +6,7 @@
  * 17 checks: 9 original + 5 spatial/motion + 3 visual quality
  * (shapes_unfilled, scale_imbalance, composition_clustered).
  */
-import { STAGE, type PlacedStory, type Story, type StoryVisual, type StoryNum } from "./story";
+import { STAGE, type ColourRole, type PlacedStory, type Story, type StoryVisual, type StoryNum } from "./story";
 import { SPOKEN_TERMS } from "./source";
 import { gridCells, gridOverlap } from "./story-grid";
 import { PROP_NAMES, PROP_WORDS } from "./story-props";
@@ -300,5 +300,89 @@ export function placedQA(placed: PlacedStory): QANote[] {
       }
     }
   }
+  return notes;
+}
+
+/**
+ * Advisory notes on the shape of a story as a lesson (ADR 0114). They are warnings for the host, never a failure, and they are kept apart from storyQA so the notes and the verdict of a
+ * story that existed before are unchanged. qa.json carries them as entries with `severity: "advisory"` and one of these `kind`s; a consumer ignores a kind it does not know.
+ *
+ * The six-part template: a hook question, a named key term, one idea per scene, a worked example with the explained part highlighted, a one-line recap, and a hand-off to try one.
+ * Heuristics (English cues are used only when the locale is English; the counts apply to every language):
+ *  - key_term_unmarked: no shape and no highlighted word of the story has the role term or key (the author never said what the key term is).
+ *  - key_term_unnamed: a shape with the role term or key has a label or text, and none of its words (3 letters or more) is spoken in its scene.
+ *  - scene_many_ideas: a scene holds more than IDEA_LIMITS.definitions sentences that define a term ("is called", "we call", "is known as", "is defined as", "stands for"), or more than IDEA_LIMITS.labelled different labelled shapes (by first word).
+ *  - worked_example_missing: no scene heading or sentence says "example", "for instance", "suppose", "let us try / solve / work / take" or the like.
+ *  - worked_example_unmarked: such a scene exists but nothing in it is highlighted (no shape with a role, `focus` or `signal`, no highlighted word).
+ *  - recap_missing: no scene has the role wrap; recap_long: the wrap scene has more than one sentence once its hand-off sentence is set aside.
+ *  - handoff_missing: no sentence of the last scene invites the student to try one ("your turn", "try one", "now you", "can you solve", "have a go").
+ *  - role_colour_shared / role_colour_varies: the colours the author wrote on shapes (not the engine's default for the kind) disagree about what a role means (the page draws roles in the role colours regardless; the note is for the host's prompts).
+ */
+export const IDEA_LIMITS = { definitions: 1, labelled: 5 } as const;
+export const ADVISORY_KINDS = ["key_term_unmarked", "key_term_unnamed", "scene_many_ideas", "worked_example_missing", "worked_example_unmarked", "recap_missing", "recap_long", "handoff_missing", "role_colour_shared", "role_colour_varies"] as const;
+const DEFINITION_RE = /\b(is called|are called|we call|is known as|are known as|is defined as|stands? for)\b/i;
+const EXAMPLE_RE = /\b(for example|for instance|worked example|an example|example|suppose|let(?:'s| us) (?:try|work|solve|take|see|look at)|say we have)\b/i;
+const HANDOFF_RE = /\b(your turn|try (?:one|it|this|another|a similar|solving)|now you|can you (?:solve|try|work|find|do)|have a go|give it a go)\b/i;
+
+export function storyAdvisories(story: Story, options: { locale?: string } = {}): QANote[] {
+  const english = (options.locale ?? "en-IN") === "en-IN";
+  const notes: QANote[] = [];
+  const marked = (v: StoryVisual): boolean => v.role !== undefined || v.focus || v.signal === true;
+  const keyRole = (r: ColourRole | undefined): boolean => r === "term" || r === "key";
+
+  // the key term: marked at all, and spoken
+  const anyKey = story.scenes.some((sc) => sc.visuals.some((v) => keyRole(v.role)) || (sc.highlights ?? []).some((h) => keyRole(h.role)));
+  if (!anyKey) notes.push({ scene: 0, kind: "key_term_unmarked", message: "no shape or highlighted word has the role term or key, so the key term is not marked" });
+  for (const [si, sc] of story.scenes.entries()) {
+    const said = sc.sentences.map((s) => s.text.toLowerCase()).join(" ");
+    for (const v of sc.visuals) {
+      if (!keyRole(v.role)) continue;
+      const own = (v.label ?? (v.kind === "text" ? v.text : "")).toLowerCase();
+      const words = own.split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 3);
+      if (words.length > 0 && !words.some((w) => said.includes(w))) notes.push({ scene: si, kind: "key_term_unnamed", shape: v.id, message: `shape "${v.id}" is marked ${v.role} ("${own.slice(0, 30)}") but its words are not spoken in the scene` });
+    }
+    // one idea per scene
+    const definitions = sc.sentences.filter((s) => english && DEFINITION_RE.test(s.text)).length;
+    const labelled = new Set(sc.visuals.filter((v) => v.label).map((v) => v.label!.split(/\s+/)[0]!.toLowerCase())).size;
+    if (definitions > IDEA_LIMITS.definitions || labelled > IDEA_LIMITS.labelled) {
+      notes.push({ scene: si, kind: "scene_many_ideas", message: `scene holds ${definitions} term definition(s) and ${labelled} labelled shape(s) (one idea per scene: at most ${IDEA_LIMITS.definitions} and ${IDEA_LIMITS.labelled})` });
+    }
+  }
+
+  // the worked example
+  if (english) {
+    const worked = story.scenes.flatMap((sc, si) => (EXAMPLE_RE.test(sc.heading) || sc.sentences.some((s) => EXAMPLE_RE.test(s.text)) ? [si] : []));
+    if (worked.length === 0) notes.push({ scene: 0, kind: "worked_example_missing", message: "no scene works an example (none says example, for instance, suppose or let us try)" });
+    else if (!worked.some((si) => story.scenes[si]!.visuals.some(marked) || (story.scenes[si]!.highlights ?? []).length > 0)) notes.push({ scene: worked[0]!, kind: "worked_example_unmarked", message: "the worked example highlights nothing: give the part being explained a role, focus or a highlighted word" });
+  }
+
+  // the recap and the hand-off
+  const last = story.scenes[story.scenes.length - 1];
+  const wrapAt = story.scenes.map((s) => s.role).lastIndexOf("wrap");
+  if (wrapAt < 0) notes.push({ scene: Math.max(0, story.scenes.length - 1), kind: "recap_missing", message: "no scene has role: wrap, so there is no one-line recap" });
+  else {
+    const recap = story.scenes[wrapAt]!.sentences.filter((s) => !(english && HANDOFF_RE.test(s.text)));
+    if (recap.length > 1) notes.push({ scene: wrapAt, kind: "recap_long", message: `the wrap scene has ${recap.length} sentences besides the hand-off: the recap should be one line` });
+  }
+  if (english && last && !last.sentences.some((s) => HANDOFF_RE.test(s.text))) notes.push({ scene: story.scenes.length - 1, kind: "handoff_missing", message: "the last scene never invites the student to try one (a your-turn sentence)" });
+
+  // colours that disagree about a role
+  const byRole = new Map<ColourRole, Map<string, number>>();
+  const byColour = new Map<string, Map<ColourRole, number>>();
+  for (const [si, sc] of story.scenes.entries()) {
+    for (const v of sc.visuals) {
+      // a colour the author never wrote is the engine's default for the kind (ink for text and formulas, blue for the rest): it says nothing about what the author meant
+      const isDefault = v.color === (v.kind === "text" || v.kind === "math" ? "ink" : "blue");
+      if (!v.role || v.color === "none" || isDefault) continue;
+      const roleColours = byRole.get(v.role) ?? new Map<string, number>();
+      if (!roleColours.has(v.color)) roleColours.set(v.color, si);
+      byRole.set(v.role, roleColours);
+      const colourRoles = byColour.get(v.color) ?? new Map<ColourRole, number>();
+      if (!colourRoles.has(v.role)) colourRoles.set(v.role, si);
+      byColour.set(v.color, colourRoles);
+    }
+  }
+  for (const [role, colours] of byRole) if (colours.size > 1) notes.push({ scene: Math.max(...colours.values()), kind: "role_colour_varies", message: `role ${role} is written in ${colours.size} colours (${[...colours.keys()].join(", ")}): one colour per role` });
+  for (const [colour, roles] of byColour) if (roles.size > 1) notes.push({ scene: Math.max(...roles.values()), kind: "role_colour_shared", message: `colour ${colour} is written for ${roles.size} roles (${[...roles.keys()].join(", ")}): one role per colour` });
   return notes;
 }

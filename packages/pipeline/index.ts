@@ -16,6 +16,8 @@ export * from "./job/job";
 export * from "./job/source";
 export * from "./job/story";
 export * from "./job/story-qa";
+export * from "./job/story-roles";
+export * from "./job/story-captions";
 export * from "./job/story-expr";
 export * from "./job/story-page";
 export * from "./job/story-props";
