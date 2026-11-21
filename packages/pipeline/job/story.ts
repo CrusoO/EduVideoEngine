@@ -4,6 +4,7 @@ import { cleanLine } from "./source";
 import { PROPS, PROP_NAMES, type PropName } from "./story-props";
 import { WORD_CUE_LEAD_MS, findWord, wordStarts } from "./story-words";
 import { fillFromGrid, gridCells, gridName } from "./story-grid";
+import { expandSteps } from "./story-steps";
 
 /**
  * A story lesson (ADR 0091): the host sends scenes of narration and the shapes to draw while it is said; the engine voices the narration and draws the shapes as an animation.
@@ -360,7 +361,9 @@ export function sanitizeStory(raw: unknown): Sanitized {
     sentenceCount += sentences.length;
     const visuals: StoryVisual[] = [];
     const ids = new Set<string>();
-    for (const [vi, v] of (Array.isArray(sc.visuals) ? sc.visuals : []).slice(0, STORY_LIMITS.visuals).entries()) {
+    // `steps` (ADR 0115) stand for formulas laid out by the engine; they are read like any other shape, after the ones the author placed
+    const rawVisuals = [...(Array.isArray(sc.visuals) ? sc.visuals : []), ...expandSteps(sc.steps, sentences.length, notes, si + 1)];
+    for (const [vi, v] of rawVisuals.slice(0, STORY_LIMITS.visuals).entries()) {
       if (!isObj(v)) continue;
       // a cell or an area of the grid (ADR 0102) fills the position the author left out; numbers the author wrote win
       const named = v.area !== undefined ? v.area : v.cell;
@@ -391,6 +394,9 @@ export function sanitizeStory(raw: unknown): Sanitized {
           shape.d = d;
         }
       }
+      // a role named as a colour (`color: "term"`) is what the author meant: it is read as the role, with a note, instead of turning silently blue
+      if (typeof v.color === "string" && !isColourRole(v.color) && !(COLORS as readonly string[]).includes(v.color)) notes.push(`scene ${si + 1}, shape ${vi + 1}: "${v.color.slice(0, 20)}" is not a colour of the stage (${COLORS.join(", ")}); the default was used`);
+      if (v.role === undefined && isColourRole(v.color)) notes.push(`scene ${si + 1}, shape ${vi + 1}: "${v.color}" is a role, not a colour; it was read as role: "${v.color}"`);
       if (v.role !== undefined && !isColourRole(v.role)) notes.push(`scene ${si + 1}, shape ${vi + 1}: role must be one of ${COLOUR_ROLES.join(", ")}; it was ignored`);
       const floodFrom = typeof v.floodFrom === "string" && (FLOOD_FROMS as readonly string[]).includes(v.floodFrom) ? (v.floodFrom as FloodFrom) : null;
       if (how === "flood" && v.floodFrom !== undefined && floodFrom === null) notes.push(`scene ${si + 1}, shape ${vi + 1}: floodFrom must be bottom, top, left or right`);
@@ -415,7 +421,7 @@ export function sanitizeStory(raw: unknown): Sanitized {
         dash: v.dash === true,
         focus: v.focus === true,
         ...(v.signal === true ? { signal: true } : {}),
-        ...(isColourRole(v.role) ? { role: v.role } : {}),
+        ...(isColourRole(v.role) ? { role: v.role } : isColourRole(v.color) ? { role: v.color } : {}),
         z: typeof v.z === "number" && isFinite(v.z) ? Math.round(clamp(v.z, -10, 10)) : 0,
         moves: (Array.isArray(v.moves) ? v.moves : []).slice(0, STORY_LIMITS.moves).map(moveOf).filter((m): m is StoryMove => m !== null),
         ...shape,

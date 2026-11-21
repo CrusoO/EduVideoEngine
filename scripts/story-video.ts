@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT, readEnv } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -72,7 +72,7 @@ const lap = (label: string): void => {
   lapAt = now;
 };
 
-type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
+type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[]; layout?: QANote[] } };
 
 async function build(): Promise<void> {
   lapAt = Date.now();
@@ -149,7 +149,9 @@ async function build(): Promise<void> {
     await Promise.all(Array.from({ length: 3 }, worker));
     synth.dispose?.();
   }
-  const placed = placeStory(story, durations);
+  // two lines of text on top of each other, or a formula off the stage, are moved to a free place (ADR 0115); a story with no collision is untouched
+  const timed = placeStory(story, durations);
+  const { placed, notes: layoutNotes } = resolveLayout(timed);
 
   // the formulas, typeset once here with KaTeX (no script runs in the page for them)
   const katexRoot = join(REPO_ROOT, "packages", "components");
@@ -171,7 +173,7 @@ async function build(): Promise<void> {
   if (sidecar) writeFileSync(join(dir, "captions.vtt"), toWebVtt(sentenceCaptionCues(placed)));
   const audio = jobs.map((j) => ({ wav: j.file, startMs: placed.scenes[j.si]!.sentences[j.i]!.startMs }));
   // soft checks on the story and on how it was timed: notes for the host, never a failure
-  const qa = { story: storyQA(story), timing: placedQA(placed) };
+  const qa = { story: storyQA(story), timing: placedQA(placed), ...(layoutNotes.length ? { layout: layoutNotes } : {}) };
   const timeline: Timeline = { totalMs: placed.totalMs, voice: { id: synthVoice.id, status: synthVoice.status }, placed, audio, dropped: clean.notes, qa };
   writeFileSync(timelineFile, JSON.stringify(timeline, null, 2) + "\n");
   lap("page, notes and timeline written");
