@@ -1,6 +1,7 @@
 import { STAGE, type PlacedScene, type PlacedStory, type PlacedVisual as PlacedBase, type StoryNum, type StoryShape } from "./story";
 import type { QANote } from "./story-qa";
 import { PROPS } from "./story-props";
+import { mathTokens } from "./story-steps";
 
 /**
  * Automatic layout for a story (ADR 0115). The host is a model that writes coordinates and cannot see the picture, so two lines of text or a label and a circle can end up on top of
@@ -24,12 +25,6 @@ export type Box = { x0: number; y0: number; x1: number; y1: number };
 /** A placed shape with its kind-specific fields (the base type drops them, because Omit flattens a union). */
 type PlacedVisual = PlacedBase & StoryShape;
 const num = (n: StoryNum | undefined): number | null => (typeof n === "number" ? n : null);
-
-/** How many glyph cells a formula takes: commands count as one, braces, spaces and the colour argument none. A rough measure, tuned on KaTeX output (a token is about one size unit wide). */
-export function mathTokens(latex: string): number {
-  const bare = latex.replace(/\\textcolor\{[^}]*\}/g, "").replace(/\\[a-zA-Z]+/g, "X").replace(/[{}\s^_$]/g, "");
-  return Math.max(1, bare.length);
-}
 
 /** The width and height of a line of text or a formula in stage units, from its size and its characters. */
 export function textSize(placed: PlacedBase): { w: number; h: number } | null {

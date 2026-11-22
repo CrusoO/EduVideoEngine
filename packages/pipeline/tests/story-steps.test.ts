@@ -9,24 +9,28 @@ describe("worked steps (ADR 0115)", () => {
     const { story, notes } = make({ steps: [{ latex: "x - 5 = 0" }, { latex: "x = -5", wrong: true }, { latex: "x = 5", role: "key" }, { latex: "5 - 5 = 0", role: "checked" }] });
     expect(notes).toEqual([]);
     const v = story!.scenes[0]!.visuals;
-    expect(v.map((s) => s.id)).toEqual(["step1", "step2", "step3", "step4"]);
-    expect(v.map((s) => s.kind)).toEqual(["math", "math", "math", "math"]);
-    expect(v.map((s) => s.in.s)).toEqual([0, 1, 2, 3]);
-    const ys = v.map((s) => (s as unknown as { y: number }).y);
+    const steps = v.filter((s) => s.id.startsWith("step"));
+    expect(steps.map((s) => s.id)).toEqual(["step1", "step2", "step3", "step4"]);
+    expect(steps.map((s) => s.kind)).toEqual(["math", "math", "math", "math"]);
+    expect(steps.map((s) => s.in.s)).toEqual([0, 1, 2, 3]);
+    const ys = steps.map((s) => (s as unknown as { y: number }).y);
     expect([...ys].sort((a, b) => a - b)).toEqual(ys);
     expect(Math.min(...ys)).toBeGreaterThan(0);
     expect(Math.max(...ys)).toBeLessThan(42);
   });
 
-  it("draws a wrong step in the look-again role and strikes it through", () => {
-    const v = make({ steps: [{ latex: "x = -5", wrong: true }] }).story!.scenes[0]!.visuals[0]! as unknown as { latex: string; role: string };
-    expect(v.role).toBe("look-again");
-    expect(v.latex).toBe(String.raw`\cancel{x = -5}`);
-  });
-
-  it("does not strike a step twice", () => {
-    const v = make({ steps: [{ latex: String.raw`\cancel{x}`, wrong: true }] }).story!.scenes[0]!.visuals[0]! as unknown as { latex: string };
-    expect(v.latex).toBe(String.raw`\cancel{x}`);
+  it("draws a wrong step in the look-again role and strikes it through with a line the engine draws", () => {
+    const v = make({ steps: [{ latex: "x = -5", wrong: true }] }).story!.scenes[0]!.visuals as unknown as Array<{ id: string; kind: string; role: string; latex?: string; y: number; x1?: number; x2?: number; y1?: number; in: { off: number } }>;
+    expect(v.map((s) => s.id)).toEqual(["step1", "strike1"]);
+    expect(v[0]!.role).toBe("look-again");
+    expect(v[0]!.latex).toBe("x = -5");
+    expect(v[1]!.kind).toBe("line");
+    expect(v[1]!.role).toBe("look-again");
+    // across the formula, which is centred on 50, and a little after it appears
+    expect(v[1]!.x1!).toBeLessThan(50);
+    expect(v[1]!.x2!).toBeGreaterThan(50);
+    expect(Math.abs(v[1]!.y1! - v[0]!.y)).toBeLessThan(2);
+    expect(v[1]!.in.off).toBeGreaterThan(0);
   });
 
   it("shrinks the lines as their number grows, and keeps at most STEP_LIMIT", () => {
