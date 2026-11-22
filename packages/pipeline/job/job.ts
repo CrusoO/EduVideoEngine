@@ -20,7 +20,7 @@ export const LessonRequest = z
     requestId: token,
     /** The same key asks for the same video: a repeated request finds the finished job instead of starting another. */
     idempotencyKey: token,
-    curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(9).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token.optional() }).strict(),
+    curriculum: z.object({ board: z.enum(["CBSE", "BHUTAN"]), grade: z.number().int().min(5).max(12), subject: z.enum(["maths", "physics", "chemistry", "biology"]), nodeId: token.optional() }).strict(),
     /** What the student asked, in words (at most 300 characters). Used to find the topic when `curriculum.nodeId` is not given; the engine reads it against the knowledge base and keeps it only in the job's own request file. Personal data and secrets are refused. */
     prompt: z.string().trim().min(3).max(300).optional(),
     /** A draft explainer (ADR 0090): text the host already has (a title and sections), voiced and drawn as cards. It is not matched to the knowledge base and no gate judges it; sources.json says so. Give it instead of `curriculum.nodeId` and `prompt`. */
@@ -65,6 +65,8 @@ export const LessonRequest = z
     const given = [r.curriculum.nodeId, r.prompt, r.source, r.story].filter((x) => x !== undefined).length;
     if (given === 0) ctx.addIssue({ code: "custom", path: ["curriculum", "nodeId"], message: "give curriculum.nodeId, a prompt, a source or a story" });
     if (given > 1) ctx.addIssue({ code: "custom", path: ["source"], message: "give one of curriculum.nodeId, a prompt, a source or a story, not several" });
+    // the knowledge base covers classes 9 to 12; a story or a source never touches it, so it may be for any class from 5 (ADR 0115)
+    if (!r.story && !r.source && r.curriculum.grade < 9) ctx.addIssue({ code: "custom", path: ["curriculum", "grade"], message: "Number must be greater than or equal to 9" });
     if (r.story) {
       const clean = sanitizeStory(r.story);
       if (!clean.story) ctx.addIssue({ code: "custom", path: ["story"], message: clean.notes.join("; ") });

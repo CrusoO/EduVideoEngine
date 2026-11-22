@@ -41,6 +41,11 @@ function centre(v: StoryVisual): { x: number; y: number } | null {
   }
 }
 
+/** The radius of a round shape, or null for any other (a rule that needs the size then falls back to the centre distance). */
+function radiusOf(v: StoryVisual | undefined): number | null {
+  return v && (v.kind === "circle" || v.kind === "sun" || v.kind === "element" || v.kind === "fuzzy") ? staticNum(v.r) : null;
+}
+
 export function storyQA(story: Story): QANote[] {
   const notes: QANote[] = [];
 
@@ -84,7 +89,8 @@ export function storyQA(story: Story): QANote[] {
     const allText = sc.sentences.map((s) => s.text.toLowerCase()).join(" ");
     for (const v of sc.visuals) {
       if (v.label) {
-        const word = v.label.split(/\s+/)[0]?.toLowerCase() ?? "";
+        // the first word of three letters or more: "x marbles" is anchored by "marbles", a one-letter variable is not a word to find
+        const word = v.label.split(/\s+/).find((w) => w.replace(/[^\p{L}\p{N}]/gu, "").length >= 3)?.toLowerCase() ?? "";
         if (word && !allText.includes(word)) {
           notes.push({ scene: si, kind: "anchor_missing", shape: v.id, message: `shape "${v.id}" has label "${v.label}" but its first word does not appear in any sentence` });
         }
@@ -124,6 +130,7 @@ export function storyQA(story: Story): QANote[] {
     }
 
     // shapes_too_close: two static centres within 6 units
+    const byId = new Map(sc.visuals.map((v) => [v.id, v]));
     const centres: Array<{ id: string; x: number; y: number }> = [];
     for (const v of sc.visuals) {
       const c = centre(v);
@@ -134,7 +141,12 @@ export function storyQA(story: Story): QANote[] {
         const dx = centres[a]!.x - centres[b]!.x;
         const dy = centres[a]!.y - centres[b]!.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 6) {
+        // a deliberate row of equal shapes (marbles, dots) that do not touch is not a crowd: only shapes that touch or come within 0.3 units of touching are flagged
+        const ra = radiusOf(byId.get(centres[a]!.id)), rb = radiusOf(byId.get(centres[b]!.id));
+        const touching = ra === null || rb === null || dist < ra + rb + 0.3;
+        // a label on a line or an arrow is meant to sit on it
+        const onLine = ["line", "arrow", "spring"].includes(byId.get(centres[a]!.id)?.kind ?? "") || ["line", "arrow", "spring"].includes(byId.get(centres[b]!.id)?.kind ?? "");
+        if (dist < 6 && touching && !onLine) {
           notes.push({ scene: si, kind: "shapes_too_close", shape: centres[a]!.id, message: `"${centres[a]!.id}" and "${centres[b]!.id}" are ${dist.toFixed(1)} units apart (min 8 recommended)` });
         }
       }
@@ -168,41 +180,33 @@ export function storyQA(story: Story): QANote[] {
 
     // shapes_unfilled: circle or rect representing a physical object has fill "none"
     for (const v of sc.visuals) {
-      if ((v.kind === "circle" || v.kind === "rect") && v.fill === "none" && v.label) {
+      if ((v.kind === "circle" || v.kind === "rect") && v.fill === "none" && v.label && v.role === undefined) {
         notes.push({ scene: si, kind: "shapes_unfilled", shape: v.id, message: `shape "${v.id}" (${v.kind}) has a label but fill "none" — physical objects should have a fill color` });
       }
     }
 
-    // scale_imbalance: one shape's radius or dimension is > 3× the median (creates visual noise)
-    const radii: number[] = [];
-    for (const v of sc.visuals) {
-      if (v.kind === "circle") { const r = staticNum(v.r); if (r !== null) radii.push(r); }
-      else if (v.kind === "rect") { const w = staticNum(v.w), h = staticNum(v.h); if (w !== null && h !== null) radii.push(Math.max(w, h)); }
-      else if (v.kind === "polygon" && Array.isArray((v as any).points) && (v as any).points.length >= 3) {
+    // scale_imbalance: one shape's radius or dimension is > 3x the median of its own kind (a bag drawn as a rectangle is not compared with the marbles drawn as circles)
+    const dimOf = (v: StoryVisual): number | null => {
+      if (v.kind === "circle") return staticNum(v.r);
+      if (v.kind === "rect") { const w = staticNum(v.w), h = staticNum(v.h); return w !== null && h !== null ? Math.max(w, h) : null; }
+      if (v.kind === "polygon" && Array.isArray((v as any).points) && (v as any).points.length >= 3) {
         const pts: [unknown, unknown][] = (v as any).points;
         const xs = pts.map((p) => (typeof p[0] === "number" ? p[0] : 0));
         const ys = pts.map((p) => (typeof p[1] === "number" ? p[1] : 0));
         const pw = Math.max(...xs) - Math.min(...xs);
         const ph = Math.max(...ys) - Math.min(...ys);
-        if (pw > 0 && ph > 0) radii.push(Math.max(pw, ph) / 2);
+        return pw > 0 && ph > 0 ? Math.max(pw, ph) / 2 : null;
       }
-    }
-    if (radii.length >= 3) {
-      const sorted = [...radii].sort((a, b) => a - b);
+      return null;
+    };
+    for (const kind of ["circle", "rect", "polygon"] as const) {
+      const same = sc.visuals.filter((v) => v.kind === kind && dimOf(v) !== null);
+      if (same.length < 3) continue;
+      const sorted = same.map((v) => dimOf(v)!).sort((a, b) => a - b);
       const median = sorted[Math.floor(sorted.length / 2)]!;
-      for (const v of sc.visuals) {
-        let dim: number | null = null;
-        if (v.kind === "circle") dim = staticNum(v.r);
-        else if (v.kind === "rect") { const w = staticNum(v.w), h = staticNum(v.h); dim = w !== null && h !== null ? Math.max(w, h) : null; }
-        else if (v.kind === "polygon" && Array.isArray((v as any).points) && (v as any).points.length >= 3) {
-          const pts: [unknown, unknown][] = (v as any).points;
-          const xs = pts.map((p) => (typeof p[0] === "number" ? p[0] : 0));
-          const ys = pts.map((p) => (typeof p[1] === "number" ? p[1] : 0));
-          const pw = Math.max(...xs) - Math.min(...xs);
-          const ph = Math.max(...ys) - Math.min(...ys);
-          if (pw > 0 && ph > 0) dim = Math.max(pw, ph) / 2;
-        }
-        if (dim !== null && median > 0 && dim > 3 * median) {
+      for (const v of same) {
+        const dim = dimOf(v)!;
+        if (median > 0 && dim > 3 * median) {
           notes.push({ scene: si, kind: "scale_imbalance", shape: v.id, message: `shape "${v.id}" size ${dim.toFixed(1)} is > 3× the scene median ${median.toFixed(1)} — creates visual imbalance` });
         }
       }

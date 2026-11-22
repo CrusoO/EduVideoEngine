@@ -15,12 +15,14 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT, readEnv } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
 const args = process.argv.slice(2);
 const jobDir = resolve(args.find((a) => !a.startsWith("--")) ?? "");
+/** How many voice workers speak sentences at once (3; 1 to 3 through VIDEO_VOICE_WORKERS, for a machine too short of memory to load the model three times). */
+const VOICE_WORKERS = Math.min(3, Math.max(1, Math.round(Number(process.env.VIDEO_VOICE_WORKERS) || 3)));
 const option = (name: string, fallback: string): string => {
   const at = args.indexOf(`--${name}`);
   return at >= 0 && args[at + 1] ? args[at + 1]! : fallback;
@@ -72,7 +74,7 @@ const lap = (label: string): void => {
   lapAt = now;
 };
 
-type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[] } };
+type Timeline = { totalMs: number; voice: { id: string; status: string }; placed: PlacedStory; audio: Array<{ wav: string; startMs: number }>; dropped: string[]; qa: { story: QANote[]; timing: QANote[]; layout?: QANote[] } };
 
 async function build(): Promise<void> {
   lapAt = Date.now();
@@ -104,8 +106,8 @@ async function build(): Promise<void> {
     const cacheDir = join(REPO_ROOT, "dist", "sentence-audio");
     const synthFor = (pace?: StorySentencePace) =>
       withSentenceCache(kokoroSynthesizer(kokoroTools(REPO_ROOT), { voice: kokoroVoice, speed: speedFor(baseSpeed, pace) }), { dir: cacheDir, enabled: sentenceCacheEnabled(args) });
-    // three instances for the ordinary pace (each serializes internally); one for each marked pace the story uses
-    const normal = Array.from({ length: 3 }, () => synthFor());
+    // three instances for the ordinary pace (each serializes internally; each holds the model in memory, so VIDEO_VOICE_WORKERS=1 is for a machine short of memory); one for each marked pace the story uses
+    const normal = Array.from({ length: VOICE_WORKERS }, () => synthFor());
     const marked = new Map<StorySentencePace, ReturnType<typeof synthFor>>();
     for (const j of jobs) if (j.pace && !marked.has(j.pace)) marked.set(j.pace, synthFor(j.pace));
     const all = [...normal, ...marked.values()];
@@ -119,7 +121,7 @@ async function build(): Promise<void> {
           await synth.synthesizeAsync!(sayText(j.text).text, out);
         }
       };
-      await Promise.all([0, 1, 2].map(worker));
+      await Promise.all(normal.map((_, idx) => worker(idx)));
       lap(`voice synthesised (sentence cache: ${all.reduce((n, s) => n + s.stats.hits, 0)} read, ${all.reduce((n, s) => n + s.stats.misses, 0)} spoken)`);
       trimSilence(ffmpegPath as string, jobs.map((j) => join(dir, j.file)));
       // a pause is silence added to this sentence's length, so the next sentence starts later
@@ -149,7 +151,9 @@ async function build(): Promise<void> {
     await Promise.all(Array.from({ length: 3 }, worker));
     synth.dispose?.();
   }
-  const placed = placeStory(story, durations);
+  // two lines of text on top of each other, or a formula off the stage, are moved to a free place (ADR 0115); a story with no collision is untouched
+  const timed = placeStory(story, durations);
+  const { placed, notes: layoutNotes } = resolveLayout(timed);
 
   // the formulas, typeset once here with KaTeX (no script runs in the page for them)
   const katexRoot = join(REPO_ROOT, "packages", "components");
@@ -171,7 +175,7 @@ async function build(): Promise<void> {
   if (sidecar) writeFileSync(join(dir, "captions.vtt"), toWebVtt(sentenceCaptionCues(placed)));
   const audio = jobs.map((j) => ({ wav: j.file, startMs: placed.scenes[j.si]!.sentences[j.i]!.startMs }));
   // soft checks on the story and on how it was timed: notes for the host, never a failure
-  const qa = { story: storyQA(story), timing: placedQA(placed) };
+  const qa = { story: storyQA(story), timing: placedQA(placed), ...(layoutNotes.length ? { layout: layoutNotes } : {}) };
   const timeline: Timeline = { totalMs: placed.totalMs, voice: { id: synthVoice.id, status: synthVoice.status }, placed, audio, dropped: clean.notes, qa };
   writeFileSync(timelineFile, JSON.stringify(timeline, null, 2) + "\n");
   lap("page, notes and timeline written");

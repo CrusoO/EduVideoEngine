@@ -297,7 +297,8 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
     save();
     emit("build", "done");
   }
-  const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as { totalMs: number; units?: unknown[]; audio?: unknown[]; voice: { id: string; status: string } };
+  type TimelineNote = { scene: number; kind: string; message: string; shape?: string; sentence?: number };
+  const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as { totalMs: number; units?: unknown[]; audio?: unknown[]; voice: { id: string; status: string }; dropped?: string[]; qa?: { story?: TimelineNote[]; timing?: TimelineNote[]; layout?: TimelineNote[] } };
   const mp4 = join(dir, "lesson.mp4");
   const renderKey = stageKey("render", { build: buildKey, fps: request.options.fps, theme: request.options.theme });
   current = "render";
@@ -327,7 +328,18 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   });
   // advisory notes on the story as a lesson (ADR 0114): entries with severity "advisory", ok always true, so they never change the verdict
   const advisories = kind === "story" ? storyAdvisories(story!, { locale: request.options.locale }).map((a) => ({ id: `advisory:${a.kind}`, ok: true, severity: "advisory", kind: a.kind, scene: a.scene, ...(a.shape ? { shape: a.shape } : {}), message: a.message })) : [];
-  writeFileSync(join(jobDir, "qa.json"), JSON.stringify([...checks, ...advisories], null, 2) + "\n");
+  // what the engine dropped, moved or noticed while it built the story (ADR 0115): the same advisory entries, so the host sees them in qa.json and not only in story/timeline.json
+  const asEntry = (n: TimelineNote) => ({ id: `advisory:${n.kind}`, ok: true, severity: "advisory", kind: n.kind, scene: n.scene, ...(n.shape ? { shape: n.shape } : {}), ...(n.sentence !== undefined ? { sentence: n.sentence } : {}), message: n.message });
+  const built =
+    kind === "story"
+      ? [
+          ...(timeline.dropped ?? []).map((m) => asEntry({ scene: 0, kind: "story_note", message: m })),
+          ...(timeline.qa?.layout ?? []).map(asEntry),
+          ...(timeline.qa?.story ?? []).map(asEntry),
+          ...(timeline.qa?.timing ?? []).map(asEntry),
+        ]
+      : [];
+  writeFileSync(join(jobDir, "qa.json"), JSON.stringify([...checks, ...advisories, ...built], null, 2) + "\n");
   writeFileSync(join(jobDir, "lesson.mp4"), readFileSync(mp4));
   if (kind === "story" && request.options.captions === "sidecar") {
     // captions.vtt beside lesson.mp4 (ADR 0114); a missing file is a failed delivery, not a silent video without captions

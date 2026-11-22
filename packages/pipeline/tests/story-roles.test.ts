@@ -17,7 +17,8 @@ describe("a story that names no role is built exactly as before (ADR 0114)", () 
   it("reads, places and checks to the same bytes", () => {
     expect(sha(JSON.stringify(clean))).toBe("f010dd8bf344ca31bdac44c669ede679bf2a0881d7bda107392c30f8209ee1eb");
     expect(sha(JSON.stringify(placed))).toBe("a1d2dec99d3a87a3eda3c3408132af9f040d551f01439bb96e50ea555ebfc79c");
-    expect(sha(JSON.stringify([storyQA(clean.story!), placedQA(placed)]))).toBe("de9e8e5e6b94ab861ff290b247ee2b461b7ce79332c1442bf76d5f4c569f5104");
+    // ADR 0115: the one change in these notes is that the beam (a rectangle) is no longer called out of scale against circles; it was the only note, and a false one. The old hash was de9e8e5e...5104.
+    expect(sha(JSON.stringify([storyQA(clean.story!), placedQA(placed)]))).toBe("954d67c1b65b1de6b0769fcc7708006739b014d8dec7b127a042560f7841b401");
   });
   it("draws to the same page in every style", () => {
     expect(sha(norm(storyPageHtml(placed, "whiteboard", {}, runtime, "x")))).toBe("19f478f764bb0dbff54138b0fb723a917a4b03ee9e6e53ab894589bebbfd19be");
