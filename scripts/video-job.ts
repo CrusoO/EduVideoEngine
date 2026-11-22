@@ -17,6 +17,7 @@ import ffmpegPath from "ffmpeg-static";
 import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
+import { buildProvenance } from "../packages/pipeline/job/provenance";
 import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
@@ -60,7 +61,7 @@ const finish = (code: ErrorCode | undefined, detail?: string): never => {
 let pkg = "package";
 const files = (): Record<string, { path: string; bytes: number; sha256: string }> => {
   const out: Record<string, { path: string; bytes: number; sha256: string }> = {};
-  for (const [k, rel] of [["video", "lesson.mp4"], ...(captionsMeta ? [["captions", "captions.vtt"] as const] : []), ["sources", "sources.json"], ["lesson", join(pkg, "lesson.json")], ["report", join(pkg, "report.json")]] as const) {
+  for (const [k, rel] of [["video", "lesson.mp4"], ...(captionsMeta ? [["captions", "captions.vtt"] as const] : []), ["sources", "sources.json"], ["provenance", "provenance.json"], ["lesson", join(pkg, "lesson.json")], ["report", join(pkg, "report.json")]] as const) {
     const p = join(jobDir, rel);
     if (existsSync(p)) out[k] = { path: rel.replace(/\\/g, "/"), bytes: statSync(p).size, sha256: sha(p) };
   }
@@ -317,6 +318,9 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   const facts = { sentences: (timeline.units ?? timeline.audio ?? []).length, lengthS: timeline.totalMs / 1000, voice: timeline.voice };
   const sheet = kind === "story" ? storySheet(request.requestId, story!, facts) : sourceSheet(request.requestId, sourceText!, facts);
   writeFileSync(join(jobDir, "sources.json"), JSON.stringify(sheet, null, 2) + "\n");
+  // how the video was made, with no text of the story in it (ADR 0116)
+  const contentSha256 = createHash("sha256").update(JSON.stringify(kind === "story" ? story : sourceText)).digest("hex");
+  writeFileSync(join(jobDir, "provenance.json"), JSON.stringify(buildProvenance({ requestId: request.requestId, kind, voice: timeline.voice, locale: request.options.locale, contentSha256, font: storyOptions.font, captions: request.options.captions }), null, 2) + "\n");
   const probe = spawnSync(ffmpegPath ?? "ffmpeg", ["-hide_banner", "-i", mp4], { encoding: "utf8" }).stderr ?? "";
   const dur = /Duration: (\d+):(\d+):(\d+(?:\.\d+)?)/.exec(probe);
   const checks = sourceQaChecks({
