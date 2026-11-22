@@ -21,6 +21,8 @@ import { mixVoice, trimSilence } from "./voice-finish";
 
 const args = process.argv.slice(2);
 const jobDir = resolve(args.find((a) => !a.startsWith("--")) ?? "");
+/** How many voice workers speak sentences at once (3; 1 to 3 through VIDEO_VOICE_WORKERS, for a machine too short of memory to load the model three times). */
+const VOICE_WORKERS = Math.min(3, Math.max(1, Math.round(Number(process.env.VIDEO_VOICE_WORKERS) || 3)));
 const option = (name: string, fallback: string): string => {
   const at = args.indexOf(`--${name}`);
   return at >= 0 && args[at + 1] ? args[at + 1]! : fallback;
@@ -104,8 +106,8 @@ async function build(): Promise<void> {
     const cacheDir = join(REPO_ROOT, "dist", "sentence-audio");
     const synthFor = (pace?: StorySentencePace) =>
       withSentenceCache(kokoroSynthesizer(kokoroTools(REPO_ROOT), { voice: kokoroVoice, speed: speedFor(baseSpeed, pace) }), { dir: cacheDir, enabled: sentenceCacheEnabled(args) });
-    // three instances for the ordinary pace (each serializes internally); one for each marked pace the story uses
-    const normal = Array.from({ length: 3 }, () => synthFor());
+    // three instances for the ordinary pace (each serializes internally; each holds the model in memory, so VIDEO_VOICE_WORKERS=1 is for a machine short of memory); one for each marked pace the story uses
+    const normal = Array.from({ length: VOICE_WORKERS }, () => synthFor());
     const marked = new Map<StorySentencePace, ReturnType<typeof synthFor>>();
     for (const j of jobs) if (j.pace && !marked.has(j.pace)) marked.set(j.pace, synthFor(j.pace));
     const all = [...normal, ...marked.values()];
@@ -119,7 +121,7 @@ async function build(): Promise<void> {
           await synth.synthesizeAsync!(sayText(j.text).text, out);
         }
       };
-      await Promise.all([0, 1, 2].map(worker));
+      await Promise.all(normal.map((_, idx) => worker(idx)));
       lap(`voice synthesised (sentence cache: ${all.reduce((n, s) => n + s.stats.hits, 0)} read, ${all.reduce((n, s) => n + s.stats.misses, 0)} spoken)`);
       trimSilence(ffmpegPath as string, jobs.map((j) => join(dir, j.file)));
       // a pause is silence added to this sentence's length, so the next sentence starts later

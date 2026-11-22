@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SAFE, boxOf, mathTokens, placeStory, resolveLayout, sanitizeStory, storyQA, type PlacedVisual } from "../index";
+import { SAFE, boxOf, mathTokens, placeStory, resolveLayout, sanitizeStory, storyPageHtml, storyQA, type PlacedVisual } from "../index";
 
 const story = (visuals: Array<Record<string, unknown>>, sentences = ["One thing is said here.", "Another thing is said here."]) =>
   sanitizeStory({ title: "Layout test", scenes: [{ role: "hook", heading: "H", sentences, visuals }] }).story!;
@@ -138,5 +138,15 @@ describe("storyQA noise (ADR 0115)", () => {
     const labelled = (label: string) => [{ id: "bag", kind: "rect", x: 20, y: 10, w: 20, h: 15, fill: "blue", label, in: { s: 0 } }];
     expect(notes(labelled("x marbles"))).not.toContain("anchor_missing");
     expect(notes(labelled("x oranges"))).toContain("anchor_missing");
+  });
+});
+
+describe("a page that needs no network (ADR 0115)", () => {
+  const page = (font: "inter" | "atkinson") => storyPageHtml(placeStory(story([]), [[1000, 1000]]), "whiteboard", {}, "", "file:///k.css", { visualStyle: "animated", chrome: "none", font });
+  it("does not link Google Fonts when the bundled Atkinson face is used", () => {
+    expect(page("atkinson")).not.toContain("fonts.googleapis.com");
+  });
+  it("still links Plus Jakarta Sans for the animated page in another face", () => {
+    expect(page("inter")).toContain("fonts.googleapis.com");
   });
 });

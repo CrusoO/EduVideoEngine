@@ -82,9 +82,10 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   const headingLetterSpacing = isDevanagari ? "0" : isAnimated ? "-0.025em" : "-.01em";
   const devanagariExtra = isDevanagari ? "text-rendering:optimizeLegibility;font-feature-settings:\"kern\" 1,\"liga\" 1;" : "";
   // Noto Sans Devanagari + Baloo 2 loaded from Google Fonts; Playwright can reach the network for screenshots
+  // Atkinson is bundled, so a page that uses it fetches nothing: the Plus Jakarta link is only for the other faces (ADR 0115); a machine with no network no longer waits 30 s for it to fail
   const googleFontLinks = [
     isDevanagari ? '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&display=swap">' : "",
-    isAnimated && !isDevanagari ? '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">' : "",
+    isAnimated && !isDevanagari && font !== "atkinson" ? '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">' : "",
   ].join("");
   // animated: heading strip sits at top-center with a translucent cream background so content shows through
   const topJustify = isAnimated ? "center" : "space-between";
