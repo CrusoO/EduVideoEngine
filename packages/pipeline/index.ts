@@ -24,6 +24,7 @@ export * from "./job/story-props";
 export * from "./job/story-words";
 export * from "./job/story-grid";
 export * from "./job/story-layout";
+export * from "./job/story-gates";
 export * from "./job/story-steps";
 export * from "./objects";
 export * from "./job/voice-mix";
