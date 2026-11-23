@@ -83,18 +83,18 @@ export function boxOf(placed: PlacedBase): Box | null {
   return b;
 }
 
-const overlaps = (a: Box, b: Box, gap = 0): boolean => a.x0 < b.x1 + gap && b.x0 < a.x1 + gap && a.y0 < b.y1 + gap && b.y0 < a.y1 + gap;
-const area = (a: Box, b: Box): number => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+export const overlaps = (a: Box, b: Box, gap = 0): boolean => a.x0 < b.x1 + gap && b.x0 < a.x1 + gap && a.y0 < b.y1 + gap && b.y0 < a.y1 + gap;
+export const area = (a: Box, b: Box): number => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
 const size = (a: Box): number => Math.max(0.001, (a.x1 - a.x0) * (a.y1 - a.y0));
 /** Is `a` (nearly) inside `b`: a label in a box, which is meant to be there. */
-const inside = (a: Box, b: Box): boolean => area(a, b) >= 0.9 * size(a);
+export const inside = (a: Box, b: Box): boolean => area(a, b) >= 0.9 * size(a);
 /** Only a box, a circle or a prop that stays where it is can hold a label: another line of text never does, and the sweep of a moving shape is not a body. */
-const holds = (v: PlacedVisual): boolean => v.moves.length === 0 && (v.kind === "rect" || v.kind === "circle" || v.kind === "sun" || v.kind === "element" || v.kind === "fuzzy" || v.kind === "prop");
+export const holds = (v: PlacedVisual): boolean => v.moves.length === 0 && (v.kind === "rect" || v.kind === "circle" || v.kind === "sun" || v.kind === "element" || v.kind === "fuzzy" || v.kind === "prop");
 const r2 = (n: number): number => Math.round(n * 100) / 100;
 
 const movable = (v: PlacedVisual): boolean => (v.kind === "text" || v.kind === "math") && num(v.x) !== null && num(v.y) !== null && v.moves.length === 0;
 /** Which shapes a moved line must stay clear of: the drawn things with a body, and other lines of text. Lines, arrows, polygons and plots are not obstacles (a label sits on them on purpose). */
-const obstacle = (v: PlacedVisual): boolean => v.kind !== "line" && v.kind !== "arrow" && v.kind !== "spring";
+export const obstacle = (v: PlacedVisual): boolean => v.kind !== "line" && v.kind !== "arrow" && v.kind !== "spring";
 
 type Line = PlacedVisual & { kind: "text" | "math"; x: number; y: number; size: number; anchor: "start" | "middle" | "end" };
 type Window = { from: number; to: number };

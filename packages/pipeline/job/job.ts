@@ -56,6 +56,8 @@ export const LessonRequest = z
         voiceName: z.enum(KOKORO_VOICES).optional(),
         /** Story jobs in hi-IN or ne-NP only (ADR 0106): write every digit, sign and maths symbol of the narration as words before the voice speaks it, in this register ("ncert" textbook Hindi, "hinglish" Hindi with English maths words). Left out, the narration is spoken as it is written; the English path never changes. */
         spokenMath: z.enum(["hinglish", "ncert"]).optional(),
+        /** Story jobs (ADR 0118): "strict" runs hard quality checks on the placed story (overlap, safe area, text size on a phone, contrast, a noun drawn at its cue) and ends the job as qa_failed when one fails; qa.json then also holds the occupancy table. Left out, the job is checked and built as before. It is not part of any build key: it changes no frame. */
+        qa: z.enum(["strict"]).optional(),
       })
       .strict()
       .default({}),

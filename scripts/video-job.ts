@@ -18,7 +18,7 @@ import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
 import { buildProvenance } from "../packages/pipeline/job/provenance";
-import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, strictGates, strictEntries, strictDetail, type GateFailure, type GateResult, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -52,10 +52,12 @@ const emit = (stage: JobEvent["stage"], status: JobEvent["status"], extra: { cod
 };
 /** Set when a story job with `captions: "sidecar"` has written captions.vtt (ADR 0114): goes into result.json. */
 let captionsMeta: { file: "captions.vtt"; language: string; format: "webvtt" } | undefined;
+/** Set when strict QA (options.qa: "strict", ADR 0118) found failures: each failed check goes into result.json. */
+let qaFailures: GateFailure[] | undefined;
 const finish = (code: ErrorCode | undefined, detail?: string): never => {
   releaseSlot?.();
   const state = reduceJob(events);
-  writeFileSync(join(jobDir, "result.json"), JSON.stringify({ requestId: safeId, status: code ? (code === "cancelled" ? "cancelled" : "failed") : "done", code, detail, state, files: files(), ...(captionsMeta ? { captions: captionsMeta } : {}) }, null, 2) + "\n");
+  writeFileSync(join(jobDir, "result.json"), JSON.stringify({ requestId: safeId, status: code ? (code === "cancelled" ? "cancelled" : "failed") : "done", code, detail, state, files: files(), ...(captionsMeta ? { captions: captionsMeta } : {}), ...(qaFailures ? { qaFailures } : {}) }, null, 2) + "\n");
   process.exit(code === undefined ? 0 : code === "cancelled" ? 3 : 1);
 };
 let pkg = "package";
@@ -299,7 +301,19 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
     emit("build", "done");
   }
   type TimelineNote = { scene: number; kind: string; message: string; shape?: string; sentence?: number };
-  const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as { totalMs: number; units?: unknown[]; audio?: unknown[]; voice: { id: string; status: string }; dropped?: string[]; qa?: { story?: TimelineNote[]; timing?: TimelineNote[]; layout?: TimelineNote[] } };
+  const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as { totalMs: number; units?: unknown[]; audio?: unknown[]; voice: { id: string; status: string }; dropped?: string[]; qa?: { story?: TimelineNote[]; timing?: TimelineNote[]; layout?: TimelineNote[] }; placed?: Parameters<typeof strictGates>[0] };
+  // strict QA (ADR 0118): hard checks on the placed story, by code alone, before the expensive render. Without options.qa this block does nothing.
+  let strict: GateResult | undefined;
+  if (kind === "story" && request.options.qa === "strict") {
+    current = "qa";
+    emit("qa", "started");
+    strict = strictGates(timeline.placed!, { theme: request.options.theme, style: request.options.style, chrome: storyOptions.chrome });
+    if (!strict.ok) {
+      qaFailures = strict.failures;
+      writeFileSync(join(jobDir, "qa.json"), JSON.stringify(strictEntries(strict), null, 2) + "\n");
+      fail("qa", "qa_failed", strictDetail(strict));
+    }
+  }
   const mp4 = join(dir, "lesson.mp4");
   const renderKey = stageKey("render", { build: buildKey, fps: request.options.fps, theme: request.options.theme });
   current = "render";
@@ -314,7 +328,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
     emit("render", "done");
   }
   current = "qa";
-  emit("qa", "started");
+  if (!strict) emit("qa", "started");
   const facts = { sentences: (timeline.units ?? timeline.audio ?? []).length, lengthS: timeline.totalMs / 1000, voice: timeline.voice };
   const sheet = kind === "story" ? storySheet(request.requestId, story!, facts) : sourceSheet(request.requestId, sourceText!, facts);
   writeFileSync(join(jobDir, "sources.json"), JSON.stringify(sheet, null, 2) + "\n");
@@ -343,7 +357,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
           ...(timeline.qa?.timing ?? []).map(asEntry),
         ]
       : [];
-  writeFileSync(join(jobDir, "qa.json"), JSON.stringify([...checks, ...advisories, ...built], null, 2) + "\n");
+  writeFileSync(join(jobDir, "qa.json"), JSON.stringify([...checks, ...(strict ? strictEntries(strict).slice(0, -1) : []), ...advisories, ...built, ...(strict ? strictEntries(strict).slice(-1) : [])], null, 2) + "\n");
   writeFileSync(join(jobDir, "lesson.mp4"), readFileSync(mp4));
   if (kind === "story" && request.options.captions === "sidecar") {
     // captions.vtt beside lesson.mp4 (ADR 0114); a missing file is a failed delivery, not a silent video without captions
