@@ -18,7 +18,7 @@ import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
 import { buildProvenance } from "../packages/pipeline/job/provenance";
-import { LessonRequest, SENTENCE_CACHE_OPT_IN, chooseEngine, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, strictGates, strictEntries, strictDetail, type GateFailure, type GateResult, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, PAGE_READY_MARK, SENTENCE_CACHE_OPT_IN, chooseEngine, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, strictGates, strictEntries, strictDetail, type GateFailure, type GateResult, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -101,6 +101,9 @@ const crash = (e: unknown): void => {
 process.on("uncaughtException", crash);
 process.on("unhandledRejection", crash);
 
+/** The end of the last child's error output: a render that failed because the page was not ready in time says so in the job's detail (ADR 0121). */
+let lastTail = "";
+
 /** A stage's time limit in milliseconds; VIDEO_JOB_STAGE_TIMEOUT_MS replaces all of them (for a machine slower than the measured one, and for tests). */
 const limitOf = (stage: JobStage): number => {
   const forced = Number(hostEnv.VIDEO_JOB_STAGE_TIMEOUT_MS);
@@ -125,6 +128,7 @@ const supervise = (script: string, scriptArgs: string[], env: Record<string, str
     child.on("exit", (c) => {
       clearTimeout(timer);
       child = undefined;
+      lastTail = tail;
       if (c !== 0 && tail.trim()) appendFileSync(eventsFile, JSON.stringify({ t: new Date().toISOString(), jobId: safeId, stage, note: tail.trim() }) + "\n");
       done(c ?? 1);
     });
@@ -287,7 +291,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   const voice = chooseEngine({ locale: request.options.locale, voice: request.options.voice, voiceName: request.options.voiceName }, kokoroMissing(kokoroTools(REPO_ROOT)).length === 0);
   const storyOptions = resolveStoryOptions(request.options); // the explainer pattern for an animated story, the plain page otherwise (ADR 0099)
   const script = (stage: "build" | "render"): Promise<number> =>
-    supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : []), ...(request.options.spokenMath ? ["--spoken-math", request.options.spokenMath] : []), ...sentenceCacheArgs(request, args.includes(SENTENCE_CACHE_OPT_IN))], { LLM_MODE: "replay" });
+    supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : []), ...(request.options.spokenMath ? ["--spoken-math", request.options.spokenMath] : []), ...(request.options.render?.profile && request.options.render.profile !== "standard" ? ["--render", request.options.render.profile] : []), ...(request.options.render?.pageReadyTimeoutMs ? ["--page-ready-timeout-ms", String(request.options.render.pageReadyTimeoutMs)] : []), ...sentenceCacheArgs(request, args.includes(SENTENCE_CACHE_OPT_IN))], { LLM_MODE: "replay" });
   const timelineFile = join(dir, "timeline.json");
   const buildKey = stageKey("build", { kind, source: sourceText, story, voice, theme: request.options.theme, ...(kind === "story" ? { options: storyOutputOptions(request.options) } : {}), v: 3 });
   current = "build";
@@ -323,7 +327,7 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
     emit("render", "started", { detail: `${request.options.fps} frames a second where something moves, ${request.options.theme} theme` });
     rmSync(mp4, { force: true });
     const code = await script("render");
-    if (code !== 0 || !existsSync(mp4)) fail("render", "render_failed", `the video export stopped (exit ${code}); see events.jsonl`);
+    if (code !== 0 || !existsSync(mp4)) fail("render", "render_failed", `the video export stopped (exit ${code}); see events.jsonl${lastTail.includes(PAGE_READY_MARK) ? "; the render browser did not get the story page ready in time (page-ready timeout): close other programs or raise options.render.pageReadyTimeoutMs (30000 to 180000)" : ""}`);
     keys.stages.render = renderKey;
     save();
     emit("render", "done");

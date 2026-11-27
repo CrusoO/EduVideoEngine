@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT, readEnv } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, isAllowedForUse, voiceById, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, RENDER_SETTINGS, pageReadyMessage, pageReadyTimeoutMs, pipeRepeats, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, isAllowedForUse, voiceById, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -59,6 +59,10 @@ const sayText = (text: string): { text: string; extraPauseMs: number } => {
   const m = spokenMathForVoice(text, { language: locale === "ne-NP" ? "ne" : "hi", register: spokenMathRegister as "hinglish" | "ncert" });
   return { text: speechText(m.text), extraPauseMs: m.extraPauseMs };
 };
+// ADR 0121: the render profile ("standard" is the render as it always was) and the page-ready timeout; the timeout may also come from VIDEO_PAGE_READY_TIMEOUT_MS (read here, through the engine's one env reader)
+const profile = option("render", request.options.render?.profile ?? "standard") === "fast" ? "fast" : "standard";
+const rs = RENDER_SETTINGS[profile];
+const readyMs = pageReadyTimeoutMs(Number(option("page-ready-timeout-ms", "")) || request.options.render?.pageReadyTimeoutMs, readEnv().VIDEO_PAGE_READY_TIMEOUT_MS);
 const timelineFile = join(dir, "timeline.json");
 const pageFile = join(dir, "page.html");
 
@@ -189,36 +193,90 @@ async function build(): Promise<void> {
   console.log(`voiced ${jobs.length} sentences in ${story.scenes.length} scenes, ${(placed.totalMs / 1000).toFixed(1)} s${clean.notes.length ? `; ${clean.notes.length} shape(s) dropped` : ""}${qa.timing.length ? `; ${qa.timing.length} timing note(s)` : ""}`);
 }
 
+/** The encoder of the fast profile (ADR 0121): JPEG frames come in through a pipe at a constant rate, a frame written `times` times is held that long; the voice is the file mixed before. */
+function startPipedEncoder(fps: number, totalMs: number) {
+  const enc = spawn(
+    ffmpegPath as string,
+    ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(fps), "-c:v", "mjpeg", "-i", "pipe:0", "-i", "voice.wav", "-vf", `scale=${rs.width}:${rs.height}:flags=lanczos,format=yuv420p`, "-c:v", "libx264", "-preset", rs.preset, "-crf", String(rs.crf), "-tune", "animation", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", "-t", (totalMs / 1000).toFixed(3), "lesson.mp4"],
+    { cwd: dir, stdio: ["pipe", "ignore", "pipe"] },
+  );
+  let err = "";
+  enc.stderr.on("data", (d: Buffer) => (err += d.toString()));
+  enc.stdin.on("error", () => undefined); // a failed encoder is reported by its exit code below
+  const closed = new Promise<void>((res, rej) => enc.on("close", (code) => (code === 0 ? res() : rej(new Error(`ffmpeg failed: ${err}`)))));
+  closed.catch(() => undefined);
+  const exited = new Promise<void>((r) => enc.once("close", () => r()));
+  return {
+    async write(buf: Buffer, times: number): Promise<void> {
+      for (let k = 0; k < times; k++) if (!enc.stdin.write(buf)) await Promise.race([new Promise<void>((r) => enc.stdin.once("drain", () => r())), exited]);
+    },
+    async end(): Promise<void> {
+      enc.stdin.end();
+      await closed;
+    },
+    abort(): void {
+      enc.kill();
+    },
+  };
+}
+
 async function render(): Promise<void> {
   lapAt = Date.now();
   if (!ffmpegPath || !existsSync(ffmpegPath)) throw new Error("ffmpeg is not installed: run pnpm install");
   const timeline = JSON.parse(readFileSync(timelineFile, "utf8")) as Timeline;
   const fps = Math.min(30, Math.max(6, Number(option("fps", "24"))));
   const ticks = frameTicks(timeline.placed, 1000 / fps, 500);
-  rmSync(join(dir, "frames"), { recursive: true, force: true });
-  mkdirSync(join(dir, "frames"), { recursive: true });
+  const secs = (ms: number): string => (ms / 1000).toFixed(3);
+  // the fast profile (ADR 0121) pipes frames to the encoder, so the voice is mixed first and the encoder is started before the first frame; the standard profile is unchanged below
+  let piped: { write(buf: Buffer, times: number): Promise<void>; end(): Promise<void>; abort(): void } | undefined;
+  if (rs.pipe) {
+    mixVoice(ffmpegPath as string, dir, timeline.audio, timeline.totalMs);
+    lap("voice finished");
+    piped = startPipedEncoder(fps, timeline.totalMs);
+  } else {
+    rmSync(join(dir, "frames"), { recursive: true, force: true });
+    mkdirSync(join(dir, "frames"), { recursive: true });
+  }
+  const repeats = pipeRepeats(ticks, fps, timeline.totalMs);
   const browser = await chromium.launch({}).catch(() => chromium.launch({ channel: "msedge" })).catch(() => chromium.launch({ channel: "chrome" }));
   try {
     // one context per worker: a page behind another in the same context is a background tab, and the browser does not draw those
     const pages = await Promise.all(
       Array.from({ length: RENDER_PAGES }, async () => {
-        const context = await browser.newContext({ viewport: { width: FRAME.width, height: FRAME.height }, deviceScaleFactor: 1 });
+        // the page is always laid out and drawn at 1920 by 1080; a smaller profile is scaled by the encoder (ADR 0121)
+        const context = await browser.newContext({ viewport: { width: FRAME.width, height: FRAME.height }, deviceScaleFactor: rs.scale });
         const page = await context.newPage();
-        await page.goto(pathToFileURL(pageFile).href);
-        await page.waitForFunction(() => (window as unknown as { __ready?: boolean }).__ready === true);
-        await page.evaluate(async (dev: boolean) => {
-          await document.fonts.ready;
-          if (dev) {
-            await document.fonts.load('400 24px "Noto Sans Devanagari"');
-            await document.fonts.load('600 24px "Noto Sans Devanagari"');
-          }
-        }, isDevanagari);
+        try {
+          await page.goto(pathToFileURL(pageFile).href, { timeout: readyMs });
+          await page.waitForFunction(() => (window as unknown as { __ready?: boolean }).__ready === true, undefined, { timeout: readyMs });
+          await page.evaluate(async (dev: boolean) => {
+            await document.fonts.ready;
+            if (dev) {
+              await document.fonts.load('400 24px "Noto Sans Devanagari"');
+              await document.fonts.load('600 24px "Noto Sans Devanagari"');
+            }
+          }, isDevanagari);
+        } catch (e) {
+          // a page that is not ready in time is nearly always a machine short of memory: say so, and say what to do (ADR 0121)
+          if (e instanceof Error && e.name === "TimeoutError") throw new Error(pageReadyMessage(readyMs));
+          throw e;
+        }
         return page;
       }),
     );
     lap("browser and pages ready");
     let next = 0;
     let done = 0;
+    // piped frames are written in order: a frame waits for the ones before it (at most one per page is ever waiting)
+    const waiting = new Map<number, Buffer>();
+    let written = 0;
+    const flush = async (): Promise<void> => {
+      for (let b = waiting.get(written); b !== undefined; b = waiting.get(written)) {
+        waiting.delete(written);
+        await piped!.write(b, repeats[written]!);
+        written++;
+      }
+    };
     await Promise.all(
       pages.map(async (page) => {
         for (let i = next++; i < ticks.length; i = next++) {
@@ -226,7 +284,10 @@ async function render(): Promise<void> {
           for (let attempt = 1; ; attempt++) {
             try {
               await page.evaluate((t) => (window as unknown as { __draw(t: number): void }).__draw(t), ticks[i]!.t);
-              await page.screenshot({ path: join(dir, "frames", `f${String(i).padStart(5, "0")}.jpg`), type: "jpeg", quality: 95, timeout: 60_000 });
+              if (piped) {
+                waiting.set(i, repeats[i] === 0 ? Buffer.alloc(0) : await page.screenshot({ type: "jpeg", quality: rs.jpegQuality, timeout: 60_000 }));
+                await flush();
+              } else await page.screenshot({ path: join(dir, "frames", `f${String(i).padStart(5, "0")}.jpg`), type: "jpeg", quality: 95, timeout: 60_000 });
               break;
             } catch (e) {
               if (attempt >= FRAME_ATTEMPTS) throw e;
@@ -237,10 +298,17 @@ async function render(): Promise<void> {
       }),
     );
     lap(`${ticks.length} frames drawn`);
+  } catch (e) {
+    piped?.abort();
+    throw e;
   } finally {
     await browser.close();
   }
-  const secs = (ms: number): string => (ms / 1000).toFixed(3);
+  if (piped) {
+    await piped.end();
+    lap("video encoded (piped)");
+    return;
+  }
   // the voice: each sentence at its start, mixed and set to the speech loudness (scripts/voice-finish.ts)
   mixVoice(ffmpegPath as string, dir, timeline.audio, timeline.totalMs);
   lap("voice finished");

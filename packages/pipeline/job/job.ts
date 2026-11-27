@@ -14,6 +14,13 @@ import { voiceChoiceProblem } from "../build/voices";
 /** At most 48 characters: the id names a folder, and a deeper folder than this passes the 260-character path limit of Windows. */
 const token = z.string().regex(/^[A-Za-z0-9][A-Za-z0-9_.:-]{5,47}$/, "6 to 48 characters: letters, digits and _ . : -");
 
+/** The render profiles (ADR 0121). `standard` is today's output; `fast` is for drafts. */
+export const RENDER_PROFILES = ["standard", "fast"] as const;
+export type RenderProfile = (typeof RENDER_PROFILES)[number];
+/** The bounds of the page-ready timeout in milliseconds (ADR 0121): the default is the 30 s the render always used. */
+export const PAGE_READY_MIN_MS = 30_000;
+export const PAGE_READY_MAX_MS = 180_000;
+
 export const LessonRequest = z
   .object({
     /** Names the job folder (dist/jobs/<requestId>); the caller's own id. */
@@ -58,6 +65,12 @@ export const LessonRequest = z
         spokenMath: z.enum(["hinglish", "ncert"]).optional(),
         /** Story jobs (ADR 0118): "strict" runs hard quality checks on the placed story (overlap, safe area, text size on a phone, contrast, a noun drawn at its cue) and ends the job as qa_failed when one fails; qa.json then also holds the occupancy table. Left out, the job is checked and built as before. It is not part of any build key: it changes no frame. */
         qa: z.enum(["strict"]).optional(),
+        /**
+         * Story jobs (ADR 0121): how the video is rendered. `profile` is "standard" (left out: the output is exactly what it was) or "fast" (drafts and low-end machines: a 1280 by 720
+         * picture, x264 preset veryfast at crf 23, frames piped to the encoder). `pageReadyTimeoutMs` (30000 to 180000, default 30000) is how long the render browser waits for the story
+         * page; it changes no frame and is not part of any key. A non-standard profile changes the bytes, so it is part of the build key; "standard" and a missing option are not.
+         */
+        render: z.object({ profile: z.enum(RENDER_PROFILES).default("standard"), pageReadyTimeoutMs: z.number().int().min(PAGE_READY_MIN_MS).max(PAGE_READY_MAX_MS).optional() }).strict().optional(),
       })
       .strict()
       .default({}),
@@ -95,7 +108,9 @@ export const EXPLAINER = { chrome: "none", font: "atkinson", voiceName: "af_kore
  * style, frame, captions, font, voice or speed builds again instead of being told "same inputs as the last run" and handed the old video.
  */
 export function storyOutputOptions(options: LessonRequest["options"]): Record<string, unknown> {
-  return { style: options.style, locale: options.locale, captions: options.captions, ...resolveStoryOptions(options), ...(options.spokenMath ? { spokenMath: options.spokenMath } : {}) };
+  const profile = options.render?.profile ?? "standard";
+  // ADR 0121: only a profile that changes the bytes is part of the key; "standard" and a missing option leave every existing key as it was. pageReadyTimeoutMs never is.
+  return { style: options.style, locale: options.locale, captions: options.captions, ...resolveStoryOptions(options), ...(options.spokenMath ? { spokenMath: options.spokenMath } : {}), ...(profile !== "standard" ? { render: profile } : {}) };
 }
 
 /** The story options with their defaults filled in: the explainer pattern for the animated style, the plain page and the language's own voice otherwise. A value in the request always wins. */
