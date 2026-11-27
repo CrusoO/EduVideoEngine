@@ -15,7 +15,7 @@ import { pathToFileURL } from "node:url";
 import ffmpegPath from "ffmpeg-static";
 import { chromium } from "@playwright/test";
 import { REPO_ROOT, readEnv } from "../packages/adapters/src";
-import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
+import { FRAME, KOKORO_VOICES, LessonRequest, resolveStoryOptions, storyForRender, frameTicks, kokoroSynthesizer, kokoroTools, sentenceCacheEnabled, withSentenceCache, piperLangModel, piperLangSynthesizer, isAllowedForUse, voiceById, piperSynthesizer, piperTools, placeStory, placedQA, resolveLayout, sanitizeStory, speechText, speedFor, spokenMathForVoice, sentenceCaptionCues, storyPageHtml, storyQA, toWebVtt, type PlacedStory, type QANote, type StorySentencePace } from "../packages/pipeline";
 import { wavInfo } from "../packages/voice/src";
 import { mixVoice, trimSilence } from "./voice-finish";
 
@@ -96,12 +96,18 @@ async function build(): Promise<void> {
   let next = 0;
   // synthVoice is set in whichever branch runs and used when writing the timeline
   let synthVoice: { id: string; status: string } = { id: "unknown", status: "unknown" };
+  // a voice named in the request, if it is a registry voice of this locale (ADR 0120); the explainer default (af_kore) is English and is ignored for another language
+  const named = voiceById(option("voice-name", resolved.voiceName ?? ""));
+  const namedHere = named && (named.locales as readonly string[]).includes(locale) ? named : undefined;
   if (useKokoro) {
-    const base = kokCfg ?? LOCALE_KOKORO["en-IN"]!;
+    if (!kokCfg) throw new Error(`no Kokoro voice speaks ${locale}: use the Piper voice of the registry (config/voices.json, ADR 0120)`);
+    const base = kokCfg;
     const baseSpeed = Number.isFinite(speedOption) && speedOption >= 0.6 && speedOption <= 1 ? speedOption : base.speed;
     // a chosen voice is for English only (the Hindi voice is not interchangeable with an English one) and must be one that was measured
     const picked = option("voice-name", resolved.voiceName ?? "");
-    const kokoroVoice = locale === "en-IN" && (KOKORO_VOICES as readonly string[]).includes(picked) ? picked : base.voice;
+    const kokoroVoice = locale === "en-IN" ? ((KOKORO_VOICES as readonly string[]).includes(picked) ? picked : base.voice) : namedHere?.engine === "kokoro" ? namedHere.id : base.voice;
+    // development and review only: no voice is cleared (ADR 0117, 0120)
+    if (!isAllowedForUse(kokoroVoice, "development")) throw new Error(`voice ${kokoroVoice} is not in the registry or is not allowed for development use`);
     // a sentence heard before is read from dist/sentence-audio instead of spoken again (ADR 0103); --no-sentence-cache turns it off, --fresh does not (it is about the job, not the voice)
     const cacheDir = join(REPO_ROOT, "dist", "sentence-audio");
     const synthFor = (pace?: StorySentencePace) =>
@@ -134,8 +140,9 @@ async function build(): Promise<void> {
     // Piper: use lang-specific model for ne-NP / hi-IN; fall back to English Jenny for en-IN
     const piperT = piperTools(REPO_ROOT);
     const synth = (locale === "ne-NP" || locale === "hi-IN")
-      ? piperLangSynthesizer(piperT.exe, piperLangModel(REPO_ROOT, locale))
+      ? piperLangSynthesizer(piperT.exe, piperLangModel(REPO_ROOT, locale, namedHere?.engine === "piper" ? namedHere.id : undefined))
       : piperSynthesizer(piperT);
+    if (!isAllowedForUse(synth.voice.id, "development")) throw new Error(`voice ${synth.voice.id} is not in the registry or is not allowed for development use`);
     synthVoice = { id: synth.voice.id, status: synth.voice.status };
     const worker = async (): Promise<void> => {
       for (let k = next++; k < jobs.length; k = next++) {

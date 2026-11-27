@@ -6,10 +6,10 @@ import { pythonCommand } from "@eve/adapters";
 import type { Synthesizer } from "./voice";
 
 /** Where the Kokoro voice lives (ADR 0084): tools/kokoro in the engine repository, which is not committed, and the worker script that runs it. */
-export type KokoroTools = { python: string; worker: string; model: string; voices: string; /** The flags before the script: isolated mode, so nothing next to the script is imported by accident. */ pythonArgs?: string[] };
+export type KokoroTools = { python: string; worker: string; model: string; voices: string; /** The flags before the script: isolated mode, so nothing next to the script is imported by accident, and UTF-8 for the sentences on standard input. */ pythonArgs?: string[] };
 export const kokoroTools = (root: string): KokoroTools => ({
   python: pythonCommand(),
-  pythonArgs: ["-I"],
+  pythonArgs: ["-I", "-X", "utf8"], // -X utf8: the worker reads its sentences from a pipe, which Windows decodes as cp1252 unless told; Devanagari needs UTF-8 (ADR 0120)
   worker: join(root, "scripts", "voice", "kokoro_worker.py"),
   model: join(root, "tools", "kokoro", "kokoro-v1.0.fp16.onnx"),
   voices: join(root, "tools", "kokoro", "voices-v1.0.bin"),
@@ -37,7 +37,7 @@ type Pending = { resolve: () => void; reject: (e: Error) => void };
 export function kokoroSynthesizer(tools: KokoroTools, opts: KokoroOptions = {}): Synthesizer & { dispose(): void } {
   const missing = kokoroMissing(tools);
   if (missing.length > 0) throw new Error(`the Kokoro voice is not installed: ${missing.join(", ")} (docs/adr/0084-kokoro-voice.md)`);
-  const flags = tools.pythonArgs ?? ["-I"];
+  const flags = tools.pythonArgs ?? ["-I", "-X", "utf8"];
   const voice = opts.voice ?? "af_heart"; // af_heart: warm American female — better for educational narration than bf_emma
   const speed = opts.speed ?? 0.92;
   const VOICE_LANG: Record<string, string> = { a: "en-us", b: "en-gb", e: "es", f: "fr-fr", h: "hi", i: "it", j: "ja", p: "pt-br", z: "cmn" };

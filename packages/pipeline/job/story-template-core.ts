@@ -21,7 +21,13 @@ export const SIZE = { body: 3.2, small: 3, title: 3.8, big: 5 } as const;
 export const isObj = (v: unknown): v is Raw => typeof v === "object" && v !== null && !Array.isArray(v);
 const r2 = (n: number): number => Math.round(n * 100) / 100;
 export const round2 = r2;
-const length = (s: string): number => Array.from(s).length;
+/**
+ * How many characters of a line take no room of their own: the Devanagari marks that sit above or below a letter (vowel signs u to ai, the nasal signs, the nukta, the virama,
+ * the accents) and the zero-width joiners (ADR 0120). A line with none of them, which is every English line, counts as before.
+ */
+export const zeroAdvanceMarks = (s: string): number => s.match(/[\u0900-\u0902\u093A\u093C\u0941-\u0948\u094D\u0951-\u0957\u0962\u0963\u200C\u200D]/g)?.length ?? 0;
+
+const length = (s: string): number => Array.from(s).length - zeroAdvanceMarks(s);
 
 /** The mark `applyRole` (story-roles.ts) puts before a line of text in this role; a line's room has to include it. */
 export const markLength = (role: TemplateRole | undefined): number => (role === "look-again" ? 2 : role === "checked" ? 3 : 0);

@@ -2,6 +2,7 @@ import { STAGE, type PlacedScene, type PlacedStory, type PlacedVisual as PlacedB
 import type { QANote } from "./story-qa";
 import { PROPS } from "./story-props";
 import { mathTokens } from "./story-steps";
+import { zeroAdvanceMarks } from "./story-template-core";
 
 /**
  * Automatic layout for a story (ADR 0115). The host is a model that writes coordinates and cannot see the picture, so two lines of text or a label and a circle can end up on top of
@@ -31,7 +32,7 @@ export function textSize(placed: PlacedBase): { w: number; h: number } | null {
   const v = placed as PlacedVisual;
   if (v.kind === "text") {
     const size = v.size;
-    return { w: Math.max(...v.text.split("\n").map((l) => l.length)) * size * (v.bold ? 0.58 : 0.54), h: size * 1.15 * v.text.split("\n").length };
+    return { w: Math.max(...v.text.split("\n").map((l) => l.length - zeroAdvanceMarks(l))) * size * (v.bold ? 0.58 : 0.54), h: size * 1.15 * v.text.split("\n").length };
   }
   if (v.kind === "math") return { w: mathTokens(v.latex) * v.size * 0.98, h: v.size * 1.45 };
   return null;

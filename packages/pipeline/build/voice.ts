@@ -5,6 +5,7 @@ import { availableParallelism } from "node:os";
 import { join } from "node:path";
 import { spokenText, type AudioTrack, type LessonBundle } from "@eve/schema";
 import { FileVoiceAdapter, VoiceManifest, trackHash, wavInfo } from "@eve/voice";
+import { voicesFor } from "./voices";
 
 /** Turns one spoken sentence into a WAV file. Piper in the build; a stand-in in tests, so no test needs the voice model. */
 export interface Synthesizer {
@@ -77,16 +78,16 @@ export function piperSynthesizer(tools: PiperTools): Synthesizer {
 
 export type PiperLangModelSpec = { model: string; config: string; voiceName: string };
 
-/** Resolves paths for a locale-specific Piper model under tools/piper/models/. */
-export const piperLangModel = (root: string, locale: string): PiperLangModelSpec => {
-  const LOCALE_MODELS: Record<string, string> = {
-    "ne-NP": "ne_NP-chitwan-medium",
-    "hi-IN": "hi_IN-priyamvada-medium",
-  };
-  const name = LOCALE_MODELS[locale];
-  if (!name) throw new Error(`no piper model configured for locale "${locale}" — add it to LOCALE_MODELS in voice.ts`);
-  const base = join(root, "tools", "piper", "models", name);
-  return { model: `${base}.onnx`, config: `${base}.onnx.json`, voiceName: name };
+/**
+ * Resolves paths for a locale-specific Piper model under tools/piper/models/. The voice comes from the registry (config/voices.json, ADR 0120): the one named, or the
+ * locale's first Piper voice. The model and its config are the two files the registry lists.
+ */
+export const piperLangModel = (root: string, locale: string, voiceName?: string): PiperLangModelSpec => {
+  const voice = voicesFor(locale).find((v) => v.engine === "piper" && v.pickable && (voiceName === undefined || v.id === voiceName));
+  if (!voice) throw new Error(`no piper model configured for locale "${locale}"${voiceName ? ` and voice "${voiceName}"` : ""}: add it to config/voices.json (ADR 0120)`);
+  const [model, config] = [voice.files.find((f) => f.path.endsWith(".onnx")), voice.files.find((f) => f.path.endsWith(".onnx.json"))];
+  if (!model || !config) throw new Error(`the registry entry of ${voice.id} lists no .onnx and .onnx.json pair`);
+  return { model: join(root, "tools", ...model.path.split("/")), config: join(root, "tools", ...config.path.split("/")), voiceName: voice.id };
 };
 
 /** Piper with a language-specific model (Hindi, Nepali, …). The exe is shared with the base Piper install. */
@@ -96,6 +97,7 @@ export function piperLangSynthesizer(exe: string, spec: PiperLangModelSpec): Syn
   }
   const modelSha = sha(readFileSync(spec.model));
   const configSha = sha(readFileSync(spec.config));
+  const registered = voicesFor("hi-IN").concat(voicesFor("ne-NP")).find((v) => v.id === spec.voiceName);
   const piperArgs = (outFile: string) => ["--model", spec.model, "--config", spec.config, "--output_file", outFile];
   return {
     voice: {
@@ -107,8 +109,9 @@ export function piperLangSynthesizer(exe: string, spec: PiperLangModelSpec): Syn
       credit: `AI-generated voice: ${spec.voiceName}`,
       status: "development-only",
       licences: {
-        engine: "Piper 2023.11.14-2 is MIT.",
-        model: `${spec.voiceName} — Apache 2.0 / CC BY 4.0; verify per model card at huggingface.co/rhasspy/piper-voices.`,
+        // the registry holds the statements as the model card and ADR 0013 give them (ADR 0120); nothing is claimed here that they do not say
+        engine: registered?.licence.engine ?? "Piper 2023.11.14-2 is MIT.",
+        model: registered?.licence.model ?? "unstated",
       },
     },
     synthesize(spoken, outFile) {

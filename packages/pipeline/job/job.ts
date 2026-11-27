@@ -4,7 +4,7 @@ import { bm25, briefFor, sectionPlace, skillIdOf, stems, type Brief, type Curric
 import { findPersonalData, findSecrets } from "@eve/safety";
 import { SourceLesson } from "./source";
 import { sanitizeStory } from "./story";
-import { KOKORO_VOICES } from "./voice-mix";
+import { voiceChoiceProblem } from "../build/voices";
 
 /**
  * The video job (ADR 0086): a request for a lesson video on one place of a curriculum, the stages that make it, the events they write and the checks that decide it is done.
@@ -52,8 +52,8 @@ export const LessonRequest = z
         font: z.enum(["inter", "atkinson"]).optional(),
         /** Story jobs, Kokoro voice (ADR 0096): the base speaking speed, 1 is the voice's normal pace. Left out, the engine uses its own speed for the language (0.92 for English); a sentence marked [slow] is said 13% slower than this. */
         voiceSpeed: z.number().min(0.6).max(1).optional(),
-        /** Story jobs, English only (ADR 0097): which Kokoro voice, from the ones that were measured. Left out, af_heart. Other languages keep their own voice. */
-        voiceName: z.enum(KOKORO_VOICES).optional(),
+        /** Story jobs (ADR 0097, 0120): which voice, from the registry (config/voices.json) for the request's locale. English: the seven Kokoro voices that were measured, af_heart when left out; hi-IN and ne-NP: only a registry voice of that locale, the language's own voice when left out. */
+        voiceName: z.string().max(48).optional(),
         /** Story jobs in hi-IN or ne-NP only (ADR 0106): write every digit, sign and maths symbol of the narration as words before the voice speaks it, in this register ("ncert" textbook Hindi, "hinglish" Hindi with English maths words). Left out, the narration is spoken as it is written; the English path never changes. */
         spokenMath: z.enum(["hinglish", "ncert"]).optional(),
         /** Story jobs (ADR 0118): "strict" runs hard quality checks on the placed story (overlap, safe area, text size on a phone, contrast, a noun drawn at its cue) and ends the job as qa_failed when one fails; qa.json then also holds the occupancy table. Left out, the job is checked and built as before. It is not part of any build key: it changes no frame. */
@@ -69,6 +69,9 @@ export const LessonRequest = z
     if (given > 1) ctx.addIssue({ code: "custom", path: ["source"], message: "give one of curriculum.nodeId, a prompt, a source or a story, not several" });
     // the knowledge base covers classes 9 to 12; a story or a source never touches it, so it may be for any class from 5 (ADR 0115)
     if (!r.story && !r.source && r.curriculum.grade < 9) ctx.addIssue({ code: "custom", path: ["curriculum", "grade"], message: "Number must be greater than or equal to 9" });
+    // ADR 0120: a voice name must be a registry voice of the request's locale, and its engine must agree with options.voice
+    const voiceProblem = voiceChoiceProblem({ locale: r.options.locale, voice: r.options.voice, voiceName: r.options.voiceName });
+    if (voiceProblem) ctx.addIssue({ code: "custom", path: ["options", "voiceName"], message: voiceProblem });
     if (r.story) {
       const clean = sanitizeStory(r.story);
       if (!clean.story) ctx.addIssue({ code: "custom", path: ["story"], message: clean.notes.join("; ") });
@@ -96,7 +99,7 @@ export function storyOutputOptions(options: LessonRequest["options"]): Record<st
 }
 
 /** The story options with their defaults filled in: the explainer pattern for the animated style, the plain page and the language's own voice otherwise. A value in the request always wins. */
-export function resolveStoryOptions(options: LessonRequest["options"]): { chrome: "full" | "none"; font: "inter" | "atkinson"; voiceName?: (typeof KOKORO_VOICES)[number]; voiceSpeed?: number } {
+export function resolveStoryOptions(options: LessonRequest["options"]): { chrome: "full" | "none"; font: "inter" | "atkinson"; voiceName?: string; voiceSpeed?: number } {
   const explainer = options.style === "animated";
   const voiceName = options.voiceName ?? (explainer ? EXPLAINER.voiceName : undefined);
   const voiceSpeed = options.voiceSpeed ?? (explainer ? EXPLAINER.voiceSpeed : undefined);

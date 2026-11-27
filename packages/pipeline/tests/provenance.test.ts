@@ -34,6 +34,9 @@ describe("the provenance record of a host video (ADR 0116)", () => {
   it("names the font and the licence the engine ships it under", () => {
     expect(buildProvenance(base).fonts).toEqual([{ family: "Atkinson Hyperlegible", licence: "OFL-1.1" }]);
     expect(buildProvenance({ ...base, font: "inter" }).fonts).toEqual([{ family: "Inter", licence: "OFL-1.1" }]);
+    // a Hindi or Nepali page is set in the Devanagari face, so that is the font the record names (ADR 0120)
+    for (const locale of ["hi-IN", "ne-NP"]) expect(buildProvenance({ ...base, locale }).fonts).toEqual([{ family: "Noto Sans Devanagari", licence: "OFL-1.1" }]);
+    expect(buildProvenance({ ...base, locale: "en-IN" }).fonts).toEqual([{ family: "Atkinson Hyperlegible", licence: "OFL-1.1" }]);
   });
 
   it("is the same bytes for the same inputs", () => {

@@ -5,3 +5,4 @@ export * from "./sentence-cache";
 export * from "./build";
 export * from "./package";
 export * from "./spoken-math";
+export * from "./voices";

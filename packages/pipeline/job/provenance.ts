@@ -22,6 +22,9 @@ const FONTS = {
   atkinson: { family: "Atkinson Hyperlegible", licence: "OFL-1.1" },
 } as const;
 
+/** A Hindi or Nepali page is set in the engine's own Noto Sans Devanagari (ADR 0120), not in the face an English page of the same request would use. */
+const DEVANAGARI_FONT = { family: "Noto Sans Devanagari", licence: "OFL-1.1" } as const;
+
 export function buildProvenance(i: ProvenanceInput) {
   if (!/^[0-9a-f]{64}$/.test(i.contentSha256)) throw new Error("provenance: contentSha256 must be a sha256 (64 hex digits)");
   return {
@@ -41,7 +44,7 @@ export function buildProvenance(i: ProvenanceInput) {
       checkedByPerson: false,
       approvedBy: null,
     },
-    fonts: [FONTS[i.font]],
+    fonts: [i.locale === "hi-IN" || i.locale === "ne-NP" ? DEVANAGARI_FONT : FONTS[i.font]],
     captions: i.captions,
   };
 }
