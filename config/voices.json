@@ -1,0 +1,469 @@
+{
+  "schema": "voices/1",
+  "note": "Every voice the engine can speak with (ADR 0120). Licence and provenance statements are copied from ADR 0013, ADR 0117 and the model cards; 'unstated' means no statement was found. No voice is cleared: status stays development-only until the owner records the steps of ADR 0117 and changes this file and its schema in a commit that names that ADR. useAllowed never lists production.",
+  "gplChainRule": "ADR 0117 step 2: the audio and the video that leave a build are not the GPL software. Voices run only on a machine we run, as a build tool; only their output is shipped. No installer, app or server image containing phonemizer or espeak-ng (Kokoro) or the Piper folder (which bundles espeak-ng) goes to anyone else without counsel's answer.",
+  "voices": [
+    {
+      "id": "af_heart",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American female, the default English voice",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "af_kore",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American female, the explainer pattern voice (ADR 0099)",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "af_sarah",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American female",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "af_sky",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American female",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "af_aoede",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American female",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "am_adam",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American male",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "am_michael",
+      "engine": "kokoro",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": true,
+      "description": "American male",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "English voice, measured for the story path (ADR 0097, 0099); no grade for this voice is held in the repository and no listening test with teachers has been done (ADR 0117 step 4).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "hf_alpha",
+      "engine": "kokoro",
+      "locales": [
+        "hi-IN"
+      ],
+      "pickable": true,
+      "description": "Hindi female, the default Hindi voice of the story path",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Graded C on the Kokoro model card (minutes of training data, ADR 0117). No native listening test has been done. Hindi stays development-only until one says otherwise (ADR 0117 step 1).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "hf_beta",
+      "engine": "kokoro",
+      "locales": [
+        "hi-IN"
+      ],
+      "pickable": true,
+      "description": "Hindi female",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Graded C on the Kokoro model card (minutes of training data, ADR 0117). No native listening test has been done. Hindi stays development-only until one says otherwise (ADR 0117 step 1).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "hm_omega",
+      "engine": "kokoro",
+      "locales": [
+        "hi-IN"
+      ],
+      "pickable": true,
+      "description": "Hindi male",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Graded C on the Kokoro model card (minutes of training data, ADR 0117). No native listening test has been done. Hindi stays development-only until one says otherwise (ADR 0117 step 1).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "hm_psi",
+      "engine": "kokoro",
+      "locales": [
+        "hi-IN"
+      ],
+      "pickable": true,
+      "description": "Hindi male",
+      "files": [
+        {
+          "path": "kokoro/kokoro-v1.0.fp16.onnx",
+          "sha256": "c1610a859f3bdea01107e73e50100685af38fff88f5cd8e5c56df109ec880204"
+        },
+        {
+          "path": "kokoro/voices-v1.0.bin",
+          "sha256": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Graded C on the Kokoro model card (minutes of training data, ADR 0117). No native listening test has been done. Hindi stays development-only until one says otherwise (ADR 0117 step 1).",
+      "licence": {
+        "engine": "kokoro-onnx is MIT; ONNX Runtime is MIT; soundfile is BSD-3-Clause (ADR 0117, licence files of the installed packages).",
+        "model": "Kokoro-82M weights are Apache-2.0 (model card, ADR 0117). Not cleared by the owner.",
+        "voiceData": "No licence or speaker provenance is stated for this voice in the voice pack voices-v1.0.bin (54 voices); attribution (CC BY) applies to the Japanese voices and ff_siwis only (ADR 0117, research notes, not legal advice).",
+        "trainingData": "Model card: trained on permissive or non-copyrighted audio, no synthetic audio from open TTS models or custom voice clones; it also thanks contributors of synthetic training data without naming the providers (ADR 0117). ADR 0084's wording about closed commercial TTS services was not found verbatim on the primary card."
+      },
+      "provenance": "Voice pack voices-v1.0.bin of Kokoro-82M v1.0 (fp16 model); the speaker is not stated anywhere we hold (ADR 0117).",
+      "gplChain": "Rule (ADR 0117 step 2): the audio and the MP4 that leave a build are not the GPL software. Keep Kokoro on a machine we run (a build host or a server) and ship only its output. phonemizer 3.4.0 (a dependency of kokoro-onnx) is GPL-3.0 and espeak-ng (reached through espeakng-loader) is GPL-3.0 (reported); do not ship an installer, an app or a server image that contains either to anyone else without counsel's answer."
+    },
+    {
+      "id": "en_GB-jenny_dioco-medium",
+      "engine": "piper",
+      "locales": [
+        "en-IN"
+      ],
+      "pickable": false,
+      "description": "British English female, the original development voice (ADR 0013); chosen with options.voice piper, not by name",
+      "files": [
+        {
+          "path": "piper/voice.onnx",
+          "sha256": "469c630d209e139dd392a66bf4abde4ab86390a0269c1e47b4e5d7ce81526b01"
+        },
+        {
+          "path": "piper/voice.onnx.json",
+          "sha256": "a9a7a93a317c9a3cb6563e37eb057df9ef09c06188a8a4341b0fcb58cba54dd4"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Medium quality (model card). British English, not Indian English: no en_IN voice exists in the catalogue (ADR 0013). No listening test done.",
+      "licence": {
+        "engine": "Piper 2023.11.14-2 is MIT (ADR 0013).",
+        "model": "Jenny (Dioco) dataset: commercial use permitted, attribution required where the voice is heard. BUT the model was fine-tuned from the lessac voice, trained on Blizzard 2013 data under a research-only licence agreement: whether weights derived from it may ship in a product is unresolved (ADR 0013; the model card says 'License: See URL').",
+        "voiceData": "Dataset https://github.com/dioco-group/jenny-tts-dataset; the model card says 'License: See URL' (the dataset page was not archived).",
+        "trainingData": "Finetuned from the U.S. English lessac voice (medium quality) (model card)."
+      },
+      "provenance": "Piper model en_GB-jenny_dioco-medium, one speaker, 22,050 Hz (model card tools/piper/MODEL_CARD).",
+      "gplChain": "Rule (ADR 0117 step 2, applied to Piper as ADR 0117 says): Piper 2023.11.14-2 is MIT but its Windows build bundles espeak-ng (GPL-3.0) as the phonemiser, and Piper 1.x on PyPI (piper-tts) is GPL-3.0-or-later (ADR 0013). Use it only as a build tool on a machine we run and ship only its output; do not redistribute the Piper folder, an installer or an image that contains it without counsel's answer."
+    },
+    {
+      "id": "hi_IN-priyamvada-medium",
+      "engine": "piper",
+      "locales": [
+        "hi-IN"
+      ],
+      "pickable": true,
+      "description": "Hindi female, Piper medium",
+      "files": [
+        {
+          "path": "piper/models/hi_IN-priyamvada-medium.onnx",
+          "sha256": "aa63bcf2cd493b55a450f280e23cf77f03afc9af7015e6e5acd43b652f166c88"
+        },
+        {
+          "path": "piper/models/hi_IN-priyamvada-medium.onnx.json",
+          "sha256": "5efc0ccf7529f3528996d46e0fac1f969f681d44a8e55bfa6236ff8841b5d52d"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Medium quality, one speaker, 22,050 Hz (model card). No native listening test has been done.",
+      "licence": {
+        "engine": "Piper 2023.11.14-2 is MIT (ADR 0013).",
+        "model": "The model card gives the licence http://creativecommons.org/licenses/by-nc-sa/4.0/ (CC BY-NC-SA 4.0, non-commercial); ADR 0013 records the same. Not usable in a shipped commercial product.",
+        "voiceData": "Model card: 'License: http://creativecommons.org/licenses/by-nc-sa/4.0/'; the speaker and recording terms are unstated.",
+        "trainingData": "Model card: dataset https://github.com/AI4Bharat/indicnlp_corpus; trained by https://github.com/PravalX."
+      },
+      "provenance": "Piper model hi_IN-priyamvada-medium from huggingface.co/rhasspy/piper-voices; the model card and the config were saved beside the model on 2026-11-27 (tools/piper/models); the model file's sha256 equals the LFS oid listed by that repository.",
+      "gplChain": "Rule (ADR 0117 step 2, applied to Piper as ADR 0117 says): Piper 2023.11.14-2 is MIT but its Windows build bundles espeak-ng (GPL-3.0) as the phonemiser, and Piper 1.x on PyPI (piper-tts) is GPL-3.0-or-later (ADR 0013). Use it only as a build tool on a machine we run and ship only its output; do not redistribute the Piper folder, an installer or an image that contains it without counsel's answer."
+    },
+    {
+      "id": "ne_NP-chitwan-medium",
+      "engine": "piper",
+      "locales": [
+        "ne-NP"
+      ],
+      "pickable": true,
+      "description": "Nepali, Piper medium",
+      "files": [
+        {
+          "path": "piper/models/ne_NP-chitwan-medium.onnx",
+          "sha256": "f7ba6b0927688f92717e93ca52bc06f5783ce8edc765d5f85365acef1d41822c"
+        },
+        {
+          "path": "piper/models/ne_NP-chitwan-medium.onnx.json",
+          "sha256": "18d523b03b201422d14e2892cc750a81208d2e45158a9c6a7e4e06a500930dee"
+        }
+      ],
+      "status": "development-only",
+      "useAllowed": [
+        "development",
+        "review"
+      ],
+      "quality": "Medium quality, one speaker, 22,050 Hz (model card). Nepali is unchecked: no native listener has heard it and the engine's Nepali wording is not reviewed.",
+      "licence": {
+        "engine": "Piper 2023.11.14-2 is MIT (ADR 0013).",
+        "model": "unstated (the model card states the dataset licence only)",
+        "voiceData": "Model card: dataset https://github.com/OHF-Voice/voice-datasets, 'License: CC0'; the speaker's release is unstated.",
+        "trainingData": "Model card: finetuned from the rdh base model (nl_BE, one Flemish speaker, CC0), with MRD and SDP. The card also says 'Requires Piper 1.5 or higher'; the pinned Piper 2023.11.14-2 loads and speaks it (measured 2026-11-27), but that is not a statement of support."
+      },
+      "provenance": "Piper model ne_NP-chitwan-medium from huggingface.co/rhasspy/piper-voices; the model card was saved beside the model on 2026-11-27 (tools/piper/models).",
+      "gplChain": "Rule (ADR 0117 step 2, applied to Piper as ADR 0117 says): Piper 2023.11.14-2 is MIT but its Windows build bundles espeak-ng (GPL-3.0) as the phonemiser, and Piper 1.x on PyPI (piper-tts) is GPL-3.0-or-later (ADR 0013). Use it only as a build tool on a machine we run and ship only its output; do not redistribute the Piper folder, an installer or an image that contains it without counsel's answer."
+    }
+  ]
+}

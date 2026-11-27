@@ -62,6 +62,20 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
     ? `@font-face{font-family:"Atkinson Hyperlegible";src:url("${atkinson400}") format("woff2");font-weight:400;font-display:block}
 @font-face{font-family:"Atkinson Hyperlegible";src:url("${atkinson700}") format("woff2");font-weight:700;font-display:block}`
     : "";
+  // Noto Sans Devanagari (ADR 0120): the engine's own hash-locked files (packages/components/fonts, docs/FONT_BUDGET.md), so a Hindi or Nepali page fetches nothing. Only these two
+  // languages get the faces; an English page is unchanged. The files hold 400 and 500, so a heading asked for at 650 to 800 is drawn at 500 (font-synthesis is off: no faked bold).
+  const notoUrl = (name: string): string => pathToFileURL(resolve(fontDir, name)).href;
+  const DEVA_RANGE = "U+0900-097F,U+1CD0-1CF9,U+200C-200D,U+20A8,U+20B9,U+20F0,U+25CC,U+A830-A839,U+A8E0-A8FF,U+11B00-11B09";
+  const NOTO_LATIN_RANGE = "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD";
+  const devanagariFaces = isDevanagari
+    ? (["400", "500"] as const)
+        .flatMap((w) => [
+          `@font-face{font-family:"Noto Sans Devanagari";src:url("${notoUrl(`noto-sans-devanagari-deva-${w}.woff2`)}") format("woff2");font-weight:${w};font-display:block;unicode-range:${DEVA_RANGE}}`,
+          `@font-face{font-family:"Noto Sans Devanagari";src:url("${notoUrl(`noto-sans-devanagari-latin-${w}.woff2`)}") format("woff2");font-weight:${w};font-display:block;unicode-range:${NOTO_LATIN_RANGE}}`,
+        ])
+        .join("\n")
+    : "";
+  const extraFaces = [atkinsonFace, devanagariFaces].filter(Boolean).join("\n");
   // animated style: Montserrat ExtraBold (geometric, premium, cognitive-transparency brief)
   // technical: clean Inter with moderate weight (3Blue1Brown-style)
   const headingWeight = font === "atkinson" ? "700" : isAnimated ? "800" : "650";
@@ -80,11 +94,10 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   // Devanagari: positive letter-spacing breaks matras; optimizeLegibility enables kerning/ligatures
   const captionLetterSpacing = isDevanagari ? "0" : isAnimated ? "0.02em" : "-0.01em";
   const headingLetterSpacing = isDevanagari ? "0" : isAnimated ? "-0.025em" : "-.01em";
-  const devanagariExtra = isDevanagari ? "text-rendering:optimizeLegibility;font-feature-settings:\"kern\" 1,\"liga\" 1;" : "";
-  // Noto Sans Devanagari + Baloo 2 loaded from Google Fonts; Playwright can reach the network for screenshots
+  const devanagariExtra = isDevanagari ? "text-rendering:optimizeLegibility;font-feature-settings:\"kern\" 1,\"liga\" 1;font-synthesis:none;" : "";
   // Atkinson is bundled, so a page that uses it fetches nothing: the Plus Jakarta link is only for the other faces (ADR 0115); a machine with no network no longer waits 30 s for it to fail
+  // A Hindi or Nepali page links nothing: its Noto faces are local (ADR 0120)
   const googleFontLinks = [
-    isDevanagari ? '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600&display=swap">' : "",
     isAnimated && !isDevanagari && font !== "atkinson" ? '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap">' : "",
   ].join("");
   // animated: heading strip sits at top-center with a translucent cream background so content shows through
@@ -113,7 +126,7 @@ export function storyPageHtml(story: PlacedStory, theme: Theme, math: Record<str
   return `<!doctype html><html lang="${langAttr}"><head><meta charset="utf-8">${googleFontLinks}<link rel="stylesheet" href="${katexCss}"><style>
 @font-face{font-family:"Inter";src:url("${inter400}") format("woff2");font-weight:400;font-display:block}
 @font-face{font-family:"Inter";src:url("${inter600}") format("woff2");font-weight:600;font-display:block}
-${atkinsonFace}
+${extraFaces}
 *{box-sizing:border-box}html,body{margin:0;width:${FRAME.width}px;height:${FRAME.height}px;background:${pageBg};overflow:hidden;font-family:${fontStack};color:${p.ink};${devanagariExtra}}
 #frame{position:relative;width:${FRAME.width}px;height:${FRAME.height}px;background:${pageBg}}
 #top{position:absolute;${isAnimated ? `left:0;right:0;top:0;height:48px;z-index:30;background:rgba(253,251,247,0.82);` : `left:120px;right:120px;top:33px;height:75px;`}display:flex;align-items:center;justify-content:${topJustify}}

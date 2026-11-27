@@ -18,7 +18,7 @@ import { REPO_ROOT, childEnv, readEnv } from "../packages/adapters/src";
 import { STAGE_TIMEOUT_MS, acquireSlot, describeCrash, killTree } from "../packages/pipeline/job/guard";
 import { loadKb, loadStores, validateKb } from "../packages/content/src";
 import { buildProvenance } from "../packages/pipeline/job/provenance";
-import { LessonRequest, SENTENCE_CACHE_OPT_IN, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, strictGates, strictEntries, strictDetail, type GateFailure, type GateResult, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
+import { LessonRequest, SENTENCE_CACHE_OPT_IN, chooseEngine, sentenceCacheArgs, resolveStoryOptions, storyOutputOptions, bundleIdFor, buildSources, kokoroMissing, kokoroTools, lessonFolderName, qaChecks, reduceJob, resolveRequest, sourceQaChecks, sourceSheet, storySheet, storyAdvisories, strictGates, strictEntries, strictDetail, type GateFailure, type GateResult, sanitizeStory, storyForRender, objectsSafetyLine, narrationOf, stageKey, type ErrorCode, type JobEvent, type JobStage } from "../packages/pipeline";
 
 const args = process.argv.slice(2);
 const file = args.find((a) => !a.startsWith("--"));
@@ -283,7 +283,8 @@ async function hostJob(kind: "source" | "story"): Promise<never> {
   current = "ground";
   emit("ground", "skipped", { detail: `a ${kind === "story" ? "story" : "draft explainer"} holds no claims of the knowledge base` });
   const dir = join(jobDir, kind);
-  const voice = request.options.voice === "auto" ? (kokoroMissing(kokoroTools(REPO_ROOT)).length === 0 ? "kokoro" : "piper") : request.options.voice;
+  // the engine of a story: as before for English; for hi-IN and ne-NP the registry decides (ADR 0120): a named voice picks its engine, and Nepali is never given a Kokoro (English) voice
+  const voice = chooseEngine({ locale: request.options.locale, voice: request.options.voice, voiceName: request.options.voiceName }, kokoroMissing(kokoroTools(REPO_ROOT)).length === 0);
   const storyOptions = resolveStoryOptions(request.options); // the explainer pattern for an animated story, the plain page otherwise (ADR 0099)
   const script = (stage: "build" | "render"): Promise<number> =>
     supervise(`${kind}-video.ts`, [jobDir, "--stage", stage, "--voice", voice, "--theme", request.options.theme, "--fps", String(request.options.fps), "--style", request.options.style, "--chrome", storyOptions.chrome, "--captions", request.options.captions, "--font", storyOptions.font, ...(storyOptions.voiceSpeed !== undefined ? ["--speed", String(storyOptions.voiceSpeed)] : []), ...(storyOptions.voiceName !== undefined ? ["--voice-name", storyOptions.voiceName] : []), ...(request.options.spokenMath ? ["--spoken-math", request.options.spokenMath] : []), ...sentenceCacheArgs(request, args.includes(SENTENCE_CACHE_OPT_IN))], { LLM_MODE: "replay" });
