@@ -1,0 +1,42 @@
+{
+ "requestId": "tpl-endcard",
+ "idempotencyKey": "tpl-endcard-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "End of the lesson",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "The end",
+    "sentences": [
+     "That is the end of this lesson.",
+     "You solved a linear equation in four steps.",
+     "Try two more on your own, then check each answer."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "endcard",
+     "title": "Well done",
+     "lines": [
+      "Today: solving linear equations",
+      "Try two more on your own"
+     ],
+     "provenance": true
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

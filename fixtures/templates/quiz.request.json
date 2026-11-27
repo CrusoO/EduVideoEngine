@@ -1,0 +1,58 @@
+{
+ "requestId": "tpl-quiz",
+ "idempotencyKey": "tpl-quiz-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "A quick check on equations",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Quick question",
+    "sentences": [
+     "Try this one before I tell you.",
+     "Three times x equals twelve.",
+     "Pick one of the four answers.",
+     "The answer is B, because twelve divided by three is four."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "quiz",
+     "question": "What is x in 3x = 12?",
+     "options": [
+      {
+       "text": "x = 3",
+       "s": 2
+      },
+      {
+       "text": "x = 4",
+       "s": 2
+      },
+      {
+       "text": "x = 9",
+       "s": 2
+      },
+      {
+       "text": "x = 36",
+       "s": 2
+      }
+     ],
+     "answer": "B",
+     "reveal": 3
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

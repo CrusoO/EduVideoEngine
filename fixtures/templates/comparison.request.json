@@ -1,0 +1,68 @@
+{
+ "requestId": "tpl-comparison",
+ "idempotencyKey": "tpl-comparison-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "A common sign mistake",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Wrong and right",
+    "sentences": [
+     "Let us solve x minus five equals zero.",
+     "A common mistake is to write x equals minus five.",
+     "The right way is to add five to both sides.",
+     "So x equals five, and the sign does not flip."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "comparison",
+     "title": "Solving x - 5 = 0",
+     "left": {
+      "label": "Wrong",
+      "role": "look-again",
+      "s": 1,
+      "points": [
+       {
+        "text": "Write x = -5",
+        "s": 1
+       },
+       {
+        "text": "Forget to add 5",
+        "s": 1
+       }
+      ]
+     },
+     "right": {
+      "label": "Right",
+      "role": "checked",
+      "s": 2,
+      "points": [
+       {
+        "text": "Add 5 to both sides",
+        "s": 2
+       },
+       {
+        "text": "So x = 5",
+        "s": 3
+       }
+      ]
+     }
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}
