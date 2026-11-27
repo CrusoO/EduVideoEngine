@@ -1,0 +1,39 @@
+{
+ "requestId": "tpl-definition",
+ "idempotencyKey": "tpl-definition-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "What a factor is",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "One idea",
+    "sentences": [
+     "A factor is a number that divides another number exactly.",
+     "That means there is no remainder left over.",
+     "For example, three is a factor of twelve, because twelve divided by three is four."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "definition",
+     "term": "Factor",
+     "meaning": "A number that divides another number exactly, leaving no remainder.",
+     "example": "3 is a factor of 12, because 12 divided by 3 is 4."
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

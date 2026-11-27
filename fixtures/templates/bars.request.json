@@ -1,0 +1,67 @@
+{
+ "requestId": "tpl-bars",
+ "idempotencyKey": "tpl-bars-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Marks in five topics",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Average marks",
+    "sentences": [
+     "This chart shows average marks in five topics.",
+     "Algebra and geometry sit in the middle.",
+     "Statistics is higher, and arithmetic is the highest.",
+     "Trigonometry is the lowest, so it needs the most practice."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "bars",
+     "title": "Average marks",
+     "bars": [
+      {
+       "label": "Algebra",
+       "value": 72,
+       "s": 1
+      },
+      {
+       "label": "Geometry",
+       "value": 65,
+       "s": 1
+      },
+      {
+       "label": "Stats",
+       "value": 80,
+       "s": 2
+      },
+      {
+       "label": "Number",
+       "value": 90,
+       "role": "checked",
+       "s": 2
+      },
+      {
+       "label": "Trig",
+       "value": 58,
+       "role": "look-again",
+       "s": 3
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

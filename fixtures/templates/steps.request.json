@@ -1,0 +1,57 @@
+{
+ "requestId": "tpl-steps",
+ "idempotencyKey": "tpl-steps-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Solving a linear equation",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Four steps",
+    "sentences": [
+     "Let us solve two x plus three equals eleven.",
+     "First we write the equation down.",
+     "Next we take three away from both sides.",
+     "Then we divide both sides by two.",
+     "Last, we check by putting x equals four back in."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "steps",
+     "title": "Solving 2x + 3 = 11",
+     "steps": [
+      {
+       "text": "Write the equation",
+       "s": 1
+      },
+      {
+       "text": "Subtract 3 each side",
+       "s": 2
+      },
+      {
+       "text": "Divide both by 2",
+       "s": 3
+      },
+      {
+       "text": "Check: 2(4)+3 = 11",
+       "s": 4
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

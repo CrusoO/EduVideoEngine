@@ -5,6 +5,7 @@ import { PROPS, PROP_NAMES, type PropName } from "./story-props";
 import { WORD_CUE_LEAD_MS, findWord, wordStarts } from "./story-words";
 import { fillFromGrid, gridCells, gridName } from "./story-grid";
 import { expandSteps } from "./story-steps";
+import { expandTemplate } from "./story-templates";
 
 /**
  * A story lesson (ADR 0091): the host sends scenes of narration and the shapes to draw while it is said; the engine voices the narration and draws the shapes as an animation.
@@ -362,8 +363,9 @@ export function sanitizeStory(raw: unknown): Sanitized {
     const visuals: StoryVisual[] = [];
     const ids = new Set<string>();
     // `steps` (ADR 0115) stand for formulas laid out by the engine; they are read like any other shape, after the ones the author placed
-    const rawVisuals = [...(Array.isArray(sc.visuals) ? sc.visuals : []), ...expandSteps(sc.steps, sentences.length, notes, si + 1)];
-    for (const [vi, v] of rawVisuals.slice(0, STORY_LIMITS.visuals).entries()) {
+    // a `template` (ADR 0119) is typed data for one of eight closed kinds, expanded by the engine into shapes; it has its own limits and comes after the capped shapes, so it is never cut in half
+    const rawVisuals = [...[...(Array.isArray(sc.visuals) ? sc.visuals : []), ...expandSteps(sc.steps, sentences.length, notes, si + 1)].slice(0, STORY_LIMITS.visuals), ...expandTemplate(sc.template, sentences.length, notes, si + 1)];
+    for (const [vi, v] of rawVisuals.entries()) {
       if (!isObj(v)) continue;
       // a cell or an area of the grid (ADR 0102) fills the position the author left out; numbers the author wrote win
       const named = v.area !== undefined ? v.area : v.cell;

@@ -26,6 +26,7 @@ export * from "./job/story-grid";
 export * from "./job/story-layout";
 export * from "./job/story-gates";
 export * from "./job/story-steps";
+export * from "./job/story-templates";
 export * from "./objects";
 export * from "./job/voice-mix";
 export * from "./bakeoff/bakeoff";

@@ -1,0 +1,60 @@
+{
+ "requestId": "tpl-checklist",
+ "idempotencyKey": "tpl-checklist-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 10,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Checking a quadratic answer",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "A short checklist",
+    "sentences": [
+     "Before you trust an answer to a quadratic, run through this short list.",
+     "First, write the equation so that one side is zero.",
+     "Second, find both roots by factorising or by the formula.",
+     "Third, put each root back into the equation, and never stop after the first root."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "checklist",
+     "title": "Checking a quadratic",
+     "items": [
+      {
+       "text": "Write it with zero on one side",
+       "state": "done",
+       "s": 1
+      },
+      {
+       "text": "Find both roots",
+       "state": "done",
+       "s": 2
+      },
+      {
+       "text": "Put each root back in",
+       "state": "todo",
+       "s": 3
+      },
+      {
+       "text": "Stop after the first root",
+       "state": "wrong",
+       "s": 3
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

@@ -1,0 +1,89 @@
+{
+ "requestId": "tpl-table",
+ "idempotencyKey": "tpl-table-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "Squares and cubes",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "Squares and cubes",
+    "sentences": [
+     "Here is a small table of squares and cubes.",
+     "Each row starts with a number called n.",
+     "Squares grow quickly, and cubes grow even faster.",
+     "Look at the row for three, where the cube is already twenty seven."
+    ],
+    "visuals": [],
+    "template": {
+     "kind": "table",
+     "title": "Squares and cubes",
+     "header": [
+      "n",
+      "n squared",
+      "n cubed"
+     ],
+     "rows": [
+      {
+       "cells": [
+        1,
+        1,
+        1
+       ],
+       "s": 1
+      },
+      {
+       "cells": [
+        2,
+        4,
+        8
+       ],
+       "s": 1
+      },
+      {
+       "cells": [
+        3,
+        9,
+        27
+       ],
+       "s": 2
+      },
+      {
+       "cells": [
+        4,
+        16,
+        64
+       ],
+       "s": 2
+      },
+      {
+       "cells": [
+        5,
+        25,
+        125
+       ],
+       "s": 2
+      }
+     ],
+     "highlight": {
+      "row": 3,
+      "s": 3
+     }
+    }
+   }
+  ]
+ },
+ "options": {
+  "locale": "en-IN",
+  "style": "animated",
+  "qa": "strict"
+ }
+}
