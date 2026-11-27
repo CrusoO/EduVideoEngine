@@ -13,6 +13,7 @@ export * from "./envelope";
 export { CO2_PROBES, PROBES, runProbe, probeRequest } from "./probes";
 export * from "./script/law-script";
 export * from "./job/job";
+export * from "./job/render-profile";
 export * from "./job/source";
 export * from "./job/story";
 export * from "./job/story-qa";
