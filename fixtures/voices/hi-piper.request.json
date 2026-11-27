@@ -1,0 +1,104 @@
+{
+ "requestId": "voice-hi-piper",
+ "idempotencyKey": "voice-hi-piper-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "biology"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "पौधे भोजन कैसे बनाते हैं",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "पौधों का भोजन",
+    "sentences": [
+     "पौधे अपना भोजन खुद बनाते हैं।",
+     "इसके लिए उन्हें सूर्य का प्रकाश, पानी और कार्बन डाइऑक्साइड चाहिए।",
+     "पत्तियों में एक हरा पदार्थ होता है, जिसे क्लोरोफिल कहते हैं।",
+     "क्लोरोफिल सूर्य के प्रकाश को सोखता है, और इसी ऊर्जा से भोजन बनता है।",
+     "इस क्रिया में पौधे ऑक्सीजन भी छोड़ते हैं, जो हमारी साँस के काम आती है।"
+    ],
+    "visuals": [
+     {
+      "id": "plant",
+      "kind": "prop",
+      "name": "plant",
+      "cx": 50,
+      "cy": 35,
+      "size": 16,
+      "label": "पौधा",
+      "in": {
+       "s": 0,
+       "off": 0
+      }
+     },
+     {
+      "id": "sun",
+      "kind": "prop",
+      "name": "sun",
+      "cx": 17,
+      "cy": 13,
+      "size": 11,
+      "label": "सूर्य का प्रकाश",
+      "in": {
+       "s": 1,
+       "off": 0
+      }
+     },
+     {
+      "id": "water",
+      "kind": "prop",
+      "name": "drop",
+      "cx": 82,
+      "cy": 14,
+      "size": 7,
+      "label": "पानी",
+      "in": {
+       "s": 1,
+       "off": 600
+      }
+     },
+     {
+      "id": "chlor",
+      "kind": "text",
+      "x": 64,
+      "y": 24,
+      "text": "क्लोरोफिल",
+      "anchor": "start",
+      "size": 3,
+      "in": {
+       "s": 2,
+       "off": 0
+      }
+     },
+     {
+      "id": "oxy",
+      "kind": "text",
+      "x": 82,
+      "y": 30,
+      "text": "ऑक्सीजन",
+      "anchor": "middle",
+      "size": 3,
+      "in": {
+       "s": 4,
+       "off": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "locale": "hi-IN",
+  "voice": "piper",
+  "voiceName": "hi_IN-priyamvada-medium",
+  "spokenMath": "ncert",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

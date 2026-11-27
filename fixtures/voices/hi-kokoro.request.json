@@ -1,0 +1,116 @@
+{
+ "requestId": "voice-hi-kokoro",
+ "idempotencyKey": "voice-hi-kokoro-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "maths"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "त्रिभुज के तीन कोण",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "त्रिभुज के कोण",
+    "sentences": [
+     "क्या आपने कभी सोचा है कि हर त्रिभुज में तीन कोण होते हैं?",
+     "चाहे त्रिभुज छोटा हो या बड़ा, इन तीनों कोणों का योग हमेशा 180 डिग्री होता है।",
+     "मान लीजिए कि दो कोण 50 डिग्री और 60 डिग्री के हैं।",
+     "तब तीसरा कोण 180 में से 110 घटाने पर 70 डिग्री मिलता है।",
+     "यही नियम हर त्रिभुज पर लागू होता है।"
+    ],
+    "visuals": [
+     {
+      "id": "tri",
+      "kind": "polygon",
+      "points": [
+       [
+        36,
+        32
+       ],
+       [
+        64,
+        32
+       ],
+       [
+        50,
+        12
+       ]
+      ],
+      "color": "blue",
+      "fill": "blue",
+      "fillOpacity": 0.12,
+      "in": {
+       "s": 0,
+       "off": 0
+      }
+     },
+     {
+      "id": "a1",
+      "kind": "text",
+      "x": 33,
+      "y": 31,
+      "text": "50°",
+      "anchor": "end",
+      "size": 3,
+      "in": {
+       "s": 2,
+       "off": 0
+      }
+     },
+     {
+      "id": "a2",
+      "kind": "text",
+      "x": 67,
+      "y": 31,
+      "text": "60°",
+      "anchor": "start",
+      "size": 3,
+      "in": {
+       "s": 2,
+       "off": 0
+      }
+     },
+     {
+      "id": "a3",
+      "kind": "text",
+      "x": 50,
+      "y": 10,
+      "text": "70°",
+      "anchor": "middle",
+      "size": 3,
+      "in": {
+       "s": 3,
+       "off": 0
+      }
+     },
+     {
+      "id": "sum",
+      "kind": "text",
+      "x": 50,
+      "y": 37,
+      "text": "50° + 60° + 70° = 180°",
+      "anchor": "middle",
+      "size": 3,
+      "in": {
+       "s": 4,
+       "off": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "locale": "hi-IN",
+  "voice": "kokoro",
+  "voiceName": "hf_alpha",
+  "spokenMath": "hinglish",
+  "style": "animated",
+  "qa": "strict"
+ }
+}

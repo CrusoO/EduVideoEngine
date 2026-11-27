@@ -265,3 +265,30 @@ describe("the voices of the registry in the adapters", () => {
     expect(piperLangModel("/x", "ne-NP").voiceName).toBe("ne_NP-chitwan-medium");
   });
 });
+
+describe("the sample requests for native listeners (fixtures/voices)", () => {
+  const dir = join(__dirname, "../../../fixtures/voices");
+  const cases: Array<[string, string, string, string]> = [
+    ["hi-kokoro", "hi-IN", "kokoro", "hf_alpha"],
+    ["hi-piper", "hi-IN", "piper", "hi_IN-priyamvada-medium"],
+    ["ne-piper", "ne-NP", "piper", "ne_NP-chitwan-medium"],
+  ];
+  for (const [name, locale, voice, voiceName] of cases) {
+    it(`${name} is a valid ${locale} request that names its registry voice`, () => {
+      const r = LessonRequest.parse(JSON.parse(readFileSync(join(dir, `${name}.request.json`), "utf8")));
+      expect(r.options).toMatchObject({ locale, voice, voiceName, style: "animated", qa: "strict" });
+      expect(isAllowedForUse(voiceName, "review")).toBe(true);
+      const story = sanitizeStory(r.story).story!;
+      const sentences = story.scenes.flatMap((s) => s.sentences);
+      expect(sentences.length).toBeGreaterThanOrEqual(4);
+      expect(sentences.length).toBeLessThanOrEqual(6);
+      expect(sentences.every((s) => /[ऀ-ॿ]/.test(s.text))).toBe(true); // written in Devanagari
+      expect(JSON.stringify(r.story)).not.toMatch(/NCERT|CBSE|ICSE|Pearson|Oxford|Cambridge|Arihant|Siyavula/i); // no board or publisher named in the story
+    });
+  }
+  it("a sample with a voice of another language is refused", () => {
+    const r = JSON.parse(readFileSync(join(dir, "hi-kokoro.request.json"), "utf8"));
+    r.options.voiceName = "ne_NP-chitwan-medium";
+    expect(LessonRequest.safeParse(r).success).toBe(false);
+  });
+});

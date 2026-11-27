@@ -1,0 +1,103 @@
+{
+ "requestId": "voice-ne-piper",
+ "idempotencyKey": "voice-ne-piper-v1",
+ "curriculum": {
+  "board": "CBSE",
+  "grade": 9,
+  "subject": "chemistry"
+ },
+ "trace": {
+  "origin": "engine-fixture",
+  "env": "local"
+ },
+ "story": {
+  "title": "पानीको चक्र",
+  "scenes": [
+   {
+    "role": "hook",
+    "heading": "पानी घुमिरहन्छ",
+    "sentences": [
+     "पानी कहिल्यै सकिँदैन, यो बारम्बार घुमिरहन्छ।",
+     "सूर्यको तापले नदी र समुद्रको पानीलाई वाष्प बनाउँछ।",
+     "यो वाष्प माथि गएर चिसो हुन्छ र बादल बन्छ।",
+     "बादलबाट पानी वर्षा भएर फेरि पृथ्वीमा खस्छ।",
+     "यसरी पानीको चक्र निरन्तर चलिरहन्छ।"
+    ],
+    "visuals": [
+     {
+      "id": "mount",
+      "kind": "prop",
+      "name": "mountain",
+      "cx": 50,
+      "cy": 36,
+      "size": 18,
+      "in": {
+       "s": 0,
+       "off": 0
+      }
+     },
+     {
+      "id": "sun",
+      "kind": "prop",
+      "name": "sun",
+      "cx": 16,
+      "cy": 13,
+      "size": 10,
+      "label": "सूर्य",
+      "in": {
+       "s": 1,
+       "off": 0
+      }
+     },
+     {
+      "id": "cloud",
+      "kind": "prop",
+      "name": "cloud",
+      "cx": 66,
+      "cy": 13,
+      "size": 11,
+      "label": "बादल",
+      "in": {
+       "s": 2,
+       "off": 0
+      }
+     },
+     {
+      "id": "rain",
+      "kind": "prop",
+      "name": "drop",
+      "cx": 74,
+      "cy": 27,
+      "size": 6,
+      "label": "वर्षा",
+      "in": {
+       "s": 3,
+       "off": 0
+      }
+     },
+     {
+      "id": "vapour",
+      "kind": "text",
+      "x": 40,
+      "y": 20,
+      "text": "वाष्प",
+      "anchor": "middle",
+      "size": 3,
+      "in": {
+       "s": 2,
+       "off": 0
+      }
+     }
+    ]
+   }
+  ]
+ },
+ "options": {
+  "locale": "ne-NP",
+  "voice": "piper",
+  "voiceName": "ne_NP-chitwan-medium",
+  "spokenMath": "ncert",
+  "style": "animated",
+  "qa": "strict"
+ }
+}
