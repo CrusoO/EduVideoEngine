@@ -6,10 +6,10 @@ import { FRAME } from "./story-page";
  * render as it always was (1920 by 1080, x264 preset slow, crf 20, a JPEG file for each frame and a concat list); a request without `options.render` never reaches the other branch.
  */
 export type RenderSettings = {
-  /** The size of the picture in the file. The page is always laid out at FRAME (1920 by 1080); a smaller size is that page drawn at a device scale factor, so nothing moves or wraps differently. */
+  /** The size of the picture in the file. The page is always laid out and drawn at FRAME (1920 by 1080); a smaller size is that picture scaled by the encoder, so nothing moves or wraps differently. */
   width: number;
   height: number;
-  /** Device scale factor of the render browser (1 for standard). */
+  /** Device scale factor of the render browser: 1 for every profile. A fractional factor was tried for `fast` and its screenshots stalled on the development machine (ADR 0121), so the encoder does the scaling. */
   scale: number;
   preset: "slow" | "veryfast";
   crf: number;
@@ -20,7 +20,7 @@ export type RenderSettings = {
 
 export const RENDER_SETTINGS: Record<RenderProfile, RenderSettings> = {
   standard: { width: FRAME.width, height: FRAME.height, scale: 1, preset: "slow", crf: 20, pipe: false, jpegQuality: 95 },
-  fast: { width: 1280, height: 720, scale: 1280 / FRAME.width, preset: "veryfast", crf: 23, pipe: true, jpegQuality: 90 },
+  fast: { width: 1280, height: 720, scale: 1, preset: "veryfast", crf: 23, pipe: true, jpegQuality: 90 },
 };
 
 /**

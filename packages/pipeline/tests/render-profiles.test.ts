@@ -92,11 +92,10 @@ describe("existing story fixtures keep their keys, their stories and their pages
 });
 
 describe("the render settings (ADR 0121)", () => {
-  it("fast is 1280 by 720, the same picture at two thirds, preset veryfast, crf 23, piped", () => {
+  it("fast is 1280 by 720 (the 1920 by 1080 page scaled by the encoder), preset veryfast, crf 23, piped", () => {
     const f = RENDER_SETTINGS.fast;
-    expect(f).toMatchObject({ width: 1280, height: 720, preset: "veryfast", crf: 23, pipe: true });
-    expect(f.scale * 1920).toBeCloseTo(1280, 9);
-    expect(f.scale * 1080).toBeCloseTo(720, 9);
+    expect(f).toMatchObject({ width: 1280, height: 720, scale: 1, preset: "veryfast", crf: 23, pipe: true });
+    expect(f.width / f.height).toBeCloseTo(1920 / 1080, 9);
   });
 });
 
